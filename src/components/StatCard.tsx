@@ -13,11 +13,11 @@ export function StatCard({ label, value, icon }: StatCardProps) {
       <CardContent className="p-0">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">{label}</p>
-            <p className="mt-1 text-2xl font-bold text-white">{value}</p>
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">{label}</p>
+            <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{value}</p>
           </div>
           {icon && (
-            <div className="text-indigo-400">{icon}</div>
+            <div className="text-indigo-600 dark:text-indigo-400">{icon}</div>
           )}
         </div>
       </CardContent>

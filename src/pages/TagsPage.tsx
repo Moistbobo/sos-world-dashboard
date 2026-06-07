@@ -59,15 +59,15 @@ export function TagsPage() {
               <button
                 key={t.tag}
                 onClick={() => navigate(`/worlds?tag=${encodeURIComponent(t.tag)}`)}
-                className="card p-4 text-left transition hover:border-slate-600"
+                className="card p-4 text-left transition hover:border-slate-400 dark:hover:border-slate-600"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <TagBadge tag={t.tag} />
                   </div>
-                  <span className="text-sm font-bold text-white">{t.count}</span>
+                  <span className="text-sm font-bold text-slate-900 dark:text-white">{t.count}</span>
                 </div>
-                <div className="mt-3 h-2 w-full rounded-full bg-slate-800">
+                <div className="mt-3 h-2 w-full rounded-full bg-slate-200 dark:bg-slate-800">
                   <div
                     className="h-2 rounded-full bg-indigo-500/60 transition-all hover:bg-indigo-400"
                     style={{ width: `${pct}%` }}

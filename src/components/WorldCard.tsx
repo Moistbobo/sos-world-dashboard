@@ -10,8 +10,8 @@ interface WorldCardProps {
 
 export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
   return (
-    <div className="card overflow-hidden flex flex-col transition hover:border-slate-600">
-      <div className="relative h-40 bg-slate-800">
+    <div className="card overflow-hidden flex flex-col transition hover:border-slate-400 dark:hover:border-slate-600">
+      <div className="relative h-40 bg-slate-200 dark:bg-slate-800">
         {world.imageUrl ? (
           <img
             src={world.imageUrl}
@@ -20,7 +20,7 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-slate-600">
+          <div className="flex h-full w-full items-center justify-center text-slate-400 dark:text-slate-600">
             <Globe className="h-10 w-10" />
           </div>
         )}
@@ -39,12 +39,12 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
       </div>
 
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="text-sm font-semibold text-white line-clamp-1" title={world.name}>
+        <h3 className="text-sm font-semibold text-slate-900 line-clamp-1 dark:text-white" title={world.name}>
           {world.name}
         </h3>
-        <p className="mt-0.5 text-xs text-slate-400">by {world.authorName || 'Unknown'}</p>
+        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">by {world.authorName || 'Unknown'}</p>
 
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
           <span className="inline-flex items-center gap-1">
             <Users className="h-3 w-3" />
             {world.capacity}
@@ -60,7 +60,7 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
             <TagBadge key={t} tag={t} onClick={onTagClick} />
           ))}
           {world.tags.length > 4 && (
-            <span className="text-xs text-slate-500">+{world.tags.length - 4}</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500">+{world.tags.length - 4}</span>
           )}
         </div>
 

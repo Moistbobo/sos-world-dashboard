@@ -38,7 +38,7 @@ export function Pagination({ offset, limit, total, onChangeOffset }: PaginationP
             min-w-[2rem] rounded-lg px-2 py-1.5 text-xs font-medium transition
             ${p === currentPage
               ? 'bg-indigo-600 text-white'
-              : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}
+              : 'bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'}
           `}
         >
           {p}
@@ -53,7 +53,7 @@ export function Pagination({ offset, limit, total, onChangeOffset }: PaginationP
         Next
       </button>
 
-      <span className="ml-2 text-xs text-slate-500">
+      <span className="ml-2 text-xs text-slate-400 dark:text-slate-500">
         {offset + 1} – {Math.min(offset + limit, total)} of {total}
       </span>
     </div>
