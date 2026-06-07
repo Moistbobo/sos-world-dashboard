@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface PaginationProps {
   offset: number;
   limit: number;
@@ -6,6 +8,7 @@ interface PaginationProps {
 }
 
 export function Pagination({ offset, limit, total, onChangeOffset }: PaginationProps) {
+  const { t } = useTranslation();
   const currentPage = Math.floor(offset / limit) + 1;
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const canPrev = offset > 0;
@@ -27,7 +30,7 @@ export function Pagination({ offset, limit, total, onChangeOffset }: PaginationP
         onClick={() => onChangeOffset(Math.max(0, offset - limit))}
         className="btn-secondary disabled:opacity-40 disabled:cursor-not-allowed px-3 py-1.5 text-xs"
       >
-        Prev
+        {t('pagination.prev')}
       </button>
 
       {pages.map((p) => (
@@ -50,11 +53,15 @@ export function Pagination({ offset, limit, total, onChangeOffset }: PaginationP
         onClick={() => onChangeOffset(offset + limit)}
         className="btn-secondary disabled:opacity-40 disabled:cursor-not-allowed px-3 py-1.5 text-xs"
       >
-        Next
+        {t('pagination.next')}
       </button>
 
       <span className="ml-2 text-xs text-slate-400 dark:text-slate-500">
-        {offset + 1} – {Math.min(offset + limit, total)} of {total}
+        {t('pagination.range', {
+          start: offset + 1,
+          end: Math.min(offset + limit, total),
+          total,
+        })}
       </span>
     </div>
   );

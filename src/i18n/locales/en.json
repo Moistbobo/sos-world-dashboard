@@ -1,0 +1,98 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "worlds": "Worlds",
+    "tags": "Tags",
+    "settings": "Settings"
+  },
+  "layout": {
+    "appName": "SOS Dashboard",
+    "apiStatus": "API status:",
+    "online": "Online",
+    "offline": "Offline / Unauthorized",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "closeSidebar": "Close sidebar"
+  },
+  "common": {
+    "back": "Back",
+    "details": "Details",
+    "save": "Save",
+    "saved": "Saved",
+    "unknown": "Unknown",
+    "good": "Good",
+    "bad": "Bad",
+    "more": "+{{count}}",
+    "byAuthor": "by {{author}}"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your VRChat world tagger data.",
+    "totalWorlds": "Total Worlds",
+    "uniqueTags": "Unique Tags",
+    "dbVersion": "Database Version",
+    "latest": "Latest",
+    "recentWorlds": "Recent Worlds",
+    "viewAll": "View all →",
+    "topTags": "Top Tags"
+  },
+  "worlds": {
+    "title": "Worlds",
+    "subtitle": "Browse and filter tracked VRChat worlds.",
+    "searchPlaceholder": "Search name, author, ID...",
+    "loadError": "Failed to load worlds: {{message}}",
+    "noWorlds": "No worlds found. Adjust your filters or",
+    "tryAgain": "try again"
+  },
+  "worldDetail": {
+    "loadError": "Failed to load world: {{message}}",
+    "byAuthor": "by {{author}}",
+    "unknownAuthor": "Unknown author",
+    "qualityGood": "Quality: Good",
+    "qualityBad": "Quality: Bad",
+    "noQuality": "No quality rating",
+    "capacity": "Capacity: {{capacity}}",
+    "id": "ID: {{id}}",
+    "added": "Added {{date}}",
+    "platforms": "Platforms",
+    "tags": "Tags",
+    "openInVRChat": "Open in VRChat"
+  },
+  "tags": {
+    "title": "Tags",
+    "subtitle": "Explore tag usage across tracked worlds.",
+    "searchPlaceholder": "Search tags...",
+    "loadError": "Failed to load tags: {{message}}"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure connection to the world tagger API.",
+    "apiBaseUrl": "API Base URL",
+    "apiBaseUrlHint": "The root URL of the bot_vrc_world_tagger API server.",
+    "bearerToken": "Bearer Token",
+    "bearerTokenHint": "Required for all routes except /api/health. Set in the bot config.",
+    "testConnection": "Test Connection",
+    "testing": "Testing...",
+    "connectionSuccess": "Connection successful.",
+    "language": "Language",
+    "languageHint": "Select your preferred display language."
+  },
+  "filter": {
+    "filters": "Filters",
+    "quality": "Quality",
+    "good": "✅ Good",
+    "bad": "❌ Bad",
+    "tags": "Tags",
+    "searchTagsPlaceholder": "Search tags...",
+    "clearAll": "Clear all"
+  },
+  "pagination": {
+    "prev": "Prev",
+    "next": "Next",
+    "range": "{{start}} – {{end}} of {{total}}"
+  },
+  "theme": {
+    "lightMode": "Switch to light mode",
+    "darkMode": "Switch to dark mode"
+  }
+}

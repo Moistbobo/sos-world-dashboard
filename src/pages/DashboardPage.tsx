@@ -1,10 +1,12 @@
 import { Activity, Globe, Tags, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useHealth, useTags, useWorlds } from '../hooks/useApi';
 import { StatCard } from '../components/StatCard';
 import { WorldCard } from '../components/WorldCard';
 import { useNavigate } from 'react-router-dom';
 
 export function DashboardPage() {
+  const { t } = useTranslation();
   const { data: health, isPending: healthLoading, isError: healthIsError } = useHealth();
   const { data: tagsData, isPending: tagsLoading } = useTags();
   const { data: worldsData, isPending: worldsLoading } = useWorlds({ limit: 6 });
@@ -16,28 +18,28 @@ export function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="mb-2">
-        <h1 className="text-xl font-bold text-slate-900 dark:text-white">Dashboard</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Overview of your VRChat world tagger data.</p>
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t('dashboard.title')}</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t('dashboard.subtitle')}</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Total Worlds"
+          label={t('dashboard.totalWorlds')}
           value={healthLoading ? '...' : healthIsError ? '?' : health?.worldCount ?? 0}
           icon={<Globe className="h-5 w-5" />}
         />
         <StatCard
-          label="Unique Tags"
+          label={t('dashboard.uniqueTags')}
           value={tagsLoading ? '...' : topTags.length}
           icon={<Tags className="h-5 w-5" />}
         />
         <StatCard
-          label="Database Version"
+          label={t('dashboard.dbVersion')}
           value={healthLoading ? '...' : health?.dbVersion ?? '-'}
           icon={<Activity className="h-5 w-5" />}
         />
         <StatCard
-          label="Latest"
+          label={t('dashboard.latest')}
           value={latestWorlds.length > 0 ? new Date(latestWorlds[0].createdAt).toLocaleDateString() : '-'}
           icon={<Clock className="h-5 w-5" />}
         />
@@ -48,12 +50,12 @@ export function DashboardPage() {
         <div className="lg:col-span-2">
           <div className="card">
             <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3 dark:border-slate-700/50">
-              <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Recent Worlds</h2>
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('dashboard.recentWorlds')}</h2>
               <button
                 onClick={() => navigate('/worlds')}
                 className="text-xs text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
               >
-                View all →
+                {t('dashboard.viewAll')}
               </button>
             </div>
             <div className="grid gap-4 p-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -76,7 +78,7 @@ export function DashboardPage() {
         <div>
           <div className="card">
             <div className="border-b border-slate-200 px-5 py-3 dark:border-slate-700/50">
-              <h2 className="text-sm font-semibold text-white">Top Tags</h2>
+              <h2 className="text-sm font-semibold text-white">{t('dashboard.topTags')}</h2>
             </div>
             <div className="p-4 space-y-3">
               {tagsLoading
