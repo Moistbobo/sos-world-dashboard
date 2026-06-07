@@ -1,22 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { Save, Activity, Globe, KeyRound, Check, AlertTriangle } from 'lucide-react';
-import { getConfig, setConfig } from '../api/client';
-import { fetchHealth } from '../api/client';
+import { getConfig, setConfig, fetchHealth } from '../api/client';
 
 export function SettingsPage() {
-  const [baseUrl, setBaseUrl] = useState('');
-  const [token, setToken] = useState('');
+  const [baseUrl, setBaseUrl] = useState(() => getConfig().baseUrl);
+  const [token, setToken] = useState(() => getConfig().token);
   const [saved, setSaved] = useState(false);
-  const [testStatus, setTestStatus] = useState<'idle' | 'loading' | 'ok' | 'fail'>('idle');
   const [testMessage, setTestMessage] = useState('');
-
-  useEffect(() => {
-    const cfg = getConfig();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setBaseUrl(cfg.baseUrl);
-     
-    setToken(cfg.token);
-  }, []);
 
   const handleSave = () => {
     setConfig({ baseUrl, token });
@@ -24,26 +15,24 @@ export function SettingsPage() {
     setTimeout(() => setSaved(false), 1500);
   };
 
-  const handleTest = async () => {
-    setTestStatus('loading');
-    setTestMessage('');
-    try {
+  const testConnection = useMutation({
+    mutationFn: async () => {
       setConfig({ baseUrl, token });
       await fetchHealth();
-      // also test an authed endpoint if token provided
       if (token) {
         const res = await fetch(`${baseUrl.replace(/\/$/, '')}/api/worlds?limit=1`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error(res.statusText);
       }
-      setTestStatus('ok');
+    },
+    onSuccess: () => {
       setTestMessage('Connection successful.');
-    } catch (err) {
-      setTestStatus('fail');
+    },
+    onError: (err) => {
       setTestMessage(err instanceof Error ? err.message : 'Connection failed');
-    }
-  };
+    },
+  });
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -93,12 +82,12 @@ export function SettingsPage() {
             Save
           </button>
           <button
-            onClick={handleTest}
-            disabled={testStatus === 'loading'}
+            onClick={() => testConnection.mutate()}
+            disabled={testConnection.isPending}
             className="btn-secondary gap-2"
           >
             <Activity className="h-4 w-4" />
-            {testStatus === 'loading' ? 'Testing...' : 'Test Connection'}
+            {testConnection.isPending ? 'Testing...' : 'Test Connection'}
           </button>
 
           {saved && (
@@ -109,16 +98,16 @@ export function SettingsPage() {
           )}
         </div>
 
-        {testStatus !== 'idle' && testStatus !== 'loading' && (
-          <div
-            className={`mt-2 flex items-center gap-2 rounded-lg px-3 py-2 text-sm ${
-              testStatus === 'ok'
-                ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
-                : 'bg-red-500/10 text-red-700 dark:text-red-300'
-            }`}
-          >
-            {testStatus === 'fail' && <AlertTriangle className="h-4 w-4" />}
-            {testStatus === 'ok' && <Check className="h-4 w-4" />}
+        {testConnection.isSuccess && (
+          <div className="mt-2 flex items-center gap-2 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-300">
+            <Check className="h-4 w-4" />
+            {testMessage}
+          </div>
+        )}
+
+        {testConnection.isError && (
+          <div className="mt-2 flex items-center gap-2 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300">
+            <AlertTriangle className="h-4 w-4" />
             {testMessage}
           </div>
         )}

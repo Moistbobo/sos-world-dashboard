@@ -19,7 +19,7 @@ export function WorldsPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const { data: tagsData } = useTags();
-  const { data, loading, error, refetch } = useWorlds({
+  const { data, isPending, isError, error, refetch } = useWorlds({
     limit,
     offset,
     tag: selectedTags,
@@ -139,13 +139,13 @@ export function WorldsPage() {
         </div>
       </div>
 
-      {error && (
+      {isError && (
         <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-600 dark:text-red-300">
-          Failed to load worlds: {error}
+          Failed to load worlds: {error?.message}
         </div>
       )}
 
-      {loading && (
+      {isPending && (
         <div className={viewMode === 'grid' ? 'grid gap-4 sm:grid-cols-2 xl:grid-cols-4' : 'space-y-3'}>
           {Array.from({ length: limit }).map((_, i) => (
             <div key={i} className="card animate-pulse bg-slate-200 dark:bg-slate-800 h-64" />
@@ -153,16 +153,16 @@ export function WorldsPage() {
         </div>
       )}
 
-      {!loading && !error && filteredWorlds.length === 0 && (
+      {!isPending && !isError && filteredWorlds.length === 0 && (
         <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
           No worlds found. Adjust your filters or{' '}
-          <button onClick={refetch} className="text-indigo-600 underline dark:text-indigo-400">
+          <button onClick={() => refetch()} className="text-indigo-600 underline dark:text-indigo-400">
             try again
           </button>.
         </div>
       )}
 
-      {!loading && !error && filteredWorlds.length > 0 && viewMode === 'grid' && (
+      {!isPending && !isError && filteredWorlds.length > 0 && viewMode === 'grid' && (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {filteredWorlds.map((w) => (
             <WorldCard
@@ -181,7 +181,7 @@ export function WorldsPage() {
         </div>
       )}
 
-      {!loading && !error && filteredWorlds.length > 0 && viewMode === 'list' && (
+      {!isPending && !isError && filteredWorlds.length > 0 && viewMode === 'list' && (
         <div className="space-y-3">
           {filteredWorlds.map((w) => (
             <button
