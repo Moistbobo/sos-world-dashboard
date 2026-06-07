@@ -26,6 +26,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const location = useLocation();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setApiOk(null);
     fetchHealth()
       .then(() => setApiOk(true))

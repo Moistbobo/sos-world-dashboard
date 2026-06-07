@@ -31,9 +31,11 @@ export function WorldsPage() {
     const tag = searchParams.get('tag');
     const quality = searchParams.get('quality');
     if (tag) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedTags((prev) => (prev.includes(tag) ? prev : [...prev, tag]));
     }
     if (quality === 'good' || quality === 'bad') {
+       
       setSelectedQuality((prev) => (prev.includes(quality) ? prev : [...prev, quality]));
     }
     // run once
