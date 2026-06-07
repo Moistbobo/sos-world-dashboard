@@ -11,8 +11,8 @@ export function WorldDetailPage() {
   if (loading) {
     return (
       <div className="mx-auto max-w-3xl space-y-4">
-        <div className="card h-72 animate-pulse bg-slate-800" />
-        <div className="card h-40 animate-pulse bg-slate-800" />
+        <div className="card h-72 animate-pulse bg-slate-200 dark:bg-slate-800" />
+        <div className="card h-40 animate-pulse bg-slate-200 dark:bg-slate-800" />
       </div>
     );
   }
@@ -20,7 +20,7 @@ export function WorldDetailPage() {
   if (error || !data) {
     return (
       <div className="mx-auto max-w-3xl">
-        <div className="card p-8 text-center text-sm text-red-300">
+        <div className="card p-8 text-center text-sm text-red-600 dark:text-red-300">
           Failed to load world: {error || 'Not found'}
         </div>
       </div>
@@ -40,7 +40,7 @@ export function WorldDetailPage() {
       </button>
 
       <div className="card overflow-hidden">
-        <div className="relative h-56 bg-slate-800 sm:h-72">
+        <div className="relative h-56 bg-slate-200 sm:h-72 dark:bg-slate-800">
           {w.imageUrl ? (
             <img
               src={w.imageUrl}
@@ -48,7 +48,7 @@ export function WorldDetailPage() {
               className="h-full w-full object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-slate-600">
+            <div className="flex h-full w-full items-center justify-center text-slate-400 dark:text-slate-600">
               <Globe className="h-16 w-16" />
             </div>
           )}
@@ -57,8 +57,8 @@ export function WorldDetailPage() {
         <div className="p-5 sm:p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-lg font-bold text-white sm:text-xl">{w.name}</h1>
-              <p className="mt-0.5 text-sm text-slate-400">by {w.authorName || 'Unknown author'}</p>
+              <h1 className="text-lg font-bold text-slate-900 sm:text-xl dark:text-white">{w.name}</h1>
+              <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">by {w.authorName || 'Unknown author'}</p>
             </div>
             <div className="shrink-0">
               {w.quality === 'good' && (
@@ -72,35 +72,35 @@ export function WorldDetailPage() {
                 </span>
               )}
               {w.quality == null && (
-                <span className="rounded-lg bg-slate-700/40 px-3 py-1 text-xs font-semibold text-slate-400 ring-1 ring-slate-600/30">
+                <span className="rounded-lg bg-slate-200/40 px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-300 dark:bg-slate-700/40 dark:text-slate-400 dark:ring-slate-600/30">
                   No quality rating
                 </span>
               )}
             </div>
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-4 border-t border-slate-700/50 pt-4 text-sm text-slate-300">
+          <div className="mt-5 flex flex-wrap gap-4 border-t border-slate-200 pt-4 text-sm text-slate-700 dark:border-slate-700/50 dark:text-slate-300">
             <div className="flex items-center gap-1.5">
-              <Users className="h-4 w-4 text-slate-500" />
+              <Users className="h-4 w-4 text-slate-400 dark:text-slate-500" />
               Capacity: {w.capacity}
             </div>
             <div className="flex items-center gap-1.5">
-              <Hash className="h-4 w-4 text-slate-500" />
+              <Hash className="h-4 w-4 text-slate-400 dark:text-slate-500" />
               ID: {w.worldId}
             </div>
             <div className="flex items-center gap-1.5">
-              <Calendar className="h-4 w-4 text-slate-500" />
+              <Calendar className="h-4 w-4 text-slate-400 dark:text-slate-500" />
               Added {new Date(w.createdAt).toLocaleString()}
             </div>
           </div>
 
           <div className="mt-4">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Platforms</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Platforms</p>
             <div className="flex flex-wrap gap-2">
               {w.platforms.map((p) => (
                 <span
                   key={p}
-                  className="rounded-md bg-slate-800 px-2 py-1 text-xs font-medium text-slate-300"
+                  className="rounded-md bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300"
                 >
                   {p}
                 </span>
@@ -109,7 +109,7 @@ export function WorldDetailPage() {
           </div>
 
           <div className="mt-4">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Tags</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tags</p>
             <div className="flex flex-wrap gap-2">
               {w.tags.map((t) => (
                 <TagBadge

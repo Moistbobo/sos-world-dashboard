@@ -27,7 +27,7 @@ function getColorForTag(tag: string): string {
   for (const [key, color] of tagColors) {
     if (lower.includes(key)) return color;
   }
-  return 'bg-slate-700/40 text-slate-300 border-slate-600/30';
+  return 'bg-slate-200/40 text-slate-700 border-slate-300 dark:bg-slate-700/40 dark:text-slate-300 dark:border-slate-600/30';
 }
 
 export function TagBadge({ tag, onClick, active, className = '' }: TagBadgeProps) {

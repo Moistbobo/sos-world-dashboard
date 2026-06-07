@@ -16,8 +16,8 @@ export function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="mb-2">
-        <h1 className="text-xl font-bold text-white">Dashboard</h1>
-        <p className="text-sm text-slate-400">Overview of your VRChat world tagger data.</p>
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white">Dashboard</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Overview of your VRChat world tagger data.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -47,11 +47,11 @@ export function DashboardPage() {
         {/* Recent Worlds */}
         <div className="lg:col-span-2">
           <div className="card">
-            <div className="flex items-center justify-between border-b border-slate-700/50 px-5 py-3">
-              <h2 className="text-sm font-semibold text-white">Recent Worlds</h2>
+            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3 dark:border-slate-700/50">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Recent Worlds</h2>
               <button
                 onClick={() => navigate('/worlds')}
-                className="text-xs text-indigo-400 hover:text-indigo-300"
+                className="text-xs text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
               >
                 View all →
               </button>
@@ -59,7 +59,7 @@ export function DashboardPage() {
             <div className="grid gap-4 p-4 sm:grid-cols-2 xl:grid-cols-3">
               {worldsLoading
                 ? Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="card h-64 animate-pulse bg-slate-800" />
+                    <div key={i} className="card h-64 animate-pulse bg-slate-200 dark:bg-slate-800" />
                   ))
                 : latestWorlds.map((w) => (
                     <WorldCard
@@ -75,13 +75,13 @@ export function DashboardPage() {
         {/* Top Tags */}
         <div>
           <div className="card">
-            <div className="border-b border-slate-700/50 px-5 py-3">
+            <div className="border-b border-slate-200 px-5 py-3 dark:border-slate-700/50">
               <h2 className="text-sm font-semibold text-white">Top Tags</h2>
             </div>
             <div className="p-4 space-y-3">
               {tagsLoading
                 ? Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="h-4 animate-pulse rounded bg-slate-800" />
+                    <div key={i} className="h-4 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
                   ))
                 : topTags.map((t) => {
                     const max = topTags[0]?.count || 1;
@@ -93,10 +93,10 @@ export function DashboardPage() {
                         className="group w-full text-left"
                       >
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-medium text-slate-200">{t.tag}</span>
-                          <span className="text-slate-500">{t.count}</span>
+                          <span className="font-medium text-slate-800 dark:text-slate-200">{t.tag}</span>
+                          <span className="text-slate-400 dark:text-slate-500">{t.count}</span>
                         </div>
-                        <div className="mt-1 h-1.5 w-full rounded-full bg-slate-800">
+                        <div className="mt-1 h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-800">
                           <div
                             className="h-1.5 rounded-full bg-indigo-500/60 transition group-hover:bg-indigo-400"
                             style={{ width: `${pct}%` }}
