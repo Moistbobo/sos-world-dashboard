@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   Globe,
@@ -11,9 +11,8 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react';
-import { useState } from 'react';
-import { fetchHealth } from '../api/client';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useHealth } from '../hooks/useApi';
 import { ThemeToggle } from './ThemeToggle';
 
 const navItems = [
@@ -25,6 +24,7 @@ const navItems = [
 
 export function Layout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isPending, isError } = useHealth();
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem('sos-sidebar-collapsed') === 'true';
@@ -32,8 +32,6 @@ export function Layout({ children }: { children: ReactNode }) {
       return false;
     }
   });
-  const [apiOk, setApiOk] = useState<boolean | null>(null);
-  const location = useLocation();
 
   useEffect(() => {
     try {
@@ -42,14 +40,6 @@ export function Layout({ children }: { children: ReactNode }) {
       // ignore storage errors
     }
   }, [collapsed]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setApiOk(null);
-    fetchHealth()
-      .then(() => setApiOk(true))
-      .catch(() => setApiOk(false));
-  }, [location.pathname]);
 
   return (
     <div className="flex min-h-screen">
@@ -135,16 +125,16 @@ export function Layout({ children }: { children: ReactNode }) {
           </button>
           <div className="flex items-center gap-2 text-xs">
             <span className="text-slate-400 dark:text-slate-500">API status:</span>
-            {apiOk === null && (
+            {isPending && (
               <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-slate-400 dark:bg-slate-500" />
             )}
-            {apiOk === true && (
+            {!isPending && !isError && (
               <div className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
                 <span className="text-emerald-600 dark:text-emerald-400">Online</span>
               </div>
             )}
-            {apiOk === false && (
+            {!isPending && isError && (
               <div className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-red-500" />
                 <span className="text-red-600 dark:text-red-400">Offline / Unauthorized</span>

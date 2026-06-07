@@ -6,7 +6,7 @@ import { TagBadge } from '../components/TagBadge';
 
 export function TagsPage() {
   const navigate = useNavigate();
-  const { data, loading, error } = useTags();
+  const { data, isPending, isError, error } = useTags();
   const [search, setSearch] = useState('');
 
   const filtered = useMemo(() => {
@@ -37,13 +37,13 @@ export function TagsPage() {
         </div>
       </div>
 
-      {error && (
+      {isError && (
         <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-300">
-          Failed to load tags: {error}
+          Failed to load tags: {error?.message}
         </div>
       )}
 
-      {loading && (
+      {isPending && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 9 }).map((_, i) => (
             <div key={i} className="card h-24 animate-pulse bg-slate-800" />
@@ -51,7 +51,7 @@ export function TagsPage() {
         </div>
       )}
 
-      {!loading && !error && (
+      {!isPending && !isError && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((t) => {
             const pct = Math.round((t.count / maxCount) * 100);
