@@ -6,9 +6,9 @@ import { TagBadge } from '../components/TagBadge';
 export function WorldDetailPage() {
   const { worldId } = useParams<{ worldId: string }>();
   const navigate = useNavigate();
-  const { data, loading, error } = useWorld(worldId);
+  const { data, isPending, isError, error } = useWorld(worldId);
 
-  if (loading) {
+  if (isPending) {
     return (
       <div className="mx-auto max-w-3xl space-y-4">
         <div className="card h-72 animate-pulse bg-slate-200 dark:bg-slate-800" />
@@ -17,11 +17,11 @@ export function WorldDetailPage() {
     );
   }
 
-  if (error || !data) {
+  if (isError || !data) {
     return (
       <div className="mx-auto max-w-3xl">
         <div className="card p-8 text-center text-sm text-red-600 dark:text-red-300">
-          Failed to load world: {error || 'Not found'}
+          Failed to load world: {error?.message || 'Not found'}
         </div>
       </div>
     );

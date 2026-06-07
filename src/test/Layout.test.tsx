@@ -1,7 +1,24 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Layout } from '../components/Layout'
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
+
+function Wrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>{children}</MemoryRouter>
+    </QueryClientProvider>
+  )
+}
 
 vi.mock('../api/client', () => ({
   fetchHealth: vi.fn(() => Promise.resolve()),
@@ -25,15 +42,15 @@ describe('Layout sidebar', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals()
+    queryClient.clear()
   })
 
   it('renders expanded by default when no localStorage value exists', () => {
     render(
-      <MemoryRouter>
-        <Layout>
-          <div>Test content</div>
-        </Layout>
-      </MemoryRouter>,
+      <Layout>
+        <div>Test content</div>
+      </Layout>,
+      { wrapper: Wrapper },
     )
 
     expect(screen.getByText('SOS Dashboard')).toBeInTheDocument()
@@ -48,11 +65,10 @@ describe('Layout sidebar', () => {
     storage['sos-sidebar-collapsed'] = 'true'
 
     render(
-      <MemoryRouter>
-        <Layout>
-          <div>Test content</div>
-        </Layout>
-      </MemoryRouter>,
+      <Layout>
+        <div>Test content</div>
+      </Layout>,
+      { wrapper: Wrapper },
     )
 
     // When collapsed the toggle label flips to "Expand"
@@ -63,11 +79,10 @@ describe('Layout sidebar', () => {
 
   it('toggles collapsed state and persists to localStorage', () => {
     render(
-      <MemoryRouter>
-        <Layout>
-          <div>Test content</div>
-        </Layout>
-      </MemoryRouter>,
+      <Layout>
+        <div>Test content</div>
+      </Layout>,
+      { wrapper: Wrapper },
     )
 
     const toggle = screen.getByLabelText('Collapse sidebar')
@@ -86,11 +101,10 @@ describe('Layout sidebar', () => {
 
   it('renders navigation links to all routes', () => {
     render(
-      <MemoryRouter>
-        <Layout>
-          <div>Test content</div>
-        </Layout>
-      </MemoryRouter>,
+      <Layout>
+        <div>Test content</div>
+      </Layout>,
+      { wrapper: Wrapper },
     )
 
     const nav = screen.getByRole('navigation')
@@ -105,11 +119,10 @@ describe('Layout sidebar', () => {
 
   it('renders mobile menu button and hides desktop collapse toggle', async () => {
     render(
-      <MemoryRouter>
-        <Layout>
-          <div>Test content</div>
-        </Layout>
-      </MemoryRouter>,
+      <Layout>
+        <div>Test content</div>
+      </Layout>,
+      { wrapper: Wrapper },
     )
 
     // Wait for async health check effect to settle

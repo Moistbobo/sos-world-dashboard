@@ -5,9 +5,9 @@ import { WorldCard } from '../components/WorldCard';
 import { useNavigate } from 'react-router-dom';
 
 export function DashboardPage() {
-  const { data: health, loading: healthLoading, error: healthError } = useHealth();
-  const { data: tagsData, loading: tagsLoading } = useTags();
-  const { data: worldsData, loading: worldsLoading } = useWorlds({ limit: 6 });
+  const { data: health, isPending: healthLoading, isError: healthIsError } = useHealth();
+  const { data: tagsData, isPending: tagsLoading } = useTags();
+  const { data: worldsData, isPending: worldsLoading } = useWorlds({ limit: 6 });
   const navigate = useNavigate();
 
   const topTags = tagsData?.tags.slice(0, 10) || [];
@@ -23,7 +23,7 @@ export function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Total Worlds"
-          value={healthLoading ? '...' : healthError ? '?' : health?.worldCount ?? 0}
+          value={healthLoading ? '...' : healthIsError ? '?' : health?.worldCount ?? 0}
           icon={<Globe className="h-5 w-5" />}
         />
         <StatCard
