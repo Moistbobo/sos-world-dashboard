@@ -1,0 +1,232 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { LayoutGrid, List, Search } from 'lucide-react';
+import { useTags, useWorlds } from '../hooks/useApi';
+import { FilterBar } from '../components/FilterBar';
+import { Pagination } from '../components/Pagination';
+import { WorldCard } from '../components/WorldCard';
+import { TagBadge } from '../components/TagBadge';
+
+export function WorldsPage() {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [limit] = useState(20);
+  const [offset, setOffset] = useState(0);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedQuality, setSelectedQuality] = useState<('good' | 'bad')[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+  const { data: tagsData } = useTags();
+  const { data, loading, error, refetch } = useWorlds({
+    limit,
+    offset,
+    tag: selectedTags,
+    quality: selectedQuality,
+  });
+
+  // Sync URL params on first load
+  useEffect(() => {
+    const tag = searchParams.get('tag');
+    const quality = searchParams.get('quality');
+    if (tag) {
+      setSelectedTags((prev) => (prev.includes(tag) ? prev : [...prev, tag]));
+    }
+    if (quality === 'good' || quality === 'bad') {
+      setSelectedQuality((prev) => (prev.includes(quality) ? prev : [...prev, quality]));
+    }
+    // run once
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Update URL when filters change
+  useEffect(() => {
+    const next = new URLSearchParams();
+    if (selectedTags.length > 0) next.set('tag', selectedTags[0]);
+    if (selectedQuality.length > 0) next.set('quality', selectedQuality[0]);
+    if (next.toString() !== searchParams.toString()) {
+      setSearchParams(next, { replace: true });
+    }
+  }, [selectedTags, selectedQuality, setSearchParams, searchParams]);
+
+  const handleToggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+    setOffset(0);
+  };
+
+  const handleRemoveTag = (tag: string) => {
+    setSelectedTags((prev) => prev.filter((t) => t !== tag));
+    setOffset(0);
+  };
+
+  const handleToggleQuality = (quality: 'good' | 'bad') => {
+    setSelectedQuality((prev) =>
+      prev.includes(quality) ? prev.filter((q) => q !== quality) : [...prev, quality]
+    );
+    setOffset(0);
+  };
+
+  const handleClear = () => {
+    setSelectedTags([]);
+    setSelectedQuality([]);
+    setOffset(0);
+  };
+
+  const filteredWorlds = useMemo(() => {
+    if (!data?.worlds) return [];
+    if (!searchQuery.trim()) return data.worlds;
+    const q = searchQuery.toLowerCase();
+    return data.worlds.filter(
+      (w) =>
+        w.name?.toLowerCase().includes(q) ||
+        w.authorName?.toLowerCase().includes(q) ||
+        w.worldId.toLowerCase().includes(q)
+    );
+  }, [data, searchQuery]);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-white">Worlds</h1>
+          <p className="text-sm text-slate-400">Browse and filter tracked VRChat worlds.</p>
+        </div>
+      </div>
+
+      <FilterBar
+        selectedTags={selectedTags}
+        onToggleTag={handleToggleTag}
+        onRemoveTag={handleRemoveTag}
+        selectedQuality={selectedQuality}
+        onToggleQuality={handleToggleQuality}
+        onClear={handleClear}
+        availableTags={tagsData?.tags || []}
+      />
+
+      <div className="flex items-center justify-between gap-3">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search name, author, ID..."
+            className="input w-full pl-9"
+          />
+        </div>
+        <div className="flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800/50 p-0.5">
+          <button
+            onClick={() => setViewMode('grid')}
+            className={`rounded-md p-1.5 transition ${
+              viewMode === 'grid' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setViewMode('list')}
+            className={`rounded-md p-1.5 transition ${
+              viewMode === 'list' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <List className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-300">
+          Failed to load worlds: {error}
+        </div>
+      )}
+
+      {loading && (
+        <div className={viewMode === 'grid' ? 'grid gap-4 sm:grid-cols-2 xl:grid-cols-4' : 'space-y-3'}>
+          {Array.from({ length: limit }).map((_, i) => (
+            <div key={i} className="card animate-pulse bg-slate-800 h-64" />
+          ))}
+        </div>
+      )}
+
+      {!loading && !error && filteredWorlds.length === 0 && (
+        <div className="card p-8 text-center text-sm text-slate-400">
+          No worlds found. Adjust your filters or{' '}
+          <button onClick={refetch} className="text-indigo-400 underline">
+            try again
+          </button>.
+        </div>
+      )}
+
+      {!loading && !error && filteredWorlds.length > 0 && viewMode === 'grid' && (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {filteredWorlds.map((w) => (
+            <WorldCard
+              key={w.worldId}
+              world={w}
+              onSelect={(id) => navigate(`/worlds/${id}`)}
+              onTagClick={(tag) => {
+                if (!selectedTags.includes(tag)) {
+                  setSelectedTags((prev) => [...prev, tag]);
+                  setOffset(0);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {!loading && !error && filteredWorlds.length > 0 && viewMode === 'list' && (
+        <div className="space-y-3">
+          {filteredWorlds.map((w) => (
+            <button
+              key={w.worldId}
+              onClick={() => navigate(`/worlds/${w.worldId}`)}
+              className="card flex w-full items-center gap-4 p-3 text-left transition hover:border-slate-600"
+            >
+              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-800">
+                {w.imageUrl ? (
+                  <img src={w.imageUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-slate-600">
+                    ...
+                  </div>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-white">{w.name}</p>
+                <p className="truncate text-xs text-slate-400">by {w.authorName || 'Unknown'} · {w.capacity} capacity · {w.platforms.join(', ')}</p>
+              </div>
+              <div className="hidden flex-wrap gap-1 sm:flex">
+                {w.tags.slice(0, 3).map((t) => (
+                  <TagBadge key={t} tag={t} />
+                ))}
+                {w.tags.length > 3 && <span className="text-xs text-slate-500">+{w.tags.length - 3}</span>}
+              </div>
+              <div className="shrink-0 text-xs text-slate-500">
+                {w.quality === 'good' ? '✅' : w.quality === 'bad' ? '❌' : '—'}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {data && (
+        <div className="flex justify-center pt-2">
+          <Pagination
+            offset={offset}
+            limit={limit}
+            total={data.total}
+            onChangeOffset={(o) => {
+              setOffset(o);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
