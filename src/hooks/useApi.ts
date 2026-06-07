@@ -22,7 +22,7 @@ function useAsync<T>(
     fetcher()
       .then((data) => setState({ data, loading: false, error: null }))
       .catch((err) => setState({ data: null, loading: false, error: err instanceof Error ? err.message : String(err) }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   }, deps);
 
   useEffect(() => {

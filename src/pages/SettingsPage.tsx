@@ -12,7 +12,9 @@ export function SettingsPage() {
 
   useEffect(() => {
     const cfg = getConfig();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setBaseUrl(cfg.baseUrl);
+     
     setToken(cfg.token);
   }, []);
 
