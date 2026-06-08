@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 
 interface FilterBarProps {
@@ -20,6 +21,7 @@ export function FilterBar({
   onClear,
   availableTags,
 }: FilterBarProps) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [tagSearch, setTagSearch] = useState('');
 
@@ -37,7 +39,7 @@ export function FilterBar({
           className={`btn-ghost gap-1.5 text-xs ${expanded ? 'bg-slate-200 dark:bg-slate-800' : ''}`}
         >
           <SlidersHorizontal className="h-3.5 w-3.5" />
-          Filters
+          {t('filter.filters')}
           {hasFilters && (
             <span className="ml-1 rounded-full bg-indigo-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
               {selectedTags.length + selectedQuality.length}
@@ -75,7 +77,7 @@ export function FilterBar({
 
         {hasFilters && (
           <button onClick={onClear} className="btn-ghost text-xs py-1.5">
-            Clear all
+            {t('filter.clearAll')}
           </button>
         )}
       </div>
@@ -83,7 +85,7 @@ export function FilterBar({
       {expanded && (
         <div className="border-t border-slate-200 p-3 dark:border-slate-700/50">
           <div className="mb-3">
-            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">Quality</label>
+            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.quality')}</label>
             <div className="flex gap-2">
               {(['good', 'bad'] as const).map((q) => (
                 <button
@@ -97,21 +99,21 @@ export function FilterBar({
                       : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
                   }`}
                 >
-                  {q === 'good' ? '✅ Good' : '❌ Bad'}
+                  {q === 'good' ? t('filter.good') : t('filter.bad')}
                 </button>
               ))}
             </div>
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">Tags</label>
+            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.tags')}</label>
             <div className="relative mb-2">
               <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
               <input
                 type="text"
                 value={tagSearch}
                 onChange={(e) => setTagSearch(e.target.value)}
-                placeholder="Search tags..."
+                placeholder={t('filter.searchTagsPlaceholder')}
                 className="input w-full pl-8"
               />
             </div>

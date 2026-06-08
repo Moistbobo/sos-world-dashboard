@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LayoutGrid, List, Search } from 'lucide-react';
 import { useTags, useWorlds } from '../hooks/useApi';
@@ -8,6 +9,7 @@ import { WorldCard } from '../components/WorldCard';
 import { TagBadge } from '../components/TagBadge';
 
 export function WorldsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -31,11 +33,9 @@ export function WorldsPage() {
     const tag = searchParams.get('tag');
     const quality = searchParams.get('quality');
     if (tag) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedTags((prev) => (prev.includes(tag) ? prev : [...prev, tag]));
     }
     if (quality === 'good' || quality === 'bad') {
-       
       setSelectedQuality((prev) => (prev.includes(quality) ? prev : [...prev, quality]));
     }
     // run once
@@ -93,8 +93,8 @@ export function WorldsPage() {
     <div className="space-y-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">Worlds</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Browse and filter tracked VRChat worlds.</p>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t('worlds.title')}</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t('worlds.subtitle')}</p>
         </div>
       </div>
 
@@ -115,7 +115,7 @@ export function WorldsPage() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search name, author, ID..."
+            placeholder={t('worlds.searchPlaceholder')}
             className="input w-full pl-9"
           />
         </div>
@@ -141,7 +141,7 @@ export function WorldsPage() {
 
       {isError && (
         <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-600 dark:text-red-300">
-          Failed to load worlds: {error?.message}
+          {t('worlds.loadError', { message: error?.message })}
         </div>
       )}
 
@@ -155,9 +155,9 @@ export function WorldsPage() {
 
       {!isPending && !isError && filteredWorlds.length === 0 && (
         <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
-          No worlds found. Adjust your filters or{' '}
+          {t('worlds.noWorlds')}{' '}
           <button onClick={() => refetch()} className="text-indigo-600 underline dark:text-indigo-400">
-            try again
+            {t('worlds.tryAgain')}
           </button>.
         </div>
       )}
@@ -200,7 +200,9 @@ export function WorldsPage() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{w.name}</p>
-                <p className="truncate text-xs text-slate-500 dark:text-slate-400">by {w.authorName || 'Unknown'} · {w.capacity} capacity · {w.platforms.join(', ')}</p>
+                <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                  {t('common.byAuthor', { author: w.authorName || t('common.unknown') })} · {w.capacity} capacity · {w.platforms.join(', ')}
+                </p>
               </div>
               <div className="hidden flex-wrap gap-1 sm:flex">
                 {w.tags.slice(0, 3).map((t) => (

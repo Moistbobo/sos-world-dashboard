@@ -1,4 +1,5 @@
 import { Globe, Users, Calendar, ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { World } from '../types';
 import { TagBadge } from './TagBadge';
 
@@ -9,6 +10,8 @@ interface WorldCardProps {
 }
 
 export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="card overflow-hidden flex flex-col transition hover:border-slate-400 dark:hover:border-slate-600">
       <div className="relative h-40 bg-slate-200 dark:bg-slate-800">
@@ -27,12 +30,12 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
         <div className="absolute top-2 right-2 flex gap-1">
           {world.quality === 'good' && (
             <span className="rounded-md bg-green-500/80 px-2 py-0.5 text-[10px] font-bold uppercase text-white backdrop-blur-sm">
-              Good
+              {t('common.good')}
             </span>
           )}
           {world.quality === 'bad' && (
             <span className="rounded-md bg-red-500/80 px-2 py-0.5 text-[10px] font-bold uppercase text-white backdrop-blur-sm">
-              Bad
+              {t('common.bad')}
             </span>
           )}
         </div>
@@ -42,7 +45,9 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
         <h3 className="text-sm font-semibold text-slate-900 line-clamp-1 dark:text-white" title={world.name}>
           {world.name}
         </h3>
-        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">by {world.authorName || 'Unknown'}</p>
+        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+          {t('common.byAuthor', { author: world.authorName || t('common.unknown') })}
+        </p>
 
         <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
           <span className="inline-flex items-center gap-1">
@@ -60,7 +65,9 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
             <TagBadge key={t} tag={t} onClick={onTagClick} />
           ))}
           {world.tags.length > 4 && (
-            <span className="text-xs text-slate-400 dark:text-slate-500">+{world.tags.length - 4}</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500">
+              {t('common.more', { count: world.tags.length - 4 })}
+            </span>
           )}
         </div>
 
@@ -70,7 +77,7 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
               onClick={() => onSelect(world.worldId)}
               className="btn-primary flex-1 text-xs py-1.5"
             >
-              Details
+              {t('common.details')}
             </button>
           )}
           <a

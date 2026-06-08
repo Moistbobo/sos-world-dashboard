@@ -1,0 +1,98 @@
+{
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "worlds": "ワールド",
+    "tags": "タグ",
+    "settings": "設定"
+  },
+  "layout": {
+    "appName": "SOS Dashboard",
+    "apiStatus": "API ステータス:",
+    "online": "オンライン",
+    "offline": "オフライン / 未認証",
+    "expandSidebar": "サイドバーを展開",
+    "collapseSidebar": "サイドバーを折りたたむ",
+    "closeSidebar": "サイドバーを閉じる"
+  },
+  "common": {
+    "back": "戻る",
+    "details": "詳細",
+    "save": "保存",
+    "saved": "保存しました",
+    "unknown": "不明",
+    "good": "良い",
+    "bad": "悪い",
+    "more": "+{{count}}",
+    "byAuthor": "{{author}} 作成"
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "subtitle": "VRChat ワールドタガーデータの概要。",
+    "totalWorlds": "ワールド総数",
+    "uniqueTags": "一意タグ数",
+    "dbVersion": "データベースバージョン",
+    "latest": "最新",
+    "recentWorlds": "最近のワールド",
+    "viewAll": "すべて表示 →",
+    "topTags": "人気タグ"
+  },
+  "worlds": {
+    "title": "ワールド",
+    "subtitle": "追跡中の VRChat ワールドを閲覧・絞り込みます。",
+    "searchPlaceholder": "名前、作成者、ID で検索...",
+    "loadError": "ワールドの読み込みに失敗しました: {{message}}",
+    "noWorlds": "ワールドが見つかりません。フィルタを調整するか",
+    "tryAgain": "再試行"
+  },
+  "worldDetail": {
+    "loadError": "ワールドの読み込みに失敗しました: {{message}}",
+    "byAuthor": "{{author}} 作成",
+    "unknownAuthor": "作成者不明",
+    "qualityGood": "品質: 良い",
+    "qualityBad": "品質: 悪い",
+    "noQuality": "品質評価なし",
+    "capacity": "定員: {{capacity}}",
+    "id": "ID: {{id}}",
+    "added": "{{date}} に追加",
+    "platforms": "プラットフォーム",
+    "tags": "タグ",
+    "openInVRChat": "VRChat で開く"
+  },
+  "tags": {
+    "title": "タグ",
+    "subtitle": "追跡中のワールド全体でのタグ使用状況を確認します。",
+    "searchPlaceholder": "タグを検索...",
+    "loadError": "タグの読み込みに失敗しました: {{message}}"
+  },
+  "settings": {
+    "title": "設定",
+    "subtitle": "ワールドタガー API への接続を設定します。",
+    "apiBaseUrl": "API ベース URL",
+    "apiBaseUrlHint": "bot_vrc_world_tagger API サーバーのルート URL。",
+    "bearerToken": "ベアラートークン",
+    "bearerTokenHint": "すべてのルートで必要です（/api/health を除く）。ボットの設定で設定してください。",
+    "testConnection": "接続テスト",
+    "testing": "テスト中...",
+    "connectionSuccess": "接続に成功しました。",
+    "language": "言語",
+    "languageHint": "表示言語を選択してください。"
+  },
+  "filter": {
+    "filters": "フィルタ",
+    "quality": "品質",
+    "good": "✅ 良い",
+    "bad": "❌ 悪い",
+    "tags": "タグ",
+    "searchTagsPlaceholder": "タグを検索...",
+    "clearAll": "すべて解除"
+  },
+  "pagination": {
+    "prev": "前へ",
+    "next": "次へ",
+    "range": "{{total}} 件中 {{start}} – {{end}} 件"
+  },
+  "theme": {
+    "lightMode": "ライトモードに切り替える",
+    "darkMode": "ダークモードに切り替える"
+  }
+}

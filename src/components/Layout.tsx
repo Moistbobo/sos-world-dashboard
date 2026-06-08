@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -15,14 +16,8 @@ import { useState, useEffect } from 'react';
 import { useHealth } from '../hooks/useApi';
 import { ThemeToggle } from './ThemeToggle';
 
-const navItems = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/worlds', label: 'Worlds', icon: Globe },
-  { to: '/tags', label: 'Tags', icon: Tags },
-  { to: '/settings', label: 'Settings', icon: Settings },
-];
-
 export function Layout({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { isPending, isError } = useHealth();
   const [collapsed, setCollapsed] = useState(() => {
@@ -40,6 +35,13 @@ export function Layout({ children }: { children: ReactNode }) {
       // ignore storage errors
     }
   }, [collapsed]);
+
+  const navItems = [
+    { to: '/', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { to: '/worlds', label: t('nav.worlds'), icon: Globe },
+    { to: '/tags', label: t('nav.tags'), icon: Tags },
+    { to: '/settings', label: t('nav.settings'), icon: Settings },
+  ];
 
   return (
     <div className="flex min-h-screen">
@@ -66,12 +68,12 @@ export function Layout({ children }: { children: ReactNode }) {
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600">
               <Activity className="h-4 w-4 text-white" />
             </div>
-            <span className="text-sm font-bold text-slate-900 dark:text-white">SOS Dashboard</span>
+            <span className="text-sm font-bold text-slate-900 dark:text-white">{t('layout.appName')}</span>
           </div>
           <div className={`hidden h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 ${collapsed ? 'lg:flex' : ''}`}>
             <Activity className="h-4 w-4 text-white" />
           </div>
-          <button className="lg:hidden" onClick={() => setSidebarOpen(false)} aria-label="Close sidebar">
+          <button className="lg:hidden" onClick={() => setSidebarOpen(false)} aria-label={t('layout.closeSidebar')}>
             <X className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           </button>
         </div>
@@ -107,7 +109,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="absolute right-0 top-3 z-10 hidden translate-x-1/2 items-center justify-center rounded-full border border-slate-200 bg-white p-1 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 lg:flex"
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={collapsed ? t('layout.expandSidebar') : t('layout.collapseSidebar')}
         >
           {collapsed ? (
             <ChevronsRight className="h-4 w-4 text-slate-500 dark:text-slate-400" />
@@ -124,20 +126,20 @@ export function Layout({ children }: { children: ReactNode }) {
             <Menu className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           </button>
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-400 dark:text-slate-500">API status:</span>
+            <span className="text-slate-400 dark:text-slate-500">{t('layout.apiStatus')}</span>
             {isPending && (
               <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-slate-400 dark:bg-slate-500" />
             )}
             {!isPending && !isError && (
               <div className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                <span className="text-emerald-600 dark:text-emerald-400">Online</span>
+                <span className="text-emerald-600 dark:text-emerald-400">{t('layout.online')}</span>
               </div>
             )}
             {!isPending && isError && (
               <div className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-red-500" />
-                <span className="text-red-600 dark:text-red-400">Offline / Unauthorized</span>
+                <span className="text-red-600 dark:text-red-400">{t('layout.offline')}</span>
               </div>
             )}
           </div>
