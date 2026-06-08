@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { getEmojiForTag } from '../utils/tagEmoji';
 
 interface FilterBarProps {
   selectedTags: string[];
@@ -52,7 +53,8 @@ export function FilterBar({
             key={t}
             className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-300 ring-1 ring-indigo-500/30"
           >
-            {t}
+            <span className="leading-none">{getEmojiForTag(t)}</span>
+            <span>{t}</span>
             <button onClick={() => onRemoveTag(t)} className="hover:text-white">
               <X className="h-3 w-3" />
             </button>
@@ -128,7 +130,7 @@ export function FilterBar({
                       : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
                   }`}
                 >
-                  {t.tag} <span className="text-slate-400 dark:text-slate-500">({t.count})</span>
+                  {getEmojiForTag(t.tag)} {t.tag} <span className="text-slate-400 dark:text-slate-500">({t.count})</span>
                 </button>
               ))}
             </div>
