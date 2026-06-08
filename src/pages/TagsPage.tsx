@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { useTags } from '../hooks/useApi';
 import { TagBadge } from '../components/TagBadge';
+import { WaffleChart } from '../components/WaffleChart';
+import { getTagColorHex } from '../utils/tagColor';
 
 export function TagsPage() {
   const { t } = useTranslation();
@@ -19,6 +21,11 @@ export function TagsPage() {
   }, [data, search]);
 
   const maxCount = data?.tags?.[0]?.count || 1;
+
+  const waffleData = useMemo(
+    () => filtered.map((t) => ({ name: t.tag, value: t.count })),
+    [filtered]
+  );
 
   return (
     <div className="space-y-4">
@@ -54,31 +61,43 @@ export function TagsPage() {
       )}
 
       {!isPending && !isError && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((t) => {
-            const pct = Math.round((t.count / maxCount) * 100);
-            return (
-              <button
-                key={t.tag}
-                onClick={() => navigate(`/worlds?tag=${encodeURIComponent(t.tag)}`)}
-                className="card p-4 text-left transition hover:border-slate-400 dark:hover:border-slate-600"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <TagBadge tag={t.tag} />
+        <>
+          <div className="card p-4">
+            <div className="mx-auto max-w-xl">
+              <WaffleChart
+                data={waffleData}
+                getColor={getTagColorHex}
+                onSelectTag={(tag) => navigate(`/worlds?tag=${encodeURIComponent(tag)}`)}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((t) => {
+              const pct = Math.round((t.count / maxCount) * 100);
+              return (
+                <button
+                  key={t.tag}
+                  onClick={() => navigate(`/worlds?tag=${encodeURIComponent(t.tag)}`)}
+                  className="card p-4 text-left transition hover:border-slate-400 dark:hover:border-slate-600"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <TagBadge tag={t.tag} />
+                    </div>
+                    <span className="text-sm font-bold text-slate-900 dark:text-white">{t.count}</span>
                   </div>
-                  <span className="text-sm font-bold text-slate-900 dark:text-white">{t.count}</span>
-                </div>
-                <div className="mt-3 h-2 w-full rounded-full bg-slate-200 dark:bg-slate-800">
-                  <div
-                    className="h-2 rounded-full bg-indigo-500/60 transition-all hover:bg-indigo-400"
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-              </button>
-            );
-          })}
-        </div>
+                  <div className="mt-3 h-2 w-full rounded-full bg-slate-200 dark:bg-slate-800">
+                    <div
+                      className="h-2 rounded-full bg-indigo-500/60 transition-all hover:bg-indigo-400"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );
