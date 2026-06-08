@@ -1,9 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash } from 'lucide-react';
 import { useWorld } from '../hooks/useApi';
 import { TagBadge } from '../components/TagBadge';
 
 export function WorldDetailPage() {
+  const { t } = useTranslation();
   const { worldId } = useParams<{ worldId: string }>();
   const navigate = useNavigate();
   const { data, isPending, isError, error } = useWorld(worldId);
@@ -21,7 +23,7 @@ export function WorldDetailPage() {
     return (
       <div className="mx-auto max-w-3xl">
         <div className="card p-8 text-center text-sm text-red-600 dark:text-red-300">
-          Failed to load world: {error?.message || 'Not found'}
+          {t('worldDetail.loadError', { message: error?.message || 'Not found' })}
         </div>
       </div>
     );
@@ -36,7 +38,7 @@ export function WorldDetailPage() {
         className="btn-ghost gap-1.5 text-sm"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back
+        {t('common.back')}
       </button>
 
       <div className="card overflow-hidden">
@@ -58,22 +60,24 @@ export function WorldDetailPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h1 className="text-lg font-bold text-slate-900 sm:text-xl dark:text-white">{w.name}</h1>
-              <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">by {w.authorName || 'Unknown author'}</p>
+              <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+                {t('worldDetail.byAuthor', { author: w.authorName || t('worldDetail.unknownAuthor') })}
+              </p>
             </div>
             <div className="shrink-0">
               {w.quality === 'good' && (
                 <span className="rounded-lg bg-green-500/15 px-3 py-1 text-xs font-semibold text-green-400 ring-1 ring-green-500/30">
-                  Quality: Good
+                  {t('worldDetail.qualityGood')}
                 </span>
               )}
               {w.quality === 'bad' && (
                 <span className="rounded-lg bg-red-500/15 px-3 py-1 text-xs font-semibold text-red-400 ring-1 ring-red-500/30">
-                  Quality: Bad
+                  {t('worldDetail.qualityBad')}
                 </span>
               )}
               {w.quality == null && (
                 <span className="rounded-lg bg-slate-200/40 px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-300 dark:bg-slate-700/40 dark:text-slate-400 dark:ring-slate-600/30">
-                  No quality rating
+                  {t('worldDetail.noQuality')}
                 </span>
               )}
             </div>
@@ -82,20 +86,20 @@ export function WorldDetailPage() {
           <div className="mt-5 flex flex-wrap gap-4 border-t border-slate-200 pt-4 text-sm text-slate-700 dark:border-slate-700/50 dark:text-slate-300">
             <div className="flex items-center gap-1.5">
               <Users className="h-4 w-4 text-slate-400 dark:text-slate-500" />
-              Capacity: {w.capacity}
+              {t('worldDetail.capacity', { capacity: w.capacity })}
             </div>
             <div className="flex items-center gap-1.5">
               <Hash className="h-4 w-4 text-slate-400 dark:text-slate-500" />
-              ID: {w.worldId}
+              {t('worldDetail.id', { id: w.worldId })}
             </div>
             <div className="flex items-center gap-1.5">
               <Calendar className="h-4 w-4 text-slate-400 dark:text-slate-500" />
-              Added {new Date(w.createdAt).toLocaleString()}
+              {t('worldDetail.added', { date: new Date(w.createdAt).toLocaleString() })}
             </div>
           </div>
 
           <div className="mt-4">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Platforms</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">{t('worldDetail.platforms')}</p>
             <div className="flex flex-wrap gap-2">
               {w.platforms.map((p) => (
                 <span
@@ -109,7 +113,7 @@ export function WorldDetailPage() {
           </div>
 
           <div className="mt-4">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tags</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">{t('worldDetail.tags')}</p>
             <div className="flex flex-wrap gap-2">
               {w.tags.map((t) => (
                 <TagBadge
@@ -129,7 +133,7 @@ export function WorldDetailPage() {
               className="btn-primary gap-2 text-sm"
             >
               <ExternalLink className="h-4 w-4" />
-              Open in VRChat
+              {t('worldDetail.openInVRChat')}
             </a>
           </div>
         </div>

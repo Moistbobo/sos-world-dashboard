@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useMutation } from '@tanstack/react-query';
-import { Save, Activity, Globe, KeyRound, Check, AlertTriangle } from 'lucide-react';
+import { Save, Activity, Globe, KeyRound, Check, AlertTriangle, Languages } from 'lucide-react';
 import { getConfig, setConfig, fetchHealth } from '../api/client';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export function SettingsPage() {
+  const { t } = useTranslation();
   const [baseUrl, setBaseUrl] = useState(() => getConfig().baseUrl);
   const [token, setToken] = useState(() => getConfig().token);
   const [saved, setSaved] = useState(false);
@@ -27,7 +30,7 @@ export function SettingsPage() {
       }
     },
     onSuccess: () => {
-      setTestMessage('Connection successful.');
+      setTestMessage(t('settings.connectionSuccess'));
     },
     onError: (err) => {
       setTestMessage(err instanceof Error ? err.message : 'Connection failed');
@@ -37,9 +40,9 @@ export function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl">
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-slate-900 dark:text-white">Settings</h1>
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t('settings.title')}</h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Configure connection to the world tagger API.
+          {t('settings.subtitle')}
         </p>
       </div>
 
@@ -47,7 +50,7 @@ export function SettingsPage() {
         <div>
           <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-200">
             <Globe className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-            API Base URL
+            {t('settings.apiBaseUrl')}
           </label>
           <input
             type="text"
@@ -56,13 +59,13 @@ export function SettingsPage() {
             placeholder="http://localhost:3000"
             className="input w-full"
           />
-          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">The root URL of the bot_vrc_world_tagger API server.</p>
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.apiBaseUrlHint')}</p>
         </div>
 
         <div>
           <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-200">
             <KeyRound className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-            Bearer Token
+            {t('settings.bearerToken')}
           </label>
           <input
             type="password"
@@ -72,14 +75,23 @@ export function SettingsPage() {
             className="input w-full"
           />
           <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
-            Required for all routes except /api/health. Set in the bot config.
+            {t('settings.bearerTokenHint')}
           </p>
+        </div>
+
+        <div>
+          <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-200">
+            <Languages className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+            {t('settings.language')}
+          </label>
+          <LanguageSwitcher />
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.languageHint')}</p>
         </div>
 
         <div className="flex items-center gap-3 pt-1">
           <button onClick={handleSave} className="btn-primary gap-2">
             <Save className="h-4 w-4" />
-            Save
+            {t('common.save')}
           </button>
           <button
             onClick={() => testConnection.mutate()}
@@ -87,13 +99,13 @@ export function SettingsPage() {
             className="btn-secondary gap-2"
           >
             <Activity className="h-4 w-4" />
-            {testConnection.isPending ? 'Testing...' : 'Test Connection'}
+            {testConnection.isPending ? t('settings.testing') : t('settings.testConnection')}
           </button>
 
           {saved && (
             <span className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
               <Check className="h-3.5 w-3.5" />
-              Saved
+              {t('common.saved')}
             </span>
           )}
         </div>
