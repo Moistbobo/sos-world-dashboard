@@ -1,9 +1,10 @@
 import { Activity, Globe, Tags, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useHealth, useTags, useWorlds } from '../hooks/useApi';
 import { StatCard } from '../components/StatCard';
 import { WorldCard } from '../components/WorldCard';
-import { useNavigate } from 'react-router-dom';
+import { getEmojiForTag } from '../utils/tagEmoji';
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -95,7 +96,10 @@ export function DashboardPage() {
                         className="group w-full text-left"
                       >
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-medium text-slate-800 dark:text-slate-200">{t.tag}</span>
+                          <span className="font-medium text-slate-800 dark:text-slate-200">
+                            <span className="mr-1">{getEmojiForTag(t.tag)}</span>
+                            {t.tag}
+                          </span>
                           <span className="text-slate-400 dark:text-slate-500">{t.count}</span>
                         </div>
                         <div className="mt-1 h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-800">
