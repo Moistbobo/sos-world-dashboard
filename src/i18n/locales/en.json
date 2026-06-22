@@ -66,14 +66,7 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Configure connection to the world tagger API.",
-    "apiBaseUrl": "API Base URL",
-    "apiBaseUrlHint": "The root URL of the bot_vrc_world_tagger API server.",
-    "bearerToken": "Bearer Token",
-    "bearerTokenHint": "Required for all routes except /api/health. Set in the bot config.",
-    "testConnection": "Test Connection",
-    "testing": "Testing...",
-    "connectionSuccess": "Connection successful.",
+    "subtitle": "Configure application preferences.",
     "language": "Language",
     "languageHint": "Select your preferred display language."
   },

@@ -1,39 +1,27 @@
 import type { HealthResponse, PaginatedWorlds, TagsResponse, World } from '../types';
 
-const STORAGE_KEY = 'sosworld_api_config';
-
-export interface ApiConfig {
-  baseUrl: string;
-  token: string;
-}
-
-export function getConfig(): ApiConfig {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as ApiConfig;
-  } catch {
-    // ignore
+function getBaseUrl(): string {
+  const url = import.meta.env.VITE_API_BASE_URL;
+  if (typeof url === 'string' && url.trim()) {
+    return url.trim().replace(/\/$/, '');
   }
-  return {
-    baseUrl: 'http://localhost:3000',
-    token: '',
-  };
+  return 'http://localhost:3000';
 }
 
-export function setConfig(config: ApiConfig) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+function getToken(): string {
+  const token = import.meta.env.VITE_API_BEARER_TOKEN;
+  return typeof token === 'string' ? token : '';
 }
 
 function getAuthHeaders(): Record<string, string> {
-  const { token } = getConfig();
+  const token = getToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
 function getUrl(path: string): string {
-  const { baseUrl } = getConfig();
-  const cleanBase = baseUrl.replace(/\/$/, '');
+  const baseUrl = getBaseUrl();
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  return `${cleanBase}${cleanPath}`;
+  return `${baseUrl}${cleanPath}`;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
