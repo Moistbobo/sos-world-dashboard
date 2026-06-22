@@ -15,8 +15,14 @@ export function WorldsPage() {
 
   const [limit] = useState(20);
   const [offset, setOffset] = useState(0);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [selectedQuality, setSelectedQuality] = useState<('good' | 'bad')[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>(() => {
+    const tag = searchParams.get('tag');
+    return tag ? [tag] : [];
+  });
+  const [selectedQuality, setSelectedQuality] = useState<('good' | 'bad')[]>(() => {
+    const quality = searchParams.get('quality');
+    return quality === 'good' || quality === 'bad' ? [quality] : [];
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -27,20 +33,6 @@ export function WorldsPage() {
     tag: selectedTags,
     quality: selectedQuality,
   });
-
-  // Sync URL params on first load
-  useEffect(() => {
-    const tag = searchParams.get('tag');
-    const quality = searchParams.get('quality');
-    if (tag) {
-      setSelectedTags((prev) => (prev.includes(tag) ? prev : [...prev, tag]));
-    }
-    if (quality === 'good' || quality === 'bad') {
-      setSelectedQuality((prev) => (prev.includes(quality) ? prev : [...prev, quality]));
-    }
-    // run once
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Update URL when filters change
   useEffect(() => {
