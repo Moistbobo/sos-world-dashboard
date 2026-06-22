@@ -66,14 +66,7 @@
   },
   "settings": {
     "title": "設定",
-    "subtitle": "ワールドタガー API への接続を設定します。",
-    "apiBaseUrl": "API ベース URL",
-    "apiBaseUrlHint": "bot_vrc_world_tagger API サーバーのルート URL。",
-    "bearerToken": "ベアラートークン",
-    "bearerTokenHint": "すべてのルートで必要です（/api/health を除く）。ボットの設定で設定してください。",
-    "testConnection": "接続テスト",
-    "testing": "テスト中...",
-    "connectionSuccess": "接続に成功しました。",
+    "subtitle": "アプリケーションの設定を変更します。",
     "language": "言語",
     "languageHint": "表示言語を選択してください。"
   },
