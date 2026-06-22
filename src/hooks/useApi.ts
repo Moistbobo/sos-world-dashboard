@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { fetchHealth, fetchTags, fetchWorld, fetchWorlds } from '../api/client';
 
 export function useHealth() {
@@ -21,10 +21,38 @@ export function useWorlds(params?: {
   offset?: number;
   tag?: string[];
   quality?: ('good' | 'bad')[];
+  search?: string;
+  enabled?: boolean;
 }) {
   return useQuery({
     queryKey: ['worlds', params],
     queryFn: () => fetchWorlds(params),
+    enabled: params?.enabled,
+  });
+}
+
+export function useInfiniteWorlds(params?: {
+  limit?: number;
+  tag?: string[];
+  quality?: ('good' | 'bad')[];
+  search?: string;
+  enabled?: boolean;
+}) {
+  const limit = params?.limit ?? 20;
+  return useInfiniteQuery({
+    queryKey: ['worlds-infinite', { ...params, limit }],
+    queryFn: ({ pageParam }) =>
+      fetchWorlds({
+        ...params,
+        limit,
+        offset: pageParam,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      const nextOffset = lastPage.offset + lastPage.limit;
+      return nextOffset < lastPage.total ? nextOffset : undefined;
+    },
+    enabled: params?.enabled,
   });
 }
 

@@ -49,10 +49,12 @@ export async function fetchWorlds(params?: {
   offset?: number;
   tag?: string[];
   quality?: ('good' | 'bad')[];
+  search?: string;
 }): Promise<PaginatedWorlds> {
   const qs = new URLSearchParams();
   if (params?.limit !== undefined) qs.set('limit', String(params.limit));
   if (params?.offset !== undefined) qs.set('offset', String(params.offset));
+  if (params?.search?.trim()) qs.set('search', params.search.trim());
   if (params?.tag?.length) {
     for (const t of params.tag) qs.append('tag', t);
   }
