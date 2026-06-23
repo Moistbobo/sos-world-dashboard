@@ -12,8 +12,9 @@ export default function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<DashboardPage />} />
-          <Route path="/worlds" element={<WorldsPage />} />
-          <Route path="/worlds/:worldId" element={<WorldDetailPage />} />
+          <Route path="/worlds" element={<WorldsPage />}>
+            <Route path=":worldId" element={<WorldDetailPage />} />
+          </Route>
           <Route path="/tags" element={<TagsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>

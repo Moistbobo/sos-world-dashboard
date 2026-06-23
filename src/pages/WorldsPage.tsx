@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useOutlet, useSearchParams } from 'react-router-dom';
 import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useInfiniteWorlds, useTags, useWorlds } from '../hooks/useApi';
@@ -14,10 +14,42 @@ type ScrollMode = 'infinite' | 'pagination';
 export function WorldsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const outlet = useOutlet();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [scrollMode, setScrollMode] = useState<ScrollMode>('infinite');
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+  const [isOverlayAnimatingOut, setIsOverlayAnimatingOut] = useState(false);
+
+  // Manage overlay visibility for enter/exit fade animation. On open we use a
+  // CSS keyframe animation so the browser reliably runs the fade-in from the
+  // first paint. On close we use the opacity transition to fade out before
+  // unmounting. State changes are scheduled in setTimeout callbacks to satisfy
+  // the project's ESLint rules about synchronous setState inside effects.
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    if (outlet && !isOverlayVisible) {
+      timer = setTimeout(() => {
+        setIsOverlayAnimatingOut(false);
+        setIsOverlayVisible(true);
+      }, 0);
+    } else if (!outlet && isOverlayVisible) {
+      timer = setTimeout(() => setIsOverlayAnimatingOut(true), 0);
+      const hideTimer = setTimeout(() => {
+        setIsOverlayVisible(false);
+        setIsOverlayAnimatingOut(false);
+      }, 200);
+      // Keep a reference to the hide timer so cleanup can clear it.
+      timer = hideTimer;
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [outlet, isOverlayVisible]);
+
   const [limit] = useState(20);
   const [offset, setOffset] = useState(0);
   const [selectedTags, setSelectedTags] = useState<string[]>(() => {
@@ -158,7 +190,8 @@ export function WorldsPage() {
   }, [isPagination, infiniteQuery]);
 
   return (
-    <div className="space-y-4">
+    <>
+      <div className="space-y-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t('worlds.title')}</h1>
@@ -321,15 +354,27 @@ export function WorldsPage() {
         </div>
       )}
 
-      {showBackToTop && scrollMode === 'infinite' && (
+      {showBackToTop && scrollMode === 'infinite' && !outlet && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-6 right-6 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="fixed bottom-6 right-6 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-indigo-500 dark:hover:bg-indigo-600"
           aria-label={t('worlds.backToTop')}
         >
           <ArrowUp className="h-5 w-5" />
         </button>
       )}
-    </div>
+      </div>
+
+      {(outlet || isOverlayVisible) && (
+        <div
+          className={`fixed inset-0 z-50 overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95 lg:p-6 ${
+            isOverlayAnimatingOut || !outlet ? 'opacity-0' : 'opacity-100 animate-fadeIn'
+          }`}
+          aria-hidden={isOverlayAnimatingOut || !outlet ? 'true' : 'false'}
+        >
+          <div className="mx-auto max-w-3xl">{outlet}</div>
+        </div>
+      )}
+    </>
   );
 }
