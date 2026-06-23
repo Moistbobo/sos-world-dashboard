@@ -104,7 +104,7 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
           onKeyDown={handleKeyDown}
           className="input w-20"
         />
-        <span className="hidden text-xs text-slate-600 dark:text-slate-400 sm:inline">
+        <span className="text-xs text-slate-600 dark:text-slate-400">
           {t('filter.capacityTo')}
         </span>
         <label
@@ -125,9 +125,6 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
           onKeyDown={handleKeyDown}
           className="input w-20"
         />
-        <span className="text-xs text-slate-600 dark:text-slate-400">
-          {t('filter.capacityUnit')}
-        </span>
       </div>
 
       <div className="space-y-2">

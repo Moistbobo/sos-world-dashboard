@@ -23,7 +23,6 @@ describe('CapacityRange', () => {
     expect(getMinInput()).toHaveValue(5);
     expect(getMaxInput()).toHaveValue(30);
     expect(screen.getByText('to')).toBeInTheDocument();
-    expect(screen.getByText('players')).toBeInTheDocument();
   });
 
   it('renders a dual-handle range slider', () => {
