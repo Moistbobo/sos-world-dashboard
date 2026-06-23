@@ -130,9 +130,9 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
         </span>
       </div>
 
-      <div className="space-y-1">
+      <div className="space-y-0">
         <div
-          className="relative h-3"
+          className="relative h-5"
           aria-hidden="true"
         >
           {ticks.map((tick) => {
