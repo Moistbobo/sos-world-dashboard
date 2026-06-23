@@ -72,7 +72,15 @@
     "title": "設定",
     "subtitle": "アプリケーションの設定を変更します。",
     "language": "言語",
-    "languageHint": "表示言語を選択してください。"
+    "languageHint": "表示言語を選択してください。",
+    "viewMode": "ワールド表示形式",
+    "viewModeHint": "ワールドページでの表示形式を選択してください。",
+    "viewModeGrid": "グリッド",
+    "viewModeList": "リスト",
+    "scrollMode": "ワールド読み込み形式",
+    "scrollModeHint": "ワールドページでの結果の読み込み方法を選択してください。",
+    "scrollModeInfinite": "無限スクロール",
+    "scrollModePagination": "ページネーション"
   },
   "filter": {
     "filters": "フィルタ",
@@ -81,7 +89,13 @@
     "bad": "❌ 悪い",
     "tags": "タグ",
     "searchTagsPlaceholder": "タグを検索...",
-    "clearAll": "すべて解除"
+    "clearAll": "すべて解除",
+    "capacity": "定員",
+    "minCapacity": "最小定員",
+    "maxCapacity": "最大定員",
+    "capacityTo": "〜",
+    "capacityUnit": "人",
+    "removeCapacity": "定員フィルタを解除"
   },
   "pagination": {
     "prev": "前へ",
