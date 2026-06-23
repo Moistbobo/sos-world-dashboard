@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const MIN_CAPACITY = 1;
@@ -26,19 +26,41 @@ function parseCapacity(value: string, fallback: number): number {
 
 export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
   const { t } = useTranslation();
-  const [minInput, setMinInput] = useState(String(min));
-  const [maxInput, setMaxInput] = useState(String(max));
+  const minRef = useRef<HTMLInputElement>(null);
+  const maxRef = useRef<HTMLInputElement>(null);
 
-  const handleBlur = () => {
-    let newMin = clamp(parseCapacity(minInput, min), MIN_CAPACITY, MAX_CAPACITY);
-    let newMax = clamp(parseCapacity(maxInput, max), MIN_CAPACITY, MAX_CAPACITY);
-
-    if (newMin > newMax) {
-      [newMin, newMax] = [newMax, newMin];
+  // Keep the inputs in sync with external prop changes (URL seeding,
+  // "Clear all", browser navigation) while the user is not actively
+  // editing them. We write directly to the DOM because the inputs are
+  // intentionally uncontrolled: React only needs to know the final
+  // committed range, which is reported on blur.
+  useEffect(() => {
+    if (minRef.current && document.activeElement !== minRef.current) {
+      minRef.current.value = String(min);
     }
+    if (maxRef.current && document.activeElement !== maxRef.current) {
+      maxRef.current.value = String(max);
+    }
+  }, [min, max]);
 
-    setMinInput(String(newMin));
-    setMaxInput(String(newMax));
+  const commit = () => {
+    const rawMin = minRef.current?.value ?? String(min);
+    const rawMax = maxRef.current?.value ?? String(max);
+
+    const parsedMin =
+      rawMin.trim() === ''
+        ? MIN_CAPACITY
+        : clamp(parseCapacity(rawMin, min), MIN_CAPACITY, MAX_CAPACITY);
+    const parsedMax =
+      rawMax.trim() === ''
+        ? MAX_CAPACITY
+        : clamp(parseCapacity(rawMax, max), MIN_CAPACITY, MAX_CAPACITY);
+
+    const newMin = Math.min(parsedMin, parsedMax);
+    const newMax = Math.max(parsedMin, parsedMax);
+
+    if (minRef.current) minRef.current.value = String(newMin);
+    if (maxRef.current) maxRef.current.value = String(newMax);
     onChange({ min: newMin, max: newMax });
   };
 
@@ -51,14 +73,14 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
         {t('filter.minCapacity')}
       </label>
       <input
+        ref={minRef}
         id="min-capacity"
         type="number"
         min={MIN_CAPACITY}
         max={MAX_CAPACITY}
         step="1"
-        value={minInput}
-        onChange={(e) => setMinInput(e.target.value)}
-        onBlur={handleBlur}
+        defaultValue={min}
+        onBlur={commit}
         className="input w-20"
       />
       <span className="text-xs text-slate-600 dark:text-slate-400">
@@ -71,14 +93,14 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
         {t('filter.maxCapacity')}
       </label>
       <input
+        ref={maxRef}
         id="max-capacity"
         type="number"
         min={MIN_CAPACITY}
         max={MAX_CAPACITY}
         step="1"
-        value={maxInput}
-        onChange={(e) => setMaxInput(e.target.value)}
-        onBlur={handleBlur}
+        defaultValue={max}
+        onBlur={commit}
         className="input w-20"
       />
       <span className="text-xs text-slate-600 dark:text-slate-400">

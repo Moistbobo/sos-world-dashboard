@@ -85,16 +85,29 @@ describe('CapacityRange', () => {
     expect(minInput).toHaveValue(MIN_CAPACITY);
   });
 
-  it('clamps empty input to MIN_CAPACITY for min field', async () => {
+  it('clamps empty max input to MAX_CAPACITY', async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
     renderCapacityRange({ min: 10, max: 50, onChange });
 
-    const minInput = screen.getByLabelText('Minimum capacity');
-    await user.clear(minInput);
+    const maxInput = screen.getByLabelText('Maximum capacity');
+    await user.clear(maxInput);
     await user.tab();
 
-    expect(onChange).toHaveBeenCalledWith({ min: MIN_CAPACITY, max: 50 });
-    expect(minInput).toHaveValue(MIN_CAPACITY);
+    expect(onChange).toHaveBeenCalledWith({ min: 10, max: MAX_CAPACITY });
+    expect(maxInput).toHaveValue(MAX_CAPACITY);
+  });
+
+  it('syncs inputs when external min/max props change', async () => {
+    const onChange = vi.fn();
+    const { rerender } = renderCapacityRange({ min: 10, max: 50, onChange });
+
+    expect(screen.getByLabelText('Minimum capacity')).toHaveValue(10);
+    expect(screen.getByLabelText('Maximum capacity')).toHaveValue(50);
+
+    rerender(<CapacityRange min={5} max={30} onChange={onChange} />);
+
+    expect(screen.getByLabelText('Minimum capacity')).toHaveValue(5);
+    expect(screen.getByLabelText('Maximum capacity')).toHaveValue(30);
   });
 });
