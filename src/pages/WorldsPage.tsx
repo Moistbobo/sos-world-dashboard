@@ -76,9 +76,11 @@ export function WorldsPage() {
     const maxRaw = searchParams.get('maxCapacity');
     const min = Number(minRaw);
     const max = Number(maxRaw);
+    const nextMin = minRaw && !Number.isNaN(min) ? Math.max(MIN_CAPACITY, min) : MIN_CAPACITY;
+    const nextMax = maxRaw && !Number.isNaN(max) ? Math.min(MAX_CAPACITY, max) : MAX_CAPACITY;
     return {
-      min: minRaw && !isNaN(min) ? Math.max(MIN_CAPACITY, min) : MIN_CAPACITY,
-      max: maxRaw && !isNaN(max) ? Math.min(MAX_CAPACITY, max) : MAX_CAPACITY,
+      min: Math.min(nextMin, nextMax),
+      max: Math.max(nextMin, nextMax),
     };
   });
   const [searchInput, setSearchInput] = useState('');

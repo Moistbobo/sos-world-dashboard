@@ -68,6 +68,7 @@ describe('WorldsPage', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    window.history.pushState({}, '', '/');
   });
 
   it('renders the worlds page with default endless scroll mode', () => {
@@ -127,5 +128,14 @@ describe('WorldsPage capacity filter', () => {
     fireEvent.click(screen.getByRole('button', { name: /filters/i }));
     expect(screen.getByLabelText('Minimum capacity')).toHaveValue(10);
     expect(screen.getByLabelText('Maximum capacity')).toHaveValue(40);
+  });
+
+  it('updates URL when capacity range changes', () => {
+    render(<WorldsPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByRole('button', { name: /filters/i }));
+    const minInput = screen.getByLabelText('Minimum capacity');
+    fireEvent.change(minInput, { target: { value: '10' } });
+    fireEvent.blur(minInput);
+    expect(window.location.search).toContain('minCapacity=10');
   });
 });
