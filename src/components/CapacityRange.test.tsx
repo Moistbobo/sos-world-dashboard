@@ -12,10 +12,10 @@ describe('CapacityRange', () => {
   it('renders min/max inputs with provided values', () => {
     renderCapacityRange({ min: 5, max: 30 });
 
-    expect(screen.getByLabelText('filter.minCapacity')).toHaveValue(5);
-    expect(screen.getByLabelText('filter.maxCapacity')).toHaveValue(30);
-    expect(screen.getByText('filter.capacityTo')).toBeInTheDocument();
-    expect(screen.getByText('filter.capacityUnit')).toBeInTheDocument();
+    expect(screen.getByLabelText('Minimum capacity')).toHaveValue(5);
+    expect(screen.getByLabelText('Maximum capacity')).toHaveValue(30);
+    expect(screen.getByText('to')).toBeInTheDocument();
+    expect(screen.getByText('players')).toBeInTheDocument();
   });
 
   it('calls onChange when min input changes and is blurred', async () => {
@@ -23,7 +23,7 @@ describe('CapacityRange', () => {
     const user = userEvent.setup();
     renderCapacityRange({ min: 10, max: 50, onChange });
 
-    const minInput = screen.getByLabelText('filter.minCapacity');
+    const minInput = screen.getByLabelText('Minimum capacity');
     await user.clear(minInput);
     await user.type(minInput, '20');
     await user.tab();
@@ -37,7 +37,7 @@ describe('CapacityRange', () => {
     const user = userEvent.setup();
     renderCapacityRange({ min: 10, max: 50, onChange });
 
-    const minInput = screen.getByLabelText('filter.minCapacity');
+    const minInput = screen.getByLabelText('Minimum capacity');
     await user.clear(minInput);
     await user.type(minInput, '0');
     await user.tab();
@@ -50,7 +50,7 @@ describe('CapacityRange', () => {
     const user = userEvent.setup();
     renderCapacityRange({ min: 10, max: 50, onChange });
 
-    const maxInput = screen.getByLabelText('filter.maxCapacity');
+    const maxInput = screen.getByLabelText('Maximum capacity');
     await user.clear(maxInput);
     await user.type(maxInput, '100');
     await user.tab();
@@ -63,7 +63,7 @@ describe('CapacityRange', () => {
     const user = userEvent.setup();
     renderCapacityRange({ min: 10, max: 50, onChange });
 
-    const minInput = screen.getByLabelText('filter.minCapacity');
+    const minInput = screen.getByLabelText('Minimum capacity');
     await user.clear(minInput);
     await user.type(minInput, '60');
     await user.tab();
@@ -76,7 +76,7 @@ describe('CapacityRange', () => {
     const user = userEvent.setup();
     renderCapacityRange({ min: 10, max: 50, onChange });
 
-    const minInput = screen.getByLabelText('filter.minCapacity');
+    const minInput = screen.getByLabelText('Minimum capacity');
     await user.clear(minInput);
     await user.type(minInput, 'abc');
     await user.tab();
@@ -90,7 +90,7 @@ describe('CapacityRange', () => {
     const user = userEvent.setup();
     renderCapacityRange({ min: 10, max: 50, onChange });
 
-    const minInput = screen.getByLabelText('filter.minCapacity');
+    const minInput = screen.getByLabelText('Minimum capacity');
     await user.clear(minInput);
     await user.tab();
 
