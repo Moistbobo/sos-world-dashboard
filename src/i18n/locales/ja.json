@@ -94,7 +94,8 @@
     "minCapacity": "最小定員",
     "maxCapacity": "最大定員",
     "capacityTo": "〜",
-    "capacityUnit": "人"
+    "capacityUnit": "人",
+    "removeCapacity": "定員フィルタを解除"
   },
   "pagination": {
     "prev": "前へ",

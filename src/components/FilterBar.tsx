@@ -74,6 +74,7 @@ export function FilterBar({
               onClick={() =>
                 onCapacityChange({ min: MIN_CAPACITY, max: MAX_CAPACITY })
               }
+              aria-label={t('filter.removeCapacity')}
               className="hover:text-white"
             >
               <X className="h-3 w-3" />

@@ -94,7 +94,8 @@
     "minCapacity": "Minimum capacity",
     "maxCapacity": "Maximum capacity",
     "capacityTo": "to",
-    "capacityUnit": "players"
+    "capacityUnit": "players",
+    "removeCapacity": "Remove capacity filter"
   },
   "pagination": {
     "prev": "Prev",

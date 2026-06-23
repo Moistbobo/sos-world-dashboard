@@ -21,7 +21,7 @@ function renderFilterBar(props: Partial<typeof defaultProps> = {}) {
 }
 
 describe('FilterBar', () => {
-  it('renders capacity section with slider/inputs when expanded', async () => {
+  it('renders capacity section with inputs when expanded', async () => {
     const user = userEvent.setup();
     renderFilterBar();
 
@@ -48,10 +48,7 @@ describe('FilterBar', () => {
       onCapacityChange,
     });
 
-    const chipText = screen.getByText(/10–40/);
-    const chip = chipText.parentElement;
-    const removeButton = chip?.querySelector('button');
-    if (!removeButton) throw new Error('Capacity chip remove button not found');
+    const removeButton = screen.getByRole('button', { name: /remove capacity filter/i });
 
     await user.click(removeButton);
 
