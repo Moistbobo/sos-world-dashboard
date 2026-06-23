@@ -85,7 +85,7 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-1 sm:flex sm:flex-wrap sm:items-center sm:gap-2">
         <label
           htmlFor="min-capacity"
           className="text-xs font-medium text-slate-700 dark:text-slate-300"
@@ -104,7 +104,7 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
           onKeyDown={handleKeyDown}
           className="input w-20"
         />
-        <span className="text-xs text-slate-600 dark:text-slate-400">
+        <span className="hidden text-xs text-slate-600 dark:text-slate-400 sm:inline">
           {t('filter.capacityTo')}
         </span>
         <label
