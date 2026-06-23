@@ -126,14 +126,14 @@ describe('WorldsPage capacity filter', () => {
     window.history.pushState({}, '', '/worlds?minCapacity=10&maxCapacity=40');
     render(<WorldsPage />, { wrapper: Wrapper });
     fireEvent.click(screen.getByRole('button', { name: /filters/i }));
-    expect(screen.getByLabelText('Minimum capacity')).toHaveValue(10);
-    expect(screen.getByLabelText('Maximum capacity')).toHaveValue(40);
+    expect(screen.getByRole('spinbutton', { name: /minimum capacity/i })).toHaveValue(10);
+    expect(screen.getByRole('spinbutton', { name: /maximum capacity/i })).toHaveValue(40);
   });
 
   it('updates URL when capacity range changes', () => {
     render(<WorldsPage />, { wrapper: Wrapper });
     fireEvent.click(screen.getByRole('button', { name: /filters/i }));
-    const minInput = screen.getByLabelText('Minimum capacity');
+    const minInput = screen.getByRole('spinbutton', { name: /minimum capacity/i });
     fireEvent.change(minInput, { target: { value: '10' } });
     fireEvent.blur(minInput);
     expect(window.location.search).toContain('minCapacity=10');

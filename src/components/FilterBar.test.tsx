@@ -28,8 +28,8 @@ describe('FilterBar', () => {
     await user.click(screen.getByRole('button', { name: /filters/i }));
 
     expect(screen.getByText('Player capacity')).toBeInTheDocument();
-    expect(screen.getByLabelText('Minimum capacity')).toBeInTheDocument();
-    expect(screen.getByLabelText('Maximum capacity')).toBeInTheDocument();
+    expect(screen.getByRole('spinbutton', { name: /minimum capacity/i })).toBeInTheDocument();
+    expect(screen.getByRole('spinbutton', { name: /maximum capacity/i })).toBeInTheDocument();
   });
 
   it('shows active capacity chip when not at default range', () => {

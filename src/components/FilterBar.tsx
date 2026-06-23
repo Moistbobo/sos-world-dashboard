@@ -144,6 +144,7 @@ export function FilterBar({
           <div className="mb-3">
             <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.capacity')}</label>
             <CapacityRange
+              key={`capacity-${capacityRange.min}-${capacityRange.max}`}
               min={capacityRange.min}
               max={capacityRange.max}
               onChange={onCapacityChange}
