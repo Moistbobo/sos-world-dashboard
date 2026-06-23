@@ -51,3 +51,4 @@ stats.html
 .env*
 pi/
 brainstorm/visuals/
+.worktrees/
