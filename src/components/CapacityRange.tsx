@@ -81,6 +81,8 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
     onChange(next);
   };
 
+  const ticks = [MIN_CAPACITY, 20, 40, 60, MAX_CAPACITY];
+
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -128,29 +130,37 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
         </span>
       </div>
 
-      <Slider.Root
-        value={[range.min, range.max]}
-        min={MIN_CAPACITY}
-        max={MAX_CAPACITY}
-        step={1}
-        minStepsBetweenThumbs={1}
-        onValueChange={handleSliderChange}
-        onValueCommit={handleSliderCommit}
-        className="relative flex w-full touch-none select-none items-center py-2"
-        aria-label={t('filter.capacity')}
-      >
-        <Slider.Track className="relative h-1.5 grow rounded-full bg-slate-200 dark:bg-slate-700">
-          <Slider.Range className="absolute h-full rounded-full bg-indigo-500" />
-        </Slider.Track>
-        <Slider.Thumb
-          className="block h-4 w-4 rounded-full border-2 border-white bg-indigo-500 shadow transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-900"
-          aria-label={t('filter.minCapacity')}
-        />
-        <Slider.Thumb
-          className="block h-4 w-4 rounded-full border-2 border-white bg-indigo-500 shadow transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-900"
-          aria-label={t('filter.maxCapacity')}
-        />
-      </Slider.Root>
+      <div className="px-1">
+        <div className="mb-1 flex justify-between text-[10px] font-medium text-slate-500 dark:text-slate-400">
+          {ticks.map((tick) => (
+            <span key={tick}>{tick}</span>
+          ))}
+        </div>
+
+        <Slider.Root
+          value={[range.min, range.max]}
+          min={MIN_CAPACITY}
+          max={MAX_CAPACITY}
+          step={1}
+          minStepsBetweenThumbs={1}
+          onValueChange={handleSliderChange}
+          onValueCommit={handleSliderCommit}
+          className="relative flex w-full touch-none select-none items-center"
+          aria-label={t('filter.capacity')}
+        >
+          <Slider.Track className="relative h-1.5 grow rounded-full bg-slate-200 dark:bg-slate-700">
+            <Slider.Range className="absolute h-full rounded-full bg-indigo-500" />
+          </Slider.Track>
+          <Slider.Thumb
+            className="block h-4 w-4 rounded-full border-2 border-white bg-indigo-500 shadow transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-900"
+            aria-label={t('filter.minCapacity')}
+          />
+          <Slider.Thumb
+            className="block h-4 w-4 rounded-full border-2 border-white bg-indigo-500 shadow transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-900"
+            aria-label={t('filter.maxCapacity')}
+          />
+        </Slider.Root>
+      </div>
     </div>
   );
 }
