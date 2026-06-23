@@ -42,7 +42,11 @@
     "searchPlaceholder": "名前、作成者、ID で検索...",
     "loadError": "ワールドの読み込みに失敗しました: {{message}}",
     "noWorlds": "ワールドが見つかりません。フィルタを調整するか",
-    "tryAgain": "再試行"
+    "tryAgain": "再試行",
+    "switchToPagination": "ページネーションに切り替え",
+    "switchToInfinite": "無限スクロールに切り替え",
+    "loadingMore": "さらに読み込み中...",
+    "backToTop": "トップに戻る"
   },
   "worldDetail": {
     "loadError": "ワールドの読み込みに失敗しました: {{message}}",

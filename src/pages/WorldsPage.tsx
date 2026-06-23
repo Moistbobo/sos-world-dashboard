@@ -1,18 +1,23 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { LayoutGrid, List, Search } from 'lucide-react';
-import { useTags, useWorlds } from '../hooks/useApi';
+import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useInfiniteWorlds, useTags, useWorlds } from '../hooks/useApi';
 import { FilterBar } from '../components/FilterBar';
 import { Pagination } from '../components/Pagination';
 import { WorldCard } from '../components/WorldCard';
 import { TagBadge } from '../components/TagBadge';
 
+type ScrollMode = 'infinite' | 'pagination';
+
 export function WorldsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const [scrollMode, setScrollMode] = useState<ScrollMode>('infinite');
   const [limit] = useState(20);
   const [offset, setOffset] = useState(0);
   const [selectedTags, setSelectedTags] = useState<string[]>(() => {
@@ -23,15 +28,28 @@ export function WorldsPage() {
     const quality = searchParams.get('quality');
     return quality === 'good' || quality === 'bad' ? [quality] : [];
   });
+  const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   const { data: tagsData } = useTags();
-  const { data, isPending, isError, error, refetch } = useWorlds({
+
+  const paginationQuery = useWorlds({
     limit,
     offset,
     tag: selectedTags,
     quality: selectedQuality,
+    search: searchQuery,
+    enabled: scrollMode === 'pagination',
+  });
+
+  const infiniteQuery = useInfiniteWorlds({
+    limit,
+    tag: selectedTags,
+    quality: selectedQuality,
+    search: searchQuery,
+    enabled: scrollMode === 'infinite',
   });
 
   // Update URL when filters change
@@ -44,42 +62,100 @@ export function WorldsPage() {
     }
   }, [selectedTags, selectedQuality, setSearchParams, searchParams]);
 
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => setSearchQuery(searchInput.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  // Reset infinite query cache when switching back to infinite mode
+  useEffect(() => {
+    if (scrollMode === 'infinite') {
+      queryClient.resetQueries({ queryKey: ['worlds-infinite'], exact: false });
+    }
+  }, [scrollMode, queryClient]);
+
+  // Back-to-top visibility
+  useEffect(() => {
+    const onScroll = () => {
+      setShowBackToTop(window.scrollY > window.innerHeight);
+    };
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const allInfiniteWorlds = useMemo(
+    () => infiniteQuery.data?.pages.flatMap((page) => page.worlds) ?? [],
+    [infiniteQuery.data]
+  );
+
+  const isPagination = scrollMode === 'pagination';
+  const worlds = isPagination ? paginationQuery.data?.worlds ?? [] : allInfiniteWorlds;
+  const isPending = isPagination ? paginationQuery.isPending : infiniteQuery.isPending;
+  const isError = isPagination ? paginationQuery.isError : infiniteQuery.isError;
+  const error = isPagination ? paginationQuery.error : infiniteQuery.error;
+  const refetch = isPagination ? paginationQuery.refetch : infiniteQuery.refetch;
+  const total = isPagination
+    ? paginationQuery.data?.total ?? 0
+    : infiniteQuery.data?.pages[0]?.total ?? 0;
+
+  const handleToggleMode = () => {
+    setScrollMode((prev) => (prev === 'infinite' ? 'pagination' : 'infinite'));
+    setOffset(0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const resetToFirstPage = () => {
+    setOffset(0);
+    if (scrollMode === 'infinite') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const handleToggleTag = (tag: string) => {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
-    setOffset(0);
+    resetToFirstPage();
   };
 
   const handleRemoveTag = (tag: string) => {
     setSelectedTags((prev) => prev.filter((t) => t !== tag));
-    setOffset(0);
+    resetToFirstPage();
   };
 
   const handleToggleQuality = (quality: 'good' | 'bad') => {
     setSelectedQuality((prev) =>
       prev.includes(quality) ? prev.filter((q) => q !== quality) : [...prev, quality]
     );
-    setOffset(0);
+    resetToFirstPage();
   };
 
   const handleClear = () => {
     setSelectedTags([]);
     setSelectedQuality([]);
-    setOffset(0);
+    setSearchInput('');
+    resetToFirstPage();
   };
 
-  const filteredWorlds = useMemo(() => {
-    if (!data?.worlds) return [];
-    if (!searchQuery.trim()) return data.worlds;
-    const q = searchQuery.toLowerCase();
-    return data.worlds.filter(
-      (w) =>
-        w.name?.toLowerCase().includes(q) ||
-        w.authorName?.toLowerCase().includes(q) ||
-        w.worldId.toLowerCase().includes(q)
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isPagination || !sentinelRef.current) return;
+    if (!infiniteQuery.hasNextPage || infiniteQuery.isFetchingNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          infiniteQuery.fetchNextPage();
+        }
+      },
+      { rootMargin: '200px' }
     );
-  }, [data, searchQuery]);
+
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [isPagination, infiniteQuery]);
 
   return (
     <div className="space-y-4">
@@ -88,6 +164,12 @@ export function WorldsPage() {
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t('worlds.title')}</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">{t('worlds.subtitle')}</p>
         </div>
+        <button
+          onClick={handleToggleMode}
+          className="btn-secondary flex items-center gap-2 px-3 py-1.5 text-xs"
+        >
+          {scrollMode === 'infinite' ? t('worlds.switchToPagination') : t('worlds.switchToInfinite')}
+        </button>
       </div>
 
       <FilterBar
@@ -105,8 +187,8 @@ export function WorldsPage() {
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
           <input
             type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             placeholder={t('worlds.searchPlaceholder')}
             className="input w-full pl-9"
           />
@@ -115,7 +197,9 @@ export function WorldsPage() {
           <button
             onClick={() => setViewMode('grid')}
             className={`rounded-md p-1.5 transition ${
-              viewMode === 'grid' ? 'bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+              viewMode === 'grid'
+                ? 'bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-white'
+                : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
             }`}
           >
             <LayoutGrid className="h-4 w-4" />
@@ -123,7 +207,9 @@ export function WorldsPage() {
           <button
             onClick={() => setViewMode('list')}
             className={`rounded-md p-1.5 transition ${
-              viewMode === 'list' ? 'bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+              viewMode === 'list'
+                ? 'bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-white'
+                : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
             }`}
           >
             <List className="h-4 w-4" />
@@ -145,18 +231,19 @@ export function WorldsPage() {
         </div>
       )}
 
-      {!isPending && !isError && filteredWorlds.length === 0 && (
+      {!isPending && !isError && worlds.length === 0 && (
         <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
           {t('worlds.noWorlds')}{' '}
           <button onClick={() => refetch()} className="text-indigo-600 underline dark:text-indigo-400">
             {t('worlds.tryAgain')}
-          </button>.
+          </button>
+          .
         </div>
       )}
 
-      {!isPending && !isError && filteredWorlds.length > 0 && viewMode === 'grid' && (
+      {!isPending && !isError && worlds.length > 0 && viewMode === 'grid' && (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {filteredWorlds.map((w) => (
+          {worlds.map((w) => (
             <WorldCard
               key={w.worldId}
               world={w}
@@ -164,8 +251,7 @@ export function WorldsPage() {
               onTagClick={(tag) => {
                 if (!selectedTags.includes(tag)) {
                   setSelectedTags((prev) => [...prev, tag]);
-                  setOffset(0);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  resetToFirstPage();
                 }
               }}
             />
@@ -173,9 +259,9 @@ export function WorldsPage() {
         </div>
       )}
 
-      {!isPending && !isError && filteredWorlds.length > 0 && viewMode === 'list' && (
+      {!isPending && !isError && worlds.length > 0 && viewMode === 'list' && (
         <div className="space-y-3">
-          {filteredWorlds.map((w) => (
+          {worlds.map((w) => (
             <button
               key={w.worldId}
               onClick={() => navigate(`/worlds/${w.worldId}`)}
@@ -193,14 +279,17 @@ export function WorldsPage() {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{w.name}</p>
                 <p className="truncate text-xs text-slate-500 dark:text-slate-400">
-                  {t('common.byAuthor', { author: w.authorName || t('common.unknown') })} · {w.capacity} capacity · {w.platforms.join(', ')}
+                  {t('common.byAuthor', { author: w.authorName || t('common.unknown') })} · {w.capacity}{' '}
+                  capacity · {w.platforms.join(', ')}
                 </p>
               </div>
               <div className="hidden flex-wrap gap-1 sm:flex">
                 {w.tags.slice(0, 3).map((t) => (
                   <TagBadge key={t} tag={t} />
                 ))}
-                {w.tags.length > 3 && <span className="text-xs text-slate-400 dark:text-slate-500">+{w.tags.length - 3}</span>}
+                {w.tags.length > 3 && (
+                  <span className="text-xs text-slate-400 dark:text-slate-500">+{w.tags.length - 3}</span>
+                )}
               </div>
               <div className="shrink-0 text-xs text-slate-400 dark:text-slate-500">
                 {w.quality === 'good' ? '✅' : w.quality === 'bad' ? '❌' : '—'}
@@ -210,18 +299,36 @@ export function WorldsPage() {
         </div>
       )}
 
-      {data && (
+      {scrollMode === 'infinite' && !isError && (
+        <div ref={sentinelRef} className="flex justify-center py-4">
+          {infiniteQuery.isFetchingNextPage && (
+            <span className="text-sm text-slate-500 dark:text-slate-400">{t('worlds.loadingMore')}</span>
+          )}
+        </div>
+      )}
+
+      {scrollMode === 'pagination' && total > 0 && (
         <div className="flex justify-center pt-2">
           <Pagination
             offset={offset}
             limit={limit}
-            total={data.total}
+            total={total}
             onChangeOffset={(o) => {
               setOffset(o);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           />
         </div>
+      )}
+
+      {showBackToTop && scrollMode === 'infinite' && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-6 right-6 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          aria-label={t('worlds.backToTop')}
+        >
+          <ArrowUp className="h-5 w-5" />
+        </button>
       )}
     </div>
   );

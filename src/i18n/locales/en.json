@@ -42,7 +42,11 @@
     "searchPlaceholder": "Search name, author, ID...",
     "loadError": "Failed to load worlds: {{message}}",
     "noWorlds": "No worlds found. Adjust your filters or",
-    "tryAgain": "try again"
+    "tryAgain": "try again",
+    "switchToPagination": "Switch to pagination",
+    "switchToInfinite": "Switch to endless scroll",
+    "loadingMore": "Loading more worlds...",
+    "backToTop": "Back to top"
   },
   "worldDetail": {
     "loadError": "Failed to load world: {{message}}",
