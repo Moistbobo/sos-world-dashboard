@@ -145,7 +145,7 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
           minStepsBetweenThumbs={1}
           onValueChange={handleSliderChange}
           onValueCommit={handleSliderCommit}
-          className="relative flex w-full touch-none select-none items-center"
+          className="relative mx-auto flex w-[60%] touch-none select-none items-center"
           aria-label={t('filter.capacity')}
         >
           <Slider.Track className="relative h-1.5 grow rounded-full bg-slate-200 dark:bg-slate-700">
