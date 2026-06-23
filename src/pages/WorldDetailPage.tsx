@@ -4,9 +4,10 @@ import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash } from 'lucide-re
 import { useWorld } from '../hooks/useApi';
 import { TagBadge } from '../components/TagBadge';
 
-export function WorldDetailPage() {
+export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
   const { t } = useTranslation();
-  const { worldId } = useParams<{ worldId: string }>();
+  const { worldId: paramWorldId } = useParams<{ worldId: string }>();
+  const worldId = worldIdProp ?? paramWorldId;
   const navigate = useNavigate();
   const { data, isPending, isError, error } = useWorld(worldId);
 

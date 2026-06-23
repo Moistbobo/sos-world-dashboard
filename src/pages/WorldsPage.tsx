@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useOutlet, useSearchParams } from 'react-router-dom';
+import { useNavigate, useMatch, useSearchParams } from 'react-router-dom';
 import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useInfiniteWorlds, useTags, useWorlds } from '../hooks/useApi';
 import { FilterBar } from '../components/FilterBar';
 import { Pagination } from '../components/Pagination';
 import { WorldCard } from '../components/WorldCard';
+import { WorldDetailPage } from '../pages/WorldDetailPage';
 import { TagBadge } from '../components/TagBadge';
 
 type ScrollMode = 'infinite' | 'pagination';
@@ -14,41 +15,51 @@ type ScrollMode = 'infinite' | 'pagination';
 export function WorldsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const outlet = useOutlet();
+  const detailMatch = useMatch('/worlds/:worldId');
+  const currentWorldId = detailMatch?.params.worldId;
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [scrollMode, setScrollMode] = useState<ScrollMode>('infinite');
-  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
-  const [isOverlayAnimatingOut, setIsOverlayAnimatingOut] = useState(false);
+  const [renderedWorldId, setRenderedWorldId] = useState<string | undefined>(undefined);
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+  const [isOverlayClosing, setIsOverlayClosing] = useState(false);
 
-  // Manage overlay visibility for enter/exit fade animation. On open we use a
-  // CSS keyframe animation so the browser reliably runs the fade-in from the
-  // first paint. On close we use the opacity transition to fade out before
-  // unmounting. State changes are scheduled in setTimeout callbacks to satisfy
-  // the project's ESLint rules about synchronous setState inside effects.
+  // Manage overlay visibility and the world ID to render for enter/exit fade
+  // animation. We keep the last rendered world ID mounted during the close
+  // animation so the detail content doesn't disappear before the fade-out
+  // finishes. State changes are scheduled inside setTimeout callbacks to
+  // satisfy the project's ESLint rules about synchronous setState inside
+  // effects.
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | null = null;
+    let openTimer: ReturnType<typeof setTimeout> | null = null;
+    let closeTimer: ReturnType<typeof setTimeout> | null = null;
 
-    if (outlet && !isOverlayVisible) {
-      timer = setTimeout(() => {
-        setIsOverlayAnimatingOut(false);
-        setIsOverlayVisible(true);
+    if (currentWorldId && !isOverlayOpen) {
+      openTimer = setTimeout(() => {
+        setRenderedWorldId(currentWorldId);
+        setIsOverlayClosing(false);
+        setIsOverlayOpen(true);
       }, 0);
-    } else if (!outlet && isOverlayVisible) {
-      timer = setTimeout(() => setIsOverlayAnimatingOut(true), 0);
+    } else if (currentWorldId && renderedWorldId !== currentWorldId) {
+      openTimer = setTimeout(() => {
+        setRenderedWorldId(currentWorldId);
+      }, 0);
+    } else if (!currentWorldId && isOverlayOpen && !isOverlayClosing) {
+      closeTimer = setTimeout(() => setIsOverlayClosing(true), 0);
       const hideTimer = setTimeout(() => {
-        setIsOverlayVisible(false);
-        setIsOverlayAnimatingOut(false);
+        setRenderedWorldId(undefined);
+        setIsOverlayOpen(false);
+        setIsOverlayClosing(false);
       }, 200);
-      // Keep a reference to the hide timer so cleanup can clear it.
-      timer = hideTimer;
+      closeTimer = hideTimer;
     }
 
     return () => {
-      if (timer) clearTimeout(timer);
+      if (openTimer) clearTimeout(openTimer);
+      if (closeTimer) clearTimeout(closeTimer);
     };
-  }, [outlet, isOverlayVisible]);
+  }, [currentWorldId, isOverlayOpen, isOverlayClosing, renderedWorldId]);
 
   const [limit] = useState(20);
   const [offset, setOffset] = useState(0);
@@ -354,7 +365,7 @@ export function WorldsPage() {
         </div>
       )}
 
-      {showBackToTop && scrollMode === 'infinite' && !outlet && (
+      {showBackToTop && scrollMode === 'infinite' && !currentWorldId && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="fixed bottom-6 right-6 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-indigo-500 dark:hover:bg-indigo-600"
@@ -365,14 +376,16 @@ export function WorldsPage() {
       )}
       </div>
 
-      {(outlet || isOverlayVisible) && (
+      {(renderedWorldId || isOverlayOpen) && (
         <div
           className={`fixed inset-0 z-50 overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95 lg:p-6 ${
-            isOverlayAnimatingOut || !outlet ? 'opacity-0' : 'opacity-100 animate-fadeIn'
+            isOverlayClosing ? 'opacity-0' : 'opacity-100 animate-fadeIn'
           }`}
-          aria-hidden={isOverlayAnimatingOut || !outlet ? 'true' : 'false'}
+          aria-hidden={isOverlayClosing ? 'true' : 'false'}
         >
-          <div className="mx-auto max-w-3xl">{outlet}</div>
+          <div className="mx-auto max-w-3xl">
+            <WorldDetailPage worldId={renderedWorldId} />
+          </div>
         </div>
       )}
     </>

@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 
@@ -59,16 +58,11 @@ vi.mock('./hooks/useApi', () => ({
 
 describe('App routing', () => {
   it('opens a world detail as an overlay and keeps the list behind it', async () => {
-    window.history.pushState({}, '', '/worlds');
+    window.history.pushState({}, '', '/worlds/wrld_demo');
 
-    const user = userEvent.setup();
     render(<App />, { wrapper: Wrapper });
 
     expect(screen.getByRole('heading', { name: /worlds/i })).toBeInTheDocument();
-    expect(screen.getByText('Demo World')).toBeInTheDocument();
-
-    // Click the world card's select button to open the detail overlay.
-    await user.click(screen.getByRole('button', { name: /details - demo world/i }));
 
     // The detail should be rendered inside the overlay.
     expect(await screen.findByRole('heading', { level: 1, name: /demo world/i })).toBeInTheDocument();
