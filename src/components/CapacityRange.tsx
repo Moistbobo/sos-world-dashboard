@@ -138,7 +138,22 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
             return (
               <div
                 key={tick}
-                className="absolute bottom-0 flex -translate-x-1/2 flex-col items-center"
+                className="absolute bottom-0 flex -translate-x-1/2 flex-col items-center sm:hidden"
+                style={{ left: `${pct}%` }}
+              >
+                <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
+                  {tick}
+                </span>
+              </div>
+            );
+          })}
+          {ticks.map((tick) => {
+            const pct =
+              ((tick - MIN_CAPACITY) / (MAX_CAPACITY - MIN_CAPACITY)) * 100;
+            return (
+              <div
+                key={`${tick}-desktop`}
+                className="absolute bottom-0 hidden -translate-x-1/2 flex-col items-center sm:flex"
                 style={{ left: `${pct * 0.6}%` }}
               >
                 <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
@@ -157,7 +172,7 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
           minStepsBetweenThumbs={1}
           onValueChange={handleSliderChange}
           onValueCommit={handleSliderCommit}
-          className="relative flex w-[60%] touch-none select-none items-center"
+          className="relative flex w-[60%] touch-none select-none items-center sm:w-full"
           aria-label={t('filter.capacity')}
         >
           <Slider.Track className="relative h-1.5 grow rounded-full bg-slate-200 dark:bg-slate-700">
