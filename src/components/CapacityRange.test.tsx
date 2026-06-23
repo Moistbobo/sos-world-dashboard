@@ -70,4 +70,31 @@ describe('CapacityRange', () => {
 
     expect(onChange).toHaveBeenCalledWith({ min: 50, max: 60 });
   });
+
+  it('clamps invalid or empty min input to MIN_CAPACITY', async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    renderCapacityRange({ min: 10, max: 50, onChange });
+
+    const minInput = screen.getByLabelText('filter.minCapacity');
+    await user.clear(minInput);
+    await user.type(minInput, 'abc');
+    await user.tab();
+
+    expect(onChange).toHaveBeenCalledWith({ min: MIN_CAPACITY, max: 50 });
+    expect(minInput).toHaveValue(MIN_CAPACITY);
+  });
+
+  it('clamps empty input to MIN_CAPACITY for min field', async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    renderCapacityRange({ min: 10, max: 50, onChange });
+
+    const minInput = screen.getByLabelText('filter.minCapacity');
+    await user.clear(minInput);
+    await user.tab();
+
+    expect(onChange).toHaveBeenCalledWith({ min: MIN_CAPACITY, max: 50 });
+    expect(minInput).toHaveValue(MIN_CAPACITY);
+  });
 });

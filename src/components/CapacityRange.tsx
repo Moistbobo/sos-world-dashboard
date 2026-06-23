@@ -53,6 +53,9 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
       <input
         id="min-capacity"
         type="number"
+        min={MIN_CAPACITY}
+        max={MAX_CAPACITY}
+        step="1"
         value={minInput}
         onChange={(e) => setMinInput(e.target.value)}
         onBlur={handleBlur}
@@ -70,6 +73,9 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
       <input
         id="max-capacity"
         type="number"
+        min={MIN_CAPACITY}
+        max={MAX_CAPACITY}
+        step="1"
         value={maxInput}
         onChange={(e) => setMaxInput(e.target.value)}
         onBlur={handleBlur}
