@@ -22,6 +22,8 @@ export function useWorlds(params?: {
   tag?: string[];
   quality?: ('good' | 'bad')[];
   search?: string;
+  minCapacity?: number;
+  maxCapacity?: number;
   enabled?: boolean;
 }) {
   return useQuery({
@@ -36,6 +38,8 @@ export function useInfiniteWorlds(params?: {
   tag?: string[];
   quality?: ('good' | 'bad')[];
   search?: string;
+  minCapacity?: number;
+  maxCapacity?: number;
   enabled?: boolean;
 }) {
   const limit = params?.limit ?? 20;
