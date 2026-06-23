@@ -4,13 +4,12 @@ import { useNavigate, useMatch, useSearchParams } from 'react-router-dom';
 import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useInfiniteWorlds, useTags, useWorlds } from '../hooks/useApi';
+import { useWorldsPreferences } from '../hooks/useWorldsPreferences';
 import { FilterBar } from '../components/FilterBar';
 import { Pagination } from '../components/Pagination';
 import { WorldCard } from '../components/WorldCard';
 import { WorldDetailPage } from '../pages/WorldDetailPage';
 import { TagBadge } from '../components/TagBadge';
-
-type ScrollMode = 'infinite' | 'pagination';
 
 export function WorldsPage() {
   const { t } = useTranslation();
@@ -20,7 +19,7 @@ export function WorldsPage() {
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [scrollMode, setScrollMode] = useState<ScrollMode>('infinite');
+  const { viewMode, setViewMode, scrollMode, setScrollMode } = useWorldsPreferences();
   const [renderedWorldId, setRenderedWorldId] = useState<string | undefined>(undefined);
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [isOverlayClosing, setIsOverlayClosing] = useState(false);
@@ -73,7 +72,6 @@ export function WorldsPage() {
   });
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   const { data: tagsData } = useTags();
@@ -143,7 +141,7 @@ export function WorldsPage() {
     : infiniteQuery.data?.pages[0]?.total ?? 0;
 
   const handleToggleMode = () => {
-    setScrollMode((prev) => (prev === 'infinite' ? 'pagination' : 'infinite'));
+    setScrollMode(scrollMode === 'infinite' ? 'pagination' : 'infinite');
     setOffset(0);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

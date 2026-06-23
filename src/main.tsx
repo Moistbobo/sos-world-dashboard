@@ -6,6 +6,7 @@ import './i18n';
 import './index.css';
 import App from './App';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { WorldsPreferencesProvider } from './contexts/WorldsPreferencesContext';
 
 const queryClient = new QueryClient();
 
@@ -13,7 +14,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <App />
+        <WorldsPreferencesProvider>
+          <App />
+        </WorldsPreferencesProvider>
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
