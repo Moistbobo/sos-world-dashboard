@@ -141,10 +141,9 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
             return (
               <div
                 key={tick}
-                className="absolute top-0 flex -translate-x-1/2 flex-col items-center"
+                className="absolute bottom-0 flex -translate-x-1/2 flex-col items-center"
                 style={{ left: `${pct * 0.6}%` }}
               >
-                <span className="mb-0.5 h-1.5 w-px bg-slate-400 dark:bg-slate-500" />
                 <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
                   {tick}
                 </span>
