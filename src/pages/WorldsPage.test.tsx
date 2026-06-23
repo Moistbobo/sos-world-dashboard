@@ -119,3 +119,13 @@ describe('WorldsPage', () => {
     expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
   });
 });
+
+describe('WorldsPage capacity filter', () => {
+  it('seeds capacity range from URL query params', () => {
+    window.history.pushState({}, '', '/worlds?minCapacity=10&maxCapacity=40');
+    render(<WorldsPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByRole('button', { name: /filters/i }));
+    expect(screen.getByLabelText('Minimum capacity')).toHaveValue(10);
+    expect(screen.getByLabelText('Maximum capacity')).toHaveValue(40);
+  });
+});
