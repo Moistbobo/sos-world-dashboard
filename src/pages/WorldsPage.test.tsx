@@ -96,4 +96,9 @@ describe('WorldsPage', () => {
 
     expect(screen.getByLabelText(/back to top/i)).toBeInTheDocument();
   });
+
+  it('does not render a detail overlay by default', () => {
+    render(<WorldsPage />, { wrapper: Wrapper });
+    expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
+  });
 });

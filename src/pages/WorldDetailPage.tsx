@@ -4,17 +4,85 @@ import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash } from 'lucide-re
 import { useWorld } from '../hooks/useApi';
 import { TagBadge } from '../components/TagBadge';
 
-export function WorldDetailPage() {
+export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
   const { t } = useTranslation();
-  const { worldId } = useParams<{ worldId: string }>();
+  const { worldId: paramWorldId } = useParams<{ worldId: string }>();
+  const worldId = worldIdProp ?? paramWorldId;
   const navigate = useNavigate();
   const { data, isPending, isError, error } = useWorld(worldId);
 
   if (isPending) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4">
-        <div className="card h-72 animate-pulse bg-slate-200 dark:bg-slate-800" />
-        <div className="card h-40 animate-pulse bg-slate-200 dark:bg-slate-800" />
+      <div className="mx-auto max-w-3xl space-y-5">
+        <button
+          disabled
+          className="btn-ghost gap-1.5 text-sm opacity-50"
+          aria-hidden="true"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {t('common.back')}
+        </button>
+
+        <div className="card overflow-hidden">
+          <div className="relative h-56 animate-pulse bg-slate-200 sm:h-72 dark:bg-slate-800" />
+
+          <div className="p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="w-full max-w-md space-y-2">
+                <div className="h-6 w-3/4 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+                <div className="h-4 w-1/2 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+              </div>
+              <div className="h-6 w-20 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+            </div>
+
+            <div className="mt-5 flex flex-wrap gap-4 border-t border-slate-200 pt-4 dark:border-slate-700/50">
+              <div className="flex items-center gap-1.5">
+                <Users className="h-4 w-4 text-slate-300 dark:text-slate-600" />
+                <div className="h-4 w-28 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Hash className="h-4 w-4 text-slate-300 dark:text-slate-600" />
+                <div className="h-4 w-40 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Calendar className="h-4 w-4 text-slate-300 dark:text-slate-600" />
+                <div className="h-4 w-48 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                {t('worldDetail.platforms')}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-6 w-16 animate-pulse rounded-md bg-slate-200 dark:bg-slate-700"
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                {t('worldDetail.tags')}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-6 w-20 animate-pulse rounded-full bg-slate-200 dark:bg-slate-700"
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6 flex gap-3">
+              <div className="h-9 w-40 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-700" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
