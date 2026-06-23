@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { WorldsPage } from './WorldsPage';
+import { WorldsPreferencesProvider } from '../contexts/WorldsPreferencesContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -13,7 +14,9 @@ const queryClient = new QueryClient({
 function Wrapper({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>{children}</BrowserRouter>
+      <WorldsPreferencesProvider>
+        <BrowserRouter>{children}</BrowserRouter>
+      </WorldsPreferencesProvider>
     </QueryClientProvider>
   );
 }
@@ -60,10 +63,12 @@ describe('WorldsPage', () => {
   beforeEach(() => {
     infiniteHasNextPage = true;
     queryClient.clear();
+    window.localStorage.clear();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+    window.history.pushState({}, '', '/');
   });
 
   it('renders the worlds page with default endless scroll mode', () => {
@@ -76,6 +81,19 @@ describe('WorldsPage', () => {
     render(<WorldsPage />, { wrapper: Wrapper });
     const toggleButton = screen.getByRole('button', { name: /switch to pagination/i });
     fireEvent.click(toggleButton);
+    expect(screen.getByRole('button', { name: /switch to endless scroll/i })).toBeInTheDocument();
+  });
+
+  it('persists scroll mode to localStorage when toggled', () => {
+    render(<WorldsPage />, { wrapper: Wrapper });
+    const toggleButton = screen.getByRole('button', { name: /switch to pagination/i });
+    fireEvent.click(toggleButton);
+    expect(window.localStorage.getItem('sos-worlds-scroll-mode')).toBe('pagination');
+  });
+
+  it('restores scroll mode from localStorage', () => {
+    window.localStorage.setItem('sos-worlds-scroll-mode', 'pagination');
+    render(<WorldsPage />, { wrapper: Wrapper });
     expect(screen.getByRole('button', { name: /switch to endless scroll/i })).toBeInTheDocument();
   });
 
@@ -95,5 +113,29 @@ describe('WorldsPage', () => {
     fireEvent.scroll(window);
 
     expect(screen.getByLabelText(/back to top/i)).toBeInTheDocument();
+  });
+
+  it('does not render a detail overlay by default', () => {
+    render(<WorldsPage />, { wrapper: Wrapper });
+    expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
+  });
+});
+
+describe('WorldsPage capacity filter', () => {
+  it('seeds capacity range from URL query params', () => {
+    window.history.pushState({}, '', '/worlds?minCapacity=10&maxCapacity=40');
+    render(<WorldsPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByRole('button', { name: /filters/i }));
+    expect(screen.getByRole('spinbutton', { name: /minimum capacity/i })).toHaveValue(10);
+    expect(screen.getByRole('spinbutton', { name: /maximum capacity/i })).toHaveValue(40);
+  });
+
+  it('updates URL when capacity range changes', () => {
+    render(<WorldsPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByRole('button', { name: /filters/i }));
+    const minInput = screen.getByRole('spinbutton', { name: /minimum capacity/i });
+    fireEvent.change(minInput, { target: { value: '10' } });
+    fireEvent.blur(minInput);
+    expect(window.location.search).toContain('minCapacity=10');
   });
 });

@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import { Languages } from 'lucide-react';
+import { Languages, LayoutGrid, MousePointerClick } from 'lucide-react';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import { useWorldsPreferences } from '../hooks/useWorldsPreferences';
 
 export function SettingsPage() {
   const { t } = useTranslation();
+  const { viewMode, setViewMode, scrollMode, setScrollMode } = useWorldsPreferences();
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -22,6 +24,40 @@ export function SettingsPage() {
           </label>
           <LanguageSwitcher />
           <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.languageHint')}</p>
+        </div>
+
+        <div>
+          <label htmlFor="view-mode" className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-200">
+            <LayoutGrid className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+            {t('settings.viewMode')}
+          </label>
+          <select
+            id="view-mode"
+            value={viewMode}
+            onChange={(e) => setViewMode(e.target.value as 'grid' | 'list')}
+            className="input w-full"
+          >
+            <option value="grid">{t('settings.viewModeGrid')}</option>
+            <option value="list">{t('settings.viewModeList')}</option>
+          </select>
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.viewModeHint')}</p>
+        </div>
+
+        <div>
+          <label htmlFor="scroll-mode" className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-200">
+            <MousePointerClick className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+            {t('settings.scrollMode')}
+          </label>
+          <select
+            id="scroll-mode"
+            value={scrollMode}
+            onChange={(e) => setScrollMode(e.target.value as 'infinite' | 'pagination')}
+            className="input w-full"
+          >
+            <option value="infinite">{t('settings.scrollModeInfinite')}</option>
+            <option value="pagination">{t('settings.scrollModePagination')}</option>
+          </select>
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.scrollModeHint')}</p>
         </div>
       </div>
     </div>
