@@ -96,4 +96,16 @@ describe('WorldsPage', () => {
 
     expect(screen.getByLabelText(/back to top/i)).toBeInTheDocument();
   });
+
+  it('renders list items within the full container width', () => {
+    render(<WorldsPage />, { wrapper: Wrapper });
+    const [, listButton] = screen.getAllByRole('button', { name: '' });
+    fireEvent.click(listButton);
+
+    const listContainer = document.querySelector('.space-y-3.w-full.min-w-0.max-w-full.overflow-hidden');
+    expect(listContainer).toBeInTheDocument();
+
+    const row = document.querySelector('.card.flex.w-full.min-w-0.max-w-full.items-center.gap-4.overflow-hidden');
+    expect(row).toBeInTheDocument();
+  });
 });

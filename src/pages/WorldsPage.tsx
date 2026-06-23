@@ -158,7 +158,7 @@ export function WorldsPage() {
   }, [isPagination, infiniteQuery]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full min-w-0">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t('worlds.title')}</h1>
@@ -260,12 +260,12 @@ export function WorldsPage() {
       )}
 
       {!isPending && !isError && worlds.length > 0 && viewMode === 'list' && (
-        <div className="space-y-3">
+        <div className="space-y-3 w-full min-w-0 max-w-full overflow-hidden">
           {worlds.map((w) => (
             <button
               key={w.worldId}
               onClick={() => navigate(`/worlds/${w.worldId}`)}
-              className="card flex w-full items-center gap-4 p-3 text-left transition hover:border-slate-400 dark:hover:border-slate-600"
+              className="card flex w-full min-w-0 max-w-full items-center gap-4 overflow-hidden p-3 text-left transition hover:border-slate-400 dark:hover:border-slate-600"
             >
               <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-800">
                 {w.imageUrl ? (
