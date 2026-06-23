@@ -50,11 +50,15 @@ export async function fetchWorlds(params?: {
   tag?: string[];
   quality?: ('good' | 'bad')[];
   search?: string;
+  minCapacity?: number;
+  maxCapacity?: number;
 }): Promise<PaginatedWorlds> {
   const qs = new URLSearchParams();
   if (params?.limit !== undefined) qs.set('limit', String(params.limit));
   if (params?.offset !== undefined) qs.set('offset', String(params.offset));
   if (params?.search?.trim()) qs.set('search', params.search.trim());
+  if (params?.minCapacity !== undefined) qs.set('minCapacity', String(params.minCapacity));
+  if (params?.maxCapacity !== undefined) qs.set('maxCapacity', String(params.maxCapacity));
   if (params?.tag?.length) {
     for (const t of params.tag) qs.append('tag', t);
   }

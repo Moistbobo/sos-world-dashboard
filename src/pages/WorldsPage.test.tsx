@@ -68,6 +68,7 @@ describe('WorldsPage', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    window.history.pushState({}, '', '/');
   });
 
   it('renders the worlds page with default endless scroll mode', () => {
@@ -117,5 +118,24 @@ describe('WorldsPage', () => {
   it('does not render a detail overlay by default', () => {
     render(<WorldsPage />, { wrapper: Wrapper });
     expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
+  });
+});
+
+describe('WorldsPage capacity filter', () => {
+  it('seeds capacity range from URL query params', () => {
+    window.history.pushState({}, '', '/worlds?minCapacity=10&maxCapacity=40');
+    render(<WorldsPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByRole('button', { name: /filters/i }));
+    expect(screen.getByRole('spinbutton', { name: /minimum capacity/i })).toHaveValue(10);
+    expect(screen.getByRole('spinbutton', { name: /maximum capacity/i })).toHaveValue(40);
+  });
+
+  it('updates URL when capacity range changes', () => {
+    render(<WorldsPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByRole('button', { name: /filters/i }));
+    const minInput = screen.getByRole('spinbutton', { name: /minimum capacity/i });
+    fireEvent.change(minInput, { target: { value: '10' } });
+    fireEvent.blur(minInput);
+    expect(window.location.search).toContain('minCapacity=10');
   });
 });
