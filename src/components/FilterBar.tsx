@@ -163,7 +163,7 @@ export function FilterBar({
                 className="input w-full pl-8"
               />
             </div>
-            <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto scrollbar-thin pr-1">
+            <div className="flex flex-wrap gap-1.5 pr-1">
               {filteredTags.map((t) => (
                 <button
                   key={t.tag}
