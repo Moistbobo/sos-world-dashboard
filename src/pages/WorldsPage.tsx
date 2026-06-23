@@ -10,6 +10,7 @@ import { Pagination } from '../components/Pagination';
 import { WorldCard } from '../components/WorldCard';
 import { WorldDetailPage } from '../pages/WorldDetailPage';
 import { TagBadge } from '../components/TagBadge';
+import { MIN_CAPACITY, MAX_CAPACITY } from '../components/CapacityRange';
 
 export function WorldsPage() {
   const { t } = useTranslation();
@@ -70,6 +71,7 @@ export function WorldsPage() {
     const quality = searchParams.get('quality');
     return quality === 'good' || quality === 'bad' ? [quality] : [];
   });
+  const [capacityRange, setCapacityRange] = useState({ min: MIN_CAPACITY, max: MAX_CAPACITY });
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -175,6 +177,7 @@ export function WorldsPage() {
   const handleClear = () => {
     setSelectedTags([]);
     setSelectedQuality([]);
+    setCapacityRange({ min: MIN_CAPACITY, max: MAX_CAPACITY });
     setSearchInput('');
     resetToFirstPage();
   };
@@ -222,6 +225,8 @@ export function WorldsPage() {
         onToggleQuality={handleToggleQuality}
         onClear={handleClear}
         availableTags={tagsData?.tags || []}
+        capacityRange={capacityRange}
+        onCapacityChange={setCapacityRange}
       />
 
       <div className="flex items-center justify-between gap-3">
