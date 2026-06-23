@@ -57,6 +57,13 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
     onChange(next);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      commit();
+      (e.currentTarget as HTMLInputElement).blur();
+    }
+  };
+
   const handleSliderChange = (values: number[]) => {
     const [nextMin, nextMax] = values;
     const next = { min: nextMin, max: nextMax };
@@ -92,6 +99,7 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
           step="1"
           defaultValue={range.min}
           onBlur={commit}
+          onKeyDown={handleKeyDown}
           className="input w-20"
         />
         <span className="text-xs text-slate-600 dark:text-slate-400">
@@ -112,6 +120,7 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
           step="1"
           defaultValue={range.max}
           onBlur={commit}
+          onKeyDown={handleKeyDown}
           className="input w-20"
         />
         <span className="text-xs text-slate-600 dark:text-slate-400">

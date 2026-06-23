@@ -35,6 +35,19 @@ describe('CapacityRange', () => {
     expect(thumbs[1]).toHaveAttribute('aria-valuenow', '50');
   });
 
+  it('calls onChange when Enter is pressed in min input', async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    renderCapacityRange({ min: 10, max: 50, onChange });
+
+    const minInput = getMinInput();
+    await user.clear(minInput);
+    await user.type(minInput, '20');
+    await user.keyboard('{Enter}');
+
+    expect(onChange).toHaveBeenLastCalledWith({ min: 20, max: 50 });
+  });
+
   it('calls onChange when min input changes and is blurred', async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
