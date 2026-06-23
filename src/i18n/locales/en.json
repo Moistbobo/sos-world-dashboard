@@ -72,7 +72,15 @@
     "title": "Settings",
     "subtitle": "Configure application preferences.",
     "language": "Language",
-    "languageHint": "Select your preferred display language."
+    "languageHint": "Select your preferred display language.",
+    "viewMode": "World view mode",
+    "viewModeHint": "Choose how worlds are displayed on the Worlds page.",
+    "viewModeGrid": "Grid",
+    "viewModeList": "List",
+    "scrollMode": "World scroll mode",
+    "scrollModeHint": "Choose how the Worlds page loads more results.",
+    "scrollModeInfinite": "Infinite scroll",
+    "scrollModePagination": "Pagination"
   },
   "filter": {
     "filters": "Filters",

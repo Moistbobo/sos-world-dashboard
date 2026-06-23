@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { WorldsPage } from './WorldsPage';
+import { WorldsPreferencesProvider } from '../contexts/WorldsPreferencesContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -13,7 +14,9 @@ const queryClient = new QueryClient({
 function Wrapper({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>{children}</BrowserRouter>
+      <WorldsPreferencesProvider>
+        <BrowserRouter>{children}</BrowserRouter>
+      </WorldsPreferencesProvider>
     </QueryClientProvider>
   );
 }
@@ -60,6 +63,7 @@ describe('WorldsPage', () => {
   beforeEach(() => {
     infiniteHasNextPage = true;
     queryClient.clear();
+    window.localStorage.clear();
   });
 
   afterEach(() => {
@@ -76,6 +80,19 @@ describe('WorldsPage', () => {
     render(<WorldsPage />, { wrapper: Wrapper });
     const toggleButton = screen.getByRole('button', { name: /switch to pagination/i });
     fireEvent.click(toggleButton);
+    expect(screen.getByRole('button', { name: /switch to endless scroll/i })).toBeInTheDocument();
+  });
+
+  it('persists scroll mode to localStorage when toggled', () => {
+    render(<WorldsPage />, { wrapper: Wrapper });
+    const toggleButton = screen.getByRole('button', { name: /switch to pagination/i });
+    fireEvent.click(toggleButton);
+    expect(window.localStorage.getItem('sos-worlds-scroll-mode')).toBe('pagination');
+  });
+
+  it('restores scroll mode from localStorage', () => {
+    window.localStorage.setItem('sos-worlds-scroll-mode', 'pagination');
+    render(<WorldsPage />, { wrapper: Wrapper });
     expect(screen.getByRole('button', { name: /switch to endless scroll/i })).toBeInTheDocument();
   });
 
