@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useMatch, useSearchParams } from 'react-router-dom';
 import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useInfiniteWorlds, useTags, useWorlds } from '../hooks/useApi';
 import { FilterBar } from '../components/FilterBar';
 import { Pagination } from '../components/Pagination';
 import { WorldCard } from '../components/WorldCard';
+import { WorldDetailPage } from '../pages/WorldDetailPage';
 import { TagBadge } from '../components/TagBadge';
 
 type ScrollMode = 'infinite' | 'pagination';
@@ -14,10 +15,52 @@ type ScrollMode = 'infinite' | 'pagination';
 export function WorldsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const detailMatch = useMatch('/worlds/:worldId');
+  const currentWorldId = detailMatch?.params.worldId;
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [scrollMode, setScrollMode] = useState<ScrollMode>('infinite');
+  const [renderedWorldId, setRenderedWorldId] = useState<string | undefined>(undefined);
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+  const [isOverlayClosing, setIsOverlayClosing] = useState(false);
+
+  // Manage overlay visibility and the world ID to render for enter/exit fade
+  // animation. We keep the last rendered world ID mounted during the close
+  // animation so the detail content doesn't disappear before the fade-out
+  // finishes. State changes are scheduled inside setTimeout callbacks to
+  // satisfy the project's ESLint rules about synchronous setState inside
+  // effects.
+  useEffect(() => {
+    let openTimer: ReturnType<typeof setTimeout> | null = null;
+    let closeTimer: ReturnType<typeof setTimeout> | null = null;
+
+    if (currentWorldId && !isOverlayOpen) {
+      openTimer = setTimeout(() => {
+        setRenderedWorldId(currentWorldId);
+        setIsOverlayClosing(false);
+        setIsOverlayOpen(true);
+      }, 0);
+    } else if (currentWorldId && renderedWorldId !== currentWorldId) {
+      openTimer = setTimeout(() => {
+        setRenderedWorldId(currentWorldId);
+      }, 0);
+    } else if (!currentWorldId && isOverlayOpen && !isOverlayClosing) {
+      closeTimer = setTimeout(() => setIsOverlayClosing(true), 0);
+      const hideTimer = setTimeout(() => {
+        setRenderedWorldId(undefined);
+        setIsOverlayOpen(false);
+        setIsOverlayClosing(false);
+      }, 200);
+      closeTimer = hideTimer;
+    }
+
+    return () => {
+      if (openTimer) clearTimeout(openTimer);
+      if (closeTimer) clearTimeout(closeTimer);
+    };
+  }, [currentWorldId, isOverlayOpen, isOverlayClosing, renderedWorldId]);
+
   const [limit] = useState(20);
   const [offset, setOffset] = useState(0);
   const [selectedTags, setSelectedTags] = useState<string[]>(() => {
@@ -158,7 +201,8 @@ export function WorldsPage() {
   }, [isPagination, infiniteQuery]);
 
   return (
-    <div className="space-y-4">
+    <>
+      <div className="space-y-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t('worlds.title')}</h1>
@@ -321,15 +365,29 @@ export function WorldsPage() {
         </div>
       )}
 
-      {showBackToTop && scrollMode === 'infinite' && (
+      {showBackToTop && scrollMode === 'infinite' && !currentWorldId && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-6 right-6 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="fixed bottom-6 right-6 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-indigo-500 dark:hover:bg-indigo-600"
           aria-label={t('worlds.backToTop')}
         >
           <ArrowUp className="h-5 w-5" />
         </button>
       )}
-    </div>
+      </div>
+
+      {(renderedWorldId || isOverlayOpen) && (
+        <div
+          className={`fixed inset-0 z-50 overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95 lg:p-6 ${
+            isOverlayClosing ? 'opacity-0' : 'opacity-100 animate-fadeIn'
+          }`}
+          aria-hidden={isOverlayClosing ? 'true' : 'false'}
+        >
+          <div className="mx-auto max-w-3xl">
+            <WorldDetailPage worldId={renderedWorldId} />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
