@@ -10,6 +10,7 @@ import { Pagination } from '../components/Pagination';
 import { WorldCard } from '../components/WorldCard';
 import { WorldDetailPage } from '../pages/WorldDetailPage';
 import { TagBadge } from '../components/TagBadge';
+import { MIN_CAPACITY, MAX_CAPACITY } from '../components/CapacityRange';
 
 export function WorldsPage() {
   const { t } = useTranslation();
@@ -70,6 +71,18 @@ export function WorldsPage() {
     const quality = searchParams.get('quality');
     return quality === 'good' || quality === 'bad' ? [quality] : [];
   });
+  const [capacityRange, setCapacityRange] = useState(() => {
+    const minRaw = searchParams.get('minCapacity');
+    const maxRaw = searchParams.get('maxCapacity');
+    const min = Number(minRaw);
+    const max = Number(maxRaw);
+    const nextMin = minRaw && !Number.isNaN(min) ? Math.max(MIN_CAPACITY, min) : MIN_CAPACITY;
+    const nextMax = maxRaw && !Number.isNaN(max) ? Math.min(MAX_CAPACITY, max) : MAX_CAPACITY;
+    return {
+      min: Math.min(nextMin, nextMax),
+      max: Math.max(nextMin, nextMax),
+    };
+  });
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -82,6 +95,8 @@ export function WorldsPage() {
     tag: selectedTags,
     quality: selectedQuality,
     search: searchQuery,
+    minCapacity: capacityRange.min,
+    maxCapacity: capacityRange.max,
     enabled: scrollMode === 'pagination',
   });
 
@@ -90,6 +105,8 @@ export function WorldsPage() {
     tag: selectedTags,
     quality: selectedQuality,
     search: searchQuery,
+    minCapacity: capacityRange.min,
+    maxCapacity: capacityRange.max,
     enabled: scrollMode === 'infinite',
   });
 
@@ -98,10 +115,12 @@ export function WorldsPage() {
     const next = new URLSearchParams();
     if (selectedTags.length > 0) next.set('tag', selectedTags[0]);
     if (selectedQuality.length > 0) next.set('quality', selectedQuality[0]);
+    if (capacityRange.min > MIN_CAPACITY) next.set('minCapacity', String(capacityRange.min));
+    if (capacityRange.max < MAX_CAPACITY) next.set('maxCapacity', String(capacityRange.max));
     if (next.toString() !== searchParams.toString()) {
       setSearchParams(next, { replace: true });
     }
-  }, [selectedTags, selectedQuality, setSearchParams, searchParams]);
+  }, [selectedTags, selectedQuality, capacityRange, setSearchParams, searchParams]);
 
   // Debounce search input
   useEffect(() => {
@@ -172,9 +191,15 @@ export function WorldsPage() {
     resetToFirstPage();
   };
 
+  const handleCapacityChange = (range: { min: number; max: number }) => {
+    setCapacityRange(range);
+    resetToFirstPage();
+  };
+
   const handleClear = () => {
     setSelectedTags([]);
     setSelectedQuality([]);
+    setCapacityRange({ min: MIN_CAPACITY, max: MAX_CAPACITY });
     setSearchInput('');
     resetToFirstPage();
   };
@@ -222,6 +247,8 @@ export function WorldsPage() {
         onToggleQuality={handleToggleQuality}
         onClear={handleClear}
         availableTags={tagsData?.tags || []}
+        capacityRange={capacityRange}
+        onCapacityChange={handleCapacityChange}
       />
 
       <div className="flex items-center justify-between gap-3">

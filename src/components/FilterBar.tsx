@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { getEmojiForTag } from '../utils/tagEmoji';
+import {
+  CapacityRange,
+  CapacityRangeValue,
+  MIN_CAPACITY,
+  MAX_CAPACITY,
+} from './CapacityRange';
 
 interface FilterBarProps {
   selectedTags: string[];
@@ -11,6 +17,8 @@ interface FilterBarProps {
   onToggleQuality: (quality: 'good' | 'bad') => void;
   onClear: () => void;
   availableTags: { tag: string; count: number }[];
+  capacityRange: CapacityRangeValue;
+  onCapacityChange: (range: CapacityRangeValue) => void;
 }
 
 export function FilterBar({
@@ -21,6 +29,8 @@ export function FilterBar({
   onToggleQuality,
   onClear,
   availableTags,
+  capacityRange,
+  onCapacityChange,
 }: FilterBarProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
@@ -30,7 +40,16 @@ export function FilterBar({
     t.tag.toLowerCase().includes(tagSearch.toLowerCase())
   );
 
-  const hasFilters = selectedTags.length > 0 || selectedQuality.length > 0;
+  const isCapacityActive =
+    capacityRange.min > MIN_CAPACITY || capacityRange.max < MAX_CAPACITY;
+
+  const hasFilters =
+    selectedTags.length > 0 ||
+    selectedQuality.length > 0 ||
+    isCapacityActive;
+
+  const activeFilterCount =
+    selectedTags.length + selectedQuality.length + (isCapacityActive ? 1 : 0);
 
   return (
     <div className="card mb-4">
@@ -43,10 +62,25 @@ export function FilterBar({
           {t('filter.filters')}
           {hasFilters && (
             <span className="ml-1 rounded-full bg-indigo-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
-              {selectedTags.length + selectedQuality.length}
+              {activeFilterCount}
             </span>
           )}
         </button>
+
+        {isCapacityActive && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-300 ring-1 ring-indigo-500/30">
+            <span>{capacityRange.min}–{capacityRange.max} {t('filter.capacityUnit')}</span>
+            <button
+              onClick={() =>
+                onCapacityChange({ min: MIN_CAPACITY, max: MAX_CAPACITY })
+              }
+              aria-label={t('filter.removeCapacity')}
+              className="hover:text-white"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </span>
+        )}
 
         {selectedTags.map((t) => (
           <span
@@ -107,6 +141,16 @@ export function FilterBar({
             </div>
           </div>
 
+          <div className="mb-3">
+            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.capacity')}</label>
+            <CapacityRange
+              key={`capacity-${capacityRange.min}-${capacityRange.max}`}
+              min={capacityRange.min}
+              max={capacityRange.max}
+              onChange={onCapacityChange}
+            />
+          </div>
+
           <div>
             <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.tags')}</label>
             <div className="relative mb-2">
@@ -119,7 +163,7 @@ export function FilterBar({
                 className="input w-full pl-8"
               />
             </div>
-            <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto scrollbar-thin pr-1">
+            <div className="flex flex-wrap gap-1.5 pr-1">
               {filteredTags.map((t) => (
                 <button
                   key={t.tag}
