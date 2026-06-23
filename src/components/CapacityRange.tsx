@@ -130,7 +130,7 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
         </span>
       </div>
 
-      <div className="space-y-0">
+      <div className="space-y-2">
         <div
           className="relative h-5"
           aria-hidden="true"
