@@ -130,11 +130,27 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
         </span>
       </div>
 
-      <div className="px-1">
-        <div className="mb-1 flex justify-between text-[10px] font-medium text-slate-500 dark:text-slate-400">
-          {ticks.map((tick) => (
-            <span key={tick}>{tick}</span>
-          ))}
+      <div className="space-y-1">
+        <div
+          className="relative h-3"
+          aria-hidden="true"
+        >
+          {ticks.map((tick) => {
+            const pct =
+              ((tick - MIN_CAPACITY) / (MAX_CAPACITY - MIN_CAPACITY)) * 100;
+            return (
+              <div
+                key={tick}
+                className="absolute top-0 flex -translate-x-1/2 flex-col items-center"
+                style={{ left: `${pct * 0.6}%` }}
+              >
+                <span className="mb-0.5 h-1.5 w-px bg-slate-400 dark:bg-slate-500" />
+                <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
+                  {tick}
+                </span>
+              </div>
+            );
+          })}
         </div>
 
         <Slider.Root
@@ -145,7 +161,7 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
           minStepsBetweenThumbs={1}
           onValueChange={handleSliderChange}
           onValueCommit={handleSliderCommit}
-          className="relative mx-auto flex w-[60%] touch-none select-none items-center"
+          className="relative flex w-[60%] touch-none select-none items-center"
           aria-label={t('filter.capacity')}
         >
           <Slider.Track className="relative h-1.5 grow rounded-full bg-slate-200 dark:bg-slate-700">
