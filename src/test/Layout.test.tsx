@@ -133,4 +133,16 @@ describe('Layout sidebar', () => {
       expect(screen.getByLabelText('Collapse sidebar')).toBeInTheDocument()
     })
   })
+
+  it('renders the sticky header above world card elements', () => {
+    render(
+      <Layout>
+        <div>Test content</div>
+      </Layout>,
+      { wrapper: Wrapper },
+    )
+
+    const header = document.querySelector('header.sticky')
+    expect(header).toHaveClass('z-40')
+  })
 })
