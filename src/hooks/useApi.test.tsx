@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
-import { useWorlds } from './useApi';
+import { useInfiniteWorlds, useWorlds } from './useApi';
 import { fetchWorlds } from '../api/client';
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -21,6 +21,18 @@ vi.mock('../api/client', () => ({
 describe('useWorlds', () => {
   it('passes minCapacity and maxCapacity to fetchWorlds', async () => {
     renderHook(() => useWorlds({ minCapacity: 10, maxCapacity: 40 }), { wrapper: Wrapper });
+    await waitFor(() => expect(vi.mocked(fetchWorlds)).toHaveBeenCalled());
+    expect(vi.mocked(fetchWorlds)).toHaveBeenCalledWith(
+      expect.objectContaining({ minCapacity: 10, maxCapacity: 40 })
+    );
+  });
+});
+
+describe('useInfiniteWorlds', () => {
+  it('passes minCapacity and maxCapacity to fetchWorlds', async () => {
+    renderHook(() => useInfiniteWorlds({ minCapacity: 10, maxCapacity: 40, enabled: true }), {
+      wrapper: Wrapper,
+    });
     await waitFor(() => expect(vi.mocked(fetchWorlds)).toHaveBeenCalled());
     expect(vi.mocked(fetchWorlds)).toHaveBeenCalledWith(
       expect.objectContaining({ minCapacity: 10, maxCapacity: 40 })

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { fetchWorlds } from './client';
 
-global.fetch = vi.fn();
+globalThis.fetch = vi.fn();
 
 beforeEach(() => {
   vi.clearAllMocks();
