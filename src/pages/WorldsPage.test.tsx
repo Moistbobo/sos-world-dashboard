@@ -66,6 +66,13 @@ vi.mock('../hooks/useApi', () => ({
     hasNextPage: infiniteHasNextPage,
     isFetchingNextPage: false,
   }),
+  useWorld: () => ({
+    data: mockWorlds[0],
+    isPending: false,
+    isError: false,
+    error: null,
+    isFetching: false,
+  }),
 }));
 
 describe('WorldsPage', () => {
@@ -139,6 +146,14 @@ describe('WorldsPage', () => {
     window.localStorage.setItem('sos-worlds-view-mode', 'list');
     renderPage(<WorldsPage />);
     expect(screen.getByText(/Desktop, Android/)).toBeInTheDocument();
+  });
+
+  it('renders the detail overlay when a world id is in the URL', async () => {
+    window.history.pushState({}, '', '/worlds/wrld_1');
+    renderPage(<WorldsPage />);
+    await waitFor(() => {
+      expect(document.querySelector('.fixed.inset-0.z-50')).toBeInTheDocument();
+    });
   });
 
   describe('WorldsPage capacity filter', () => {

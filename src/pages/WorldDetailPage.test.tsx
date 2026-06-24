@@ -49,6 +49,7 @@ describe('WorldDetailPage', () => {
       isPending: false,
       isError: false,
       error: null,
+      isFetching: false,
     } as ReturnType<typeof useApi.useWorld>);
 
     render(
@@ -63,5 +64,43 @@ describe('WorldDetailPage', () => {
     await userEvent.click(shareButton);
 
     expect(writeText).toHaveBeenCalledWith('https://vrchat.com/home/world/wrld_123');
+  });
+
+  it('shows a background refresh indicator while data is present', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: true,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(screen.getByRole('heading', { name: /Test World/i })).toBeInTheDocument();
+    expect(screen.getByTestId('world-detail-loading-bar')).toBeInTheDocument();
+  });
+
+  it('renders cached data and a refresh error banner when the background fetch fails', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: true,
+      error: new Error('Network error'),
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(screen.getByRole('heading', { name: /Test World/i })).toBeInTheDocument();
+    expect(screen.getByText(/Failed to refresh world details: Network error/i)).toBeInTheDocument();
   });
 });

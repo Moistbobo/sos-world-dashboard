@@ -1,59 +1,113 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React from 'react';
-import { useInfiniteWorlds, useWorlds } from './useApi';
-import { fetchWorlds } from '../api/client';
+import { useWorld } from './useApi';
+import * as client from '../api/client';
+import type { World } from '../types';
 
-const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+  },
+});
 
 function Wrapper({ children }: { children: React.ReactNode }) {
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
 
-vi.mock('../api/client', () => ({
-  fetchWorlds: vi.fn(() => Promise.resolve({ worlds: [], total: 0, limit: 20, offset: 0 })),
-  fetchHealth: vi.fn(),
-  fetchTags: vi.fn(),
-  fetchWorld: vi.fn(),
-}));
-
-describe('useWorlds', () => {
-  it('passes minCapacity and maxCapacity to fetchWorlds', async () => {
-    renderHook(() => useWorlds({ minCapacity: 10, maxCapacity: 40 }), { wrapper: Wrapper });
-    await waitFor(() => expect(vi.mocked(fetchWorlds)).toHaveBeenCalled());
-    expect(vi.mocked(fetchWorlds)).toHaveBeenCalledWith(
-      expect.objectContaining({ minCapacity: 10, maxCapacity: 40 })
-    );
-  });
-
-  it('passes platform array to fetchWorlds', async () => {
-    renderHook(() => useWorlds({ platform: ['android', 'ios'] }), { wrapper: Wrapper });
-    await waitFor(() => expect(vi.mocked(fetchWorlds)).toHaveBeenCalled());
-    expect(vi.mocked(fetchWorlds)).toHaveBeenCalledWith(
-      expect.objectContaining({ platform: ['android', 'ios'] })
-    );
-  });
+const createWorld = (overrides: Partial<World> = {}): World => ({
+  worldId: 'wrld_123',
+  name: 'Test World',
+  authorName: 'Test Author',
+  imageUrl: 'https://example.com/image.png',
+  tags: [],
+  platforms: ['pc'],
+  capacity: 42,
+  quality: 'good',
+  createdAt: '2024-01-01T00:00:00Z',
+  vrchatUrl: 'https://vrchat.com/home/world/wrld_123',
+  ...overrides,
 });
 
-describe('useInfiniteWorlds', () => {
-  it('passes minCapacity and maxCapacity to fetchWorlds', async () => {
-    renderHook(() => useInfiniteWorlds({ minCapacity: 10, maxCapacity: 40, enabled: true }), {
-      wrapper: Wrapper,
-    });
-    await waitFor(() => expect(vi.mocked(fetchWorlds)).toHaveBeenCalled());
-    expect(vi.mocked(fetchWorlds)).toHaveBeenCalledWith(
-      expect.objectContaining({ minCapacity: 10, maxCapacity: 40 })
-    );
+describe('useWorld', () => {
+  beforeEach(() => {
+    queryClient.clear();
+    vi.clearAllMocks();
   });
 
-  it('passes platform array to fetchWorlds', async () => {
-    renderHook(() => useInfiniteWorlds({ platform: ['android'], enabled: true }), {
-      wrapper: Wrapper,
+  it('returns placeholder data from paginated worlds cache and fetches in background', async () => {
+    const cachedWorld = createWorld({ worldId: 'wrld_cached', name: 'Cached World' });
+    const fetchedWorld = createWorld({ worldId: 'wrld_cached', name: 'Fetched World' });
+
+    queryClient.setQueryData(['worlds', {}], {
+      worlds: [cachedWorld],
+      total: 1,
+      limit: 20,
+      offset: 0,
     });
-    await waitFor(() => expect(vi.mocked(fetchWorlds)).toHaveBeenCalled());
-    expect(vi.mocked(fetchWorlds)).toHaveBeenCalledWith(
-      expect.objectContaining({ platform: ['android'] })
-    );
+
+    vi.spyOn(client, 'fetchWorld').mockResolvedValue(fetchedWorld);
+
+    const { result } = renderHook(() => useWorld('wrld_cached'), { wrapper: Wrapper });
+
+    expect(result.current.data?.name).toBe('Cached World');
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.isFetching).toBe(true);
+
+    await waitFor(() => expect(result.current.data?.name).toBe('Fetched World'));
+    expect(result.current.isFetching).toBe(false);
+    expect(client.fetchWorld).toHaveBeenCalledWith('wrld_cached');
+  });
+
+  it('returns placeholder data from infinite worlds cache', () => {
+    const cachedWorld = createWorld({ worldId: 'wrld_infinite', name: 'Infinite World' });
+
+    queryClient.setQueryData(['worlds-infinite', {}], {
+      pages: [{ worlds: [cachedWorld], total: 1, limit: 20, offset: 0 }],
+      pageParams: [0],
+    });
+
+    vi.spyOn(client, 'fetchWorld').mockImplementation(() => new Promise(() => {}));
+
+    const { result } = renderHook(() => useWorld('wrld_infinite'), { wrapper: Wrapper });
+
+    expect(result.current.data?.name).toBe('Infinite World');
+    expect(result.current.isPending).toBe(false);
+  });
+
+  it('prefers paginated cache over infinite cache when both are present', async () => {
+    const paginatedWorld = createWorld({
+      worldId: 'wrld_both',
+      name: 'Paginated World',
+    });
+    const infiniteWorld = createWorld({
+      worldId: 'wrld_both',
+      name: 'Infinite World',
+    });
+    const fetchedWorld = createWorld({ worldId: 'wrld_both', name: 'Fetched World' });
+
+    queryClient.setQueryData(['worlds', {}], {
+      worlds: [paginatedWorld],
+      total: 1,
+      limit: 20,
+      offset: 0,
+    });
+    queryClient.setQueryData(['worlds-infinite', {}], {
+      pages: [{ worlds: [infiniteWorld], total: 1, limit: 20, offset: 0 }],
+      pageParams: [0],
+    });
+
+    vi.spyOn(client, 'fetchWorld').mockResolvedValue(fetchedWorld);
+
+    const { result } = renderHook(() => useWorld('wrld_both'), { wrapper: Wrapper });
+
+    expect(result.current.data?.name).toBe('Paginated World');
+    await waitFor(() => expect(result.current.data?.name).toBe('Fetched World'));
+  });
+
+  it('returns undefined when worldId is undefined', () => {
+    const { result } = renderHook(() => useWorld(undefined), { wrapper: Wrapper });
+    expect(result.current.data).toBeUndefined();
+    expect(result.current.isPending).toBe(true);
   });
 });
