@@ -179,7 +179,7 @@ export function FilterBar({
             />
           </div>
 
-          <div>
+          <div className="mb-3">
             <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.tags')}</label>
             <div className="relative mb-2">
               <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
@@ -232,6 +232,7 @@ export function FilterBar({
                 return (
                   <button
                     key={p}
+                    data-testid={`platform-toggle-${p || 'unknown'}`}
                     onClick={() => onTogglePlatform(p)}
                     className={`rounded-md border px-2 py-1 text-xs transition ${
                       selectedPlatforms.includes(p)
