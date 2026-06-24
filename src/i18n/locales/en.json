@@ -91,7 +91,6 @@
     "good": "✅ Good",
     "bad": "❌ Bad",
     "tags": "Tags",
-    "searchTagsPlaceholder": "Search tags...",
     "clearAll": "Clear all",
     "capacity": "Player capacity",
     "minCapacity": "Minimum capacity",
@@ -101,7 +100,6 @@
     "removeCapacity": "Remove capacity filter",
     "platform": "Platform",
     "platforms": "Platforms",
-    "searchPlatformsPlaceholder": "Search or add platform...",
     "removePlatform": "Remove platform filter"
   },
   "pagination": {

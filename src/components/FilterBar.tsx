@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { SlidersHorizontal, X } from 'lucide-react';
 import { getEmojiForTag } from '../utils/tagEmoji';
 import { COMMON_PLATFORM_VALUES, getPlatformLabel } from '../utils/platformLabel';
 import {
@@ -41,12 +41,8 @@ export function FilterBar({
 }: FilterBarProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
-  const [tagSearch, setTagSearch] = useState('');
-  const [platformInput, setPlatformInput] = useState('');
 
-  const filteredTags = availableTags.filter((t) =>
-    t.tag.toLowerCase().includes(tagSearch.toLowerCase())
-  );
+  const tagFilters = [...availableTags].sort((a, b) => a.tag.localeCompare(b.tag));
 
   const isCapacityActive =
     capacityRange.min > MIN_CAPACITY || capacityRange.max < MAX_CAPACITY;
@@ -65,9 +61,17 @@ export function FilterBar({
 
   return (
     <div className="card mb-4">
-      <div className="flex flex-wrap items-center gap-2 p-3">
+      <div
+        data-testid="filter-bar-header"
+        className="flex flex-wrap items-center gap-2 p-3 cursor-pointer"
+        onClick={() => setExpanded((v) => !v)}
+      >
         <button
-          onClick={() => setExpanded((v) => !v)}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpanded((v) => !v);
+          }}
           className={`btn-ghost gap-1.5 text-xs ${expanded ? 'bg-slate-200 dark:bg-slate-800' : ''}`}
         >
           <SlidersHorizontal className="h-3.5 w-3.5" />
@@ -83,9 +87,10 @@ export function FilterBar({
           <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-300 ring-1 ring-indigo-500/30">
             <span>{capacityRange.min}–{capacityRange.max} {t('filter.capacityUnit')}</span>
             <button
-              onClick={() =>
-                onCapacityChange({ min: MIN_CAPACITY, max: MAX_CAPACITY })
-              }
+              onClick={(e) => {
+                e.stopPropagation();
+                onCapacityChange({ min: MIN_CAPACITY, max: MAX_CAPACITY });
+              }}
               aria-label={t('filter.removeCapacity')}
               className="hover:text-white"
             >
@@ -101,7 +106,13 @@ export function FilterBar({
           >
             <span className="leading-none">{getEmojiForTag(t)}</span>
             <span>{t}</span>
-            <button onClick={() => onRemoveTag(t)} className="hover:text-white">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemoveTag(t);
+              }}
+              className="hover:text-white"
+            >
               <X className="h-3 w-3" />
             </button>
           </span>
@@ -114,7 +125,10 @@ export function FilterBar({
           >
             <span>{getPlatformLabel(p)}</span>
             <button
-              onClick={() => onRemovePlatform(p)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemovePlatform(p);
+              }}
               aria-label={t('filter.removePlatform')}
               className="hover:text-white"
             >
@@ -133,14 +147,26 @@ export function FilterBar({
             }`}
           >
             {q}
-            <button onClick={() => onToggleQuality(q)} className="hover:text-white">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleQuality(q);
+              }}
+              className="hover:text-white"
+            >
               <X className="h-3 w-3" />
             </button>
           </span>
         ))}
 
         {hasFilters && (
-          <button onClick={onClear} className="btn-ghost text-xs py-1.5">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onClear();
+            }}
+            className="btn-ghost text-xs py-1.5"
+          >
             {t('filter.clearAll')}
           </button>
         )}
@@ -148,6 +174,25 @@ export function FilterBar({
 
       {expanded && (
         <div className="border-t border-slate-200 p-3 dark:border-slate-700/50">
+          <div className="mb-3">
+            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.tags')}</label>
+            <div className="flex flex-wrap gap-1.5 pr-1">
+              {tagFilters.map((t) => (
+                <button
+                  key={t.tag}
+                  onClick={() => onToggleTag(t.tag)}
+                  className={`rounded-md border px-2 py-1 text-xs transition ${
+                    selectedTags.includes(t.tag)
+                      ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-300'
+                      : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
+                  }`}
+                >
+                  {getEmojiForTag(t.tag)} {t.tag} <span className="text-slate-400 dark:text-slate-500">({t.count})</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="mb-3">
             <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.quality')}</label>
             <div className="flex gap-2">
@@ -170,62 +215,7 @@ export function FilterBar({
           </div>
 
           <div className="mb-3">
-            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.capacity')}</label>
-            <CapacityRange
-              key={`capacity-${capacityRange.min}-${capacityRange.max}`}
-              min={capacityRange.min}
-              max={capacityRange.max}
-              onChange={onCapacityChange}
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.tags')}</label>
-            <div className="relative mb-2">
-              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
-              <input
-                type="text"
-                value={tagSearch}
-                onChange={(e) => setTagSearch(e.target.value)}
-                placeholder={t('filter.searchTagsPlaceholder')}
-                className="input w-full pl-8"
-              />
-            </div>
-            <div className="flex flex-wrap gap-1.5 pr-1">
-              {filteredTags.map((t) => (
-                <button
-                  key={t.tag}
-                  onClick={() => onToggleTag(t.tag)}
-                  className={`rounded-md border px-2 py-1 text-xs transition ${
-                    selectedTags.includes(t.tag)
-                      ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-300'
-                      : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
-                  }`}
-                >
-                  {getEmojiForTag(t.tag)} {t.tag} <span className="text-slate-400 dark:text-slate-500">({t.count})</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
             <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.platforms')}</label>
-            <div className="relative mb-2">
-              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
-              <input
-                type="text"
-                value={platformInput}
-                onChange={(e) => setPlatformInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && platformInput.trim()) {
-                    onTogglePlatform(platformInput.trim());
-                    setPlatformInput('');
-                  }
-                }}
-                placeholder={t('filter.searchPlatformsPlaceholder')}
-                className="input w-full pl-8"
-              />
-            </div>
             <div className="flex flex-wrap gap-1.5 pr-1">
               {COMMON_PLATFORM_VALUES.map((p) => {
                 const label = getPlatformLabel(p);
@@ -245,6 +235,16 @@ export function FilterBar({
                 );
               })}
             </div>
+          </div>
+
+          <div className="mb-3">
+            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.capacity')}</label>
+            <CapacityRange
+              key={`capacity-${capacityRange.min}-${capacityRange.max}`}
+              min={capacityRange.min}
+              max={capacityRange.max}
+              onChange={onCapacityChange}
+            />
           </div>
         </div>
       )}

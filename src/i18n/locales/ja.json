@@ -91,7 +91,6 @@
     "good": "✅ 良い",
     "bad": "❌ 悪い",
     "tags": "タグ",
-    "searchTagsPlaceholder": "タグを検索...",
     "clearAll": "すべて解除",
     "capacity": "定員",
     "minCapacity": "最小定員",
@@ -101,7 +100,6 @@
     "removeCapacity": "定員フィルタを解除",
     "platform": "プラットフォーム",
     "platforms": "プラットフォーム",
-    "searchPlatformsPlaceholder": "プラットフォームを検索または追加...",
     "removePlatform": "プラットフォームフィルタを解除"
   },
   "pagination": {
