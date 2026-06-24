@@ -28,38 +28,95 @@ export function WorldsPage() {
   // Manage overlay visibility and the world ID to render for enter/exit fade
   // animation. We keep the last rendered world ID mounted during the close
   // animation so the detail content doesn't disappear before the fade-out
-  // finishes. State changes are scheduled inside setTimeout callbacks to
-  // satisfy the project's ESLint rules about synchronous setState inside
-  // effects.
-  useEffect(() => {
-    let openTimer: ReturnType<typeof setTimeout> | null = null;
-    let closeTimer: ReturnType<typeof setTimeout> | null = null;
+  // finishes. Timers are stored in refs so the hide timer survives the
+  // re-render triggered by starting the close animation; otherwise it gets
+  // cancelled and the overlay stays in the DOM at opacity-0, blocking clicks.
+  const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closeStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closeEndTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    if (currentWorldId && !isOverlayOpen) {
-      openTimer = setTimeout(() => {
+  const clearOpenTimers = () => {
+    if (openTimerRef.current) {
+      clearTimeout(openTimerRef.current);
+      openTimerRef.current = null;
+    }
+    if (closeStartTimerRef.current) {
+      clearTimeout(closeStartTimerRef.current);
+      closeStartTimerRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    if (currentWorldId) {
+      // Opening (or switching to a different world). Cancel any pending close
+      // timers and fade the overlay in.
+      clearOpenTimers();
+      if (closeEndTimerRef.current) {
+        clearTimeout(closeEndTimerRef.current);
+        closeEndTimerRef.current = null;
+      }
+      openTimerRef.current = setTimeout(() => {
         setRenderedWorldId(currentWorldId);
         setIsOverlayClosing(false);
         setIsOverlayOpen(true);
+        openTimerRef.current = null;
       }, 0);
-    } else if (currentWorldId && renderedWorldId !== currentWorldId) {
-      openTimer = setTimeout(() => {
-        setRenderedWorldId(currentWorldId);
+    } else if (isOverlayOpen && !isOverlayClosing) {
+      // URL lost the world id: start the close animation and schedule unmount.
+      clearOpenTimers();
+      closeStartTimerRef.current = setTimeout(() => {
+        setIsOverlayClosing(true);
+        closeStartTimerRef.current = null;
       }, 0);
-    } else if (!currentWorldId && isOverlayOpen && !isOverlayClosing) {
-      closeTimer = setTimeout(() => setIsOverlayClosing(true), 0);
-      const hideTimer = setTimeout(() => {
+      closeEndTimerRef.current = setTimeout(() => {
         setRenderedWorldId(undefined);
         setIsOverlayOpen(false);
         setIsOverlayClosing(false);
+        closeEndTimerRef.current = null;
       }, 200);
-      closeTimer = hideTimer;
     }
 
     return () => {
-      if (openTimer) clearTimeout(openTimer);
-      if (closeTimer) clearTimeout(closeTimer);
+      // Keep the end-of-close timer alive across re-renders while closing.
+      clearOpenTimers();
     };
-  }, [currentWorldId, isOverlayOpen, isOverlayClosing, renderedWorldId]);
+  }, [currentWorldId, isOverlayOpen, isOverlayClosing]);
+
+  // Make sure any pending hide timer is cleared if the page unmounts while
+  // the close animation is running, preventing state updates on an unmounted
+  // component.
+  useEffect(() => {
+    return () => {
+      clearOpenTimers();
+      if (closeEndTimerRef.current) {
+        clearTimeout(closeEndTimerRef.current);
+        closeEndTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  // Lock background scrolling while the overlay is open so the worlds list
+  // behind the modal doesn't scroll. We restore the original styles on close
+  // to avoid permanently disabling scrolling.
+  useEffect(() => {
+    if (!isOverlayOpen || isOverlayClosing) return;
+
+    const originalOverflow = document.body.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
+
+    document.body.style.overflow = 'hidden';
+
+    // Compensate for the scrollbar disappearing so the layout doesn't shift.
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
+    };
+  }, [isOverlayOpen, isOverlayClosing]);
 
   const [limit] = useState(20);
   const [offset, setOffset] = useState(0);
@@ -404,7 +461,9 @@ export function WorldsPage() {
       {(renderedWorldId || isOverlayOpen) && (
         <div
           className={`fixed inset-0 z-50 overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95 lg:p-6 ${
-            isOverlayClosing ? 'opacity-0' : 'opacity-100 animate-fadeIn'
+            isOverlayClosing
+              ? 'pointer-events-none opacity-0'
+              : 'opacity-100 animate-fadeIn'
           }`}
           aria-hidden={isOverlayClosing ? 'true' : 'false'}
         >

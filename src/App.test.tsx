@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 
@@ -72,5 +72,49 @@ describe('App routing', () => {
 
     // The overlay container itself should exist.
     expect(document.querySelector('.fixed.inset-0.z-50')).toBeInTheDocument();
+  });
+
+  it('locks body scrolling while the detail overlay is open', async () => {
+    window.history.pushState({}, '', '/worlds/wrld_demo');
+
+    render(<App />, { wrapper: Wrapper });
+
+    expect(await screen.findByRole('heading', { level: 1, name: /demo world/i })).toBeInTheDocument();
+    expect(document.body.style.overflow).toBe('hidden');
+  });
+
+  it('unlocks body scrolling after the detail overlay closes', async () => {
+    window.history.pushState({}, '', '/worlds');
+    window.history.pushState({}, '', '/worlds/wrld_demo');
+
+    render(<App />, { wrapper: Wrapper });
+
+    expect(await screen.findByRole('heading', { level: 1, name: /demo world/i })).toBeInTheDocument();
+    expect(document.body.style.overflow).toBe('hidden');
+
+    fireEvent.click(screen.getByRole('button', { name: /back/i }));
+
+    await waitFor(() => {
+      expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
+    });
+
+    expect(document.body.style.overflow).toBe('');
+  });
+
+  it('closes the world detail overlay and removes it from the DOM when navigating back', async () => {
+    window.history.pushState({}, '', '/worlds');
+    window.history.pushState({}, '', '/worlds/wrld_demo');
+
+    render(<App />, { wrapper: Wrapper });
+
+    expect(await screen.findByRole('heading', { level: 1, name: /demo world/i })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /back/i }));
+
+    await waitFor(() => {
+      expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('heading', { name: /worlds/i })).toBeInTheDocument();
   });
 });
