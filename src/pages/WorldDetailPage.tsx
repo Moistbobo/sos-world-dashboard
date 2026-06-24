@@ -4,6 +4,7 @@ import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash } from 'lucide-re
 import { useWorld } from '../hooks/useApi';
 import { TagBadge } from '../components/TagBadge';
 import { getPlatformLabel } from '../utils/platformLabel';
+import { ShareButton } from '../components/ShareButton';
 
 export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
   const { t } = useTranslation();
@@ -204,6 +205,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
               <ExternalLink className="h-4 w-4" />
               {t('worldDetail.openInVRChat')}
             </a>
+            <ShareButton world={w} />
           </div>
         </div>
       </div>
