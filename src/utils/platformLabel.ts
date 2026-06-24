@@ -1,6 +1,6 @@
 const PLATFORM_LABELS: Record<string, string> = {
   standalonewindows: 'Desktop',
-  android: 'android',
+  android: 'Android',
   ios: 'iOS',
   web: 'web',
 };

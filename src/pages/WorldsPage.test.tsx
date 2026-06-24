@@ -123,7 +123,7 @@ describe('WorldsPage', () => {
   it('renders mapped platform labels in list view', () => {
     window.localStorage.setItem('sos-worlds-view-mode', 'list');
     render(<WorldsPage />, { wrapper: Wrapper });
-    expect(screen.getByText(/Desktop, android/)).toBeInTheDocument();
+    expect(screen.getByText(/Desktop, Android/)).toBeInTheDocument();
   });
 });
 

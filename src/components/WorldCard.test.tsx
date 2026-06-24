@@ -25,7 +25,7 @@ describe('WorldCard', () => {
   it('renders mapped platform chips', () => {
     render(<WorldCard world={mockWorld} />);
     expect(screen.getByText('Desktop')).toBeInTheDocument();
-    expect(screen.getByText('android')).toBeInTheDocument();
+    expect(screen.getByText('Android')).toBeInTheDocument();
     expect(screen.getByText('iOS')).toBeInTheDocument();
   });
 

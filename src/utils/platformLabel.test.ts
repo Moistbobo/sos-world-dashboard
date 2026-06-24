@@ -4,7 +4,7 @@ import { getPlatformLabel } from './platformLabel';
 describe('getPlatformLabel', () => {
   it('maps known platform values to readable labels', () => {
     expect(getPlatformLabel('standalonewindows')).toBe('Desktop');
-    expect(getPlatformLabel('android')).toBe('android');
+    expect(getPlatformLabel('android')).toBe('Android');
     expect(getPlatformLabel('ios')).toBe('iOS');
     expect(getPlatformLabel('web')).toBe('web');
   });
