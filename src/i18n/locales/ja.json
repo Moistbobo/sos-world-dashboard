@@ -12,7 +12,8 @@
     "offline": "オフライン / 未認証",
     "expandSidebar": "サイドバーを展開",
     "collapseSidebar": "サイドバーを折りたたむ",
-    "closeSidebar": "サイドバーを閉じる"
+    "closeSidebar": "サイドバーを閉じる",
+    "version": "バージョン"
   },
   "common": {
     "back": "戻る",
@@ -80,7 +81,9 @@
     "scrollMode": "ワールド読み込み形式",
     "scrollModeHint": "ワールドページでの結果の読み込み方法を選択してください。",
     "scrollModeInfinite": "無限スクロール",
-    "scrollModePagination": "ページネーション"
+    "scrollModePagination": "ページネーション",
+    "appVersion": "バージョン",
+    "appVersionHint": "ダッシュボードのバージョン"
   },
   "filter": {
     "filters": "フィルタ",
@@ -95,7 +98,11 @@
     "maxCapacity": "最大定員",
     "capacityTo": "〜",
     "capacityUnit": "人",
-    "removeCapacity": "定員フィルタを解除"
+    "removeCapacity": "定員フィルタを解除",
+    "platform": "プラットフォーム",
+    "platforms": "プラットフォーム",
+    "searchPlatformsPlaceholder": "プラットフォームを検索または追加...",
+    "removePlatform": "プラットフォームフィルタを解除"
   },
   "pagination": {
     "prev": "前へ",
@@ -105,5 +112,10 @@
   "theme": {
     "lightMode": "ライトモードに切り替える",
     "darkMode": "ダークモードに切り替える"
+  },
+  "share": {
+    "share": "共有",
+    "success": "リンクをコピーしました",
+    "error": "リンクをコピーできませんでした"
   }
 }

@@ -10,6 +10,7 @@ import { Pagination } from '../components/Pagination';
 import { WorldCard } from '../components/WorldCard';
 import { WorldDetailPage } from '../pages/WorldDetailPage';
 import { TagBadge } from '../components/TagBadge';
+import { getPlatformLabel } from '../utils/platformLabel';
 import { MIN_CAPACITY, MAX_CAPACITY } from '../components/CapacityRange';
 
 export function WorldsPage() {
@@ -128,6 +129,9 @@ export function WorldsPage() {
     const quality = searchParams.get('quality');
     return quality === 'good' || quality === 'bad' ? [quality] : [];
   });
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(() =>
+    searchParams.getAll('platform')
+  );
   const [capacityRange, setCapacityRange] = useState(() => {
     const minRaw = searchParams.get('minCapacity');
     const maxRaw = searchParams.get('maxCapacity');
@@ -151,6 +155,7 @@ export function WorldsPage() {
     offset,
     tag: selectedTags,
     quality: selectedQuality,
+    platform: selectedPlatforms,
     search: searchQuery,
     minCapacity: capacityRange.min,
     maxCapacity: capacityRange.max,
@@ -161,6 +166,7 @@ export function WorldsPage() {
     limit,
     tag: selectedTags,
     quality: selectedQuality,
+    platform: selectedPlatforms,
     search: searchQuery,
     minCapacity: capacityRange.min,
     maxCapacity: capacityRange.max,
@@ -174,10 +180,13 @@ export function WorldsPage() {
     if (selectedQuality.length > 0) next.set('quality', selectedQuality[0]);
     if (capacityRange.min > MIN_CAPACITY) next.set('minCapacity', String(capacityRange.min));
     if (capacityRange.max < MAX_CAPACITY) next.set('maxCapacity', String(capacityRange.max));
+    for (const p of selectedPlatforms) {
+      next.append('platform', p);
+    }
     if (next.toString() !== searchParams.toString()) {
       setSearchParams(next, { replace: true });
     }
-  }, [selectedTags, selectedQuality, capacityRange, setSearchParams, searchParams]);
+  }, [selectedTags, selectedQuality, capacityRange, selectedPlatforms, setSearchParams, searchParams]);
 
   // Debounce search input
   useEffect(() => {
@@ -248,6 +257,18 @@ export function WorldsPage() {
     resetToFirstPage();
   };
 
+  const handleTogglePlatform = (platform: string) => {
+    setSelectedPlatforms((prev) =>
+      prev.includes(platform) ? prev.filter((p) => p !== platform) : [...prev, platform]
+    );
+    resetToFirstPage();
+  };
+
+  const handleRemovePlatform = (platform: string) => {
+    setSelectedPlatforms((prev) => prev.filter((p) => p !== platform));
+    resetToFirstPage();
+  };
+
   const handleCapacityChange = (range: { min: number; max: number }) => {
     setCapacityRange(range);
     resetToFirstPage();
@@ -256,6 +277,7 @@ export function WorldsPage() {
   const handleClear = () => {
     setSelectedTags([]);
     setSelectedQuality([]);
+    setSelectedPlatforms([]);
     setCapacityRange({ min: MIN_CAPACITY, max: MAX_CAPACITY });
     setSearchInput('');
     resetToFirstPage();
@@ -306,6 +328,9 @@ export function WorldsPage() {
         availableTags={tagsData?.tags || []}
         capacityRange={capacityRange}
         onCapacityChange={handleCapacityChange}
+        selectedPlatforms={selectedPlatforms}
+        onTogglePlatform={handleTogglePlatform}
+        onRemovePlatform={handleRemovePlatform}
       />
 
       <div className="flex items-center justify-between gap-3">
@@ -406,7 +431,7 @@ export function WorldsPage() {
                 <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{w.name}</p>
                 <p className="truncate text-xs text-slate-500 dark:text-slate-400">
                   {t('common.byAuthor', { author: w.authorName || t('common.unknown') })} · {w.capacity}{' '}
-                  capacity · {w.platforms.join(', ')}
+                  capacity · {w.platforms.map(getPlatformLabel).join(', ')}
                 </p>
               </div>
               <div className="hidden flex-wrap gap-1 sm:flex">
