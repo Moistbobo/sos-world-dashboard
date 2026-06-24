@@ -13,10 +13,10 @@ import {
   ChevronsRight,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useHealth } from '../hooks/useApi';
-import { ThemeToggle } from './ThemeToggle';
+import { useHealth } from '../../hooks/useApi';
+import { ThemeToggle } from '../theme-toggle';
 
-import { getAppVersion } from '../config/version';
+import { getAppVersion } from '../../config/version';
 
 export function Layout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();

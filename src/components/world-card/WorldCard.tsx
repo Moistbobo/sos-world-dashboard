@@ -1,9 +1,9 @@
 import { Globe, Users, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { World } from '../types';
-import { TagBadge } from './TagBadge';
-import { getPlatformLabel } from '../utils/platformLabel';
-import { ShareButton } from './ShareButton';
+import type { World } from '../../types';
+import { TagBadge } from '../tag-badge';
+import { getPlatformLabel } from '../../utils/platformLabel';
+import { ShareButton } from '../share-button';
 
 interface WorldCardProps {
   world: World;

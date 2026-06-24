@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import { Layout } from './components/Layout';
+import { Layout } from './components/layout';
 import { DashboardPage } from './pages/dashboard';
 import { WorldsPage } from './pages/worlds';
 import { TagsPage } from './pages/tags';
