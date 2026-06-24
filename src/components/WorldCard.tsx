@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { World } from '../types';
 import { TagBadge } from './TagBadge';
 import { getPlatformLabel } from '../utils/platformLabel';
+import { ShareButton } from './ShareButton';
 
 interface WorldCardProps {
   world: World;
@@ -100,6 +101,7 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
           >
             {t('worldDetail.openInVRChat')}
           </a>
+          <ShareButton world={world} iconOnly />
         </div>
       </div>
     </div>
