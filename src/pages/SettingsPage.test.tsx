@@ -35,4 +35,11 @@ describe('SettingsPage', () => {
     fireEvent.change(scrollModeSelect, { target: { value: 'pagination' } });
     expect(window.localStorage.getItem('sos-worlds-scroll-mode')).toBe('pagination');
   });
+
+  it('renders the app version', () => {
+    (globalThis as Record<string, unknown>).__APP_VERSION__ = '1.0.0';
+    (globalThis as Record<string, unknown>).__APP_MODE__ = 'production';
+    render(<SettingsPage />, { wrapper: Wrapper });
+    expect(screen.getByTestId('app-version')).toHaveTextContent('1.0.0');
+  });
 });
