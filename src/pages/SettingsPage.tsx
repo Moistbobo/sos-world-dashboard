@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Languages, LayoutGrid, MousePointerClick, Info } from 'lucide-react';
+import { Languages, LayoutGrid, MousePointerClick } from 'lucide-react';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { useWorldsPreferences } from '../hooks/useWorldsPreferences';
 import { getAppVersion } from '../config/version';
@@ -60,20 +60,11 @@ export function SettingsPage() {
           </select>
           <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.scrollModeHint')}</p>
         </div>
-        <div>
-          <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-200">
-            <Info className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-            {t('settings.appVersion')}
-          </label>
-          <p
-            className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
-            data-testid="app-version"
-          >
-            {getAppVersion()}
-          </p>
-          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.appVersionHint')}</p>
-        </div>
       </div>
+
+      <p className="mt-4 text-center text-xs text-slate-400 dark:text-slate-500" data-testid="app-version">
+        {t('settings.appVersion')} {getAppVersion()}
+      </p>
     </div>
   );
 }

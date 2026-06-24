@@ -1,35 +1,39 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { getAppVersion } from './version';
 
 describe('getAppVersion', () => {
   let originalVersion: string | undefined;
   let originalMode: string | undefined;
+  let originalSha: string | undefined;
 
   beforeEach(() => {
     originalVersion = (globalThis as Record<string, unknown>).__APP_VERSION__ as string | undefined;
     originalMode = (globalThis as Record<string, unknown>).__APP_MODE__ as string | undefined;
+    originalSha = (globalThis as Record<string, unknown>).__APP_GIT_SHA__ as string | undefined;
   });
 
   afterEach(() => {
     (globalThis as Record<string, unknown>).__APP_VERSION__ = originalVersion;
     (globalThis as Record<string, unknown>).__APP_MODE__ = originalMode;
-    vi.restoreAllMocks();
+    (globalThis as Record<string, unknown>).__APP_GIT_SHA__ = originalSha;
   });
 
-  it('returns the plain version in production mode', () => {
+  it('returns the version with git short SHA in production mode', () => {
     (globalThis as Record<string, unknown>).__APP_VERSION__ = '1.0.0';
     (globalThis as Record<string, unknown>).__APP_MODE__ = 'production';
-    expect(getAppVersion()).toBe('1.0.0');
+    (globalThis as Record<string, unknown>).__APP_GIT_SHA__ = 'abc1234';
+    expect(getAppVersion()).toBe('1.0.0 — abc1234');
   });
 
-  it('returns version with UTC timestamp in preview mode', () => {
-    (globalThis as Record<string, unknown>).__APP_VERSION__ = '1.0.0';
-    (globalThis as Record<string, unknown>).__APP_MODE__ = 'preview';
-    const mockDate = new Date(Date.UTC(2026, 5, 24, 12, 0, 0));
-    vi.setSystemTime(mockDate);
+  it('returns version with git short SHA in non-production modes', () => {
+    const modes = ['development', 'preview', 'staging'];
 
-    const result = getAppVersion();
-
-    expect(result).toMatch(/^1\.0\.0 — \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+    for (const mode of modes) {
+      (globalThis as Record<string, unknown>).__APP_VERSION__ = '1.0.0';
+      (globalThis as Record<string, unknown>).__APP_MODE__ = mode;
+      (globalThis as Record<string, unknown>).__APP_GIT_SHA__ = 'abc1234';
+      const result = getAppVersion();
+      expect(result).toBe('1.0.0 — abc1234');
+    }
   });
 });

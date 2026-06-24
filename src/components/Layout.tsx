@@ -80,7 +80,7 @@ export function Layout({ children }: { children: ReactNode }) {
             </span>
           </div>
           <div
-            className={`relative hidden ${collapsed ? 'lg:flex' : ''}`}
+            className={`relative z-20 hidden ${collapsed ? 'lg:flex' : ''}`}
             onMouseEnter={() => setShowCollapsedVersion(true)}
             onMouseLeave={() => setShowCollapsedVersion(false)}
             onClick={() => setShowCollapsedVersion((prev) => !prev)}
@@ -98,7 +98,7 @@ export function Layout({ children }: { children: ReactNode }) {
               <Activity className="h-4 w-4 text-white" />
             </div>
             <span
-              className={`pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity dark:bg-white dark:text-slate-900 ${
+              className={`pointer-events-none absolute left-full top-1/2 z-30 -translate-y-1/2 ml-2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity dark:bg-white dark:text-slate-900 ${
                 showCollapsedVersion ? 'opacity-100' : ''
               }`}
             >
