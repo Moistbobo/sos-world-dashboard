@@ -5,13 +5,13 @@ import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useInfiniteWorlds, useTags, useWorlds } from '../../hooks/useApi';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
-import { FilterBar } from '../../components/FilterBar';
-import { Pagination } from '../../components/Pagination';
-import { WorldCard } from '../../components/WorldCard';
+import { FilterBar } from '../../components/filter-bar';
+import { Pagination } from '../../components/pagination';
+import { WorldCard } from '../../components/world-card';
 import { WorldDetailPage } from '../world-detail';
-import { TagBadge } from '../../components/TagBadge';
+import { TagBadge } from '../../components/tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
-import { MIN_CAPACITY, MAX_CAPACITY } from '../../components/CapacityRange';
+import { MIN_CAPACITY, MAX_CAPACITY } from '../../components/capacity-range';
 
 export function WorldsPage() {
   const { t } = useTranslation();

@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SlidersHorizontal, X } from 'lucide-react';
-import { getEmojiForTag } from '../utils/tagEmoji';
-import { COMMON_PLATFORM_VALUES, getPlatformLabel } from '../utils/platformLabel';
+import { getEmojiForTag } from '../../utils/tagEmoji';
+import { COMMON_PLATFORM_VALUES, getPlatformLabel } from '../../utils/platformLabel';
 import {
   CapacityRange,
   CapacityRangeValue,
   MIN_CAPACITY,
   MAX_CAPACITY,
-} from './CapacityRange';
+} from '../capacity-range';
 
 interface FilterBarProps {
   selectedTags: string[];

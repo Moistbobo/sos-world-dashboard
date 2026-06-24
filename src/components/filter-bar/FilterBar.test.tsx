@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { FilterBar } from './FilterBar';
-import { MIN_CAPACITY, MAX_CAPACITY } from './CapacityRange';
+import { FilterBar } from '../filter-bar';
+import { MIN_CAPACITY, MAX_CAPACITY } from '../capacity-range';
 
 const defaultProps = {
   selectedTags: [] as string[],

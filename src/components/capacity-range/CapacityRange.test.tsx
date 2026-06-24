@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { CapacityRange, MIN_CAPACITY, MAX_CAPACITY } from './CapacityRange';
+import { CapacityRange, MIN_CAPACITY, MAX_CAPACITY } from '../capacity-range';
 
 function renderCapacityRange(props: Partial<Parameters<typeof CapacityRange>[0]> = {}) {
   const defaults = { min: 10, max: 50, onChange: vi.fn() };
