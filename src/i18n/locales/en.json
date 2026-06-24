@@ -12,7 +12,8 @@
     "offline": "Offline / Unauthorized",
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
-    "closeSidebar": "Close sidebar"
+    "closeSidebar": "Close sidebar",
+    "version": "Version"
   },
   "common": {
     "back": "Back",
@@ -80,7 +81,9 @@
     "scrollMode": "World scroll mode",
     "scrollModeHint": "Choose how the Worlds page loads more results.",
     "scrollModeInfinite": "Infinite scroll",
-    "scrollModePagination": "Pagination"
+    "scrollModePagination": "Pagination",
+    "appVersion": "Version",
+    "appVersionHint": "Dashboard version"
   },
   "filter": {
     "filters": "Filters",

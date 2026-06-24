@@ -12,7 +12,8 @@
     "offline": "オフライン / 未認証",
     "expandSidebar": "サイドバーを展開",
     "collapseSidebar": "サイドバーを折りたたむ",
-    "closeSidebar": "サイドバーを閉じる"
+    "closeSidebar": "サイドバーを閉じる",
+    "version": "バージョン"
   },
   "common": {
     "back": "戻る",
@@ -80,7 +81,9 @@
     "scrollMode": "ワールド読み込み形式",
     "scrollModeHint": "ワールドページでの結果の読み込み方法を選択してください。",
     "scrollModeInfinite": "無限スクロール",
-    "scrollModePagination": "ページネーション"
+    "scrollModePagination": "ページネーション",
+    "appVersion": "バージョン",
+    "appVersionHint": "ダッシュボードのバージョン"
   },
   "filter": {
     "filters": "フィルタ",
