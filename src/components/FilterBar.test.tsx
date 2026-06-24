@@ -5,16 +5,16 @@ import { FilterBar } from './FilterBar';
 import { MIN_CAPACITY, MAX_CAPACITY } from './CapacityRange';
 
 const defaultProps = {
-  selectedTags: [],
+  selectedTags: [] as string[],
   onToggleTag: vi.fn(),
   onRemoveTag: vi.fn(),
-  selectedQuality: [],
+  selectedQuality: [] as ('good' | 'bad')[],
   onToggleQuality: vi.fn(),
   onClear: vi.fn(),
-  availableTags: [],
+  availableTags: [] as { tag: string; count: number }[],
   capacityRange: { min: MIN_CAPACITY, max: MAX_CAPACITY },
   onCapacityChange: vi.fn(),
-  selectedPlatforms: [],
+  selectedPlatforms: [] as string[],
   onTogglePlatform: vi.fn(),
   onRemovePlatform: vi.fn(),
 };
