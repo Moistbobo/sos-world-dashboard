@@ -11,9 +11,9 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
   const { worldId: paramWorldId } = useParams<{ worldId: string }>();
   const worldId = worldIdProp ?? paramWorldId;
   const navigate = useNavigate();
-  const { data, isPending, isError, error } = useWorld(worldId);
+  const { data, isPending, isError, error, isFetching } = useWorld(worldId);
 
-  if (isPending) {
+  if (isPending && !data) {
     return (
       <div className="mx-auto max-w-3xl space-y-5">
         <button
@@ -89,9 +89,16 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
     );
   }
 
-  if (isError || !data) {
+  if (isError && !data) {
     return (
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-3xl space-y-5">
+        <button
+          onClick={() => navigate(-1)}
+          className="btn-ghost gap-1.5 text-sm"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {t('common.back')}
+        </button>
         <div className="card p-8 text-center text-sm text-red-600 dark:text-red-300">
           {t('worldDetail.loadError', { message: error?.message || 'Not found' })}
         </div>
@@ -111,7 +118,17 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
         {t('common.back')}
       </button>
 
-      <div className="card overflow-hidden">
+      <div className="card overflow-hidden relative">
+        {isFetching && (
+          <div className="absolute left-0 right-0 top-0 z-10 h-1 overflow-hidden bg-slate-200 dark:bg-slate-800">
+            <div className="h-full w-1/3 animate-[shimmer_1.5s_infinite] bg-indigo-500" />
+          </div>
+        )}
+        {isError && (
+          <div className="border-b border-red-500/20 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-300">
+            {t('worldDetail.refreshError', { message: error?.message })}
+          </div>
+        )}
         <div className="relative h-56 bg-slate-200 sm:h-72 dark:bg-slate-800">
           {w.imageUrl ? (
             <img

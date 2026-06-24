@@ -1,5 +1,6 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchHealth, fetchTags, fetchWorld, fetchWorlds } from '../api/client';
+import type { PaginatedWorlds } from '../types';
 
 export function useHealth() {
   return useQuery({
@@ -63,6 +64,7 @@ export function useInfiniteWorlds(params?: {
 }
 
 export function useWorld(worldId: string | undefined) {
+  const queryClient = useQueryClient();
   return useQuery({
     queryKey: ['world', worldId],
     queryFn: () => {
@@ -70,5 +72,25 @@ export function useWorld(worldId: string | undefined) {
       return fetchWorld(worldId);
     },
     enabled: !!worldId,
+    placeholderData: () => {
+      if (!worldId) return undefined;
+
+      const paginatedQueries = queryClient.getQueriesData<PaginatedWorlds>({
+        queryKey: ['worlds'],
+      });
+      const fromPaginated = paginatedQueries
+        .flatMap(([, data]) => data?.worlds ?? [])
+        .find((w) => w.worldId === worldId);
+      if (fromPaginated) return fromPaginated;
+
+      const infiniteQueries = queryClient.getQueriesData<{ pages: PaginatedWorlds[] }>({
+        queryKey: ['worlds-infinite'],
+      });
+      const fromInfinite = infiniteQueries
+        .flatMap(([, data]) => data?.pages.flatMap((page) => page.worlds) ?? [])
+        .find((w) => w.worldId === worldId);
+
+      return fromInfinite;
+    },
   });
 }

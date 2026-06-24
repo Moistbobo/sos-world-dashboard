@@ -51,6 +51,7 @@
   },
   "worldDetail": {
     "loadError": "Failed to load world: {{message}}",
+    "refreshError": "Failed to refresh world details: {{message}}",
     "byAuthor": "by {{author}}",
     "unknownAuthor": "Unknown author",
     "qualityGood": "Quality: Good",

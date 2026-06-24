@@ -51,6 +51,7 @@
   },
   "worldDetail": {
     "loadError": "ワールドの読み込みに失敗しました: {{message}}",
+    "refreshError": "ワールド詳細の更新に失敗しました: {{message}}",
     "byAuthor": "{{author}} 作成",
     "unknownAuthor": "作成者不明",
     "qualityGood": "品質: 良い",
