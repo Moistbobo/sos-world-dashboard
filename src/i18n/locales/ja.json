@@ -51,6 +51,7 @@
   },
   "worldDetail": {
     "loadError": "ワールドの読み込みに失敗しました: {{message}}",
+    "refreshError": "ワールド詳細の更新に失敗しました: {{message}}",
     "byAuthor": "{{author}} 作成",
     "unknownAuthor": "作成者不明",
     "qualityGood": "品質: 良い",
@@ -91,7 +92,6 @@
     "good": "✅ 良い",
     "bad": "❌ 悪い",
     "tags": "タグ",
-    "searchTagsPlaceholder": "タグを検索...",
     "clearAll": "すべて解除",
     "capacity": "定員",
     "minCapacity": "最小定員",
@@ -101,7 +101,6 @@
     "removeCapacity": "定員フィルタを解除",
     "platform": "プラットフォーム",
     "platforms": "プラットフォーム",
-    "searchPlatformsPlaceholder": "プラットフォームを検索または追加...",
     "removePlatform": "プラットフォームフィルタを解除"
   },
   "pagination": {
@@ -115,7 +114,7 @@
   },
   "share": {
     "share": "共有",
-    "success": "リンクをコピーしました",
+    "success": "VRChatワールドURLをコピーしました",
     "error": "リンクをコピーできませんでした"
   }
 }
