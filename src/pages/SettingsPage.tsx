@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Languages, LayoutGrid, MousePointerClick } from 'lucide-react';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { useWorldsPreferences } from '../hooks/useWorldsPreferences';
+import { getAppVersion } from '../config/version';
 
 export function SettingsPage() {
   const { t } = useTranslation();
@@ -60,6 +61,10 @@ export function SettingsPage() {
           <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.scrollModeHint')}</p>
         </div>
       </div>
+
+      <p className="mt-4 text-center text-xs text-slate-400 dark:text-slate-500" data-testid="app-version">
+        {t('settings.appVersion')} {getAppVersion()}
+      </p>
     </div>
   );
 }

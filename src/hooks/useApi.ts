@@ -24,6 +24,7 @@ export function useWorlds(params?: {
   search?: string;
   minCapacity?: number;
   maxCapacity?: number;
+  platform?: string[];
   enabled?: boolean;
 }) {
   return useQuery({
@@ -40,6 +41,7 @@ export function useInfiniteWorlds(params?: {
   search?: string;
   minCapacity?: number;
   maxCapacity?: number;
+  platform?: string[];
   enabled?: boolean;
 }) {
   const limit = params?.limit ?? 20;
