@@ -3,15 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useMatch, useSearchParams } from 'react-router-dom';
 import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useInfiniteWorlds, useTags, useWorlds } from '../hooks/useApi';
-import { useWorldsPreferences } from '../hooks/useWorldsPreferences';
-import { FilterBar } from '../components/FilterBar';
-import { Pagination } from '../components/Pagination';
-import { WorldCard } from '../components/WorldCard';
-import { WorldDetailPage } from '../pages/WorldDetailPage';
-import { TagBadge } from '../components/TagBadge';
-import { getPlatformLabel } from '../utils/platformLabel';
-import { MIN_CAPACITY, MAX_CAPACITY } from '../components/CapacityRange';
+import { useInfiniteWorlds, useTags, useWorlds } from '../../hooks/useApi';
+import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
+import { FilterBar } from '../../components/FilterBar';
+import { Pagination } from '../../components/Pagination';
+import { WorldCard } from '../../components/WorldCard';
+import { WorldDetailPage } from '../world-detail';
+import { TagBadge } from '../../components/TagBadge';
+import { getPlatformLabel } from '../../utils/platformLabel';
+import { MIN_CAPACITY, MAX_CAPACITY } from '../../components/CapacityRange';
 
 export function WorldsPage() {
   const { t } = useTranslation();

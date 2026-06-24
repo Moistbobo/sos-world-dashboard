@@ -1,10 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash } from 'lucide-react';
-import { useWorld } from '../hooks/useApi';
-import { TagBadge } from '../components/TagBadge';
-import { getPlatformLabel } from '../utils/platformLabel';
-import { ShareButton } from '../components/ShareButton';
+import { useWorld } from '../../hooks/useApi';
+import { TagBadge } from '../../components/TagBadge';
+import { getPlatformLabel } from '../../utils/platformLabel';
+import { ShareButton } from '../../components/ShareButton';
 
 export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
   const { t } = useTranslation();

@@ -2,10 +2,10 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
-import { useTags } from '../hooks/useApi';
-import { TagBadge } from '../components/TagBadge';
-import { WaffleChart } from '../components/WaffleChart';
-import { getTagColorHex } from '../utils/tagColor';
+import { useTags } from '../../hooks/useApi';
+import { TagBadge } from '../../components/TagBadge';
+import { WaffleChart } from '../../components/WaffleChart';
+import { getTagColorHex } from '../../utils/tagColor';
 
 export function TagsPage() {
   const { t } = useTranslation();
