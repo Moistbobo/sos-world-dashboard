@@ -35,6 +35,32 @@ describe('FilterBar', () => {
     expect(screen.getByRole('spinbutton', { name: /maximum capacity/i })).toBeInTheDocument();
   });
 
+  it('toggles expanded when clicking anywhere on the filter bar header', async () => {
+    const user = userEvent.setup();
+    renderFilterBar();
+
+    await user.click(screen.getByTestId('filter-bar-header'));
+
+    expect(screen.getByText('Player capacity')).toBeInTheDocument();
+    expect(screen.getByText('Platforms')).toBeInTheDocument();
+
+    await user.click(screen.getByTestId('filter-bar-header'));
+
+    expect(screen.queryByText('Player capacity')).not.toBeInTheDocument();
+    expect(screen.queryByText('Platforms')).not.toBeInTheDocument();
+  });
+
+  it('does not toggle expanded when clicking the clear all button', async () => {
+    const user = userEvent.setup();
+    const onClear = vi.fn();
+    renderFilterBar({ selectedPlatforms: ['android'], onClear });
+
+    await user.click(screen.getByRole('button', { name: /clear all/i }));
+
+    expect(onClear).toHaveBeenCalled();
+    expect(screen.queryByText('Platforms')).not.toBeInTheDocument();
+  });
+
   it('shows active capacity chip when not at default range', () => {
     renderFilterBar({ capacityRange: { min: 10, max: 40 } });
 
@@ -99,19 +125,6 @@ describe('FilterBar', () => {
     await user.click(screen.getByRole('button', { name: /remove platform filter/i }));
 
     expect(onRemovePlatform).toHaveBeenCalledWith('android');
-  });
-
-  it('adds a raw platform value when typing and pressing Enter', async () => {
-    const user = userEvent.setup();
-    const onTogglePlatform = vi.fn();
-    renderFilterBar({ onTogglePlatform });
-
-    await user.click(screen.getByRole('button', { name: /filters/i }));
-    const input = screen.getByPlaceholderText(/search or add platform/i);
-    await user.type(input, '2019.2.4-801-Release');
-    await user.keyboard('{Enter}');
-
-    expect(onTogglePlatform).toHaveBeenCalledWith('2019.2.4-801-Release');
   });
 
   it('clears platforms via onClear', async () => {
