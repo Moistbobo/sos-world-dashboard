@@ -16,6 +16,8 @@ import { useState, useEffect } from 'react';
 import { useHealth } from '../hooks/useApi';
 import { ThemeToggle } from './ThemeToggle';
 
+import { getAppVersion } from '../config/version';
+
 export function Layout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -27,6 +29,8 @@ export function Layout({ children }: { children: ReactNode }) {
       return false;
     }
   });
+  const [showCollapsedVersion, setShowCollapsedVersion] = useState(false);
+  const appVersion = getAppVersion();
 
   useEffect(() => {
     try {
@@ -64,14 +68,42 @@ export function Layout({ children }: { children: ReactNode }) {
         `}
       >
         <div className={`flex h-14 items-center border-b border-slate-200 px-4 dark:border-slate-800 ${collapsed ? 'lg:justify-center' : 'justify-between'}`}>
-          <div className={`flex items-center gap-2 ${collapsed ? 'lg:hidden' : ''}`}>
+          <div className={`flex flex-col ${collapsed ? 'lg:hidden' : ''}`}>
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600">
+                <Activity className="h-4 w-4 text-white" />
+              </div>
+              <span className="text-sm font-bold text-slate-900 dark:text-white">{t('layout.appName')}</span>
+            </div>
+            <span className="mt-0.5 pl-9 text-[10px] text-slate-400 dark:text-slate-500">
+              {t('layout.version')}: {appVersion}
+            </span>
+          </div>
+          <div
+            className={`relative hidden ${collapsed ? 'lg:flex' : ''}`}
+            onMouseEnter={() => setShowCollapsedVersion(true)}
+            onMouseLeave={() => setShowCollapsedVersion(false)}
+            onClick={() => setShowCollapsedVersion((prev) => !prev)}
+            role="button"
+            tabIndex={0}
+            aria-label={t('layout.appName')}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowCollapsedVersion((prev) => !prev);
+              }
+            }}
+          >
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600">
               <Activity className="h-4 w-4 text-white" />
             </div>
-            <span className="text-sm font-bold text-slate-900 dark:text-white">{t('layout.appName')}</span>
-          </div>
-          <div className={`hidden h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 ${collapsed ? 'lg:flex' : ''}`}>
-            <Activity className="h-4 w-4 text-white" />
+            <span
+              className={`pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity dark:bg-white dark:text-slate-900 ${
+                showCollapsedVersion ? 'opacity-100' : ''
+              }`}
+            >
+              {t('layout.appName')} {appVersion}
+            </span>
           </div>
           <button className="lg:hidden" onClick={() => setSidebarOpen(false)} aria-label={t('layout.closeSidebar')}>
             <X className="h-5 w-5 text-slate-500 dark:text-slate-400" />
