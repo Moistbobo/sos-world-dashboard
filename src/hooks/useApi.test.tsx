@@ -26,6 +26,14 @@ describe('useWorlds', () => {
       expect.objectContaining({ minCapacity: 10, maxCapacity: 40 })
     );
   });
+
+  it('passes platform array to fetchWorlds', async () => {
+    renderHook(() => useWorlds({ platform: ['android', 'ios'] }), { wrapper: Wrapper });
+    await waitFor(() => expect(vi.mocked(fetchWorlds)).toHaveBeenCalled());
+    expect(vi.mocked(fetchWorlds)).toHaveBeenCalledWith(
+      expect.objectContaining({ platform: ['android', 'ios'] })
+    );
+  });
 });
 
 describe('useInfiniteWorlds', () => {
@@ -36,6 +44,16 @@ describe('useInfiniteWorlds', () => {
     await waitFor(() => expect(vi.mocked(fetchWorlds)).toHaveBeenCalled());
     expect(vi.mocked(fetchWorlds)).toHaveBeenCalledWith(
       expect.objectContaining({ minCapacity: 10, maxCapacity: 40 })
+    );
+  });
+
+  it('passes platform array to fetchWorlds', async () => {
+    renderHook(() => useInfiniteWorlds({ platform: ['android'], enabled: true }), {
+      wrapper: Wrapper,
+    });
+    await waitFor(() => expect(vi.mocked(fetchWorlds)).toHaveBeenCalled());
+    expect(vi.mocked(fetchWorlds)).toHaveBeenCalledWith(
+      expect.objectContaining({ platform: ['android'] })
     );
   });
 });

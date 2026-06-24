@@ -26,4 +26,14 @@ describe('fetchWorlds', () => {
     expect(url).not.toContain('minCapacity');
     expect(url).not.toContain('maxCapacity');
   });
+
+  it('includes platform query params', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ worlds: [], total: 0, limit: 20, offset: 0 }), { status: 200 })
+    );
+    await fetchWorlds({ platform: ['android', 'ios'] });
+    const url = vi.mocked(fetch).mock.calls[0][0] as string;
+    expect(url).toContain('platform=android');
+    expect(url).toContain('platform=ios');
+  });
 });

@@ -2,6 +2,8 @@ import { Globe, Users, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { World } from '../types';
 import { TagBadge } from './TagBadge';
+import { getPlatformLabel } from '../utils/platformLabel';
+import { ShareButton } from './ShareButton';
 
 interface WorldCardProps {
   world: World;
@@ -69,6 +71,17 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
         </div>
 
         <div className="mt-3 flex flex-wrap gap-1">
+          {world.platforms.map((p) => (
+            <span
+              key={p}
+              className="rounded-md bg-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+            >
+              {getPlatformLabel(p)}
+            </span>
+          ))}
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-1">
           {world.tags.slice(0, 4).map((t) => (
             <TagBadge key={t} tag={t} onClick={onTagClick} className="relative z-30" />
           ))}
@@ -88,6 +101,7 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
           >
             {t('worldDetail.openInVRChat')}
           </a>
+          <ShareButton world={world} iconOnly />
         </div>
       </div>
     </div>
