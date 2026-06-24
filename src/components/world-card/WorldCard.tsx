@@ -1,4 +1,4 @@
-import { Globe, Users, Calendar } from 'lucide-react';
+import { Globe, Users, Calendar, ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { World } from '../../types';
 import { TagBadge } from '../tag-badge';
@@ -97,8 +97,9 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
             href={world.vrchatUrl}
             target="_blank"
             rel="noreferrer"
-            className="btn-secondary px-4 py-2 text-xs font-medium relative z-30"
+            className="btn-primary gap-2 text-sm relative z-30"
           >
+            <ExternalLink className="h-4 w-4" />
             {t('worldDetail.openInVRChat')}
           </a>
           <ShareButton world={world} iconOnly />

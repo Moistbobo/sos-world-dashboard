@@ -156,6 +156,33 @@ describe('WorldsPage', () => {
     });
   });
 
+  it('closes the detail overlay when the backdrop is clicked', async () => {
+    window.history.pushState({}, '', '/worlds/wrld_1');
+    renderPage(<WorldsPage />);
+    const backdrop = await waitFor(() => {
+      const el = document.querySelector('.fixed.inset-0.z-50');
+      expect(el).toBeInTheDocument();
+      return el as HTMLElement;
+    });
+
+    fireEvent.click(backdrop);
+    await waitFor(() => {
+      expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
+    });
+  });
+
+  it('does not close the detail overlay when the modal content is clicked', async () => {
+    window.history.pushState({}, '', '/worlds/wrld_1');
+    renderPage(<WorldsPage />);
+    await waitFor(() => {
+      expect(document.querySelector('.fixed.inset-0.z-50')).toBeInTheDocument();
+    });
+
+    const heading = screen.getByRole('heading', { level: 1, name: /test world/i });
+    fireEvent.click(heading);
+    expect(document.querySelector('.fixed.inset-0.z-50')).toBeInTheDocument();
+  });
+
   describe('WorldsPage capacity filter', () => {
     it('seeds capacity range from URL query params', () => {
       window.history.pushState({}, '', '/worlds?minCapacity=10&maxCapacity=40');

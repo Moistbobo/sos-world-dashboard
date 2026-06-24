@@ -485,6 +485,7 @@ export function WorldsPage() {
 
       {(renderedWorldId || isOverlayOpen) && (
         <div
+          onClick={() => navigate(-1)}
           className={`fixed inset-0 z-50 overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95 lg:p-6 ${
             isOverlayClosing
               ? 'pointer-events-none opacity-0'
@@ -492,7 +493,10 @@ export function WorldsPage() {
           }`}
           aria-hidden={isOverlayClosing ? 'true' : 'false'}
         >
-          <div className="mx-auto max-w-3xl">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="mx-auto max-w-3xl"
+          >
             <WorldDetailPage worldId={renderedWorldId} />
           </div>
         </div>
