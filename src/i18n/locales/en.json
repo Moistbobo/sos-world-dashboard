@@ -108,5 +108,10 @@
   "theme": {
     "lightMode": "Switch to light mode",
     "darkMode": "Switch to dark mode"
+  },
+  "share": {
+    "share": "Share",
+    "success": "Link copied",
+    "error": "Could not copy link"
   }
 }
