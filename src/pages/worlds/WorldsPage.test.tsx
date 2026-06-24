@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { WorldsPage } from './WorldsPage';
-import { WorldsPreferencesProvider } from '../contexts/WorldsPreferencesContext';
+import { WorldsPreferencesProvider } from '../../contexts/WorldsPreferencesContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,7 +47,7 @@ const mockWorlds = [
 
 let infiniteHasNextPage = true;
 
-vi.mock('../hooks/useApi', () => ({
+vi.mock('../../hooks/useApi', () => ({
   useTags: () => ({ data: { tags: [] } }),
   useWorlds: () => ({
     data: { worlds: mockWorlds, total: 1, limit: 20, offset: 0 },

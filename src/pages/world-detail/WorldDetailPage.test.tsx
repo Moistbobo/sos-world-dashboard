@@ -4,8 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { WorldDetailPage } from './WorldDetailPage';
-import * as useApi from '../hooks/useApi';
-import type { World } from '../types';
+import * as useApi from '../../hooks/useApi';
+import type { World } from '../../types';
 
 const queryClient = new QueryClient({
   defaultOptions: {

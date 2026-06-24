@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Languages, LayoutGrid, MousePointerClick } from 'lucide-react';
-import { LanguageSwitcher } from '../components/LanguageSwitcher';
-import { useWorldsPreferences } from '../hooks/useWorldsPreferences';
-import { getAppVersion } from '../config/version';
+import { LanguageSwitcher } from '../../components/LanguageSwitcher';
+import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
+import { getAppVersion } from '../../config/version';
 
 export function SettingsPage() {
   const { t } = useTranslation();

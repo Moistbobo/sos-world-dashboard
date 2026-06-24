@@ -1,10 +1,10 @@
 import { Activity, Globe, Tags, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useHealth, useTags, useWorlds } from '../hooks/useApi';
-import { StatCard } from '../components/StatCard';
-import { WorldCard } from '../components/WorldCard';
-import { getEmojiForTag } from '../utils/tagEmoji';
+import { useHealth, useTags, useWorlds } from '../../hooks/useApi';
+import { StatCard } from '../../components/StatCard';
+import { WorldCard } from '../../components/WorldCard';
+import { getEmojiForTag } from '../../utils/tagEmoji';
 
 export function DashboardPage() {
   const { t } = useTranslation();
