@@ -101,7 +101,6 @@
     "removeCapacity": "Remove capacity filter",
     "platform": "Platform",
     "platforms": "Platforms",
-    "searchPlatformsPlaceholder": "Search or add platform...",
     "removePlatform": "Remove platform filter"
   },
   "pagination": {

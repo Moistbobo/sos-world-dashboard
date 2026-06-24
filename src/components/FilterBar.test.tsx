@@ -101,19 +101,6 @@ describe('FilterBar', () => {
     expect(onRemovePlatform).toHaveBeenCalledWith('android');
   });
 
-  it('adds a raw platform value when typing and pressing Enter', async () => {
-    const user = userEvent.setup();
-    const onTogglePlatform = vi.fn();
-    renderFilterBar({ onTogglePlatform });
-
-    await user.click(screen.getByRole('button', { name: /filters/i }));
-    const input = screen.getByPlaceholderText(/search or add platform/i);
-    await user.type(input, '2019.2.4-801-Release');
-    await user.keyboard('{Enter}');
-
-    expect(onTogglePlatform).toHaveBeenCalledWith('2019.2.4-801-Release');
-  });
-
   it('clears platforms via onClear', async () => {
     const user = userEvent.setup();
     const onClear = vi.fn();

@@ -42,7 +42,6 @@ export function FilterBar({
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [tagSearch, setTagSearch] = useState('');
-  const [platformInput, setPlatformInput] = useState('');
 
   const filteredTags = availableTags.filter((t) =>
     t.tag.toLowerCase().includes(tagSearch.toLowerCase())
@@ -210,22 +209,6 @@ export function FilterBar({
 
           <div>
             <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.platforms')}</label>
-            <div className="relative mb-2">
-              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
-              <input
-                type="text"
-                value={platformInput}
-                onChange={(e) => setPlatformInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && platformInput.trim()) {
-                    onTogglePlatform(platformInput.trim());
-                    setPlatformInput('');
-                  }
-                }}
-                placeholder={t('filter.searchPlatformsPlaceholder')}
-                className="input w-full pl-8"
-              />
-            </div>
             <div className="flex flex-wrap gap-1.5 pr-1">
               {COMMON_PLATFORM_VALUES.map((p) => {
                 const label = getPlatformLabel(p);

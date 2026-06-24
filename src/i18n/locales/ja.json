@@ -101,7 +101,6 @@
     "removeCapacity": "定員フィルタを解除",
     "platform": "プラットフォーム",
     "platforms": "プラットフォーム",
-    "searchPlatformsPlaceholder": "プラットフォームを検索または追加...",
     "removePlatform": "プラットフォームフィルタを解除"
   },
   "pagination": {
