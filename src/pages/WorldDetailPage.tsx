@@ -120,7 +120,10 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
 
       <div className="card overflow-hidden relative">
         {isFetching && (
-          <div className="absolute left-0 right-0 top-0 z-10 h-1 overflow-hidden bg-slate-200 dark:bg-slate-800">
+          <div
+            data-testid="world-detail-loading-bar"
+            className="absolute left-0 right-0 top-0 z-10 h-1 overflow-hidden bg-slate-200 dark:bg-slate-800"
+          >
             <div className="h-full w-1/3 animate-[shimmer_1.5s_infinite] bg-indigo-500" />
           </div>
         )}
