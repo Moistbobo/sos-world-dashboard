@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash } from 'lucide-react';
 import { useWorld } from '../hooks/useApi';
 import { TagBadge } from '../components/TagBadge';
+import { getPlatformLabel } from '../utils/platformLabel';
 
 export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
   const { t } = useTranslation();
@@ -174,7 +175,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
                   key={p}
                   className="rounded-md bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300"
                 >
-                  {p}
+                  {getPlatformLabel(p)}
                 </span>
               ))}
             </div>

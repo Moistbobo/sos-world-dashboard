@@ -10,6 +10,7 @@ import { Pagination } from '../components/Pagination';
 import { WorldCard } from '../components/WorldCard';
 import { WorldDetailPage } from '../pages/WorldDetailPage';
 import { TagBadge } from '../components/TagBadge';
+import { getPlatformLabel } from '../utils/platformLabel';
 import { MIN_CAPACITY, MAX_CAPACITY } from '../components/CapacityRange';
 
 export function WorldsPage() {
@@ -406,7 +407,7 @@ export function WorldsPage() {
                 <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{w.name}</p>
                 <p className="truncate text-xs text-slate-500 dark:text-slate-400">
                   {t('common.byAuthor', { author: w.authorName || t('common.unknown') })} · {w.capacity}{' '}
-                  capacity · {w.platforms.join(', ')}
+                  capacity · {w.platforms.map(getPlatformLabel).join(', ')}
                 </p>
               </div>
               <div className="hidden flex-wrap gap-1 sm:flex">

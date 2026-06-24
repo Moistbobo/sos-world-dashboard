@@ -27,7 +27,7 @@ const mockWorlds = [
     name: 'Test World',
     authorName: 'Tester',
     capacity: 40,
-    platforms: ['PC', 'Quest'],
+    platforms: ['standalonewindows', 'android'],
     tags: ['chill'],
     imageUrl: '',
     vrchatUrl: '',
@@ -118,6 +118,12 @@ describe('WorldsPage', () => {
   it('does not render a detail overlay by default', () => {
     render(<WorldsPage />, { wrapper: Wrapper });
     expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
+  });
+
+  it('renders mapped platform labels in list view', () => {
+    window.localStorage.setItem('sos-worlds-view-mode', 'list');
+    render(<WorldsPage />, { wrapper: Wrapper });
+    expect(screen.getByText(/Desktop, Android/)).toBeInTheDocument();
   });
 });
 
