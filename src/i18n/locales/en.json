@@ -51,6 +51,7 @@
   },
   "worldDetail": {
     "loadError": "Failed to load world: {{message}}",
+    "refreshError": "Failed to refresh world details: {{message}}",
     "byAuthor": "by {{author}}",
     "unknownAuthor": "Unknown author",
     "qualityGood": "Quality: Good",
@@ -91,7 +92,6 @@
     "good": "✅ Good",
     "bad": "❌ Bad",
     "tags": "Tags",
-    "searchTagsPlaceholder": "Search tags...",
     "clearAll": "Clear all",
     "capacity": "Player capacity",
     "minCapacity": "Minimum capacity",
@@ -101,7 +101,6 @@
     "removeCapacity": "Remove capacity filter",
     "platform": "Platform",
     "platforms": "Platforms",
-    "searchPlatformsPlaceholder": "Search or add platform...",
     "removePlatform": "Remove platform filter"
   },
   "pagination": {
@@ -115,7 +114,7 @@
   },
   "share": {
     "share": "Share",
-    "success": "Link copied",
+    "success": "VRChat world URL copied",
     "error": "Could not copy link"
   }
 }
