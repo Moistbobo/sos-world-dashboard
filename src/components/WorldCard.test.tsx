@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { WorldCard } from './WorldCard';
 
 const mockWorld = {
@@ -34,5 +35,32 @@ describe('WorldCard', () => {
     render(<WorldCard world={mockWorld} onSelect={onSelect} />);
     screen.getByLabelText(/Details - Test World/).click();
     expect(onSelect).toHaveBeenCalledWith('wrld_test');
+  });
+
+  it('renders a share button that copies the VRChat URL', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+
+    render(<WorldCard world={mockWorld} onSelect={vi.fn()} />);
+
+    const shareButton = screen.getByRole('button', { name: /share/i });
+    expect(shareButton).toBeInTheDocument();
+
+    await userEvent.click(shareButton);
+
+    expect(writeText).toHaveBeenCalledWith(mockWorld.vrchatUrl);
+  });
+
+  it('does not trigger card navigation when the share button is clicked', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+
+    const onSelect = vi.fn();
+    render(<WorldCard world={mockWorld} onSelect={onSelect} />);
+
+    const shareButton = screen.getByRole('button', { name: /share/i });
+    await userEvent.click(shareButton);
+
+    expect(onSelect).not.toHaveBeenCalled();
   });
 });
