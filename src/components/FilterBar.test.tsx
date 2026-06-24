@@ -69,8 +69,9 @@ describe('FilterBar', () => {
     await user.click(screen.getByRole('button', { name: /filters/i }));
 
     expect(screen.getByText('Platforms')).toBeInTheDocument();
+    expect(screen.getByText('Desktop')).toBeInTheDocument();
     expect(screen.getByText('Android')).toBeInTheDocument();
-    expect(screen.getByText('Unknown')).toBeInTheDocument();
+    expect(screen.getByText('iOS')).toBeInTheDocument();
   });
 
   it('calls onTogglePlatform when a platform chip is clicked', async () => {

@@ -7,16 +7,12 @@ const PLATFORM_LABELS: Record<string, string> = {
 
 /**
  * Common raw platform values to surface in the /worlds filter list.
- * The empty string represents worlds with no platform data and is
- * rendered as "Unknown" by getPlatformLabel.
+ * These are the valid, selectable platforms from the upstream API.
  */
 export const COMMON_PLATFORM_VALUES = [
   'standalonewindows',
   'android',
   'ios',
-  'web',
-  'unknownplatform',
-  '',
 ];
 
 /**

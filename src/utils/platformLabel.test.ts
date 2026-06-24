@@ -23,9 +23,6 @@ describe('getPlatformLabel', () => {
       'standalonewindows',
       'android',
       'ios',
-      'web',
-      'unknownplatform',
-      '',
     ]);
   });
 });
