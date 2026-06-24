@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getEmojiForTag } from '../utils/tagEmoji';
+import { getEmojiForTag } from '../../utils/tagEmoji';
 
 interface WaffleItem {
   name: string;

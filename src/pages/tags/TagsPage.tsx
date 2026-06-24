@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { useTags } from '../../hooks/useApi';
-import { TagBadge } from '../../components/TagBadge';
-import { WaffleChart } from '../../components/WaffleChart';
+import { TagBadge } from '../../components/tag-badge';
+import { WaffleChart } from '../../components/waffle-chart';
 import { getTagColorHex } from '../../utils/tagColor';
 
 export function TagsPage() {

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { getTagMeta } from '../utils/tagTypes';
-import { getEmojiForTag } from '../utils/tagEmoji';
+import { getTagMeta } from '../../utils/tagTypes';
+import { getEmojiForTag } from '../../utils/tagEmoji';
 
 interface TagBadgeProps {
   tag: string;

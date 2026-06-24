@@ -1,7 +1,7 @@
 import { Share2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import type { World } from '../types';
+import type { World } from '../../types';
 
 interface ShareButtonProps {
   world: World;
