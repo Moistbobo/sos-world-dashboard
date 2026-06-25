@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { WorldDetailPage } from './WorldDetailPage';
 import * as useApi from '../../hooks/useApi';
+import { ListsProvider } from '../../contexts/ListsContext';
 import type { World } from '../../types';
 
 const queryClient = new QueryClient({
@@ -16,7 +17,9 @@ const queryClient = new QueryClient({
 function Wrapper({ children }: { children: React.ReactNode }) {
   return (
     <MemoryRouter>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <ListsProvider>{children}</ListsProvider>
+      </QueryClientProvider>
     </MemoryRouter>
   );
 }
@@ -103,5 +106,23 @@ describe('WorldDetailPage', () => {
 
     expect(screen.getByRole('heading', { name: /Test World/i })).toBeInTheDocument();
     expect(screen.getByText(/Failed to refresh world details: Network error/i)).toBeInTheDocument();
+  });
+
+  it('renders a save-to-list button', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(screen.getByRole('button', { name: /save to list/i })).toBeInTheDocument();
   });
 });
