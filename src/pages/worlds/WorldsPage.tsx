@@ -428,6 +428,12 @@ export function WorldsPage() {
                   resetToFirstPage();
                 }
               }}
+              onPlatformClick={(platform) => {
+                if (!selectedPlatforms.includes(platform)) {
+                  setSelectedPlatforms((prev) => [...prev, platform]);
+                  resetToFirstPage();
+                }
+              }}
             />
           ))}
         </div>

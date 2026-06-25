@@ -71,6 +71,7 @@ export function DashboardPage() {
                       world={w}
                       onSelect={(id) => navigate(`/worlds/${id}`)}
                       onTagClick={(tag) => navigate(`/worlds?tag=${encodeURIComponent(tag)}`)}
+                      onPlatformClick={(platform) => navigate(`/worlds?platform=${encodeURIComponent(platform)}`)}
                     />
                   ))}
             </div>
