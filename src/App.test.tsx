@@ -132,4 +132,12 @@ describe('App routing', () => {
 
     expect(screen.getByRole('heading', { name: /worlds/i })).toBeInTheDocument();
   });
+
+  it('renders the list detail page at /lists/:listId', () => {
+    window.history.pushState({}, '', '/lists/missing-list');
+
+    render(<App />, { wrapper: Wrapper });
+
+    expect(screen.getByText(/list not found/i)).toBeInTheDocument();
+  });
 });

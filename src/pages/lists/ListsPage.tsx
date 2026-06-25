@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useMatch } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Pencil, List } from 'lucide-react';
 import { useLists } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
-import { ListDetailPage } from '../list-detail';
 
 export function ListsPage() {
   const { t } = useTranslation();
@@ -15,58 +14,7 @@ export function ListsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingList, setEditingList] = useState(
     undefined as ReturnType<typeof useLists>['lists'][number] | undefined,
-  );
-
-  const detailMatch = useMatch('/lists/:listId');
-  const [renderedListId, setRenderedListId] = useState<
-    string | undefined
-  >(undefined);
-  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
-  const [isOverlayClosing, setIsOverlayClosing] = useState(false);
-
-  const currentListId = detailMatch?.params.listId;
-  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  /* eslint-disable react-hooks/set-state-in-effect -- route-driven overlay animation requires state updates when the URL list id changes */
-  useEffect(() => {
-    if (currentListId) {
-      setRenderedListId(currentListId);
-      setIsOverlayClosing(false);
-      setIsOverlayOpen(true);
-    } else if (isOverlayOpen && !isOverlayClosing) {
-      setIsOverlayClosing(true);
-      closeTimerRef.current = setTimeout(() => {
-        setRenderedListId(undefined);
-        setIsOverlayOpen(false);
-        setIsOverlayClosing(false);
-      }, 200);
-    }
-
-    return () => {
-      if (closeTimerRef.current) {
-        clearTimeout(closeTimerRef.current);
-        closeTimerRef.current = null;
-      }
-    };
-  }, [currentListId, isOverlayOpen, isOverlayClosing]);
-  /* eslint-enable react-hooks/set-state-in-effect */
-
-  const closeOverlay = () => {
-    if (isOverlayClosing) return;
-    if (currentListId) {
-      // Navigate back to /lists so the route change drives the close animation.
-      navigate('/lists');
-      return;
-    }
-    setIsOverlayClosing(true);
-    closeTimerRef.current = setTimeout(() => {
-      setRenderedListId(undefined);
-      setIsOverlayOpen(false);
-      setIsOverlayClosing(false);
-    }, 200);
-  };
-
-  const handleEdit = (
+  );  const handleEdit = (
     list: ReturnType<typeof useLists>['lists'][number] | undefined,
   ) => {
     setEditingList(list);
@@ -183,27 +131,6 @@ export function ListsPage() {
           }
         }}
       />
-
-      {(renderedListId || isOverlayOpen) && (
-        <div className="contents">
-          <div
-            onClick={closeOverlay}
-            className={`fixed inset-0 z-50 overflow-auto bg-white/95 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95 ${
-              isOverlayClosing
-                ? 'pointer-events-none opacity-0'
-                : 'opacity-100 animate-fadeIn'
-            }`}
-            aria-hidden={isOverlayClosing ? 'true' : 'false'}
-          >
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="mx-auto max-w-3xl"
-            >
-              <ListDetailPage listId={renderedListId} />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -34,7 +34,7 @@ export function ListDetailPage({
 
   if (!list) {
     return (
-      <div className="space-y-4 p-4 lg:p-6">
+      <div className="space-y-4">
         <button
           onClick={() => navigate(-1)}
           className="btn-ghost gap-1.5 text-sm"
@@ -56,7 +56,7 @@ export function ListDetailPage({
   };
 
   return (
-    <div className="space-y-4 p-4 lg:p-6">
+    <div className="space-y-4">
       <button
         onClick={() => navigate(-1)}
         className="btn-ghost gap-1.5 text-sm"
