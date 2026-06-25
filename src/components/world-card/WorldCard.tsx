@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Globe, Users, Calendar, ExternalLink, Star } from 'lucide-react';
+import { Globe, Users, Calendar, ExternalLink, Star, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { World } from '../../types';
 import { TagBadge } from '../tag-badge';
@@ -13,9 +13,10 @@ interface WorldCardProps {
   world: World;
   onTagClick?: (tag: string) => void;
   onSelect?: (worldId: string) => void;
+  onRemove?: () => void;
 }
 
-export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
+export function WorldCard({ world, onTagClick, onSelect, onRemove }: WorldCardProps) {
   const { t } = useTranslation();
   const { isWorldInAnyList } = useLists();
   const [saveOpen, setSaveOpen] = useState(false);
@@ -68,6 +69,20 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
         >
           <Star className={`h-4 w-4 ${isSaved ? 'fill-current text-indigo-500' : ''}`} />
         </button>
+        {onRemove && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+            className="absolute top-10 right-2 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-red-600 shadow-sm transition hover:bg-white hover:text-red-700 dark:bg-slate-800/90 dark:text-red-400 dark:hover:text-red-300"
+            aria-label={t('lists.removeWorld')}
+            title={t('lists.removeWorld')}
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-4">

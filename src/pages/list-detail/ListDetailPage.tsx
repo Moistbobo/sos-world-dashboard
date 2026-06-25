@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Trash2, Pencil, XCircle, List } from 'lucide-react';
+import { ArrowLeft, Trash2, Pencil, List } from 'lucide-react';
 import { useLists } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
 import { useWorldsByIds } from '../../hooks/useWorldsByIds';
 import { Pagination } from '../../components/pagination';
+import { WorldCard } from '../../components/world-card/WorldCard';
 
 const WORLDS_PER_PAGE = 30;
 
@@ -107,48 +108,17 @@ export function ListDetailPage({
           {isPending && worlds.every((w) => !w.data) ? (
             <div className="card h-20 animate-pulse bg-slate-200 dark:bg-slate-800" />
           ) : (
-            worlds.map((entry) => (
-              <div
-                key={entry.worldId}
-                className="card flex items-center justify-between p-4"
-              >
-                <div className="min-w-0 flex-1">
-                  {entry.data ? (
-                    <>
-                      <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                        {entry.data.name}
-                      </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        {t('common.byAuthor', {
-                          author: entry.data.authorName || t('common.unknown'),
-                        })}{' '}
-                        · {entry.worldId}
-                      </p>
-                    </>
-                  ) : entry.isError ? (
-                    <>
-                      <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                        {entry.worldId}
-                      </p>
-                      <p className="text-xs text-red-600 dark:text-red-300">
-                        {t('lists.loadWorldError')}
-                      </p>
-                    </>
-                  ) : (
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                      {entry.worldId}
-                    </p>
-                  )}
-                </div>
-                <button
-                  onClick={() => removeWorldFromList(list.id, entry.worldId)}
-                  className="btn-ghost gap-1.5 text-xs"
-                  aria-label={t('lists.removeWorld')}
-                >
-                  <XCircle className="h-3.5 w-3.5" /> {t('lists.remove')}
-                </button>
-              </div>
-            ))
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {worlds
+                .filter((entry) => entry.data)
+                .map((entry) => (
+                  <WorldCard
+                    key={entry.worldId}
+                    world={entry.data!}
+                    onRemove={() => removeWorldFromList(list.id, entry.worldId)}
+                  />
+                ))}
+            </div>
           )}
 
           {list.worldIds.length > WORLDS_PER_PAGE && (
