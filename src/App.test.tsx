@@ -25,8 +25,14 @@ const mockWorlds = [
   },
 ];
 
+import { ListsProvider } from './contexts/ListsContext';
+
 function Wrapper({ children }: { children: React.ReactNode }) {
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <ListsProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </ListsProvider>
+  );
 }
 
 vi.mock('./hooks/useApi', () => ({
@@ -58,6 +64,14 @@ vi.mock('./hooks/useApi', () => ({
 }));
 
 describe('App routing', () => {
+  it('renders the lists page at /lists', () => {
+    window.history.pushState({}, '', '/lists');
+
+    render(<App />, { wrapper: Wrapper });
+
+    expect(screen.getByRole('heading', { name: /my lists/i })).toBeInTheDocument();
+  });
+
   it('opens a world detail as an overlay and keeps the list behind it', async () => {
     window.history.pushState({}, '', '/worlds/wrld_demo');
 

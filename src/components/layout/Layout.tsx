@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Globe,
   Tags,
+  List,
   Settings,
   Activity,
   Menu,
@@ -44,6 +45,7 @@ export function Layout({ children }: { children: ReactNode }) {
     { to: '/', label: t('nav.dashboard'), icon: LayoutDashboard },
     { to: '/worlds', label: t('nav.worlds'), icon: Globe },
     { to: '/tags', label: t('nav.tags'), icon: Tags },
+    { to: '/lists', label: t('nav.lists'), icon: List },
     { to: '/settings', label: t('nav.settings'), icon: Settings },
   ];
 
