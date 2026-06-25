@@ -3,6 +3,7 @@
     "dashboard": "Dashboard",
     "worlds": "Worlds",
     "tags": "Tags",
+    "lists": "Lists",
     "settings": "Settings"
   },
   "layout": {
@@ -20,6 +21,12 @@
     "details": "Details",
     "save": "Save",
     "saved": "Saved",
+    "cancel": "Cancel",
+    "done": "Done",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close",
+    "dismiss": "Dismiss",
     "unknown": "Unknown",
     "good": "Good",
     "bad": "Bad",
@@ -65,7 +72,9 @@
     "tagged": "Tagged on: {{date}}",
     "platforms": "Platforms",
     "tags": "Tags",
-    "openInVRChat": "Open in VRChat"
+    "openInVRChat": "Open in VRChat",
+    "saveToList": "Save to list",
+    "savedToList": "Saved to list"
   },
   "tags": {
     "title": "Tags",
@@ -119,5 +128,40 @@
     "share": "Share",
     "success": "VRChat world URL copied",
     "error": "Could not copy link"
+  },
+  "worldCard": {
+    "saveToList": "Save to list",
+    "savedToList": "Saved to list"
+  },
+  "lists": {
+    "title": "My Lists",
+    "subtitle": "Create and manage your saved world collections.",
+    "newList": "New list",
+    "createList": "Create list",
+    "editList": "Edit list",
+    "deleteList": "Delete list",
+    "deleteConfirm": "Delete \"{{name}}\"? This cannot be undone.",
+    "listName": "List name",
+    "listNamePlaceholder": "e.g. Favorites",
+    "listIcon": "Icon",
+    "listIconPlaceholder": "Emoji or Lucide icon name",
+    "listIconHint": "Leave empty to use the default star icon.",
+    "listColor": "Color",
+    "nameRequired": "Please enter a list name.",
+    "saveToList": "Save to list",
+    "createNewListInline": "Create new list",
+    "noListsYet": "You haven't created any lists yet.",
+    "emptyTitle": "No lists yet",
+    "emptySubtitle": "Create a list to start saving worlds.",
+    "emptyDetailTitle": "No worlds in this list",
+    "emptyDetailSubtitle": "Add worlds from the Worlds page.",
+    "worldCount": "{{count}} worlds",
+    "updated": "Updated {{date}}",
+    "remove": "Remove",
+    "removeWorld": "Remove world from list",
+    "loadWorldError": "Could not load world details",
+    "listNotFound": "List not found",
+    "storageError": "Failed to save your lists",
+    "storageErrorMessage": "Could not save lists: {{message}}"
   }
 }

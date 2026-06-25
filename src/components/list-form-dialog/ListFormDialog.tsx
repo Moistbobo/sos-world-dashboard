@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import type { CreateListInput, WorldList } from '../../types/lists';
@@ -21,14 +21,6 @@ export function ListFormDialog({
   const [icon, setIcon] = useState(list?.icon ?? '');
   const [color, setColor] = useState(list?.color ?? '#4f46e5');
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    setName(list?.name ?? '');
-    setIcon(list?.icon ?? '');
-    setColor(list?.color ?? '#4f46e5');
-    setError(null);
-  }, [open, list]);
 
   if (!open) return null;
 

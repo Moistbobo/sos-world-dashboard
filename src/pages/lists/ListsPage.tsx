@@ -27,6 +27,7 @@ export function ListsPage() {
   const currentListId = detailMatch?.params.listId;
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- route-driven overlay animation requires state updates when the URL list id changes */
   useEffect(() => {
     if (currentListId) {
       setRenderedListId(currentListId);
@@ -48,6 +49,7 @@ export function ListsPage() {
       }
     };
   }, [currentListId, isOverlayOpen, isOverlayClosing]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const closeOverlay = () => {
     if (isOverlayClosing) return;
@@ -164,6 +166,7 @@ export function ListsPage() {
       )}
 
       <ListFormDialog
+        key={editingList?.id ?? 'new'}
         open={formOpen}
         list={editingList}
         onOpenChange={setFormOpen}

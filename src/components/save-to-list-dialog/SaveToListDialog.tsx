@@ -112,6 +112,7 @@ export function SaveToListDialog({
         </div>
       </div>
       <ListFormDialog
+        key="new"
         open={showCreate}
         onOpenChange={setShowCreate}
         onSubmit={(input) => {

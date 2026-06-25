@@ -3,7 +3,7 @@ import { loadLists, saveLists, createList } from './listsStorage';
 
 beforeEach(() => {
   window.localStorage.clear();
-  vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue('uuid-1');
+  vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue('00000000-0000-0000-0000-000000000001');
 });
 
 describe('loadLists', () => {
@@ -78,6 +78,6 @@ describe('createList', () => {
     expect(list.icon).toBeNull();
     expect(list.color).toBe('#4f46e5');
     expect(list.worldIds).toEqual([]);
-    expect(list.id).toBe('uuid-1');
+    expect(list.id).toBe('00000000-0000-0000-0000-000000000001');
   });
 });

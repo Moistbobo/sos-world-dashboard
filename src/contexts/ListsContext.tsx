@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -19,7 +20,6 @@ import {
 interface ListsContextValue {
   lists: WorldList[];
   error: string | null;
-  isLoaded: boolean;
   createList(input: CreateListInput): WorldList;
   updateList(id: string, input: Partial<CreateListInput>): WorldList | undefined;
   deleteList(id: string): boolean;
@@ -33,6 +33,7 @@ interface ListsContextValue {
 
 const ListsContext = createContext<ListsContextValue | null>(null);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useLists() {
   const ctx = useContext(ListsContext);
   if (!ctx) throw new Error('useLists must be used within ListsProvider');
@@ -45,100 +46,105 @@ function nowIso(): string {
 
 export function ListsProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
-  const [lists, setLists] = useState<WorldList[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [lists, setLists] = useState<WorldList[]>(() => loadLists().lists);
+  const [error, setError] = useState<string | null>(() => loadLists().error);
+  const listsRef = useRef(lists);
 
   useEffect(() => {
-    const { lists: loaded, error: loadError } = loadLists();
-    setLists(loaded);
-    setError(loadError);
-    setIsLoaded(true);
-  }, []);
+    listsRef.current = lists;
+  }, [lists]);
 
-  useEffect(() => {
-    if (!isLoaded) return;
-    const { error: saveError } = saveLists(lists);
-    if (saveError) {
-      setError(saveError);
-      toast.error(t('lists.storageError'));
-    }
-  }, [lists, isLoaded, t]);
+  const commit = useCallback(
+    (nextLists: WorldList[]) => {
+      listsRef.current = nextLists;
+      const { error: saveError } = saveLists(nextLists);
+      if (saveError) {
+        setError(saveError);
+        toast.error(t('lists.storageError'));
+      } else if (error) {
+        setError(null);
+      }
+      setLists(nextLists);
+    },
+    [t, error],
+  );
 
-  const createList = useCallback((input: CreateListInput) => {
-    const list = makeList(input);
-    setLists((prev) => [...prev, list]);
-    return list;
-  }, []);
+  const createList = useCallback(
+    (input: CreateListInput) => {
+      const list = makeList(input);
+      commit([...listsRef.current, list]);
+      return list;
+    },
+    [commit],
+  );
 
   const updateList = useCallback(
     (id: string, input: Partial<CreateListInput>) => {
       let updated: WorldList | undefined;
-      setLists((prev) =>
-        prev.map((list) => {
-          if (list.id !== id) return list;
-          updated = {
-            ...list,
-            name: input.name?.trim() ?? list.name,
-            icon:
-              input.icon === undefined
-                ? list.icon
-                : input.icon?.trim() || null,
-            color: input.color?.trim() ?? list.color,
-            updatedAt: nowIso(),
-          };
-          return updated;
-        }),
-      );
+      const next = listsRef.current.map((list) => {
+        if (list.id !== id) return list;
+        updated = {
+          ...list,
+          name: input.name?.trim() ?? list.name,
+          icon:
+            input.icon === undefined
+              ? list.icon
+              : input.icon?.trim() || null,
+          color: input.color?.trim() ?? list.color,
+          updatedAt: nowIso(),
+        };
+        return updated;
+      });
+      commit(next);
       return updated;
     },
-    [],
+    [commit],
   );
 
-  const deleteList = useCallback((id: string) => {
-    let removed = false;
-    setLists((prev) => {
-      const next = prev.filter((list) => list.id !== id);
-      removed = next.length !== prev.length;
-      return next;
-    });
-    return removed;
-  }, []);
+  const deleteList = useCallback(
+    (id: string) => {
+      const next = listsRef.current.filter((list) => list.id !== id);
+      const removed = next.length !== listsRef.current.length;
+      if (removed) {
+        commit(next);
+      }
+      return removed;
+    },
+    [commit],
+  );
 
   const addWorldToList = useCallback(
     (listId: string | undefined, worldId: string) => {
       if (!listId) return;
-      setLists((prev) =>
-        prev.map((list) =>
-          list.id === listId && !list.worldIds.includes(worldId)
-            ? {
-                ...list,
-                worldIds: [...list.worldIds, worldId],
-                updatedAt: nowIso(),
-              }
-            : list,
-        ),
+      const next = listsRef.current.map((list) =>
+        list.id === listId && !list.worldIds.includes(worldId)
+          ? {
+              ...list,
+              worldIds: [...list.worldIds, worldId],
+              updatedAt: nowIso(),
+            }
+          : list,
       );
+      commit(next);
     },
-    [],
+    [commit],
   );
 
   const removeWorldFromList = useCallback(
     (listId: string | undefined, worldId: string) => {
       if (!listId) return;
-      setLists((prev) =>
-        prev.map((list) =>
-          list.id === listId
-            ? {
-                ...list,
-                worldIds: list.worldIds.filter((id) => id !== worldId),
-                updatedAt: nowIso(),
-              }
-            : list,
-        ),
+      const next = listsRef.current.map((list) =>
+        list.id === listId
+          ? {
+              ...list,
+              worldIds: list.worldIds.filter((id) => id !== worldId),
+              updatedAt: nowIso(),
+            }
+          : list,
       );
+      commit(next);
     },
-    [],
+    [commit],
   );
 
   const isWorldInList = useCallback(
@@ -165,7 +171,6 @@ export function ListsProvider({ children }: { children: ReactNode }) {
     () => ({
       lists,
       error,
-      isLoaded,
       createList,
       updateList,
       deleteList,
@@ -179,7 +184,6 @@ export function ListsProvider({ children }: { children: ReactNode }) {
     [
       lists,
       error,
-      isLoaded,
       createList,
       updateList,
       deleteList,

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { WorldsPage } from './WorldsPage';
 import { WorldsPreferencesProvider } from '../../contexts/WorldsPreferencesContext';
+import { ListsProvider } from '../../contexts/ListsContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,7 +25,9 @@ function Wrapper({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <WorldsPreferencesProvider>
-        <BrowserRouter>{children}</BrowserRouter>
+        <ListsProvider>
+          <BrowserRouter>{children}</BrowserRouter>
+        </ListsProvider>
       </WorldsPreferencesProvider>
     </QueryClientProvider>
   );
