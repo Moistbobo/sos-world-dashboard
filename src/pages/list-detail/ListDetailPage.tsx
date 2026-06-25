@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Trash2, Pencil, List } from 'lucide-react';
 import { useLists } from '../../contexts/ListsContext';
+import { useListsPreferences } from '../../hooks/useListsPreferences';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
 import { useWorldsByIds } from '../../hooks/useWorldsByIds';
 import { Pagination } from '../../components/pagination';
 import { WorldCard } from '../../components/world-card/WorldCard';
+import { ConfirmDialog } from '../../components/confirm-dialog';
 
 const WORLDS_PER_PAGE = 28;
 
@@ -21,9 +23,12 @@ export function ListDetailPage({
   const { listId: paramListId } = useParams<{ listId: string }>();
   const listId = listIdProp ?? paramListId;
   const { getList, updateList, deleteList, removeWorldFromList } = useLists();
+  const { skipRemoveWorldConfirmation, setSkipRemoveWorldConfirmation } = useListsPreferences();
   const list = listId ? getList(listId) : undefined;
   const [offset, setOffset] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingRemoveWorldId, setPendingRemoveWorldId] = useState<string | null>(null);
 
   const paginatedIds = useMemo(() => {
     if (!list) return [];
@@ -62,7 +67,28 @@ export function ListDetailPage({
   };
 
   const handleRemove = (worldId: string) => {
-    removeWorldFromList(list.id, worldId);
+    if (skipRemoveWorldConfirmation) {
+      removeWorldFromList(list.id, worldId);
+      return;
+    }
+    setPendingRemoveWorldId(worldId);
+    setConfirmOpen(true);
+  };
+
+  const confirmRemove = (dontAskAgain: boolean) => {
+    if (pendingRemoveWorldId) {
+      removeWorldFromList(list.id, pendingRemoveWorldId);
+    }
+    if (dontAskAgain) {
+      setSkipRemoveWorldConfirmation(true);
+    }
+    setPendingRemoveWorldId(null);
+    setConfirmOpen(false);
+  };
+
+  const cancelRemove = () => {
+    setPendingRemoveWorldId(null);
+    setConfirmOpen(false);
   };
 
   return (
@@ -149,6 +175,17 @@ export function ListDetailPage({
           )}
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title={t('lists.removeWorldConfirmTitle')}
+        message={t('lists.removeWorldConfirmMessage')}
+        confirmLabel={t('lists.remove')}
+        cancelLabel={t('common.cancel')}
+        showDontAskAgain
+        onConfirm={confirmRemove}
+        onCancel={cancelRemove}
+      />
 
       <ListFormDialog
         open={formOpen}

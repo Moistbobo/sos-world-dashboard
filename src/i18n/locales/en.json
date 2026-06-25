@@ -96,7 +96,9 @@
     "scrollModeInfinite": "Infinite scroll",
     "scrollModePagination": "Pagination",
     "appVersion": "Version",
-    "appVersionHint": "Dashboard version"
+    "appVersionHint": "Dashboard version",
+    "skipRemoveWorldConfirmation": "Skip remove confirmation",
+    "skipRemoveWorldConfirmationHint": "Don't show a confirmation when removing worlds from lists."
   },
   "filter": {
     "filters": "Filters",
@@ -159,6 +161,9 @@
     "updated": "Updated {{date}}",
     "remove": "Remove",
     "removeWorld": "Remove world from list",
+    "removeWorldConfirmTitle": "Remove world",
+    "removeWorldConfirmMessage": "Are you sure you want to remove this world from the list?",
+    "dontAskAgain": "Don't ask again",
     "loadWorldError": "Could not load world details",
     "maxWorldsReached": "Lists can hold up to {{count}} worlds. Remove one before adding more.",
     "listNotFound": "List not found",

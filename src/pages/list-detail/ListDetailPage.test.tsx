@@ -17,11 +17,15 @@ beforeEach(() => {
   queryClient.clear();
 });
 
+import { ListsPreferencesProvider } from '../../contexts/ListsPreferencesContext';
+
 function Wrapper({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>
-        <ListsProvider>{children}</ListsProvider>
+        <ListsPreferencesProvider>
+          <ListsProvider>{children}</ListsProvider>
+        </ListsPreferencesProvider>
       </MemoryRouter>
     </QueryClientProvider>
   );
@@ -166,6 +170,9 @@ describe('ListDetailPage', () => {
     await userEvent.click(
       screen.getByRole('button', { name: /remove world from list/i }),
     );
+
+    expect(screen.getByText(/remove world/i)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /remove$/i }));
 
     await waitFor(() => {
       expect(screen.queryByText('Saved World')).not.toBeInTheDocument();

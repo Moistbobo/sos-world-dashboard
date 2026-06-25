@@ -7,6 +7,7 @@ import './index.css';
 import App from './App';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { WorldsPreferencesProvider } from './contexts/WorldsPreferencesContext';
+import { ListsPreferencesProvider } from './contexts/ListsPreferencesContext';
 import { ListsProvider } from './contexts/ListsContext';
 
 const queryClient = new QueryClient();
@@ -16,9 +17,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <WorldsPreferencesProvider>
-          <ListsProvider>
-            <App />
-          </ListsProvider>
+          <ListsPreferencesProvider>
+            <ListsProvider>
+              <App />
+            </ListsProvider>
+          </ListsPreferencesProvider>
         </WorldsPreferencesProvider>
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />

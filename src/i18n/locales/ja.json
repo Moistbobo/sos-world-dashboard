@@ -96,7 +96,9 @@
     "scrollModeInfinite": "無限スクロール",
     "scrollModePagination": "ページネーション",
     "appVersion": "バージョン",
-    "appVersionHint": "ダッシュボードのバージョン"
+    "appVersionHint": "ダッシュボードのバージョン",
+    "skipRemoveWorldConfirmation": "削除確認を省略",
+    "skipRemoveWorldConfirmationHint": "リストからワールドを削除する際に確認ダイアログを表示しません。"
   },
   "filter": {
     "filters": "フィルタ",
@@ -159,6 +161,9 @@
     "updated": "更新日 {{date}}",
     "remove": "削除",
     "removeWorld": "リストからワールドを削除",
+    "removeWorldConfirmTitle": "ワールドを削除",
+    "removeWorldConfirmMessage": "このワールドをリストから削除してもよろしいですか？",
+    "dontAskAgain": "次回から表示しない",
     "loadWorldError": "ワールド詳細を読み込めませんでした",
     "maxWorldsReached": "リストには最大 {{count}} 件のワールドまで保存できます。追加するにはワールドを削除してください。",
     "listNotFound": "リストが見つかりません",
