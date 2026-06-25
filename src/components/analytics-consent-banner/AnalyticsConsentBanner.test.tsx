@@ -39,11 +39,13 @@ describe('AnalyticsConsentBanner', () => {
     expect(window.localStorage.getItem('sos-analytics-consent')).toBe('denied');
   });
 
-  it('does not close when clicking the backdrop', () => {
+  it('treats a backdrop click as a denial', async () => {
     render(<AnalyticsConsentBanner />, { wrapper: Wrapper });
     fireEvent.click(screen.getByRole('dialog'));
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(window.localStorage.getItem('sos-analytics-consent')).toBeNull();
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+    expect(window.localStorage.getItem('sos-analytics-consent')).toBe('denied');
   });
 
   it('does not close when clicking inside the modal content', () => {

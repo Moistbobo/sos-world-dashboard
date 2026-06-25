@@ -30,9 +30,13 @@ export function AnalyticsConsentBanner({ onDismiss }: { onDismiss?: () => void }
       role="dialog"
       aria-modal="true"
       aria-labelledby="analytics-consent-title"
+      onClick={handleDeny}
       className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm"
     >
-      <div className="w-full max-w-lg animate-fadeIn rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-lg animate-fadeIn rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+      >
         <div className="flex items-start justify-between gap-4">
           <div className="mb-4 flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-indigo-100 dark:bg-indigo-900/30">
             <img src={wPoint} alt="" className="h-full w-full object-cover" />
