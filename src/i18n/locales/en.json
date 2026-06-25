@@ -24,7 +24,9 @@
     "good": "Good",
     "bad": "Bad",
     "more": "+{{count}}",
-    "byAuthor": "by {{author}}"
+    "byAuthor": "by {{author}}",
+    "added": "Added on",
+    "tagged": "Tagged on"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -59,7 +61,8 @@
     "noQuality": "No quality rating",
     "capacity": "Capacity: {{capacity}}",
     "id": "ID: {{id}}",
-    "added": "Added {{date}}",
+    "added": "Added on: {{date}}",
+    "tagged": "Tagged on: {{date}}",
     "platforms": "Platforms",
     "tags": "Tags",
     "openInVRChat": "Open in VRChat"
