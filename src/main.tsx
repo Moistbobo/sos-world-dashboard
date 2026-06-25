@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Analytics } from '@vercel/analytics/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import './i18n';
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <ThemeProvider>
         <WorldsPreferencesProvider>
           <App />
+          <Analytics />
         </WorldsPreferencesProvider>
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
