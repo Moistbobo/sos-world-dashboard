@@ -84,7 +84,13 @@
     "scrollModeInfinite": "Infinite scroll",
     "scrollModePagination": "Pagination",
     "appVersion": "Version",
-    "appVersionHint": "Dashboard version"
+    "appVersionHint": "Dashboard version",
+    "analytics": "Analytics",
+    "analyticsDescription": "Allow anonymous analytics to help us improve the app. No personal data is collected.",
+    "analyticsEnabled": "Enabled",
+    "analyticsDisabled": "Disabled",
+    "analyticsStatus": "Analytics is currently {{status}}.",
+    "analyticsNotSet": "You haven't made a choice yet. Analytics is disabled by default."
   },
   "filter": {
     "filters": "Filters",
@@ -111,6 +117,14 @@
   "theme": {
     "lightMode": "Switch to light mode",
     "darkMode": "Switch to dark mode"
+  },
+  "analyticsConsent": {
+    "title": "Help us improve SOS Dashboard",
+    "description": "We'd like to collect anonymous analytics data such as page views and approximate location to understand how the app is used and make it better.",
+    "disclaimer": "Allowing or denying analytics will not change any functionality of the app.",
+    "accept": "Accept",
+    "deny": "No thanks",
+    "hint": "You can change this choice at any time in Settings."
   },
   "share": {
     "share": "Share",
