@@ -196,7 +196,7 @@ export function ListsPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="mx-auto max-w-3xl p-4 lg:p-6"
+            className="mx-auto max-w-3xl"
           >
             <ListDetailPage listId={renderedListId} />
           </div>
