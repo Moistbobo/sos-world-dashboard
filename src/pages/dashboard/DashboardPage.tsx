@@ -5,6 +5,7 @@ import { useHealth, useTags, useWorlds } from '../../hooks/useApi';
 import { StatCard } from '../../components/stat-card';
 import { WorldCard } from '../../components/world-card';
 import { getEmojiForTag } from '../../utils/tagEmoji';
+import { getWorldAddDate } from '../../utils/worldAddDate';
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -41,7 +42,7 @@ export function DashboardPage() {
         />
         <StatCard
           label={t('dashboard.latest')}
-          value={latestWorlds.length > 0 ? new Date(latestWorlds[0].createdAt).toLocaleDateString() : '-'}
+          value={latestWorlds.length > 0 ? new Date(getWorldAddDate(latestWorlds[0])).toLocaleDateString() : '-'}
           icon={<Clock className="h-5 w-5" />}
         />
       </div>

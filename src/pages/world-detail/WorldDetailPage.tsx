@@ -4,6 +4,7 @@ import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash } from 'lucide-re
 import { useWorld } from '../../hooks/useApi';
 import { TagBadge } from '../../components/tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
+import { getWorldAddDate } from '../../utils/worldAddDate';
 import { ShareButton } from '../../components/share-button';
 
 export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
@@ -184,7 +185,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
             </div>
             <div className="flex items-center gap-1.5">
               <Calendar className="h-4 w-4 text-slate-400 dark:text-slate-500" />
-              {t('worldDetail.added', { date: new Date(w.createdAt).toLocaleString() })}
+              {t('worldDetail.added', { date: new Date(getWorldAddDate(w)).toLocaleString() })}
             </div>
           </div>
 

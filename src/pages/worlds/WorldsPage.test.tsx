@@ -42,6 +42,7 @@ const mockWorlds = [
     vrchatUrl: '',
     quality: 'good' as const,
     createdAt: '2024-01-01',
+    internalAddDate: '2024-02-01',
   },
 ];
 

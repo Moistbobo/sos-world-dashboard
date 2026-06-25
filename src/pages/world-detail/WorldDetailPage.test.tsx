@@ -31,6 +31,7 @@ const createWorld = (overrides: Partial<World> = {}): World => ({
   capacity: 42,
   quality: 'good',
   createdAt: '2024-01-01T00:00:00Z',
+  internalAddDate: '2024-02-01T00:00:00Z',
   vrchatUrl: 'https://vrchat.com/home/world/wrld_123',
   ...overrides,
 });

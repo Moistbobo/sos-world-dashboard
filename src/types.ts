@@ -9,6 +9,7 @@ export interface World {
   vrchatUrl: string;
   quality: 'good' | 'bad' | null;
   createdAt: string;
+  internalAddDate?: string;
 }
 
 export interface PaginatedWorlds {

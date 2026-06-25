@@ -14,6 +14,7 @@ const mockWorld = {
   vrchatUrl: 'https://vrchat.com/home/world/wrld_test',
   quality: 'good' as const,
   createdAt: '2024-01-01',
+  internalAddDate: '2024-02-01',
 };
 
 describe('WorldCard', () => {
@@ -73,6 +74,13 @@ describe('WorldCard', () => {
     await userEvent.click(tagButton);
 
     expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it('falls back to createdAt when internalAddDate is missing', () => {
+    render(<WorldCard world={{ ...mockWorld, internalAddDate: undefined }} />);
+    expect(
+      screen.getByText(new Date('2024-01-01').toLocaleDateString()),
+    ).toBeInTheDocument();
   });
 
   it('does not trigger card navigation when the share button is clicked', async () => {

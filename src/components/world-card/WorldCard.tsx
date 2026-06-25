@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { World } from '../../types';
 import { TagBadge } from '../tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
+import { getWorldAddDate } from '../../utils/worldAddDate';
 import { ShareButton } from '../share-button';
 
 interface WorldCardProps {
@@ -66,7 +67,7 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
           </span>
           <span className="inline-flex items-center gap-1">
             <Calendar className="h-3 w-3" />
-            {new Date(world.createdAt).toLocaleDateString()}
+            {new Date(getWorldAddDate(world)).toLocaleDateString()}
           </span>
         </div>
 
