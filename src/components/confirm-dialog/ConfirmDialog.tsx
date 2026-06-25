@@ -32,11 +32,15 @@ export function ConfirmDialog({
 
   return (
     <div
+      onClick={onCancel}
       className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95"
       role="alertdialog"
       aria-modal="true"
     >
-      <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900"
+      >
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-base font-semibold text-slate-900 dark:text-white">{title}</h3>
           <button
@@ -58,7 +62,7 @@ export function ConfirmDialog({
               onChange={(e) => setDontAskAgain(e.target.checked)}
               className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
             />
-            {dontAskAgainLabel ?? t('common.dontAskAgain')}
+            {dontAskAgainLabel ?? t('lists.dontAskAgain')}
           </label>
         )}
 
