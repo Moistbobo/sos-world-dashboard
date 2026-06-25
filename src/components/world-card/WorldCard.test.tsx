@@ -51,6 +51,30 @@ describe('WorldCard', () => {
     expect(writeText).toHaveBeenCalledWith(mockWorld.vrchatUrl);
   });
 
+  it('calls onTagClick when a tag is clicked', async () => {
+    const onTagClick = vi.fn();
+    render(
+      <WorldCard world={mockWorld} onSelect={vi.fn()} onTagClick={onTagClick} />,
+    );
+
+    const tagButton = screen.getByTitle('chill');
+    await userEvent.click(tagButton);
+
+    expect(onTagClick).toHaveBeenCalledWith('chill');
+  });
+
+  it('does not trigger card navigation when a tag is clicked', async () => {
+    const onSelect = vi.fn();
+    render(
+      <WorldCard world={mockWorld} onSelect={onSelect} onTagClick={vi.fn()} />,
+    );
+
+    const tagButton = screen.getByTitle('chill');
+    await userEvent.click(tagButton);
+
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
   it('does not trigger card navigation when the share button is clicked', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.assign(navigator, { clipboard: { writeText } });
