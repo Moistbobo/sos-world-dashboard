@@ -1,10 +1,13 @@
-import { Globe, Users, Calendar, ExternalLink } from 'lucide-react';
+import { useState } from 'react';
+import { Globe, Users, Calendar, ExternalLink, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { World } from '../../types';
 import { TagBadge } from '../tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
 import { getWorldAddDate } from '../../utils/worldAddDate';
 import { ShareButton } from '../share-button';
+import { useLists } from '../../contexts/ListsContext';
+import { SaveToListDialog } from '../save-to-list-dialog/SaveToListDialog';
 
 interface WorldCardProps {
   world: World;
@@ -14,6 +17,9 @@ interface WorldCardProps {
 
 export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
   const { t } = useTranslation();
+  const { isWorldInAnyList } = useLists();
+  const [saveOpen, setSaveOpen] = useState(false);
+  const isSaved = isWorldInAnyList(world.worldId);
 
   return (
     <div className="card group relative overflow-hidden flex flex-col transition hover:border-slate-400 dark:hover:border-slate-600 cursor-pointer">
@@ -38,7 +44,7 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
             <Globe className="h-10 w-10" />
           </div>
         )}
-        <div className="absolute top-2 right-2 z-10 flex gap-1">
+        <div className="absolute top-2 left-2 z-10 flex gap-1">
           {world.quality === 'good' && (
             <span className="rounded-md bg-green-500/80 px-2 py-0.5 text-[10px] font-bold uppercase text-white backdrop-blur-sm">
               {t('common.good')}
@@ -50,6 +56,18 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
             </span>
           )}
         </div>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setSaveOpen(true);
+          }}
+          className="absolute top-2 right-2 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-sm transition hover:bg-white hover:text-indigo-600 dark:bg-slate-800/90 dark:text-slate-300 dark:hover:text-indigo-300"
+          aria-label={isSaved ? t('worldCard.savedToList') : t('worldCard.saveToList')}
+          title={isSaved ? t('worldCard.savedToList') : t('worldCard.saveToList')}
+        >
+          <Star className={`h-4 w-4 ${isSaved ? 'fill-current text-indigo-500' : ''}`} />
+        </button>
       </div>
 
       <div className="flex flex-1 flex-col p-4">
@@ -106,6 +124,7 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
           <ShareButton world={world} iconOnly />
         </div>
       </div>
+      <SaveToListDialog worldId={world.worldId} open={saveOpen} onOpenChange={setSaveOpen} />
     </div>
   );
 }
