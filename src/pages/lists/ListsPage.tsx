@@ -53,6 +53,11 @@ export function ListsPage() {
 
   const closeOverlay = () => {
     if (isOverlayClosing) return;
+    if (currentListId) {
+      // Navigate back to /lists so the route change drives the close animation.
+      navigate('/lists');
+      return;
+    }
     setIsOverlayClosing(true);
     closeTimerRef.current = setTimeout(() => {
       setRenderedListId(undefined);
@@ -182,7 +187,7 @@ export function ListsPage() {
       {(renderedListId || isOverlayOpen) && (
         <div
           onClick={closeOverlay}
-          className={`fixed inset-0 z-50 overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95 lg:p-6 ${
+          className={`fixed inset-0 z-50 overflow-auto bg-white/95 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95 ${
             isOverlayClosing
               ? 'pointer-events-none opacity-0'
               : 'opacity-100 animate-fadeIn'
@@ -191,7 +196,7 @@ export function ListsPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="mx-auto max-w-3xl"
+            className="mx-auto max-w-3xl p-4 lg:p-6"
           >
             <ListDetailPage listId={renderedListId} />
           </div>
