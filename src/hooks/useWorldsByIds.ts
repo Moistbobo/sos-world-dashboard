@@ -26,6 +26,7 @@ export function useWorldsByIds(worldIds: string[]) {
     enabled: uniqueIds.length > 0,
     staleTime: Infinity,
     gcTime: Infinity,
+    placeholderData: (previousData) => previousData,
   });
 
   const worldById = useMemo(() => {
