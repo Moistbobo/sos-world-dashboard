@@ -99,7 +99,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
     return (
       <div className="mx-auto max-w-3xl space-y-5">
         <button
-          onClick={() => navigate('/worlds')}
+          onClick={() => navigate(-1)}
           className="btn-ghost gap-1.5 text-sm"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -117,7 +117,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
   return (
     <div className="mx-auto max-w-3xl space-y-5">
       <button
-        onClick={() => navigate('/worlds')}
+        onClick={() => navigate(-1)}
         className="btn-ghost gap-1.5 text-sm"
       >
         <ArrowLeft className="h-4 w-4" />
