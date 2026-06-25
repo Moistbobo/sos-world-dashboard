@@ -2,14 +2,12 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Trash2, Pencil, List } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
 import { useLists } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
 import { useWorldsByIds } from '../../hooks/useWorldsByIds';
 import { Pagination } from '../../components/pagination';
 import { WorldCard } from '../../components/world-card/WorldCard';
-import type { World } from '../../types';
 
 const WORLDS_PER_PAGE = 30;
 
@@ -26,14 +24,20 @@ export function ListDetailPage({
   const list = listId ? getList(listId) : undefined;
   const [offset, setOffset] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
-  const queryClient = useQueryClient();
 
   const paginatedIds = useMemo(() => {
     if (!list) return [];
     return list.worldIds.slice(offset, offset + WORLDS_PER_PAGE);
   }, [list, offset]);
 
-  const { worlds, isPending } = useWorldsByIds(paginatedIds);
+  const pageKey = listId ? `${listId}-${offset}` : undefined;
+  const { worlds, isPending } = useWorldsByIds(paginatedIds, pageKey);
+
+  const listIds = useMemo(() => new Set(list?.worldIds ?? []), [list]);
+  const visibleWorlds = useMemo(
+    () => worlds.filter((entry) => listIds.has(entry.worldId) && entry.data),
+    [worlds, listIds],
+  );
 
   if (!list) {
     return (
@@ -59,21 +63,6 @@ export function ListDetailPage({
   };
 
   const handleRemove = (worldId: string) => {
-    const currentIds = paginatedIds;
-    const currentKey = ['worlds-by-ids', currentIds.join(',')];
-    const nextIds = list.worldIds
-      .filter((id) => id !== worldId)
-      .slice(offset, offset + WORLDS_PER_PAGE);
-    const nextKey = ['worlds-by-ids', nextIds.join(',')];
-
-    const currentData = queryClient.getQueryData<World[]>(currentKey);
-    if (currentData) {
-      queryClient.setQueryData(
-        nextKey,
-        currentData.filter((w) => w.worldId !== worldId),
-      );
-    }
-
     removeWorldFromList(list.id, worldId);
   };
 
@@ -138,15 +127,13 @@ export function ListDetailPage({
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              {worlds
-                .filter((entry) => entry.data)
-                .map((entry) => (
-                  <WorldCard
-                    key={entry.worldId}
-                    world={entry.data!}
-                    onRemove={() => handleRemove(entry.worldId)}
-                  />
-                ))}
+              {visibleWorlds.map((entry) => (
+                <WorldCard
+                  key={entry.worldId}
+                  world={entry.data!}
+                  onRemove={() => handleRemove(entry.worldId)}
+                />
+              ))}
             </div>
           )}
 

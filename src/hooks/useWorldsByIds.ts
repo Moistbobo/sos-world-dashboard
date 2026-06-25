@@ -11,9 +11,9 @@ interface WorldQueryResult {
   error: Error | null;
 }
 
-export function useWorldsByIds(worldIds: string[]) {
+export function useWorldsByIds(worldIds: string[], pageKey?: string) {
   const uniqueIds = useMemo(() => worldIds.filter(Boolean), [worldIds]);
-  const idKey = uniqueIds.join(',');
+  const idKey = pageKey ?? uniqueIds.join(',');
 
   const {
     data: fetchedWorlds,
