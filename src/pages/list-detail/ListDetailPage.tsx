@@ -30,8 +30,7 @@ export function ListDetailPage({
     return list.worldIds.slice(offset, offset + WORLDS_PER_PAGE);
   }, [list, offset]);
 
-  const pageKey = listId ? `${listId}-${offset}` : undefined;
-  const { worlds, isPending } = useWorldsByIds(paginatedIds, pageKey);
+  const { worlds, isPending } = useWorldsByIds(paginatedIds);
 
   const listIds = useMemo(() => new Set(list?.worldIds ?? []), [list]);
   const visibleWorlds = useMemo(

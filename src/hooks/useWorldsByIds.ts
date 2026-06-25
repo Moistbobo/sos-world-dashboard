@@ -11,9 +11,9 @@ interface WorldQueryResult {
   error: Error | null;
 }
 
-export function useWorldsByIds(worldIds: string[], pageKey?: string) {
+export function useWorldsByIds(worldIds: string[]) {
   const uniqueIds = useMemo(() => worldIds.filter(Boolean), [worldIds]);
-  const idKey = pageKey ?? uniqueIds.join(',');
+  const idKey = uniqueIds.join(',');
 
   const {
     data: fetchedWorlds,
@@ -26,7 +26,6 @@ export function useWorldsByIds(worldIds: string[], pageKey?: string) {
     enabled: uniqueIds.length > 0,
     staleTime: Infinity,
     gcTime: Infinity,
-    placeholderData: (previousData) => previousData,
   });
 
   const worldById = useMemo(() => {
