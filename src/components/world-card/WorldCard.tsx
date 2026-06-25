@@ -65,7 +65,7 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
             <Users className="h-3 w-3" />
             {world.capacity}
           </span>
-          <span className="inline-flex items-center gap-1">
+          <span className="inline-flex items-center gap-1" title={world.internalAddDate ? t('worldCard.tagged') : t('worldCard.added')}>
             <Calendar className="h-3 w-3" />
             {new Date(getWorldAddDate(world)).toLocaleDateString()}
           </span>
@@ -75,7 +75,7 @@ export function WorldCard({ world, onTagClick, onSelect }: WorldCardProps) {
           {world.platforms.map((p) => (
             <span
               key={p}
-              className="rounded-md bg-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+              className="rounded-md bg-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-200"
             >
               {getPlatformLabel(p)}
             </span>

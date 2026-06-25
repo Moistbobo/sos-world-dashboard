@@ -185,7 +185,10 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
             </div>
             <div className="flex items-center gap-1.5">
               <Calendar className="h-4 w-4 text-slate-400 dark:text-slate-500" />
-              {t('worldDetail.added', { date: new Date(getWorldAddDate(w)).toLocaleString() })}
+              {t(
+                w.internalAddDate ? 'worldDetail.tagged' : 'worldDetail.added',
+                { date: new Date(getWorldAddDate(w)).toLocaleString() },
+              )}
             </div>
           </div>
 
@@ -195,7 +198,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
               {w.platforms.map((p) => (
                 <span
                   key={p}
-                  className="rounded-md bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                  className="rounded-md bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-200"
                 >
                   {getPlatformLabel(p)}
                 </span>
