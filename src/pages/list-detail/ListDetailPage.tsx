@@ -130,6 +130,7 @@ export function ListDetailPage({
                 <WorldCard
                   key={entry.worldId}
                   world={entry.data!}
+                  onSelect={(id) => navigate(`/worlds/${id}`)}
                   onRemove={() => handleRemove(entry.worldId)}
                 />
               ))}
