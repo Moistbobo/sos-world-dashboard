@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, Plus } from 'lucide-react';
-import { useLists } from '../../contexts/ListsContext';
+import { useLists, MAX_WORLDS_PER_LIST } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
 
@@ -88,7 +88,7 @@ export function SaveToListDialog({
                     {list.name}
                   </span>
                   <span className="text-xs text-slate-400 dark:text-slate-500">
-                    {list.worldIds.length}
+                    {list.worldIds.length}/{MAX_WORLDS_PER_LIST}
                   </span>
                 </label>
               ))}

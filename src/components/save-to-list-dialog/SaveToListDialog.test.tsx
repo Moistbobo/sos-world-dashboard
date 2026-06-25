@@ -20,6 +20,18 @@ describe('SaveToListDialog', () => {
     expect(screen.getByText(/haven't created any lists/i)).toBeInTheDocument();
   });
 
+  it('displays world count and cap for each list', async () => {
+    const user = userEvent.setup();
+    render(<SaveToListDialog worldId="wrld_1" open={true} onOpenChange={vi.fn()} />,
+      { wrapper: Wrapper },
+    );
+    await user.click(screen.getByRole('button', { name: /create new list/i }));
+    await user.type(screen.getByRole('textbox', { name: /name/i }), 'Favorites');
+    await user.click(screen.getByRole('button', { name: /create list/i }));
+
+    expect(screen.getByText('1/250')).toBeInTheDocument();
+  });
+
   it('toggles a world in a list', async () => {
     const user = userEvent.setup();
     render(<SaveToListDialog worldId="wrld_1" open={true} onOpenChange={vi.fn()} />,
