@@ -2,12 +2,14 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Trash2, Pencil, List } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useLists } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
 import { useWorldsByIds } from '../../hooks/useWorldsByIds';
 import { Pagination } from '../../components/pagination';
 import { WorldCard } from '../../components/world-card/WorldCard';
+import type { World } from '../../types';
 
 const WORLDS_PER_PAGE = 30;
 
@@ -24,6 +26,7 @@ export function ListDetailPage({
   const list = listId ? getList(listId) : undefined;
   const [offset, setOffset] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const paginatedIds = useMemo(() => {
     if (!list) return [];
@@ -53,6 +56,25 @@ export function ListDetailPage({
       deleteList(list.id);
       navigate('/lists');
     }
+  };
+
+  const handleRemove = (worldId: string) => {
+    const currentIds = paginatedIds;
+    const currentKey = ['worlds-by-ids', currentIds.join(',')];
+    const nextIds = list.worldIds
+      .filter((id) => id !== worldId)
+      .slice(offset, offset + WORLDS_PER_PAGE);
+    const nextKey = ['worlds-by-ids', nextIds.join(',')];
+
+    const currentData = queryClient.getQueryData<World[]>(currentKey);
+    if (currentData) {
+      queryClient.setQueryData(
+        nextKey,
+        currentData.filter((w) => w.worldId !== worldId),
+      );
+    }
+
+    removeWorldFromList(list.id, worldId);
   };
 
   return (
@@ -122,7 +144,7 @@ export function ListDetailPage({
                   <WorldCard
                     key={entry.worldId}
                     world={entry.data!}
-                    onRemove={() => removeWorldFromList(list.id, entry.worldId)}
+                    onRemove={() => handleRemove(entry.worldId)}
                   />
                 ))}
             </div>
