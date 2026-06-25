@@ -23,7 +23,7 @@ interface ListsContextValue {
   createList(input: CreateListInput): WorldList;
   updateList(id: string, input: Partial<CreateListInput>): WorldList | undefined;
   deleteList(id: string): boolean;
-  addWorldToList(listId: string | undefined, worldId: string): void;
+  addWorldToList(listId: string | undefined, worldId: string): boolean;
   removeWorldFromList(listId: string | undefined, worldId: string): void;
   isWorldInList(worldId: string, listId: string): boolean;
   isWorldInAnyList(worldId: string): boolean;
@@ -43,6 +43,8 @@ export function useLists() {
 function nowIso(): string {
   return new Date().toISOString();
 }
+
+export const MAX_WORLDS_PER_LIST = 250;
 
 export function ListsProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
@@ -115,19 +117,23 @@ export function ListsProvider({ children }: { children: ReactNode }) {
 
   const addWorldToList = useCallback(
     (listId: string | undefined, worldId: string) => {
-      if (!listId) return;
-      const next = listsRef.current.map((list) =>
-        list.id === listId && !list.worldIds.includes(worldId)
-          ? {
-              ...list,
-              worldIds: [...list.worldIds, worldId],
-              updatedAt: nowIso(),
-            }
-          : list,
+      if (!listId || !worldId.trim()) return false;
+      const list = listsRef.current.find((l) => l.id === listId);
+      if (!list) return false;
+      if (list.worldIds.length >= MAX_WORLDS_PER_LIST) {
+        toast.error(t('lists.maxWorldsReached', { count: MAX_WORLDS_PER_LIST }));
+        return false;
+      }
+      if (list.worldIds.includes(worldId)) return false;
+      const next = listsRef.current.map((l) =>
+        l.id === listId
+          ? { ...l, worldIds: [...l.worldIds, worldId], updatedAt: nowIso() }
+          : l,
       );
       commit(next);
+      return true;
     },
-    [commit],
+    [commit, t],
   );
 
   const removeWorldFromList = useCallback(

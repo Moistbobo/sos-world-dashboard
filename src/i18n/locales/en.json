@@ -160,6 +160,7 @@
     "remove": "Remove",
     "removeWorld": "Remove world from list",
     "loadWorldError": "Could not load world details",
+    "maxWorldsReached": "Lists can hold up to {{count}} worlds. Remove one before adding more.",
     "listNotFound": "List not found",
     "storageError": "Failed to save your lists",
     "storageErrorMessage": "Could not save lists: {{message}}"

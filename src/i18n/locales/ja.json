@@ -160,6 +160,7 @@
     "remove": "削除",
     "removeWorld": "リストからワールドを削除",
     "loadWorldError": "ワールド詳細を読み込めませんでした",
+    "maxWorldsReached": "リストには最大 {{count}} 件のワールドまで保存できます。追加するにはワールドを削除してください。",
     "listNotFound": "リストが見つかりません",
     "storageError": "リストの保存に失敗しました",
     "storageErrorMessage": "リストを保存できませんでした: {{message}}"

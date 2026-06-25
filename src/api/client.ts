@@ -53,6 +53,7 @@ export async function fetchWorlds(params?: {
   minCapacity?: number;
   maxCapacity?: number;
   platform?: string[];
+  worldId?: string[];
 }): Promise<PaginatedWorlds> {
   const qs = new URLSearchParams();
   if (params?.limit !== undefined) qs.set('limit', String(params.limit));
@@ -69,8 +70,20 @@ export async function fetchWorlds(params?: {
   if (params?.platform?.length) {
     for (const p of params.platform) qs.append('platform', p);
   }
+  if (params?.worldId?.length) {
+    for (const id of params.worldId) qs.append('worldId', id);
+  }
   const query = qs.toString();
   return request(`/api/worlds${query ? `?${query}` : ''}`);
+}
+
+export async function fetchWorldsByIds(worldIds: string[]): Promise<World[]> {
+  if (worldIds.length === 0) return [];
+  const params = new URLSearchParams();
+  for (const id of worldIds) params.append('worldId', id);
+  const res = await request<{ worlds: World[] } | World[]>(`/api/worlds?${params.toString()}`);
+  if (Array.isArray(res)) return res;
+  return res.worlds ?? [];
 }
 
 export async function fetchWorld(worldId: string): Promise<World> {

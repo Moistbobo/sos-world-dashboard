@@ -1,5 +1,6 @@
-import { useQueries } from '@tanstack/react-query';
-import { fetchWorld } from '../api/client';
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { fetchWorldsByIds } from '../api/client';
 import type { World } from '../types';
 
 interface WorldQueryResult {
@@ -11,26 +12,47 @@ interface WorldQueryResult {
 }
 
 export function useWorldsByIds(worldIds: string[]) {
-  const uniqueIds = worldIds.filter(Boolean);
-  const queries = useQueries({
-    queries: uniqueIds.map((id) => ({
-      queryKey: ['world', id] as const,
-      queryFn: () => fetchWorld(id),
-      enabled: !!id,
-    })),
+  const uniqueIds = useMemo(() => worldIds.filter(Boolean), [worldIds]);
+  const idKey = uniqueIds.join(',');
+
+  const {
+    data: fetchedWorlds,
+    isPending,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ['worlds-by-ids', idKey],
+    queryFn: () => fetchWorldsByIds(uniqueIds),
+    enabled: uniqueIds.length > 0,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
-  const worlds: WorldQueryResult[] = uniqueIds.map((worldId, index) => ({
-    worldId,
-    data: queries[index]?.data,
-    isPending: queries[index]?.isPending ?? false,
-    isError: queries[index]?.isError ?? false,
-    error: (queries[index]?.error as Error | null) ?? null,
-  }));
+  const worldById = useMemo(() => {
+    const map = new Map<string, World>();
+    if (fetchedWorlds) {
+      for (const world of fetchedWorlds) {
+        map.set(world.worldId, world);
+      }
+    }
+    return map;
+  }, [fetchedWorlds]);
+
+  const worlds: WorldQueryResult[] = useMemo(
+    () =>
+      uniqueIds.map((worldId) => ({
+        worldId,
+        data: worldById.get(worldId),
+        isPending,
+        isError,
+        error: error ?? null,
+      })),
+    [uniqueIds, worldById, isPending, isError, error],
+  );
 
   return {
     worlds,
-    isPending: queries.some((q) => q.isPending),
-    isError: queries.some((q) => q.isError),
+    isPending,
+    isError,
   };
 }

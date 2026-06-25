@@ -1,17 +1,14 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  ArrowLeft,
-  Trash2,
-  Pencil,
-  XCircle,
-  List,
-} from 'lucide-react';
+import { ArrowLeft, Trash2, Pencil, XCircle, List } from 'lucide-react';
 import { useLists } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
 import { useWorldsByIds } from '../../hooks/useWorldsByIds';
+import { Pagination } from '../../components/pagination';
+
+const WORLDS_PER_PAGE = 30;
 
 export function ListDetailPage({
   listId: listIdProp,
@@ -24,8 +21,15 @@ export function ListDetailPage({
   const listId = listIdProp ?? paramListId;
   const { getList, updateList, deleteList, removeWorldFromList } = useLists();
   const list = listId ? getList(listId) : undefined;
-  const { worlds, isPending } = useWorldsByIds(list?.worldIds ?? []);
+  const [offset, setOffset] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
+
+  const paginatedIds = useMemo(() => {
+    if (!list) return [];
+    return list.worldIds.slice(offset, offset + WORLDS_PER_PAGE);
+  }, [list, offset]);
+
+  const { worlds, isPending } = useWorldsByIds(paginatedIds);
 
   if (!list) {
     return (
@@ -137,9 +141,7 @@ export function ListDetailPage({
                   )}
                 </div>
                 <button
-                  onClick={() =>
-                    removeWorldFromList(list.id, entry.worldId)
-                  }
+                  onClick={() => removeWorldFromList(list.id, entry.worldId)}
                   className="btn-ghost gap-1.5 text-xs"
                   aria-label={t('lists.removeWorld')}
                 >
@@ -147,6 +149,17 @@ export function ListDetailPage({
                 </button>
               </div>
             ))
+          )}
+
+          {list.worldIds.length > WORLDS_PER_PAGE && (
+            <div className="flex justify-center pt-2">
+              <Pagination
+                offset={offset}
+                limit={WORLDS_PER_PAGE}
+                total={list.worldIds.length}
+                onChangeOffset={(o) => setOffset(o)}
+              />
+            </div>
           )}
         </div>
       )}

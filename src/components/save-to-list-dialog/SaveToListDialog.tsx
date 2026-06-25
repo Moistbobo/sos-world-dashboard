@@ -36,6 +36,11 @@ export function SaveToListDialog({
     }
   };
 
+  const handleInlineCreate = (input: Parameters<typeof createList>[0]) => {
+    const list = createList(input);
+    addWorldToList(list.id, worldId);
+  };
+
   return (
     <>
       <div
@@ -115,10 +120,7 @@ export function SaveToListDialog({
         key="new"
         open={showCreate}
         onOpenChange={setShowCreate}
-        onSubmit={(input) => {
-          const list = createList(input);
-          addWorldToList(list.id, worldId);
-        }}
+        onSubmit={handleInlineCreate}
       />
     </>
   );
