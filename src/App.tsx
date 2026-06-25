@@ -6,6 +6,7 @@ import { WorldsPage } from './pages/worlds';
 import { TagsPage } from './pages/tags';
 import { ListsPage } from './pages/lists';
 import { ListDetailPage } from './pages/list-detail';
+import { WorldDetailPage } from './pages/world-detail';
 import { SettingsPage } from './pages/settings';
 
 export default function App() {
@@ -16,7 +17,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/worlds" element={<WorldsPage />} />
-          <Route path="/worlds/:worldId" element={<WorldsPage />} />
+          <Route path="/worlds/:worldId" element={<WorldDetailPage />} />
           <Route path="/tags" element={<TagsPage />} />
           <Route path="/lists" element={<ListsPage />} />
           <Route path="/lists/:listId" element={<ListDetailPage />} />

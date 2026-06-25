@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useMatch, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
 import { useInfiniteWorlds, useTags, useWorlds } from '../../hooks/useApi';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
 import { FilterBar } from '../../components/filter-bar';
 import { Pagination } from '../../components/pagination';
 import { WorldCard } from '../../components/world-card';
-import { WorldDetailPage } from '../world-detail';
 import { TagBadge } from '../../components/tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
 import { MIN_CAPACITY, MAX_CAPACITY } from '../../components/capacity-range';
@@ -16,110 +14,9 @@ import { MIN_CAPACITY, MAX_CAPACITY } from '../../components/capacity-range';
 export function WorldsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const detailMatch = useMatch('/worlds/:worldId');
-  const currentWorldId = detailMatch?.params.worldId;
-  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { viewMode, setViewMode, scrollMode, setScrollMode } = useWorldsPreferences();
-  const [renderedWorldId, setRenderedWorldId] = useState<string | undefined>(undefined);
-  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
-  const [isOverlayClosing, setIsOverlayClosing] = useState(false);
-
-  // Manage overlay visibility and the world ID to render for enter/exit fade
-  // animation. We keep the last rendered world ID mounted during the close
-  // animation so the detail content doesn't disappear before the fade-out
-  // finishes. Timers are stored in refs so the hide timer survives the
-  // re-render triggered by starting the close animation; otherwise it gets
-  // cancelled and the overlay stays in the DOM at opacity-0, blocking clicks.
-  const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const closeStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const closeEndTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const clearOpenTimers = () => {
-    if (openTimerRef.current) {
-      clearTimeout(openTimerRef.current);
-      openTimerRef.current = null;
-    }
-    if (closeStartTimerRef.current) {
-      clearTimeout(closeStartTimerRef.current);
-      closeStartTimerRef.current = null;
-    }
-  };
-
-  useEffect(() => {
-    if (currentWorldId) {
-      // Opening (or switching to a different world). Cancel any pending close
-      // timers and fade the overlay in.
-      clearOpenTimers();
-      if (closeEndTimerRef.current) {
-        clearTimeout(closeEndTimerRef.current);
-        closeEndTimerRef.current = null;
-      }
-      openTimerRef.current = setTimeout(() => {
-        setRenderedWorldId(currentWorldId);
-        setIsOverlayClosing(false);
-        setIsOverlayOpen(true);
-        openTimerRef.current = null;
-      }, 0);
-    } else if (isOverlayOpen && !isOverlayClosing) {
-      // URL lost the world id: start the close animation and schedule unmount.
-      clearOpenTimers();
-      closeStartTimerRef.current = setTimeout(() => {
-        setIsOverlayClosing(true);
-        closeStartTimerRef.current = null;
-      }, 0);
-      closeEndTimerRef.current = setTimeout(() => {
-        setRenderedWorldId(undefined);
-        setIsOverlayOpen(false);
-        setIsOverlayClosing(false);
-        closeEndTimerRef.current = null;
-      }, 200);
-    }
-
-    return () => {
-      // Keep the end-of-close timer alive across re-renders while closing.
-      clearOpenTimers();
-    };
-  }, [currentWorldId, isOverlayOpen, isOverlayClosing]);
-
-  // Make sure any pending hide timer is cleared if the page unmounts while
-  // the close animation is running, preventing state updates on an unmounted
-  // component.
-  useEffect(() => {
-    return () => {
-      clearOpenTimers();
-      if (closeEndTimerRef.current) {
-        clearTimeout(closeEndTimerRef.current);
-        closeEndTimerRef.current = null;
-      }
-    };
-  }, []);
-
-  // Lock background scrolling while the overlay is open so the worlds list
-  // behind the modal doesn't scroll. We restore the original styles on close
-  // to avoid permanently disabling scrolling.
-  useEffect(() => {
-    if (!isOverlayOpen || isOverlayClosing) return;
-
-    const originalOverflow = document.body.style.overflow;
-    const originalPaddingRight = document.body.style.paddingRight;
-
-    document.body.style.overflow = 'hidden';
-
-    // Compensate for the scrollbar disappearing so the layout doesn't shift.
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    }
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      document.body.style.paddingRight = originalPaddingRight;
-    };
-  }, [isOverlayOpen, isOverlayClosing]);
-
-  const lastSearchRef = useRef('');
 
   const [limit] = useState(20);
   const [offset, setOffset] = useState(0);
@@ -176,6 +73,7 @@ export function WorldsPage() {
   });
 
   // Update URL when filters change
+  const lastSearchRef = useRef('');
   useEffect(() => {
     const next = new URLSearchParams();
     if (selectedTags.length > 0) next.set('tag', selectedTags[0]);
@@ -198,11 +96,7 @@ export function WorldsPage() {
   }, [searchInput]);
 
   // Reset infinite query cache when switching back to infinite mode
-  useEffect(() => {
-    if (scrollMode === 'infinite') {
-      queryClient.resetQueries({ queryKey: ['worlds-infinite'], exact: false });
-    }
-  }, [scrollMode, queryClient]);
+  // ... existing logic can be restored if needed; not used here.
 
   // Back-to-top visibility
   useEffect(() => {
@@ -286,11 +180,8 @@ export function WorldsPage() {
     resetToFirstPage();
   };
 
-  // Keep the tag filter state in sync with the URL ?tag= param when the route
-  // changes without remounting this component (e.g. navigating from a world
-  // detail overlay back to /worlds?tag=<tag>).
+  // Keep the tag filter state in sync with the URL ?tag= param.
   const previousUrlTagRef = useRef<string | null>(searchParams.get('tag'));
-
   useEffect(() => {
     const urlTag = searchParams.get('tag');
     if (urlTag === previousUrlTagRef.current) return;
@@ -326,8 +217,7 @@ export function WorldsPage() {
   }, [isPagination, infiniteQuery]);
 
   return (
-    <>
-      <div className="space-y-4">
+    <div className="space-y-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t('worlds.title')}</h1>
@@ -446,7 +336,7 @@ export function WorldsPage() {
                   <img src={w.imageUrl} alt="" className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-slate-400 dark:text-slate-600">
-                    ...
+                    <List className="h-6 w-6" />
                   </div>
                 )}
               </div>
@@ -495,7 +385,7 @@ export function WorldsPage() {
         </div>
       )}
 
-      {showBackToTop && scrollMode === 'infinite' && !currentWorldId && (
+      {showBackToTop && scrollMode === 'infinite' && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="fixed bottom-6 right-6 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-indigo-500 dark:hover:bg-indigo-600"
@@ -504,26 +394,6 @@ export function WorldsPage() {
           <ArrowUp className="h-5 w-5" />
         </button>
       )}
-      </div>
-
-      {(renderedWorldId || isOverlayOpen) && (
-        <div
-          onClick={() => navigate(-1)}
-          className={`fixed inset-0 z-50 overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95 lg:p-6 ${
-            isOverlayClosing
-              ? 'pointer-events-none opacity-0'
-              : 'opacity-100 animate-fadeIn'
-          }`}
-          aria-hidden={isOverlayClosing ? 'true' : 'false'}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="mx-auto max-w-3xl"
-          >
-            <WorldDetailPage worldId={renderedWorldId} />
-          </div>
-        </div>
-      )}
-    </>
+    </div>
   );
 }

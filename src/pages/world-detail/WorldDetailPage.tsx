@@ -11,10 +11,10 @@ import { useLists } from '../../contexts/ListsContext';
 import { SaveToListDialog } from '../../components/save-to-list-dialog/SaveToListDialog';
 
 export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { worldId: paramWorldId } = useParams<{ worldId: string }>();
   const worldId = worldIdProp ?? paramWorldId;
-  const navigate = useNavigate();
   const { isWorldInAnyList } = useLists();
   const [saveOpen, setSaveOpen] = useState(false);
   const { data, isPending, isError, error, isFetching } = useWorld(worldId);
@@ -99,7 +99,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
     return (
       <div className="mx-auto max-w-3xl space-y-5">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/worlds')}
           className="btn-ghost gap-1.5 text-sm"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -117,7 +117,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
   return (
     <div className="mx-auto max-w-3xl space-y-5">
       <button
-        onClick={() => navigate(-1)}
+        onClick={() => navigate('/worlds')}
         className="btn-ghost gap-1.5 text-sm"
       >
         <ArrowLeft className="h-4 w-4" />
