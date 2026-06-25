@@ -163,7 +163,7 @@
     "removeWorld": "リストからワールドを削除",
     "removeWorldConfirmTitle": "ワールドを削除",
     "removeWorldConfirmMessage": "このワールドをリストから削除してもよろしいですか？",
-    "dontAskAgain": "次回から表示しない",
+    "dontAskAgain": "次回から表示しない（設定からいつでも変更できます）",
     "loadWorldError": "ワールド詳細を読み込めませんでした",
     "maxWorldsReached": "リストには最大 {{count}} 件のワールドまで保存できます。追加するにはワールドを削除してください。",
     "listNotFound": "リストが見つかりません",

@@ -163,7 +163,7 @@
     "removeWorld": "Remove world from list",
     "removeWorldConfirmTitle": "Remove world",
     "removeWorldConfirmMessage": "Are you sure you want to remove this world from the list?",
-    "dontAskAgain": "Don't ask again",
+    "dontAskAgain": "Don't ask again (you can change this in Settings anytime)",
     "loadWorldError": "Could not load world details",
     "maxWorldsReached": "Lists can hold up to {{count}} worlds. Remove one before adding more.",
     "listNotFound": "List not found",
