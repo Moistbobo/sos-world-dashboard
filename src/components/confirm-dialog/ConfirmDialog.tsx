@@ -55,15 +55,20 @@ export function ConfirmDialog({
         <p className="mb-4 text-sm text-slate-600 dark:text-slate-300">{message}</p>
 
         {showDontAskAgain && (
-          <label className="mb-4 flex cursor-pointer items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-            <input
-              type="checkbox"
-              checked={dontAskAgain}
-              onChange={(e) => setDontAskAgain(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
-            />
-            {dontAskAgainLabel ?? t('lists.dontAskAgain')}
-          </label>
+          <div className="mb-4">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+              <input
+                type="checkbox"
+                checked={dontAskAgain}
+                onChange={(e) => setDontAskAgain(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+              />
+              {dontAskAgainLabel ?? t('lists.dontAskAgain')}
+            </label>
+            <p className="mt-1 pl-6 text-xs text-slate-400 dark:text-slate-500">
+              {t('lists.dontAskAgainHint')}
+            </p>
+          </div>
         )}
 
         <div className="flex justify-end gap-2">
