@@ -39,11 +39,15 @@ export function ListFormDialog({
   return (
     <div className="contents">
       <div
+        onClick={() => onOpenChange(false)}
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
         role="dialog"
         aria-modal="true"
       >
-        <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900">
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900"
+        >
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-base font-semibold dark:text-white">
               {isEdit ? t('lists.editList') : t('lists.newList')}
