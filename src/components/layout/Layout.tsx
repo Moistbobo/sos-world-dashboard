@@ -15,6 +15,7 @@ import {
 import { useState, useEffect } from 'react';
 import { useHealth } from '../../hooks/useApi';
 import { ThemeToggle } from '../theme-toggle';
+import { AnalyticsConsentBanner } from '../analytics-consent-banner';
 
 import { getAppVersion } from '../../config/version';
 
@@ -49,6 +50,8 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen">
+      <AnalyticsConsentBanner />
+
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
