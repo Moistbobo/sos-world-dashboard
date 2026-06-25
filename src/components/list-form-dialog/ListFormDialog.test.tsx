@@ -8,9 +8,10 @@ beforeEach(() => {
 });
 
 describe('ListFormDialog', () => {
-  it('renders create mode with empty fields', () => {
+  it('renders create mode with empty name field', () => {
     render(<ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={vi.fn()} />);
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('');
+    expect(screen.queryByRole('textbox', { name: /icon/i })).not.toBeInTheDocument();
   });
 
   it('submits a new list', async () => {
@@ -39,7 +40,7 @@ describe('ListFormDialog', () => {
         list={{
           id: 'l1',
           name: 'Old',
-          icon: '🌙',
+          icon: null,
           color: '#ff0000',
           worldIds: [],
           createdAt: '',

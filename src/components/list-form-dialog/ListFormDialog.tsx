@@ -18,7 +18,6 @@ export function ListFormDialog({
 }: ListFormDialogProps) {
   const { t } = useTranslation();
   const [name, setName] = useState(list?.name ?? '');
-  const [icon, setIcon] = useState(list?.icon ?? '');
   const [color, setColor] = useState(list?.color ?? '#4f46e5');
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +30,7 @@ export function ListFormDialog({
       setError(t('lists.nameRequired'));
       return;
     }
-    onSubmit({ name: trimmed, icon: icon.trim() || null, color });
+    onSubmit({ name: trimmed, color });
     onOpenChange(false);
   };
 
@@ -72,25 +71,6 @@ export function ListFormDialog({
               className="input w-full"
               placeholder={t('lists.listNamePlaceholder')}
             />
-          </div>
-          <div>
-            <label
-              htmlFor="list-icon"
-              className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-300"
-            >
-              {t('lists.listIcon')}
-            </label>
-            <input
-              id="list-icon"
-              type="text"
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
-              className="input w-full"
-              placeholder={t('lists.listIconPlaceholder')}
-            />
-            <p className="mt-1 text-[10px] text-slate-500 dark:text-slate-400">
-              {t('lists.listIconHint')}
-            </p>
           </div>
           <div>
             <label
