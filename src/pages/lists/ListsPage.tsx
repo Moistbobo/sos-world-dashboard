@@ -185,20 +185,22 @@ export function ListsPage() {
       />
 
       {(renderedListId || isOverlayOpen) && (
-        <div
-          onClick={closeOverlay}
-          className={`fixed inset-0 z-50 overflow-auto bg-white/95 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95 ${
-            isOverlayClosing
-              ? 'pointer-events-none opacity-0'
-              : 'opacity-100 animate-fadeIn'
-          }`}
-          aria-hidden={isOverlayClosing ? 'true' : 'false'}
-        >
+        <div className="contents">
           <div
-            onClick={(e) => e.stopPropagation()}
-            className="mx-auto max-w-3xl"
+            onClick={closeOverlay}
+            className={`fixed inset-0 z-50 overflow-auto bg-white/95 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95 ${
+              isOverlayClosing
+                ? 'pointer-events-none opacity-0'
+                : 'opacity-100 animate-fadeIn'
+            }`}
+            aria-hidden={isOverlayClosing ? 'true' : 'false'}
           >
-            <ListDetailPage listId={renderedListId} />
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="mx-auto max-w-3xl"
+            >
+              <ListDetailPage listId={renderedListId} />
+            </div>
           </div>
         </div>
       )}
