@@ -24,7 +24,9 @@
     "good": "良い",
     "bad": "悪い",
     "more": "+{{count}}",
-    "byAuthor": "{{author}} 作成"
+    "byAuthor": "{{author}} 作成",
+    "added": "追加日",
+    "tagged": "タグ付け日"
   },
   "dashboard": {
     "title": "ダッシュボード",
@@ -60,6 +62,7 @@
     "capacity": "定員: {{capacity}}",
     "id": "ID: {{id}}",
     "added": "{{date}} に追加",
+    "tagged": "{{date}} にタグ付け",
     "platforms": "プラットフォーム",
     "tags": "タグ",
     "openInVRChat": "VRChat で開く"
