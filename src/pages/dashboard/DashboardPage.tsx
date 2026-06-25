@@ -69,6 +69,7 @@ export function DashboardPage() {
                       key={w.worldId}
                       world={w}
                       onSelect={(id) => navigate(`/worlds/${id}`)}
+                      onTagClick={(tag) => navigate(`/worlds?tag=${encodeURIComponent(tag)}`)}
                     />
                   ))}
             </div>

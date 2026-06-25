@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useMatch, useSearchParams } from 'react-router-dom';
 import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
@@ -119,6 +119,8 @@ export function WorldsPage() {
     };
   }, [isOverlayOpen, isOverlayClosing]);
 
+  const lastSearchRef = useRef('');
+
   const [limit] = useState(20);
   const [offset, setOffset] = useState(0);
   const [selectedTags, setSelectedTags] = useState<string[]>(() => {
@@ -183,10 +185,11 @@ export function WorldsPage() {
     for (const p of selectedPlatforms) {
       next.append('platform', p);
     }
-    if (next.toString() !== searchParams.toString()) {
-      setSearchParams(next, { replace: true });
-    }
-  }, [selectedTags, selectedQuality, capacityRange, selectedPlatforms, setSearchParams, searchParams]);
+    const nextSearch = next.toString();
+    if (nextSearch === lastSearchRef.current) return;
+    lastSearchRef.current = nextSearch;
+    setSearchParams(next, { replace: true });
+  }, [selectedTags, selectedQuality, capacityRange, selectedPlatforms, setSearchParams]);
 
   // Debounce search input
   useEffect(() => {
@@ -231,12 +234,12 @@ export function WorldsPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const resetToFirstPage = () => {
+  const resetToFirstPage = useCallback(() => {
     setOffset(0);
     if (scrollMode === 'infinite') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  };
+  }, [scrollMode]);
 
   const handleToggleTag = (tag: string) => {
     setSelectedTags((prev) =>
@@ -282,6 +285,26 @@ export function WorldsPage() {
     setSearchInput('');
     resetToFirstPage();
   };
+
+  // Keep the tag filter state in sync with the URL ?tag= param when the route
+  // changes without remounting this component (e.g. navigating from a world
+  // detail overlay back to /worlds?tag=<tag>).
+  const previousUrlTagRef = useRef<string | null>(searchParams.get('tag'));
+
+  useEffect(() => {
+    const urlTag = searchParams.get('tag');
+    if (urlTag === previousUrlTagRef.current) return;
+
+    previousUrlTagRef.current = urlTag;
+    const nextTags = urlTag ? [urlTag] : [];
+    setSelectedTags((prev) => {
+      if (prev.length === nextTags.length && prev[0] === nextTags[0]) {
+        return prev;
+      }
+      return nextTags;
+    });
+    resetToFirstPage();
+  }, [searchParams, resetToFirstPage]);
 
   const sentinelRef = useRef<HTMLDivElement>(null);
 
