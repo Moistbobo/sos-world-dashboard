@@ -106,9 +106,16 @@ export function ListDetailPage({
       ) : (
         <div className="space-y-3">
           {isPending && worlds.every((w) => !w.data) ? (
-            <div className="card h-20 animate-pulse bg-slate-200 dark:bg-slate-800" />
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {Array.from({ length: WORLDS_PER_PAGE }).map((_, i) => (
+                <div
+                  key={i}
+                  className="card h-64 animate-pulse bg-slate-200 dark:bg-slate-800"
+                />
+              ))}
+            </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               {worlds
                 .filter((entry) => entry.data)
                 .map((entry) => (
