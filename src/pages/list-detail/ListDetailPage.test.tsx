@@ -203,7 +203,7 @@ describe('ListDetailPage', () => {
     );
 
     await waitFor(() => {
-      expect(fetchSpy).toHaveBeenLastCalledWith(ids.slice(0, 30));
+      expect(fetchSpy).toHaveBeenLastCalledWith(ids.slice(0, 28));
     });
 
     expect(screen.getByText(/of 35/i)).toBeInTheDocument();

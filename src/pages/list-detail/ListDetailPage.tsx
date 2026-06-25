@@ -9,7 +9,7 @@ import { useWorldsByIds } from '../../hooks/useWorldsByIds';
 import { Pagination } from '../../components/pagination';
 import { WorldCard } from '../../components/world-card/WorldCard';
 
-const WORLDS_PER_PAGE = 30;
+const WORLDS_PER_PAGE = 28;
 
 export function ListDetailPage({
   listId: listIdProp,
