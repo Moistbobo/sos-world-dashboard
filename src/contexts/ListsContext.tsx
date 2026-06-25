@@ -1,0 +1,198 @@
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
+import type { CreateListInput, WorldList } from '../types/lists';
+import {
+  createList as makeList,
+  loadLists,
+  saveLists,
+} from '../utils/listsStorage';
+
+interface ListsContextValue {
+  lists: WorldList[];
+  error: string | null;
+  isLoaded: boolean;
+  createList(input: CreateListInput): WorldList;
+  updateList(id: string, input: Partial<CreateListInput>): WorldList | undefined;
+  deleteList(id: string): boolean;
+  addWorldToList(listId: string | undefined, worldId: string): void;
+  removeWorldFromList(listId: string | undefined, worldId: string): void;
+  isWorldInList(worldId: string, listId: string): boolean;
+  isWorldInAnyList(worldId: string): boolean;
+  getList(listId: string): WorldList | undefined;
+  clearError(): void;
+}
+
+const ListsContext = createContext<ListsContextValue | null>(null);
+
+export function useLists() {
+  const ctx = useContext(ListsContext);
+  if (!ctx) throw new Error('useLists must be used within ListsProvider');
+  return ctx;
+}
+
+function nowIso(): string {
+  return new Date().toISOString();
+}
+
+export function ListsProvider({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
+  const [lists, setLists] = useState<WorldList[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const { lists: loaded, error: loadError } = loadLists();
+    setLists(loaded);
+    setError(loadError);
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    const { error: saveError } = saveLists(lists);
+    if (saveError) {
+      setError(saveError);
+      toast.error(t('lists.storageError'));
+    }
+  }, [lists, isLoaded, t]);
+
+  const createList = useCallback((input: CreateListInput) => {
+    const list = makeList(input);
+    setLists((prev) => [...prev, list]);
+    return list;
+  }, []);
+
+  const updateList = useCallback(
+    (id: string, input: Partial<CreateListInput>) => {
+      let updated: WorldList | undefined;
+      setLists((prev) =>
+        prev.map((list) => {
+          if (list.id !== id) return list;
+          updated = {
+            ...list,
+            name: input.name?.trim() ?? list.name,
+            icon:
+              input.icon === undefined
+                ? list.icon
+                : input.icon?.trim() || null,
+            color: input.color?.trim() ?? list.color,
+            updatedAt: nowIso(),
+          };
+          return updated;
+        }),
+      );
+      return updated;
+    },
+    [],
+  );
+
+  const deleteList = useCallback((id: string) => {
+    let removed = false;
+    setLists((prev) => {
+      const next = prev.filter((list) => list.id !== id);
+      removed = next.length !== prev.length;
+      return next;
+    });
+    return removed;
+  }, []);
+
+  const addWorldToList = useCallback(
+    (listId: string | undefined, worldId: string) => {
+      if (!listId) return;
+      setLists((prev) =>
+        prev.map((list) =>
+          list.id === listId && !list.worldIds.includes(worldId)
+            ? {
+                ...list,
+                worldIds: [...list.worldIds, worldId],
+                updatedAt: nowIso(),
+              }
+            : list,
+        ),
+      );
+    },
+    [],
+  );
+
+  const removeWorldFromList = useCallback(
+    (listId: string | undefined, worldId: string) => {
+      if (!listId) return;
+      setLists((prev) =>
+        prev.map((list) =>
+          list.id === listId
+            ? {
+                ...list,
+                worldIds: list.worldIds.filter((id) => id !== worldId),
+                updatedAt: nowIso(),
+              }
+            : list,
+        ),
+      );
+    },
+    [],
+  );
+
+  const isWorldInList = useCallback(
+    (worldId: string, listId: string) =>
+      lists.some(
+        (list) => list.id === listId && list.worldIds.includes(worldId),
+      ),
+    [lists],
+  );
+
+  const isWorldInAnyList = useCallback(
+    (worldId: string) => lists.some((list) => list.worldIds.includes(worldId)),
+    [lists],
+  );
+
+  const getList = useCallback(
+    (listId: string) => lists.find((list) => list.id === listId),
+    [lists],
+  );
+
+  const clearError = useCallback(() => setError(null), []);
+
+  const value = useMemo(
+    () => ({
+      lists,
+      error,
+      isLoaded,
+      createList,
+      updateList,
+      deleteList,
+      addWorldToList,
+      removeWorldFromList,
+      isWorldInList,
+      isWorldInAnyList,
+      getList,
+      clearError,
+    }),
+    [
+      lists,
+      error,
+      isLoaded,
+      createList,
+      updateList,
+      deleteList,
+      addWorldToList,
+      removeWorldFromList,
+      isWorldInList,
+      isWorldInAnyList,
+      getList,
+      clearError,
+    ],
+  );
+
+  return (
+    <ListsContext.Provider value={value}>{children}</ListsContext.Provider>
+  );
+}
