@@ -40,7 +40,7 @@ export function ListFormDialog({
     <div className="contents">
       <div
         onClick={() => onOpenChange(false)}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95"
         role="dialog"
         aria-modal="true"
       >
