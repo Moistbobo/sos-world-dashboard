@@ -57,18 +57,20 @@ export function WorldCard({ world, onTagClick, onSelect, onRemove }: WorldCardPr
             </span>
           )}
         </div>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setSaveOpen(true);
-          }}
-          className="absolute top-2 right-2 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-sm transition hover:bg-white hover:text-indigo-600 dark:bg-slate-800/90 dark:text-slate-300 dark:hover:text-indigo-300"
-          aria-label={isSaved ? t('worldCard.savedToList') : t('worldCard.saveToList')}
-          title={isSaved ? t('worldCard.savedToList') : t('worldCard.saveToList')}
-        >
-          <Star className={`h-4 w-4 ${isSaved ? 'fill-current text-indigo-500' : ''}`} />
-        </button>
+        {!onRemove && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSaveOpen(true);
+            }}
+            className="absolute top-2 right-2 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-sm transition hover:bg-white hover:text-indigo-600 dark:bg-slate-800/90 dark:text-slate-300 dark:hover:text-indigo-300"
+            aria-label={isSaved ? t('worldCard.savedToList') : t('worldCard.saveToList')}
+            title={isSaved ? t('worldCard.savedToList') : t('worldCard.saveToList')}
+          >
+            <Star className={`h-4 w-4 ${isSaved ? 'fill-current text-indigo-500' : ''}`} />
+          </button>
+        )}
         {onRemove && (
           <button
             type="button"
@@ -76,7 +78,7 @@ export function WorldCard({ world, onTagClick, onSelect, onRemove }: WorldCardPr
               e.stopPropagation();
               onRemove();
             }}
-            className="absolute top-10 right-2 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-red-600 shadow-sm transition hover:bg-white hover:text-red-700 dark:bg-slate-800/90 dark:text-red-400 dark:hover:text-red-300"
+            className="absolute top-2 right-2 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-red-600 shadow-sm transition hover:bg-white hover:text-red-700 dark:bg-slate-800/90 dark:text-red-400 dark:hover:text-red-300"
             aria-label={t('lists.removeWorld')}
             title={t('lists.removeWorld')}
           >
