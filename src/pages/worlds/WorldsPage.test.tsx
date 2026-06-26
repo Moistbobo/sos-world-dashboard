@@ -252,8 +252,8 @@ describe('WorldsPage', () => {
       window.history.pushState({}, '', '/worlds?platform=android&platform=ios');
       renderPage(<WorldsPage />);
       fireEvent.click(screen.getByRole('button', { name: /filters/i }));
-      expect(screen.getByRole('button', { name: 'Android' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'iOS' })).toBeInTheDocument();
+      expect(screen.getByTestId('platform-toggle-android')).toBeInTheDocument();
+      expect(screen.getByTestId('platform-toggle-ios')).toBeInTheDocument();
       await waitFor(() =>
         expect(window.location.search).toBe('?platform=android&platform=ios')
       );

@@ -196,12 +196,14 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">{t('worldDetail.platforms')}</p>
             <div className="flex flex-wrap gap-2">
               {w.platforms.map((p) => (
-                <span
+                <button
                   key={p}
-                  className="rounded-md bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-200"
+                  type="button"
+                  onClick={() => navigate(`/worlds?platform=${encodeURIComponent(p)}`)}
+                  className="rounded-md bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 transition hover:brightness-110 dark:bg-slate-700 dark:text-slate-200"
                 >
                   {getPlatformLabel(p)}
-                </span>
+                </button>
               ))}
             </div>
           </div>
