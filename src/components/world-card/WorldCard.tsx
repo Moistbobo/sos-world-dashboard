@@ -12,11 +12,12 @@ import { SaveToListDialog } from '../save-to-list-dialog/SaveToListDialog';
 interface WorldCardProps {
   world: World;
   onTagClick?: (tag: string) => void;
+  onPlatformClick?: (platform: string) => void;
   onSelect?: (worldId: string) => void;
   onRemove?: () => void;
 }
 
-export function WorldCard({ world, onTagClick, onSelect, onRemove }: WorldCardProps) {
+export function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemove }: WorldCardProps) {
   const { t } = useTranslation();
   const { isWorldInAnyList } = useLists();
   const [saveOpen, setSaveOpen] = useState(false);
@@ -107,14 +108,27 @@ export function WorldCard({ world, onTagClick, onSelect, onRemove }: WorldCardPr
         </div>
 
         <div className="mt-3 flex flex-wrap gap-1">
-          {world.platforms.map((p) => (
-            <span
-              key={p}
-              className="rounded-md bg-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-200"
-            >
-              {getPlatformLabel(p)}
-            </span>
-          ))}
+          {world.platforms.map((p) => {
+            const label = getPlatformLabel(p);
+            return onPlatformClick ? (
+              <button
+                key={p}
+                type="button"
+                onClick={() => onPlatformClick(p)}
+                title={label}
+                className="relative z-30 rounded-md bg-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-700 transition hover:brightness-110 dark:bg-slate-700 dark:text-slate-200"
+              >
+                {label}
+              </button>
+            ) : (
+              <span
+                key={p}
+                className="rounded-md bg-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-200"
+              >
+                {label}
+              </span>
+            );
+          })}
         </div>
 
         <div className="mt-3 flex flex-wrap gap-1">

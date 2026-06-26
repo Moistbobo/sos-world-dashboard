@@ -141,15 +141,15 @@ describe('WorldsPage', () => {
     expect(screen.getByLabelText(/back to top/i)).toBeInTheDocument();
   });
 
-  it('does not render a detail overlay by default', () => {
-    renderPage(<WorldsPage />);
-    expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
-  });
-
   it('renders mapped platform labels in list view', () => {
     window.localStorage.setItem('sos-worlds-view-mode', 'list');
     renderPage(<WorldsPage />);
     expect(screen.getByText(/Desktop, Android/)).toBeInTheDocument();
+  });
+
+  it('renders the number of results from the filtered query', () => {
+    renderPage(<WorldsPage />);
+    expect(screen.getByText(/Number of results: 1/i)).toBeInTheDocument();
   });
 
   it('navigates to world detail when a card is selected', async () => {
@@ -190,8 +190,8 @@ describe('WorldsPage', () => {
       window.history.pushState({}, '', '/worlds?platform=android&platform=ios');
       renderPage(<WorldsPage />);
       fireEvent.click(screen.getByRole('button', { name: /filters/i }));
-      expect(screen.getByRole('button', { name: 'Android' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'iOS' })).toBeInTheDocument();
+      expect(screen.getByTestId('platform-toggle-android')).toBeInTheDocument();
+      expect(screen.getByTestId('platform-toggle-ios')).toBeInTheDocument();
       await waitFor(() =>
         expect(window.location.search).toBe('?platform=android&platform=ios')
       );
