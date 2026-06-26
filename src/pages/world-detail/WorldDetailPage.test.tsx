@@ -5,6 +5,7 @@ import { MemoryRouter, useLocation } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { WorldDetailPage } from './WorldDetailPage';
 import * as useApi from '../../hooks/useApi';
+import { ListsProvider } from '../../contexts/ListsContext';
 import type { World } from '../../types';
 
 const queryClient = new QueryClient({
@@ -24,7 +25,7 @@ function Wrapper({ children }: { children: React.ReactNode }) {
   return (
     <MemoryRouter initialEntries={['/worlds/wrld_123']} future={{ v7_startTransition: true }}>
       <QueryClientProvider client={queryClient}>
-        {children}
+        <ListsProvider>{children}</ListsProvider>
         <LocationProbe />
       </QueryClientProvider>
     </MemoryRouter>
@@ -135,5 +136,23 @@ describe('WorldDetailPage', () => {
 
     expect(screen.getByTestId('current-location')).toHaveTextContent('/worlds');
     expect(screen.getByTestId('current-location')).toHaveTextContent('platform=standalonewindows');
+  });
+
+  it('renders a save-to-list button', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(screen.getByRole('button', { name: /save to list/i })).toBeInTheDocument();
   });
 });

@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { WorldsPage } from './WorldsPage';
 import { WorldsPreferencesProvider } from '../../contexts/WorldsPreferencesContext';
+import { ListsProvider } from '../../contexts/ListsContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,7 +25,9 @@ function Wrapper({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <WorldsPreferencesProvider>
-        <BrowserRouter>{children}</BrowserRouter>
+        <ListsProvider>
+          <BrowserRouter>{children}</BrowserRouter>
+        </ListsProvider>
       </WorldsPreferencesProvider>
     </QueryClientProvider>
   );
@@ -47,7 +50,6 @@ const mockWorlds = [
 ];
 
 let infiniteHasNextPage = true;
-let lastInfiniteParams: unknown;
 
 vi.mock('../../hooks/useApi', () => ({
   useTags: () => ({ data: { tags: [] } }),
@@ -58,19 +60,16 @@ vi.mock('../../hooks/useApi', () => ({
     error: null,
     refetch: vi.fn(),
   }),
-  useInfiniteWorlds: (params: unknown) => {
-    lastInfiniteParams = params;
-    return {
-      data: { pages: [{ worlds: mockWorlds, total: 1, limit: 20, offset: 0 }] },
-      isPending: false,
-      isError: false,
-      error: null,
-      refetch: vi.fn(),
-      fetchNextPage: vi.fn(),
-      hasNextPage: infiniteHasNextPage,
-      isFetchingNextPage: false,
-    };
-  },
+  useInfiniteWorlds: () => ({
+    data: { pages: [{ worlds: mockWorlds, total: 1, limit: 20, offset: 0 }] },
+    isPending: false,
+    isError: false,
+    error: null,
+    refetch: vi.fn(),
+    fetchNextPage: vi.fn(),
+    hasNextPage: infiniteHasNextPage,
+    isFetchingNextPage: false,
+  }),
   useWorld: () => ({
     data: mockWorlds[0],
     isPending: false,
@@ -83,7 +82,6 @@ vi.mock('../../hooks/useApi', () => ({
 describe('WorldsPage', () => {
   beforeEach(() => {
     infiniteHasNextPage = true;
-    lastInfiniteParams = undefined;
     queryClient.clear();
     window.localStorage.clear();
     window.history.pushState({}, '', '/');
@@ -143,11 +141,6 @@ describe('WorldsPage', () => {
     expect(screen.getByLabelText(/back to top/i)).toBeInTheDocument();
   });
 
-  it('does not render a detail overlay by default', () => {
-    renderPage(<WorldsPage />);
-    expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
-  });
-
   it('renders mapped platform labels in list view', () => {
     window.localStorage.setItem('sos-worlds-view-mode', 'list');
     renderPage(<WorldsPage />);
@@ -159,72 +152,17 @@ describe('WorldsPage', () => {
     expect(screen.getByText(/Number of results: 1/i)).toBeInTheDocument();
   });
 
-  it('renders the detail overlay when a world id is in the URL', async () => {
-    window.history.pushState({}, '', '/worlds/wrld_1');
-    renderPage(<WorldsPage />);
-    await waitFor(() => {
-      expect(document.querySelector('.fixed.inset-0.z-50')).toBeInTheDocument();
-    });
-  });
-
-  it('closes the detail overlay when the backdrop is clicked', async () => {
-    window.history.pushState({}, '', '/worlds/wrld_1');
-    renderPage(<WorldsPage />);
-    const backdrop = await waitFor(() => {
-      const el = document.querySelector('.fixed.inset-0.z-50');
-      expect(el).toBeInTheDocument();
-      return el as HTMLElement;
-    });
-
-    fireEvent.click(backdrop);
-    await waitFor(() => {
-      expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
-    });
-  });
-
-  it('does not close the detail overlay when the modal content is clicked', async () => {
-    window.history.pushState({}, '', '/worlds/wrld_1');
-    renderPage(<WorldsPage />);
-    await waitFor(() => {
-      expect(document.querySelector('.fixed.inset-0.z-50')).toBeInTheDocument();
-    });
-
-    const heading = screen.getByRole('heading', { level: 1, name: /test world/i });
-    fireEvent.click(heading);
-    expect(document.querySelector('.fixed.inset-0.z-50')).toBeInTheDocument();
-  });
-
-  it('prefills the tag filter when navigating from a world detail tag', async () => {
+  it('navigates to world detail when a card is selected', async () => {
     const user = userEvent.setup();
-    window.history.pushState({}, '', '/worlds/wrld_1');
+    window.history.pushState({}, '', '/worlds');
     renderPage(<WorldsPage />);
 
+    const worldCard = screen.getByRole('button', { name: /details - test world/i });
+    expect(worldCard).toBeInTheDocument();
+
+    await user.click(worldCard);
     await waitFor(() => {
-      expect(document.querySelector('.fixed.inset-0.z-50')).toBeInTheDocument();
-    });
-
-    const overlay = document.querySelector('.fixed.inset-0.z-50') as HTMLElement;
-    const tagButton = within(overlay).getByTitle('chill');
-    expect(tagButton).toBeInTheDocument();
-
-    await user.click(tagButton);
-
-    await waitFor(() => {
-      expect(window.location.search).toContain('tag=chill');
-    });
-    await waitFor(() => {
-      expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
-    });
-
-    // Active tag chip visible in the filter bar
-    expect(within(screen.getByTestId('filter-bar-header')).getByText('chill')).toBeInTheDocument();
-
-    // Active filter count badge shows 1
-    expect(screen.getByRole('button', { name: /filters/i }).textContent).toContain('1');
-
-    // The infinite query is called with the selected tag
-    await waitFor(() => {
-      expect((lastInfiniteParams as { tag?: string[] } | undefined)?.tag).toEqual(['chill']);
+      expect(window.location.pathname).toBe('/worlds/wrld_1');
     });
   });
 
