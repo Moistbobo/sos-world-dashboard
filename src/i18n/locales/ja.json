@@ -49,7 +49,8 @@
     "switchToPagination": "ページネーションに切り替え",
     "switchToInfinite": "無限スクロールに切り替え",
     "loadingMore": "さらに読み込み中...",
-    "backToTop": "トップに戻る"
+    "backToTop": "トップに戻る",
+    "numberOfResults": "結果件数: {{count}}"
   },
   "worldDetail": {
     "loadError": "ワールドの読み込みに失敗しました: {{message}}",

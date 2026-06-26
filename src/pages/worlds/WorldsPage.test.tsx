@@ -154,6 +154,11 @@ describe('WorldsPage', () => {
     expect(screen.getByText(/Desktop, Android/)).toBeInTheDocument();
   });
 
+  it('renders the number of results from the filtered query', () => {
+    renderPage(<WorldsPage />);
+    expect(screen.getByText(/Number of results: 1/i)).toBeInTheDocument();
+  });
+
   it('renders the detail overlay when a world id is in the URL', async () => {
     window.history.pushState({}, '', '/worlds/wrld_1');
     renderPage(<WorldsPage />);
