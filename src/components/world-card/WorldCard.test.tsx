@@ -76,6 +76,30 @@ describe('WorldCard', () => {
     expect(onSelect).not.toHaveBeenCalled();
   });
 
+  it('calls onPlatformClick when a platform chip is clicked', async () => {
+    const onPlatformClick = vi.fn();
+    render(
+      <WorldCard world={mockWorld} onSelect={vi.fn()} onPlatformClick={onPlatformClick} />,
+    );
+
+    const platformButton = screen.getByTitle('Desktop');
+    await userEvent.click(platformButton);
+
+    expect(onPlatformClick).toHaveBeenCalledWith('standalonewindows');
+  });
+
+  it('does not trigger card navigation when a platform chip is clicked', async () => {
+    const onSelect = vi.fn();
+    render(
+      <WorldCard world={mockWorld} onSelect={onSelect} onPlatformClick={vi.fn()} />,
+    );
+
+    const platformButton = screen.getByTitle('Desktop');
+    await userEvent.click(platformButton);
+
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
   it('falls back to createdAt when internalAddDate is missing', () => {
     render(<WorldCard world={{ ...mockWorld, internalAddDate: undefined }} />);
     expect(
