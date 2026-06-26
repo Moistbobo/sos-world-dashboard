@@ -367,6 +367,11 @@ export function WorldsPage() {
             className="input w-full pl-9"
           />
         </div>
+        {!isPending && !isError && (
+          <p className="hidden text-sm text-slate-600 dark:text-slate-400 sm:block">
+            {t('worlds.numberOfResults', { count: total })}
+          </p>
+        )}
         <div className="flex items-center gap-1 rounded-lg border border-slate-300 bg-slate-100/50 p-0.5 dark:border-slate-700 dark:bg-slate-800/50">
           <button
             onClick={() => setViewMode('grid')}
