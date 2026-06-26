@@ -3,6 +3,7 @@
     "dashboard": "ダッシュボード",
     "worlds": "ワールド",
     "tags": "タグ",
+    "lists": "リスト",
     "settings": "設定"
   },
   "layout": {
@@ -20,6 +21,12 @@
     "details": "詳細",
     "save": "保存",
     "saved": "保存しました",
+    "cancel": "キャンセル",
+    "done": "完了",
+    "edit": "編集",
+    "delete": "削除",
+    "close": "閉じる",
+    "dismiss": "閉じる",
     "unknown": "不明",
     "good": "良い",
     "bad": "悪い",
@@ -66,7 +73,9 @@
     "tagged": "{{date}} にタグ付け",
     "platforms": "プラットフォーム",
     "tags": "タグ",
-    "openInVRChat": "VRChat で開く"
+    "openInVRChat": "VRChat で開く",
+    "saveToList": "リストに保存",
+    "savedToList": "リストに保存済み"
   },
   "tags": {
     "title": "タグ",
@@ -88,7 +97,9 @@
     "scrollModeInfinite": "無限スクロール",
     "scrollModePagination": "ページネーション",
     "appVersion": "バージョン",
-    "appVersionHint": "ダッシュボードのバージョン"
+    "appVersionHint": "ダッシュボードのバージョン",
+    "skipRemoveWorldConfirmation": "削除確認を省略",
+    "skipRemoveWorldConfirmationHint": "リストからワールドを削除する際に確認ダイアログを表示しません。"
   },
   "filter": {
     "filters": "フィルタ",
@@ -120,5 +131,45 @@
     "share": "共有",
     "success": "VRChatワールドURLをコピーしました",
     "error": "リンクをコピーできませんでした"
+  },
+  "worldCard": {
+    "saveToList": "リストに保存",
+    "savedToList": "リストに保存済み"
+  },
+  "lists": {
+    "title": "マイリスト",
+    "subtitle": "保存したワールドのコレクションを作成・管理します。",
+    "newList": "新規リスト",
+    "createList": "リストを作成",
+    "editList": "リストを編集",
+    "deleteList": "リストを削除",
+    "deleteConfirm": "\"{{name}}\" を削除しますか？ この操作は元に戻せません。",
+    "listName": "リスト名",
+    "listNamePlaceholder": "例：お気に入り",
+    "listIcon": "アイコン",
+    "listIconPlaceholder": "絵文字またはLucideアイコン名",
+    "listIconHint": "空白の場合はデフォルトの星アイコンを使用します。",
+    "listColor": "色",
+    "nameRequired": "リスト名を入力してください。",
+    "saveToList": "リストに保存",
+    "createNewListInline": "新規リストを作成",
+    "noListsYet": "まだリストを作成していません。",
+    "emptyTitle": "リストがありません",
+    "emptySubtitle": "リストを作成してワールドの保存を開始してください。",
+    "emptyDetailTitle": "このリストにワールドがありません",
+    "emptyDetailSubtitle": "ワールドページからワールドを追加してください。",
+    "worldCount": "{{count}}件のワールド",
+    "updated": "更新日 {{date}}",
+    "remove": "削除",
+    "removeWorld": "リストからワールドを削除",
+    "removeWorldConfirmTitle": "ワールドを削除",
+    "removeWorldConfirmMessage": "このワールドをリストから削除してもよろしいですか？",
+    "dontAskAgain": "次回から表示しない",
+    "dontAskAgainHint": "設定からいつでも変更できます。",
+    "loadWorldError": "ワールド詳細を読み込めませんでした",
+    "maxWorldsReached": "リストには最大 {{count}} 件のワールドまで保存できます。追加するにはワールドを削除してください。",
+    "listNotFound": "リストが見つかりません",
+    "storageError": "リストの保存に失敗しました",
+    "storageErrorMessage": "リストを保存できませんでした: {{message}}"
   }
 }

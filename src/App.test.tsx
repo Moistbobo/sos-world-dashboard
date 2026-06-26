@@ -25,8 +25,14 @@ const mockWorlds = [
   },
 ];
 
+import { ListsProvider } from './contexts/ListsContext';
+
 function Wrapper({ children }: { children: React.ReactNode }) {
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <ListsProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </ListsProvider>
+  );
 }
 
 vi.mock('./hooks/useApi', () => ({
@@ -58,51 +64,27 @@ vi.mock('./hooks/useApi', () => ({
 }));
 
 describe('App routing', () => {
-  it('opens a world detail as an overlay and keeps the list behind it', async () => {
+  it('renders the lists page at /lists', () => {
+    window.history.pushState({}, '', '/lists');
+
+    render(<App />, { wrapper: Wrapper });
+
+    expect(screen.getByRole('heading', { name: /my lists/i })).toBeInTheDocument();
+  });
+
+  it('navigates to a standalone world detail page', async () => {
     window.history.pushState({}, '', '/worlds/wrld_demo');
 
     render(<App />, { wrapper: Wrapper });
 
-    expect(screen.getByRole('heading', { name: /worlds/i })).toBeInTheDocument();
-
-    // The detail should be rendered inside the overlay.
+    // The detail should be rendered as a standalone page.
     expect(await screen.findByRole('heading', { level: 1, name: /demo world/i })).toBeInTheDocument();
 
-    // The original list heading should still be mounted behind the overlay.
-    expect(screen.getByRole('heading', { name: /worlds/i })).toBeInTheDocument();
-
-    // The overlay container itself should exist.
-    expect(document.querySelector('.fixed.inset-0.z-50')).toBeInTheDocument();
+    // The back button navigates to /worlds.
+    expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument();
   });
 
-  it('locks body scrolling while the detail overlay is open', async () => {
-    window.history.pushState({}, '', '/worlds/wrld_demo');
-
-    render(<App />, { wrapper: Wrapper });
-
-    expect(await screen.findByRole('heading', { level: 1, name: /demo world/i })).toBeInTheDocument();
-    expect(document.body.style.overflow).toBe('hidden');
-  });
-
-  it('unlocks body scrolling after the detail overlay closes', async () => {
-    window.history.pushState({}, '', '/worlds');
-    window.history.pushState({}, '', '/worlds/wrld_demo');
-
-    render(<App />, { wrapper: Wrapper });
-
-    expect(await screen.findByRole('heading', { level: 1, name: /demo world/i })).toBeInTheDocument();
-    expect(document.body.style.overflow).toBe('hidden');
-
-    fireEvent.click(screen.getByRole('button', { name: /back/i }));
-
-    await waitFor(() => {
-      expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
-    });
-
-    expect(document.body.style.overflow).toBe('');
-  });
-
-  it('closes the world detail overlay and removes it from the DOM when navigating back', async () => {
+  it('navigates back to the worlds list from the detail page', async () => {
     window.history.pushState({}, '', '/worlds');
     window.history.pushState({}, '', '/worlds/wrld_demo');
 
@@ -113,9 +95,15 @@ describe('App routing', () => {
     fireEvent.click(screen.getByRole('button', { name: /back/i }));
 
     await waitFor(() => {
-      expect(document.querySelector('.fixed.inset-0.z-50')).not.toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /worlds/i })).toBeInTheDocument();
     });
+  });
 
-    expect(screen.getByRole('heading', { name: /worlds/i })).toBeInTheDocument();
+  it('renders the list detail page at /lists/:listId', () => {
+    window.history.pushState({}, '', '/lists/missing-list');
+
+    render(<App />, { wrapper: Wrapper });
+
+    expect(screen.getByText(/list not found/i)).toBeInTheDocument();
   });
 });

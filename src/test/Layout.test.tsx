@@ -114,6 +114,7 @@ describe('Layout sidebar', () => {
     expect(labels).toContain('Dashboard')
     expect(labels).toContain('Worlds')
     expect(labels).toContain('Tags')
+    expect(labels).toContain('Lists')
     expect(labels).toContain('Settings')
   })
 

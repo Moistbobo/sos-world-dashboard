@@ -1,17 +1,22 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash } from 'lucide-react';
+import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash, Star } from 'lucide-react';
 import { useWorld } from '../../hooks/useApi';
 import { TagBadge } from '../../components/tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
 import { getWorldAddDate } from '../../utils/worldAddDate';
 import { ShareButton } from '../../components/share-button';
+import { useLists } from '../../contexts/ListsContext';
+import { SaveToListDialog } from '../../components/save-to-list-dialog/SaveToListDialog';
 
 export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { worldId: paramWorldId } = useParams<{ worldId: string }>();
   const worldId = worldIdProp ?? paramWorldId;
-  const navigate = useNavigate();
+  const { isWorldInAnyList } = useLists();
+  const [saveOpen, setSaveOpen] = useState(false);
   const { data, isPending, isError, error, isFetching } = useWorld(worldId);
 
   if (isPending && !data) {
@@ -221,7 +226,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
             </div>
           </div>
 
-          <div className="mt-6 flex gap-3">
+          <div className="mt-6 flex flex-wrap gap-3">
             <a
               href={w.vrchatUrl}
               target="_blank"
@@ -232,6 +237,15 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
               {t('worldDetail.openInVRChat')}
             </a>
             <ShareButton world={w} />
+            <button
+              type="button"
+              onClick={() => setSaveOpen(true)}
+              className={`btn-secondary gap-2 text-sm ${isWorldInAnyList(w.worldId) ? 'text-indigo-600 dark:text-indigo-300' : ''}`}
+            >
+              <Star className={`h-4 w-4 ${isWorldInAnyList(w.worldId) ? 'fill-current' : ''}`} />
+              {isWorldInAnyList(w.worldId) ? t('worldDetail.savedToList') : t('worldDetail.saveToList')}
+            </button>
+            <SaveToListDialog worldId={w.worldId} open={saveOpen} onOpenChange={setSaveOpen} />
           </div>
         </div>
       </div>
