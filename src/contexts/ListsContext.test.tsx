@@ -13,7 +13,7 @@ function TestHelper() {
     createList,
     addWorldToList,
     isWorldInAnyList,
-    exportLists,
+    exportList,
     importLists,
   } = useLists();
   return (
@@ -26,7 +26,21 @@ function TestHelper() {
       <span data-testid="saved">
         {isWorldInAnyList('wrld_1') ? 'yes' : 'no'}
       </span>
-      <button onClick={exportLists}>Export</button>
+      <button
+        onClick={() =>
+          exportList({
+            id: 'exp1',
+            name: 'Exportable',
+            icon: null,
+            color: '#ffffff',
+            worldIds: ['wrld_2'],
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+          })
+        }
+      >
+        Export
+      </button>
       <button
         onClick={() =>
           importLists([
@@ -85,7 +99,7 @@ describe('ListsContext', () => {
   it('exports lists', () => {
     vi.spyOn(listsImportExport, 'serializeLists').mockReturnValue('{}');
     vi.spyOn(listsImportExport, 'makeExportFilename').mockReturnValue(
-      'sosd-all-lists-1.json',
+      'sosd-exportable-1.json',
     );
     const downloadJson = vi
       .spyOn(listsImportExport, 'downloadJson')
@@ -98,7 +112,10 @@ describe('ListsContext', () => {
     );
     fireEvent.click(screen.getByText('Create'));
     fireEvent.click(screen.getByText('Export'));
-    expect(downloadJson).toHaveBeenCalledWith('sosd-all-lists-1.json', '{}');
+    expect(downloadJson).toHaveBeenCalledWith(
+      'sosd-exportable-1.json',
+      '{}',
+    );
   });
 
   it('imports lists by id merge', () => {

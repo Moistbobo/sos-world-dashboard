@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import {
   serializeLists,
   makeExportFilename,
+  slugifyListName,
   parseLists,
   buildImportPreview,
   mergeListsById,
@@ -34,6 +35,19 @@ describe('makeExportFilename', () => {
     expect(makeExportFilename('all-lists', 1751116800000)).toBe(
       'sosd-all-lists-1751116800000.json',
     );
+  });
+
+  it('slugifies names with spaces and special characters', () => {
+    expect(makeExportFilename('My Favorites!', 1)).toBe(
+      'sosd-my-favorites-1.json',
+    );
+  });
+});
+
+describe('slugifyListName', () => {
+  it('sanitizes names for safe filenames', () => {
+    expect(slugifyListName('Date Spots 🌙')).toBe('date-spots');
+    expect(slugifyListName('  My--List!! ')).toBe('my-list');
   });
 });
 

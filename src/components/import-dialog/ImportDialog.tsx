@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Download, Upload, FileJson } from 'lucide-react';
+import { X, Upload, FileJson } from 'lucide-react';
 import type { WorldList } from '../../types/lists';
 import {
   buildImportPreview,
@@ -14,7 +14,6 @@ interface ImportDialogProps {
   existingLists: WorldList[];
   onOpenChange: (open: boolean) => void;
   onImport: (lists: WorldList[], filename: string) => void;
-  onExport: () => void;
 }
 
 type Phase = 'transfer' | 'preview' | 'error';
@@ -24,7 +23,6 @@ export function ImportDialog({
   existingLists,
   onOpenChange,
   onImport,
-  onExport,
 }: ImportDialogProps) {
   const { t } = useTranslation();
   const [phase, setPhase] = useState<Phase>('transfer');
@@ -146,22 +144,13 @@ export function ImportDialog({
             <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
               {t('lists.transferYourListsHint')}
             </p>
-            <div className="mb-4 flex flex-wrap gap-2">
-              <button
-                onClick={onExport}
-                className="btn-primary flex-1 gap-1.5 py-2 text-xs"
-              >
-                <Download className="h-3.5 w-3.5" />
-                {t('lists.exportAllLists')}
-              </button>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="btn-secondary flex-1 gap-1.5 py-2 text-xs"
-              >
-                <Upload className="h-3.5 w-3.5" />
-                {t('lists.importFromFile')}
-              </button>
-            </div>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="btn-secondary mb-4 w-full gap-1.5 py-2 text-xs"
+            >
+              <Upload className="h-3.5 w-3.5" />
+              {t('lists.importFromFile')}
+            </button>
             <div
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}

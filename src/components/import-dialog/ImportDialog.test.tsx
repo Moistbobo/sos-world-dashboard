@@ -16,12 +16,10 @@ const sampleList = {
 function setup() {
   const onOpenChange = vi.fn();
   const onImport = vi.fn();
-  const onExport = vi.fn();
   return {
     user: userEvent.setup(),
     onOpenChange,
     onImport,
-    onExport,
     render: () =>
       render(
         <ImportDialog
@@ -29,7 +27,6 @@ function setup() {
           existingLists={[]}
           onOpenChange={onOpenChange}
           onImport={onImport}
-          onExport={onExport}
         />,
       ),
   };
@@ -46,13 +43,6 @@ describe('ImportDialog', () => {
   it('shows transfer screen', () => {
     setup().render();
     expect(screen.getByText(/transfer your lists/i)).toBeInTheDocument();
-  });
-
-  it('calls onExport when export button clicked', async () => {
-    const { user, onExport, render } = setup();
-    render();
-    await user.click(screen.getByRole('button', { name: /export all lists/i }));
-    expect(onExport).toHaveBeenCalled();
   });
 
   it('calls onOpenChange(false) when close button clicked', async () => {

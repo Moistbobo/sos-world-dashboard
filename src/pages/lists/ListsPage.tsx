@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Pencil, List, ArrowUpDown, Upload } from 'lucide-react';
+import { Plus, Trash2, Pencil, List, Upload, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLists } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
@@ -19,7 +19,7 @@ export function ListsPage() {
     updateList,
     deleteList,
     clearError,
-    exportLists,
+    exportList,
     importLists,
   } = useLists();
   const [formOpen, setFormOpen] = useState(false);
@@ -40,6 +40,14 @@ export function ListsPage() {
       deleteList(id);
     }
   };
+
+  const handleExport = useCallback(
+    (e: React.MouseEvent, list: WorldList) => {
+      e.stopPropagation();
+      exportList(list);
+    },
+    [exportList],
+  );
 
   const handleImport = useCallback(
     (incoming: WorldList[], filename: string) => {
@@ -71,8 +79,8 @@ export function ListsPage() {
             onClick={() => setImportOpen(true)}
             className="btn-secondary gap-1.5 text-xs"
           >
-            <ArrowUpDown className="h-3.5 w-3.5" />
-            {t('lists.importExport')}
+            <Upload className="h-3.5 w-3.5" />
+            {t('lists.importLists')}
           </button>
           <button
             onClick={() => {
@@ -145,6 +153,13 @@ export function ListsPage() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
+                  onClick={(e) => handleExport(e, list)}
+                  className="btn-ghost p-1.5 text-xs"
+                  aria-label={t('lists.exportList')}
+                >
+                  <Download className="h-3.5 w-3.5" />
+                </button>
+                <button
                   onClick={() => handleEdit(list)}
                   className="btn-ghost p-1.5 text-xs"
                   aria-label={t('lists.editList')}
@@ -182,7 +197,6 @@ export function ListsPage() {
         open={importOpen}
         existingLists={lists}
         onOpenChange={setImportOpen}
-        onExport={exportLists}
         onImport={handleImport}
       />
     </div>

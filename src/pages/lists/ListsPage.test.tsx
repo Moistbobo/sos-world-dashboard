@@ -18,6 +18,16 @@ function Wrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
+const sampleList = {
+  id: 'l1',
+  name: 'Favorites',
+  icon: null,
+  color: '#4f46e5',
+  worldIds: ['wrld_1'],
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z',
+};
+
 describe('ListsPage', () => {
   it('shows empty state', () => {
     render(<ListsPage />, { wrapper: Wrapper });
@@ -44,10 +54,10 @@ describe('ListsPage', () => {
     expect(screen.queryByText('Temp')).not.toBeInTheDocument();
   });
 
-  it('opens import/export dialog from header', async () => {
+  it('opens import dialog from header', async () => {
     const user = userEvent.setup();
     render(<ListsPage />, { wrapper: Wrapper });
-    await user.click(screen.getByRole('button', { name: /import \/ export/i }));
+    await user.click(screen.getByRole('button', { name: /^import$/i }));
     expect(screen.getByText(/transfer your lists/i)).toBeInTheDocument();
   });
 
@@ -60,19 +70,23 @@ describe('ListsPage', () => {
     expect(screen.getByText(/transfer your lists/i)).toBeInTheDocument();
   });
 
-  it('exports lists when export is clicked in the dialog', async () => {
+  it('exports a list when its export icon is clicked', async () => {
     const user = userEvent.setup();
     vi.spyOn(listsImportExport, 'serializeLists').mockReturnValue('{}');
     vi.spyOn(listsImportExport, 'makeExportFilename').mockReturnValue(
-      'sosd-all-lists-1.json',
+      'sosd-favorites-1.json',
     );
     const downloadJson = vi
       .spyOn(listsImportExport, 'downloadJson')
       .mockImplementation(() => {});
 
+    window.localStorage.setItem(
+      'sos-world-lists',
+      JSON.stringify({ version: 1, lists: [sampleList] }),
+    );
+
     render(<ListsPage />, { wrapper: Wrapper });
-    await user.click(screen.getByRole('button', { name: /import \/ export/i }));
-    await user.click(screen.getByRole('button', { name: /export all lists/i }));
-    expect(downloadJson).toHaveBeenCalledWith('sosd-all-lists-1.json', '{}');
+    await user.click(screen.getByRole('button', { name: /export list/i }));
+    expect(downloadJson).toHaveBeenCalledWith('sosd-favorites-1.json', '{}');
   });
 });

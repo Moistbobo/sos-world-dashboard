@@ -35,7 +35,7 @@ interface ListsContextValue {
   isWorldInAnyList(worldId: string): boolean;
   getList(listId: string): WorldList | undefined;
   clearError(): void;
-  exportLists(): void;
+  exportList(list: WorldList): void;
   importLists(lists: WorldList[]): void;
 }
 
@@ -181,9 +181,9 @@ export function ListsProvider({ children }: { children: ReactNode }) {
 
   const clearError = useCallback(() => setError(null), []);
 
-  const exportLists = useCallback(() => {
-    const content = serializeLists(listsRef.current);
-    const filename = makeExportFilename('all-lists');
+  const exportList = useCallback((list: WorldList) => {
+    const content = serializeLists([list]);
+    const filename = makeExportFilename(list.name);
     downloadJson(filename, content);
   }, []);
 
@@ -208,7 +208,7 @@ export function ListsProvider({ children }: { children: ReactNode }) {
       isWorldInAnyList,
       getList,
       clearError,
-      exportLists,
+      exportList,
       importLists,
     }),
     [
@@ -223,7 +223,7 @@ export function ListsProvider({ children }: { children: ReactNode }) {
       isWorldInAnyList,
       getList,
       clearError,
-      exportLists,
+      exportList,
       importLists,
     ],
   );
