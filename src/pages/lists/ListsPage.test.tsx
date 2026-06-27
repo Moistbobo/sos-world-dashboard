@@ -45,12 +45,13 @@ describe('ListsPage', () => {
 
   it('deletes a list after confirmation', async () => {
     const user = userEvent.setup();
-    window.confirm = vi.fn(() => true);
     render(<ListsPage />, { wrapper: Wrapper });
     await user.click(screen.getByRole('button', { name: /new list/i }));
     await user.type(screen.getByRole('textbox', { name: /name/i }), 'Temp');
     await user.click(screen.getByRole('button', { name: /create list/i }));
-    await user.click(screen.getByRole('button', { name: /delete/i }));
+    await user.click(screen.getByRole('button', { name: /delete list/i }));
+    expect(screen.getByText(/delete list/i)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /^delete$/i }));
     expect(screen.queryByText('Temp')).not.toBeInTheDocument();
   });
 

@@ -143,6 +143,8 @@
     "createList": "Create list",
     "editList": "Edit list",
     "deleteList": "Delete list",
+    "deleteConfirmTitle": "Delete list",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This cannot be undone.",
     "deleteConfirm": "Delete \"{{name}}\"? This cannot be undone.",
     "listName": "List name",
     "listNamePlaceholder": "e.g. Favorites",

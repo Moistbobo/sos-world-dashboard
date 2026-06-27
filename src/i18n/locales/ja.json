@@ -143,6 +143,8 @@
     "createList": "リストを作成",
     "editList": "リストを編集",
     "deleteList": "リストを削除",
+    "deleteConfirmTitle": "リストを削除",
+    "deleteConfirmMessage": "\"{{name}}\" を削除してもよろしいですか？ この操作は元に戻せません。",
     "deleteConfirm": "\"{{name}}\" を削除しますか？ この操作は元に戻せません。",
     "listName": "リスト名",
     "listNamePlaceholder": "例：お気に入り",
