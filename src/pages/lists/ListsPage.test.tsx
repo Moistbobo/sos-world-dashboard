@@ -1,9 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { ListsProvider } from '../../contexts/ListsContext';
 import { ListsPage } from './ListsPage';
+import * as listsImportExport from '../../utils/listsImportExport';
 
 beforeEach(() => {
   window.localStorage.clear();
@@ -41,5 +42,37 @@ describe('ListsPage', () => {
     await user.click(screen.getByRole('button', { name: /create list/i }));
     await user.click(screen.getByRole('button', { name: /delete/i }));
     expect(screen.queryByText('Temp')).not.toBeInTheDocument();
+  });
+
+  it('opens import/export dialog from header', async () => {
+    const user = userEvent.setup();
+    render(<ListsPage />, { wrapper: Wrapper });
+    await user.click(screen.getByRole('button', { name: /import \/ export/i }));
+    expect(screen.getByText(/transfer your lists/i)).toBeInTheDocument();
+  });
+
+  it('opens import dialog from empty state', async () => {
+    const user = userEvent.setup();
+    render(<ListsPage />, { wrapper: Wrapper });
+    await user.click(
+      screen.getByRole('button', { name: /import lists from file/i }),
+    );
+    expect(screen.getByText(/transfer your lists/i)).toBeInTheDocument();
+  });
+
+  it('exports lists when export is clicked in the dialog', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(listsImportExport, 'serializeLists').mockReturnValue('{}');
+    vi.spyOn(listsImportExport, 'makeExportFilename').mockReturnValue(
+      'sosd-all-lists-1.json',
+    );
+    const downloadJson = vi
+      .spyOn(listsImportExport, 'downloadJson')
+      .mockImplementation(() => {});
+
+    render(<ListsPage />, { wrapper: Wrapper });
+    await user.click(screen.getByRole('button', { name: /import \/ export/i }));
+    await user.click(screen.getByRole('button', { name: /export all lists/i }));
+    expect(downloadJson).toHaveBeenCalledWith('sosd-all-lists-1.json', '{}');
   });
 });
