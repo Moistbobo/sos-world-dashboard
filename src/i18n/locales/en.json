@@ -189,7 +189,6 @@
     "removedWorldsForList": "{{count}} removed",
     "deleteConfirmTitle": "Delete list",
     "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This cannot be undone.",
-    "importListsFromFile": "Import lists from file",
     "couldNotImport": "Could not import lists",
     "invalidBackup": "Invalid list backup",
     "invalidBackupDescription": "The file does not contain a recognized lists snapshot. Make sure you exported it from this app.",
