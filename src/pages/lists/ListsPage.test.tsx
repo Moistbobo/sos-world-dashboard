@@ -1,9 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { ListsProvider } from '../../contexts/ListsContext';
 import { ListsPage } from './ListsPage';
+import * as listsImportExport from '../../utils/listsImportExport';
 
 beforeEach(() => {
   window.localStorage.clear();
@@ -16,6 +17,16 @@ function Wrapper({ children }: { children: React.ReactNode }) {
     </MemoryRouter>
   );
 }
+
+const sampleList = {
+  id: 'l1',
+  name: 'Favorites',
+  icon: null,
+  color: '#4f46e5',
+  worldIds: ['wrld_1'],
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z',
+};
 
 describe('ListsPage', () => {
   it('shows empty state', () => {
@@ -41,5 +52,39 @@ describe('ListsPage', () => {
     await user.click(screen.getByRole('button', { name: /create list/i }));
     await user.click(screen.getByRole('button', { name: /delete/i }));
     expect(screen.queryByText('Temp')).not.toBeInTheDocument();
+  });
+
+  it('opens import dialog from header', async () => {
+    const user = userEvent.setup();
+    render(<ListsPage />, { wrapper: Wrapper });
+    await user.click(screen.getByRole('button', { name: /^import$/i }));
+    expect(screen.getByText(/transfer your lists/i)).toBeInTheDocument();
+  });
+
+  it('opens import dialog from header when lists are empty', async () => {
+    const user = userEvent.setup();
+    render(<ListsPage />, { wrapper: Wrapper });
+    await user.click(screen.getByRole('button', { name: /^import$/i }));
+    expect(screen.getByText(/transfer your lists/i)).toBeInTheDocument();
+  });
+
+  it('exports a list when its export icon is clicked', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(listsImportExport, 'serializeLists').mockReturnValue('{}');
+    vi.spyOn(listsImportExport, 'makeExportFilename').mockReturnValue(
+      'sosd-favorites-1.json',
+    );
+    const downloadJson = vi
+      .spyOn(listsImportExport, 'downloadJson')
+      .mockImplementation(() => {});
+
+    window.localStorage.setItem(
+      'sos-world-lists',
+      JSON.stringify({ version: 1, lists: [sampleList] }),
+    );
+
+    render(<ListsPage />, { wrapper: Wrapper });
+    await user.click(screen.getByRole('button', { name: /export list/i }));
+    expect(downloadJson).toHaveBeenCalledWith('sosd-favorites-1.json', '{}');
   });
 });

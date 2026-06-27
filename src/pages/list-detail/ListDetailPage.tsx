@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Trash2, Pencil, List } from 'lucide-react';
+import { ArrowLeft, Trash2, Pencil, List, Download } from 'lucide-react';
 import { useLists } from '../../contexts/ListsContext';
 import { useListsPreferences } from '../../hooks/useListsPreferences';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
@@ -22,7 +22,7 @@ export function ListDetailPage({
   const navigate = useNavigate();
   const { listId: paramListId } = useParams<{ listId: string }>();
   const listId = listIdProp ?? paramListId;
-  const { getList, updateList, deleteList, removeWorldFromList } = useLists();
+  const { getList, updateList, deleteList, removeWorldFromList, exportList } = useLists();
   const { skipRemoveWorldConfirmation, setSkipRemoveWorldConfirmation } = useListsPreferences();
   const list = listId ? getList(listId) : undefined;
   const [offset, setOffset] = useState(0);
@@ -118,6 +118,12 @@ export function ListDetailPage({
           </div>
         </div>
         <div className="flex gap-2">
+          <button
+            onClick={() => exportList(list)}
+            className="btn-secondary gap-1.5 text-xs"
+          >
+            <Download className="h-3.5 w-3.5" /> {t('lists.exportList')}
+          </button>
           <button
             onClick={() => setFormOpen(true)}
             className="btn-secondary gap-1.5 text-xs"

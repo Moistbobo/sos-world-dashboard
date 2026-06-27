@@ -170,6 +170,37 @@
     "maxWorldsReached": "リストには最大 {{count}} 件のワールドまで保存できます。追加するにはワールドを削除してください。",
     "listNotFound": "リストが見つかりません",
     "storageError": "リストの保存に失敗しました",
-    "storageErrorMessage": "リストを保存できませんでした: {{message}}"
+    "storageErrorMessage": "リストを保存できませんでした: {{message}}",
+    "importExport": "インポート / エクスポート",
+    "importLists": "インポート",
+    "exportList": "リストをエクスポート",
+    "transferYourLists": "リストの転送",
+    "transferYourListsHint": "リストはこのブラウザにのみ保存されています。バックアップをエクスポートするか友人と共有し、ファイルをどこにでもインポートできます。",
+    "exportAllLists": "リストをエクスポート (.json)",
+    "importFromFile": "ファイルからインポート",
+    "dragAndDropJson": ".json のリストファイルをここにドラッグ＆ドロップ",
+    "importPreview": "インポートのプレビュー",
+    "importSummary": "新規 {{new}}、更新 {{updated}}、変更なし {{unchanged}} · ワールド {{worlds}} 件 · 削除 {{removed}} 件",
+    "importRowNew": "新規",
+    "importRowUpdated": "更新",
+    "importListsButton": "{{count}} 件のリストをインポート",
+    "validatingWorlds": "ワールドを API と照合しています...",
+    "removedWorldsWarning": "{{count}} 件のワールドが見つからないためスキップされます。",
+    "removedWorldsForList": "{{count}} 件削除",
+    "couldNotImport": "リストをインポートできませんでした",
+    "invalidBackup": "無効なリストバックアップ",
+    "invalidBackupDescription": "ファイルに認識可能なリストスナップショットが含まれていません。このアプリからエクスポートしたものか確認してください。",
+    "tryAnotherFile": "別のファイルを試す",
+    "importSuccess": "{{filename}} からリスト {{lists}} 件（ワールド {{worlds}} 件）をインポートしました。",
+    "importError": {
+      "fileTooLarge": "ファイルが大きすぎます。最大サイズは 5 MB です。",
+      "invalidJson": "ファイルが有効な JSON ではありません。",
+      "missingVersionOrLists": "必要な version または lists フィールドがありません。",
+      "unsupportedSchemaVersion": "このバックアップ形式はサポートされていません。",
+      "listsNotArray": "lists は配列である必要があります。",
+      "noValidLists": "ファイルに有効なリストが見つかりませんでした。",
+      "readFailed": "ファイルを読み込めませんでした。",
+      "unknown": "不明なインポートエラーが発生しました。"
+    }
   }
 }
