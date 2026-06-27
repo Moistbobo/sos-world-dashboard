@@ -61,12 +61,10 @@ describe('ListsPage', () => {
     expect(screen.getByText(/transfer your lists/i)).toBeInTheDocument();
   });
 
-  it('opens import dialog from empty state', async () => {
+  it('opens import dialog from header when lists are empty', async () => {
     const user = userEvent.setup();
     render(<ListsPage />, { wrapper: Wrapper });
-    await user.click(
-      screen.getByRole('button', { name: /import lists from file/i }),
-    );
+    await user.click(screen.getByRole('button', { name: /^import$/i }));
     expect(screen.getByText(/transfer your lists/i)).toBeInTheDocument();
   });
 

@@ -1,10 +1,12 @@
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Upload, FileJson } from 'lucide-react';
+import { X, Upload, FileJson, Loader2, AlertTriangle } from 'lucide-react';
 import type { WorldList } from '../../types/lists';
 import {
   buildImportPreview,
   parseLists,
+  prepareImport,
+  validateWorldIds,
   type ImportPreview,
 } from '../../utils/listsImportExport';
 import { ListIcon } from '../../utils/listIcon';
@@ -29,7 +31,12 @@ export function ImportDialog({
   const [preview, setPreview] = useState<ImportPreview | null>(null);
   const [filename, setFilename] = useState<string>('');
   const [errorKey, setErrorKey] = useState<string>('');
+  const [removedWorldIds, setRemovedWorldIds] = useState<
+    Map<string, string[]>
+  >(new Map());
+  const [totalRemoved, setTotalRemoved] = useState(0);
   const [dragActive, setDragActive] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const reset = useCallback(() => {
@@ -37,7 +44,10 @@ export function ImportDialog({
     setPreview(null);
     setFilename('');
     setErrorKey('');
+    setRemovedWorldIds(new Map());
+    setTotalRemoved(0);
     setDragActive(false);
+    setIsValidating(false);
   }, []);
 
   const handleClose = useCallback(() => {
@@ -62,8 +72,23 @@ export function ImportDialog({
         setPhase('error');
         return;
       }
-      setPreview(buildImportPreview(existingLists, result.exportData.lists));
-      setPhase('preview');
+      setIsValidating(true);
+      try {
+        const prepared = await prepareImport(
+          result.exportData,
+          file.name,
+          validateWorldIds,
+        );
+        setRemovedWorldIds(prepared.removedWorldIds);
+        setTotalRemoved(prepared.totalRemoved);
+        setPreview(buildImportPreview(existingLists, prepared.lists));
+        setPhase('preview');
+      } catch {
+        setErrorKey('lists.importError.unknown');
+        setPhase('error');
+      } finally {
+        setIsValidating(false);
+      }
     },
     [existingLists],
   );
@@ -163,8 +188,17 @@ export function ImportDialog({
                 'text-slate-500 dark:text-slate-400',
               ].join(' ')}
             >
-              <FileJson className="mx-auto mb-2 h-6 w-6" />
-              <p>{t('lists.dragAndDropJson')}</p>
+              {isValidating ? (
+                <>
+                  <Loader2 className="mx-auto mb-2 h-6 w-6 animate-spin" />
+                  <p>{t('lists.validatingWorlds')}</p>
+                </>
+              ) : (
+                <>
+                  <FileJson className="mx-auto mb-2 h-6 w-6" />
+                  <p>{t('lists.dragAndDropJson')}</p>
+                </>
+              )}
             </div>
           </>
         )}
@@ -177,8 +211,21 @@ export function ImportDialog({
                 updated: preview.updatedCount,
                 unchanged: preview.unchangedCount,
                 worlds: preview.totalWorlds,
+                removed: totalRemoved,
               })}
             </p>
+
+            {totalRemoved > 0 && (
+              <div className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300">
+                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <p>
+                  {t('lists.removedWorldsWarning', {
+                    count: totalRemoved,
+                  })}
+                </p>
+              </div>
+            )}
+
             <div className="mb-4 max-h-56 space-y-2 overflow-y-auto pr-1">
               {preview.items.map((item) => (
                 <div
@@ -203,6 +250,10 @@ export function ImportDialog({
                       {t('lists.worldCount', {
                         count: item.list.worldIds.length,
                       })}
+                      {removedWorldIds.has(item.list.id) &&
+                        ` · ${t('lists.removedWorldsForList', {
+                          count: removedWorldIds.get(item.list.id)?.length ?? 0,
+                        })}`}
                     </p>
                   </div>
                   <span

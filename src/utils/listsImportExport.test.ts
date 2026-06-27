@@ -8,7 +8,11 @@ import {
   mergeListsById,
   downloadJson,
   MAX_IMPORT_FILE_SIZE_BYTES,
+  validateWorldIds,
+  prepareImport,
 } from './listsImportExport';
+import * as client from '../api/client';
+import type { World } from '../types';
 
 const sampleList = {
   id: 'l1',
@@ -95,6 +99,83 @@ describe('parseLists', () => {
   it('errors when no valid lists remain', () => {
     const json = JSON.stringify({ version: 1, lists: [{ id: 'bad' }] });
     expect(parseLists(json).error).toBe('noValidLists');
+  });
+});
+
+describe('validateWorldIds', () => {
+  it('returns only IDs that exist in the API', async () => {
+    const world: World = {
+      worldId: 'wrld_1',
+      name: 'Saved World',
+      authorName: 'Author',
+      capacity: 10,
+      platforms: ['pc'],
+      tags: [],
+      imageUrl: '',
+      vrchatUrl: '',
+      quality: 'good',
+      createdAt: '2024-01-01',
+      internalAddDate: '2024-02-01',
+    };
+    vi.spyOn(client, 'fetchWorldsByIds').mockResolvedValue([world]);
+
+    const result = await validateWorldIds(['wrld_1', 'wrld_deleted']);
+    expect(result).toEqual(['wrld_1']);
+  });
+
+  it('preserves all IDs when the API call fails', async () => {
+    vi.spyOn(client, 'fetchWorldsByIds').mockRejectedValue(new Error('offline'));
+
+    const result = await validateWorldIds(['wrld_1', 'wrld_2']);
+    expect(result).toEqual(['wrld_1', 'wrld_2']);
+  });
+});
+
+describe('prepareImport', () => {
+  it('strips invalid world IDs and reports them', async () => {
+    const world: World = {
+      worldId: 'wrld_1',
+      name: 'Saved World',
+      authorName: 'Author',
+      capacity: 10,
+      platforms: ['pc'],
+      tags: [],
+      imageUrl: '',
+      vrchatUrl: '',
+      quality: 'good',
+      createdAt: '2024-01-01',
+      internalAddDate: '2024-02-01',
+    };
+    vi.spyOn(client, 'fetchWorldsByIds').mockResolvedValue([world]);
+
+    const result = await prepareImport(
+      {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        lists: [{ ...sampleList, worldIds: ['wrld_1', 'wrld_2'] }],
+      },
+      'backup.json',
+    );
+
+    expect(result.lists[0].worldIds).toEqual(['wrld_1']);
+    expect(result.removedWorldIds.get('l1')).toEqual(['wrld_2']);
+    expect(result.totalRemoved).toBe(1);
+    expect(result.filename).toBe('backup.json');
+  });
+
+  it('can inject a custom validator', async () => {
+    const result = await prepareImport(
+      {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        lists: [{ ...sampleList, worldIds: ['a', 'b'] }],
+      },
+      'backup.json',
+      async () => ['a'],
+    );
+
+    expect(result.lists[0].worldIds).toEqual(['a']);
+    expect(result.totalRemoved).toBe(1);
   });
 });
 
