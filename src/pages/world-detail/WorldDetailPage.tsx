@@ -1,16 +1,22 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash } from 'lucide-react';
+import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash, Star } from 'lucide-react';
 import { useWorld } from '../../hooks/useApi';
 import { TagBadge } from '../../components/tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
+import { getWorldAddDate } from '../../utils/worldAddDate';
 import { ShareButton } from '../../components/share-button';
+import { useLists } from '../../contexts/ListsContext';
+import { SaveToListDialog } from '../../components/save-to-list-dialog/SaveToListDialog';
 
 export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { worldId: paramWorldId } = useParams<{ worldId: string }>();
   const worldId = worldIdProp ?? paramWorldId;
-  const navigate = useNavigate();
+  const { isWorldInAnyList } = useLists();
+  const [saveOpen, setSaveOpen] = useState(false);
   const { data, isPending, isError, error, isFetching } = useWorld(worldId);
 
   if (isPending && !data) {
@@ -184,7 +190,10 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
             </div>
             <div className="flex items-center gap-1.5">
               <Calendar className="h-4 w-4 text-slate-400 dark:text-slate-500" />
-              {t('worldDetail.added', { date: new Date(w.createdAt).toLocaleString() })}
+              {t(
+                w.internalAddDate ? 'worldDetail.tagged' : 'worldDetail.added',
+                { date: new Date(getWorldAddDate(w)).toLocaleString() },
+              )}
             </div>
           </div>
 
@@ -192,12 +201,14 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">{t('worldDetail.platforms')}</p>
             <div className="flex flex-wrap gap-2">
               {w.platforms.map((p) => (
-                <span
+                <button
                   key={p}
-                  className="rounded-md bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                  type="button"
+                  onClick={() => navigate(`/worlds?platform=${encodeURIComponent(p)}`)}
+                  className="rounded-md bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 transition hover:brightness-110 dark:bg-slate-700 dark:text-slate-200"
                 >
                   {getPlatformLabel(p)}
-                </span>
+                </button>
               ))}
             </div>
           </div>
@@ -215,7 +226,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
             </div>
           </div>
 
-          <div className="mt-6 flex gap-3">
+          <div className="mt-6 flex flex-wrap gap-3">
             <a
               href={w.vrchatUrl}
               target="_blank"
@@ -226,6 +237,15 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
               {t('worldDetail.openInVRChat')}
             </a>
             <ShareButton world={w} />
+            <button
+              type="button"
+              onClick={() => setSaveOpen(true)}
+              className={`btn-secondary gap-2 text-sm ${isWorldInAnyList(w.worldId) ? 'text-indigo-600 dark:text-indigo-300' : ''}`}
+            >
+              <Star className={`h-4 w-4 ${isWorldInAnyList(w.worldId) ? 'fill-current' : ''}`} />
+              {isWorldInAnyList(w.worldId) ? t('worldDetail.savedToList') : t('worldDetail.saveToList')}
+            </button>
+            <SaveToListDialog worldId={w.worldId} open={saveOpen} onOpenChange={setSaveOpen} />
           </div>
         </div>
       </div>
