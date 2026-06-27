@@ -119,8 +119,12 @@ describe('downloadJson', () => {
     vi.spyOn(document, 'createElement').mockReturnValue(
       link as unknown as HTMLAnchorElement,
     );
-    vi.spyOn(document.body, 'appendChild').mockImplementation(() => null);
-    vi.spyOn(document.body, 'removeChild').mockImplementation(() => null);
+    vi.spyOn(document.body, 'appendChild').mockImplementation(
+      () => null as unknown as Node,
+    );
+    vi.spyOn(document.body, 'removeChild').mockImplementation(
+      () => null as unknown as Node,
+    );
 
     downloadJson('test.json', '{"a":1}');
 
