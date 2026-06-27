@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useLists } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ImportDialog } from '../../components/import-dialog';
+import { ConfirmDialog } from '../../components/confirm-dialog';
 import type { WorldList } from '../../types/lists';
 import { ListIcon } from '../../utils/listIcon';
 
@@ -27,6 +28,11 @@ export function ListsPage() {
   const [editingList, setEditingList] = useState(
     undefined as ReturnType<typeof useLists>['lists'][number] | undefined,
   );
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const handleEdit = (
     list: ReturnType<typeof useLists>['lists'][number] | undefined,
@@ -36,9 +42,21 @@ export function ListsPage() {
   };
 
   const handleDelete = (id: string, name: string) => {
-    if (window.confirm(t('lists.deleteConfirm', { name }))) {
-      deleteList(id);
+    setPendingDelete({ id, name });
+    setConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (pendingDelete) {
+      deleteList(pendingDelete.id);
     }
+    setPendingDelete(null);
+    setConfirmOpen(false);
+  };
+
+  const cancelDelete = () => {
+    setPendingDelete(null);
+    setConfirmOpen(false);
   };
 
   const handleExport = useCallback(
@@ -105,10 +123,19 @@ export function ListsPage() {
       )}
 
       {lists.length === 0 ? (
-        <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
-          <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
-          <p>{t('lists.emptyTitle')}</p>
-          <p>{t('lists.emptySubtitle')}</p>
+        <div className="space-y-3">
+          <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
+            <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
+            <p>{t('lists.emptyTitle')}</p>
+            <p>{t('lists.emptySubtitle')}</p>
+          </div>
+          <button
+            onClick={() => setImportOpen(true)}
+            className="btn-ghost w-full gap-1.5 py-2 text-xs"
+          >
+            <Upload className="h-3.5 w-3.5" />
+            {t('lists.importListsFromFile')}
+          </button>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -169,6 +196,20 @@ export function ListsPage() {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title={t('lists.deleteConfirmTitle')}
+        message={
+          pendingDelete
+            ? t('lists.deleteConfirmMessage', { name: pendingDelete.name })
+            : ''
+        }
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
 
       <ListFormDialog
         key={editingList?.id ?? 'new'}
