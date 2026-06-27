@@ -2,6 +2,15 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ImportDialog } from './ImportDialog';
+import * as listsImportExport from '../../utils/listsImportExport';
+
+vi.mock('../../utils/listsImportExport', async () => {
+  const actual = await vi.importActual('../../utils/listsImportExport');
+  return {
+    ...actual,
+    validateWorldIds: vi.fn(),
+  };
+});
 
 const sampleList = {
   id: 'l1',
@@ -53,6 +62,9 @@ describe('ImportDialog', () => {
   });
 
   it('shows preview after dropping a valid file', async () => {
+    vi.mocked(listsImportExport.validateWorldIds).mockImplementation(
+      async (ids) => ids,
+    );
     const { onImport, render } = setup();
     render();
     const dropZone = screen.getByText(/drag and drop/i).parentElement!;
@@ -60,7 +72,16 @@ describe('ImportDialog', () => {
     fireEvent.drop(dropZone, { dataTransfer: { files: [file] } });
     expect(await screen.findByText(/import preview/i)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /import 1 list/i }));
-    expect(onImport).toHaveBeenCalledWith([sampleList], 'backup.json');
+    expect(onImport).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: sampleList.id,
+          name: sampleList.name,
+          worldIds: sampleList.worldIds,
+        }),
+      ]),
+      'backup.json',
+    );
   });
 
   it('shows error for invalid json', async () => {
@@ -70,5 +91,22 @@ describe('ImportDialog', () => {
     const file = createJsonFile({ version: 1, lists: [{ id: 'bad' }] });
     fireEvent.drop(dropZone, { dataTransfer: { files: [file] } });
     expect(await screen.findByText(/could not import/i)).toBeInTheDocument();
+  });
+
+  it('warns when worlds are removed after API validation', async () => {
+    vi.mocked(listsImportExport.validateWorldIds).mockImplementation(
+      async (ids) => ids.filter((id) => id === 'wrld_1'),
+    );
+    const { render } = setup();
+    render();
+    const dropZone = screen.getByText(/drag and drop/i).parentElement!;
+    const file = createJsonFile({
+      version: 1,
+      lists: [{ ...sampleList, worldIds: ['wrld_1', 'wrld_deleted'] }],
+    });
+    fireEvent.drop(dropZone, { dataTransfer: { files: [file] } });
+    expect(
+      await screen.findByText(/world\(s\) were not found/i),
+    ).toBeInTheDocument();
   });
 });

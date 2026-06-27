@@ -1,3 +1,4 @@
+import { fetchWorldsByIds } from '../api/client';
 import type { WorldList } from '../types/lists';
 
 export const EXPORT_SCHEMA_VERSION = 1;
@@ -23,9 +24,51 @@ export interface ImportPreview {
   items: ImportPreviewItem[];
 }
 
+export interface ParsedImport {
+  lists: WorldList[];
+  removedWorldIds: Map<string, string[]>;
+  totalRemoved: number;
+  filename: string;
+}
+
+export async function prepareImport(
+  result: ListsExport,
+  filename: string,
+  validator: (ids: string[]) => Promise<string[]> = validateWorldIds,
+): Promise<ParsedImport> {
+  const removedWorldIds = new Map<string, string[]>();
+  let totalRemoved = 0;
+
+  const lists: WorldList[] = [];
+  for (const list of result.lists) {
+    const validIds = await validator(list.worldIds);
+    const removed = list.worldIds.filter((id) => !validIds.includes(id));
+    if (removed.length) {
+      removedWorldIds.set(list.id, removed);
+      totalRemoved += removed.length;
+    }
+    lists.push({ ...list, worldIds: validIds });
+  }
+
+  return { lists, removedWorldIds, totalRemoved, filename };
+}
+
 export interface ImportParseResult {
   exportData: ListsExport | null;
   error: string | null;
+}
+
+export async function validateWorldIds(worldIds: string[]): Promise<string[]> {
+  if (worldIds.length === 0) return [];
+  try {
+    const worlds = await fetchWorldsByIds(worldIds);
+    const validIds = new Set(worlds.map((w) => w.worldId));
+    return worldIds.filter((id) => validIds.has(id));
+  } catch (err) {
+    // If the API is unreachable, preserve all IDs rather than silently deleting data.
+    console.warn('validateWorldIds failed, preserving all world IDs', err);
+    return worldIds;
+  }
 }
 
 export function serializeLists(lists: WorldList[]): string {
