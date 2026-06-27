@@ -62,13 +62,6 @@ describe('ListsPage', () => {
     expect(screen.getByText(/transfer your lists/i)).toBeInTheDocument();
   });
 
-  it('opens import dialog from header when lists are empty', async () => {
-    const user = userEvent.setup();
-    render(<ListsPage />, { wrapper: Wrapper });
-    await user.click(screen.getByRole('button', { name: /^import$/i }));
-    expect(screen.getByText(/transfer your lists/i)).toBeInTheDocument();
-  });
-
   it('exports a list when its export icon is clicked', async () => {
     const user = userEvent.setup();
     vi.spyOn(listsImportExport, 'serializeLists').mockReturnValue('{}');

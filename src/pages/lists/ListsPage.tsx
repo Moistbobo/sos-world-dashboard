@@ -123,19 +123,10 @@ export function ListsPage() {
       )}
 
       {lists.length === 0 ? (
-        <div className="space-y-3">
-          <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
-            <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
-            <p>{t('lists.emptyTitle')}</p>
-            <p>{t('lists.emptySubtitle')}</p>
-          </div>
-          <button
-            onClick={() => setImportOpen(true)}
-            className="btn-ghost w-full gap-1.5 py-2 text-xs"
-          >
-            <Upload className="h-3.5 w-3.5" />
-            {t('lists.importListsFromFile')}
-          </button>
+        <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
+          <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
+          <p>{t('lists.emptyTitle')}</p>
+          <p>{t('lists.emptySubtitle')}</p>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
