@@ -1,0 +1,84 @@
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { ImportDialog } from './ImportDialog';
+
+const sampleList = {
+  id: 'l1',
+  name: 'Favorites',
+  icon: null,
+  color: '#4f46e5',
+  worldIds: ['wrld_1'],
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z',
+};
+
+function setup() {
+  const onOpenChange = vi.fn();
+  const onImport = vi.fn();
+  const onExport = vi.fn();
+  return {
+    user: userEvent.setup(),
+    onOpenChange,
+    onImport,
+    onExport,
+    render: () =>
+      render(
+        <ImportDialog
+          open
+          existingLists={[]}
+          onOpenChange={onOpenChange}
+          onImport={onImport}
+          onExport={onExport}
+        />,
+      ),
+  };
+}
+
+function createJsonFile(contents: object, name = 'backup.json') {
+  const blob = new Blob([JSON.stringify(contents)], {
+    type: 'application/json',
+  });
+  return new File([blob], name, { type: 'application/json' });
+}
+
+describe('ImportDialog', () => {
+  it('shows transfer screen', () => {
+    setup().render();
+    expect(screen.getByText(/transfer your lists/i)).toBeInTheDocument();
+  });
+
+  it('calls onExport when export button clicked', async () => {
+    const { user, onExport, render } = setup();
+    render();
+    await user.click(screen.getByRole('button', { name: /export all lists/i }));
+    expect(onExport).toHaveBeenCalled();
+  });
+
+  it('calls onOpenChange(false) when close button clicked', async () => {
+    const { user, onOpenChange, render } = setup();
+    render();
+    await user.click(screen.getByRole('button', { name: /close/i }));
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('shows preview after dropping a valid file', async () => {
+    const { onImport, render } = setup();
+    render();
+    const dropZone = screen.getByText(/drag and drop/i).parentElement!;
+    const file = createJsonFile({ version: 1, lists: [sampleList] });
+    fireEvent.drop(dropZone, { dataTransfer: { files: [file] } });
+    expect(await screen.findByText(/import preview/i)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /import 1 list/i }));
+    expect(onImport).toHaveBeenCalledWith([sampleList], 'backup.json');
+  });
+
+  it('shows error for invalid json', async () => {
+    const { render } = setup();
+    render();
+    const dropZone = screen.getByText(/drag and drop/i).parentElement!;
+    const file = createJsonFile({ version: 1, lists: [{ id: 'bad' }] });
+    fireEvent.drop(dropZone, { dataTransfer: { files: [file] } });
+    expect(await screen.findByText(/could not import/i)).toBeInTheDocument();
+  });
+});

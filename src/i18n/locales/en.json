@@ -170,6 +170,33 @@
     "maxWorldsReached": "Lists can hold up to {{count}} worlds. Remove one before adding more.",
     "listNotFound": "List not found",
     "storageError": "Failed to save your lists",
-    "storageErrorMessage": "Could not save lists: {{message}}"
+    "storageErrorMessage": "Could not save lists: {{message}}",
+    "importExport": "Import / Export",
+    "importListsFromFile": "Import lists from file",
+    "transferYourLists": "Transfer your lists",
+    "transferYourListsHint": "Lists are stored only in this browser. Export a backup or share them with a friend, then import the file anywhere.",
+    "exportAllLists": "Export all lists (.json)",
+    "importFromFile": "Import from file",
+    "dragAndDropJson": "Drag and drop a .json list file here",
+    "importPreview": "Import preview",
+    "importSummary": "{{new}} new, {{updated}} updated, {{unchanged}} unchanged · {{worlds}} worlds",
+    "importRowNew": "New",
+    "importRowUpdated": "Updated",
+    "importListsButton": "Import {{count}} lists",
+    "couldNotImport": "Could not import lists",
+    "invalidBackup": "Invalid list backup",
+    "invalidBackupDescription": "The file does not contain a recognized lists snapshot. Make sure you exported it from this app.",
+    "tryAnotherFile": "Try another file",
+    "importSuccess": "Imported {{lists}} lists with {{worlds}} worlds from {{filename}}.",
+    "importError": {
+      "fileTooLarge": "File is too large. Maximum size is 5 MB.",
+      "invalidJson": "The file is not valid JSON.",
+      "missingVersionOrLists": "Missing required version or lists field.",
+      "unsupportedSchemaVersion": "This backup format is not supported.",
+      "listsNotArray": "lists must be an array.",
+      "noValidLists": "No valid lists were found in the file.",
+      "readFailed": "Could not read the file.",
+      "unknown": "An unknown import error occurred."
+    }
   }
 }

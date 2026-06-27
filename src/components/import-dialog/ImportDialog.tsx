@@ -1,0 +1,293 @@
+import { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { X, Download, Upload, FileJson } from 'lucide-react';
+import type { WorldList } from '../../types/lists';
+import {
+  buildImportPreview,
+  parseLists,
+  type ImportPreview,
+} from '../../utils/listsImportExport';
+import { ListIcon } from '../../utils/listIcon';
+
+interface ImportDialogProps {
+  open: boolean;
+  existingLists: WorldList[];
+  onOpenChange: (open: boolean) => void;
+  onImport: (lists: WorldList[], filename: string) => void;
+  onExport: () => void;
+}
+
+type Phase = 'transfer' | 'preview' | 'error';
+
+export function ImportDialog({
+  open,
+  existingLists,
+  onOpenChange,
+  onImport,
+  onExport,
+}: ImportDialogProps) {
+  const { t } = useTranslation();
+  const [phase, setPhase] = useState<Phase>('transfer');
+  const [preview, setPreview] = useState<ImportPreview | null>(null);
+  const [filename, setFilename] = useState<string>('');
+  const [errorKey, setErrorKey] = useState<string>('');
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const reset = useCallback(() => {
+    setPhase('transfer');
+    setPreview(null);
+    setFilename('');
+    setErrorKey('');
+    setDragActive(false);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    reset();
+    onOpenChange(false);
+  }, [onOpenChange, reset]);
+
+  const processFile = useCallback(
+    async (file: File) => {
+      setFilename(file.name);
+      let text: string;
+      try {
+        text = await file.text();
+      } catch {
+        setErrorKey('lists.importError.readFailed');
+        setPhase('error');
+        return;
+      }
+      const result = parseLists(text);
+      if (result.error || !result.exportData) {
+        setErrorKey(`lists.importError.${result.error}`);
+        setPhase('error');
+        return;
+      }
+      setPreview(buildImportPreview(existingLists, result.exportData.lists));
+      setPhase('preview');
+    },
+    [existingLists],
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
+      const file = e.dataTransfer.files?.[0];
+      if (file) processFile(file);
+    },
+    [processFile],
+  );
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  }, []);
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) processFile(file);
+      e.target.value = '';
+    },
+    [processFile],
+  );
+
+  const handleImport = useCallback(() => {
+    if (!preview) return;
+    onImport(
+      preview.items.map((item) => item.list),
+      filename,
+    );
+    handleClose();
+  }, [preview, onImport, filename, handleClose]);
+
+  if (!open) return null;
+
+  return (
+    <div
+      onClick={handleClose}
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900"
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold dark:text-white">
+            {phase === 'preview'
+              ? t('lists.importPreview')
+              : phase === 'error'
+                ? t('lists.couldNotImport')
+                : t('lists.transferYourLists')}
+          </h3>
+          <button
+            onClick={handleClose}
+            aria-label={t('common.close')}
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {phase === 'transfer' && (
+          <>
+            <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
+              {t('lists.transferYourListsHint')}
+            </p>
+            <div className="mb-4 flex flex-wrap gap-2">
+              <button
+                onClick={onExport}
+                className="btn-primary flex-1 gap-1.5 py-2 text-xs"
+              >
+                <Download className="h-3.5 w-3.5" />
+                {t('lists.exportAllLists')}
+              </button>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="btn-secondary flex-1 gap-1.5 py-2 text-xs"
+              >
+                <Upload className="h-3.5 w-3.5" />
+                {t('lists.importFromFile')}
+              </button>
+            </div>
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={[
+                'rounded-xl border-2 border-dashed p-6 text-center text-sm transition',
+                dragActive
+                  ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30'
+                  : 'border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50',
+                'text-slate-500 dark:text-slate-400',
+              ].join(' ')}
+            >
+              <FileJson className="mx-auto mb-2 h-6 w-6" />
+              <p>{t('lists.dragAndDropJson')}</p>
+            </div>
+          </>
+        )}
+
+        {phase === 'preview' && preview && (
+          <>
+            <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
+              {t('lists.importSummary', {
+                new: preview.newCount,
+                updated: preview.updatedCount,
+                unchanged: preview.unchangedCount,
+                worlds: preview.totalWorlds,
+              })}
+            </p>
+            <div className="mb-4 max-h-56 space-y-2 overflow-y-auto pr-1">
+              {preview.items.map((item) => (
+                <div
+                  key={item.list.id}
+                  className="flex items-center gap-3 rounded-lg border border-slate-200 p-2 dark:border-slate-700"
+                >
+                  <div
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                    style={{ backgroundColor: `${item.list.color}20` }}
+                  >
+                    <ListIcon
+                      icon={item.list.icon}
+                      color={item.list.color}
+                      className="h-4 w-4"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-slate-900 dark:text-white">
+                      {item.list.name}
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {t('lists.worldCount', {
+                        count: item.list.worldIds.length,
+                      })}
+                    </p>
+                  </div>
+                  <span
+                    className={[
+                      'rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase',
+                      item.status === 'new'
+                        ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300'
+                        : 'bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300',
+                    ].join(' ')}
+                  >
+                    {item.status === 'new'
+                      ? t('lists.importRowNew')
+                      : t('lists.importRowUpdated')}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={handleClose}
+                className="btn-ghost px-3 py-1.5 text-xs"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={handleImport}
+                className="btn-primary px-3 py-1.5 text-xs"
+              >
+                {t('lists.importListsButton', {
+                  count: preview.items.length,
+                })}
+              </button>
+            </div>
+          </>
+        )}
+
+        {phase === 'error' && (
+          <>
+            <p className="mb-3 text-sm text-slate-600 dark:text-slate-300">
+              {t('lists.invalidBackupDescription')}
+            </p>
+            <p className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
+              {t(errorKey || 'lists.importError.unknown')}
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={handleClose}
+                className="btn-ghost px-3 py-1.5 text-xs"
+              >
+                {t('common.close')}
+              </button>
+              <button
+                onClick={() => {
+                  reset();
+                  fileInputRef.current?.click();
+                }}
+                className="btn-primary gap-1.5 px-3 py-1.5 text-xs"
+              >
+                <Upload className="h-3.5 w-3.5" />
+                {t('lists.tryAnotherFile')}
+              </button>
+            </div>
+          </>
+        )}
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json,application/json"
+          onChange={handleInputChange}
+          className="hidden"
+          aria-label={t('lists.importFromFile')}
+        />
+      </div>
+    </div>
+  );
+}
