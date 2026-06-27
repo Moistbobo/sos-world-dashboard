@@ -16,6 +16,12 @@ import {
   loadLists,
   saveLists,
 } from '../utils/listsStorage';
+import {
+  downloadJson,
+  makeExportFilename,
+  mergeListsById,
+  serializeLists,
+} from '../utils/listsImportExport';
 
 interface ListsContextValue {
   lists: WorldList[];
@@ -29,6 +35,8 @@ interface ListsContextValue {
   isWorldInAnyList(worldId: string): boolean;
   getList(listId: string): WorldList | undefined;
   clearError(): void;
+  exportList(list: WorldList): void;
+  importLists(lists: WorldList[]): void;
 }
 
 const ListsContext = createContext<ListsContextValue | null>(null);
@@ -173,6 +181,20 @@ export function ListsProvider({ children }: { children: ReactNode }) {
 
   const clearError = useCallback(() => setError(null), []);
 
+  const exportList = useCallback((list: WorldList) => {
+    const content = serializeLists([list]);
+    const filename = makeExportFilename(list.name);
+    downloadJson(filename, content);
+  }, []);
+
+  const importLists = useCallback(
+    (incoming: WorldList[]) => {
+      const next = mergeListsById(listsRef.current, incoming);
+      commit(next);
+    },
+    [commit],
+  );
+
   const value = useMemo(
     () => ({
       lists,
@@ -186,6 +208,8 @@ export function ListsProvider({ children }: { children: ReactNode }) {
       isWorldInAnyList,
       getList,
       clearError,
+      exportList,
+      importLists,
     }),
     [
       lists,
@@ -199,6 +223,8 @@ export function ListsProvider({ children }: { children: ReactNode }) {
       isWorldInAnyList,
       getList,
       clearError,
+      exportList,
+      importLists,
     ],
   );
 

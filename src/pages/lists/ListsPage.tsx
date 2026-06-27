@@ -1,20 +1,34 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Pencil, List } from 'lucide-react';
+import { Plus, Trash2, Pencil, List, Upload, Download } from 'lucide-react';
+import { toast } from 'sonner';
 import { useLists } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
+import { ImportDialog } from '../../components/import-dialog';
+import type { WorldList } from '../../types/lists';
 import { ListIcon } from '../../utils/listIcon';
 
 export function ListsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { lists, error, createList, updateList, deleteList, clearError } =
-    useLists();
+  const {
+    lists,
+    error,
+    createList,
+    updateList,
+    deleteList,
+    clearError,
+    exportList,
+    importLists,
+  } = useLists();
   const [formOpen, setFormOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [editingList, setEditingList] = useState(
     undefined as ReturnType<typeof useLists>['lists'][number] | undefined,
-  );  const handleEdit = (
+  );
+
+  const handleEdit = (
     list: ReturnType<typeof useLists>['lists'][number] | undefined,
   ) => {
     setEditingList(list);
@@ -27,6 +41,28 @@ export function ListsPage() {
     }
   };
 
+  const handleExport = useCallback(
+    (e: React.MouseEvent, list: WorldList) => {
+      e.stopPropagation();
+      exportList(list);
+    },
+    [exportList],
+  );
+
+  const handleImport = useCallback(
+    (incoming: WorldList[], filename: string) => {
+      importLists(incoming);
+      toast.success(
+        t('lists.importSuccess', {
+          lists: incoming.length,
+          worlds: incoming.reduce((sum, list) => sum + list.worldIds.length, 0),
+          filename,
+        }),
+      );
+    },
+    [importLists, t],
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -38,16 +74,25 @@ export function ListsPage() {
             {t('lists.subtitle')}
           </p>
         </div>
-        <button
-          onClick={() => {
-            setEditingList(undefined);
-            setFormOpen(true);
-          }}
-          className="btn-primary gap-1.5 text-xs"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          {t('lists.newList')}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setImportOpen(true)}
+            className="btn-secondary gap-1.5 text-xs"
+          >
+            <Upload className="h-3.5 w-3.5" />
+            {t('lists.importLists')}
+          </button>
+          <button
+            onClick={() => {
+              setEditingList(undefined);
+              setFormOpen(true);
+            }}
+            className="btn-primary gap-1.5 text-xs"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            {t('lists.newList')}
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -99,6 +144,13 @@ export function ListsPage() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
+                  onClick={(e) => handleExport(e, list)}
+                  className="btn-ghost p-1.5 text-xs"
+                  aria-label={t('lists.exportList')}
+                >
+                  <Download className="h-3.5 w-3.5" />
+                </button>
+                <button
                   onClick={() => handleEdit(list)}
                   className="btn-ghost p-1.5 text-xs"
                   aria-label={t('lists.editList')}
@@ -130,6 +182,13 @@ export function ListsPage() {
             createList(input);
           }
         }}
+      />
+
+      <ImportDialog
+        open={importOpen}
+        existingLists={lists}
+        onOpenChange={setImportOpen}
+        onImport={handleImport}
       />
     </div>
   );
