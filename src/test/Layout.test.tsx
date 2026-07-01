@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Layout } from '../components/Layout'
+import { Layout } from '../components/layout'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -114,6 +114,7 @@ describe('Layout sidebar', () => {
     expect(labels).toContain('Dashboard')
     expect(labels).toContain('Worlds')
     expect(labels).toContain('Tags')
+    expect(labels).toContain('Lists')
     expect(labels).toContain('Settings')
   })
 
@@ -132,5 +133,17 @@ describe('Layout sidebar', () => {
       // Desktop collapse toggle uses aria-label
       expect(screen.getByLabelText('Collapse sidebar')).toBeInTheDocument()
     })
+  })
+
+  it('renders the sticky header above world card elements', () => {
+    render(
+      <Layout>
+        <div>Test content</div>
+      </Layout>,
+      { wrapper: Wrapper },
+    )
+
+    const header = document.querySelector('header.sticky')
+    expect(header).toHaveClass('z-40')
   })
 })

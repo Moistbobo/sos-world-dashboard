@@ -47,3 +47,9 @@ coverage/
 .temp/
 tmp/
 stats.html
+.vercel
+.env*
+pi/
+brainstorm/
+docs/superpowers
+.worktrees/

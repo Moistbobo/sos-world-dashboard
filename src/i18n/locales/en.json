@@ -3,6 +3,7 @@
     "dashboard": "Dashboard",
     "worlds": "Worlds",
     "tags": "Tags",
+    "lists": "Lists",
     "settings": "Settings"
   },
   "layout": {
@@ -12,18 +13,27 @@
     "offline": "Offline / Unauthorized",
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
-    "closeSidebar": "Close sidebar"
+    "closeSidebar": "Close sidebar",
+    "version": "Version"
   },
   "common": {
     "back": "Back",
     "details": "Details",
     "save": "Save",
     "saved": "Saved",
+    "cancel": "Cancel",
+    "done": "Done",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close",
+    "dismiss": "Dismiss",
     "unknown": "Unknown",
     "good": "Good",
     "bad": "Bad",
     "more": "+{{count}}",
-    "byAuthor": "by {{author}}"
+    "byAuthor": "by {{author}}",
+    "added": "Added on",
+    "tagged": "Tagged on"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -42,10 +52,16 @@
     "searchPlaceholder": "Search name, author, ID...",
     "loadError": "Failed to load worlds: {{message}}",
     "noWorlds": "No worlds found. Adjust your filters or",
-    "tryAgain": "try again"
+    "tryAgain": "try again",
+    "switchToPagination": "Switch to pagination",
+    "switchToInfinite": "Switch to endless scroll",
+    "loadingMore": "Loading more worlds...",
+    "backToTop": "Back to top",
+    "numberOfResults": "Number of results: {{count}}"
   },
   "worldDetail": {
     "loadError": "Failed to load world: {{message}}",
+    "refreshError": "Failed to refresh world details: {{message}}",
     "byAuthor": "by {{author}}",
     "unknownAuthor": "Unknown author",
     "qualityGood": "Quality: Good",
@@ -53,10 +69,13 @@
     "noQuality": "No quality rating",
     "capacity": "Capacity: {{capacity}}",
     "id": "ID: {{id}}",
-    "added": "Added {{date}}",
+    "added": "Added on: {{date}}",
+    "tagged": "Tagged on: {{date}}",
     "platforms": "Platforms",
     "tags": "Tags",
-    "openInVRChat": "Open in VRChat"
+    "openInVRChat": "Open in VRChat",
+    "saveToList": "Save to list",
+    "savedToList": "Saved to list"
   },
   "tags": {
     "title": "Tags",
@@ -68,7 +87,19 @@
     "title": "Settings",
     "subtitle": "Configure application preferences.",
     "language": "Language",
-    "languageHint": "Select your preferred display language."
+    "languageHint": "Select your preferred display language.",
+    "viewMode": "World view mode",
+    "viewModeHint": "Choose how worlds are displayed on the Worlds page.",
+    "viewModeGrid": "Grid",
+    "viewModeList": "List",
+    "scrollMode": "World scroll mode",
+    "scrollModeHint": "Choose how the Worlds page loads more results.",
+    "scrollModeInfinite": "Infinite scroll",
+    "scrollModePagination": "Pagination",
+    "appVersion": "Version",
+    "appVersionHint": "Dashboard version",
+    "skipRemoveWorldConfirmation": "Skip remove confirmation",
+    "skipRemoveWorldConfirmationHint": "Don't show a confirmation when removing worlds from lists."
   },
   "filter": {
     "filters": "Filters",
@@ -76,8 +107,16 @@
     "good": "✅ Good",
     "bad": "❌ Bad",
     "tags": "Tags",
-    "searchTagsPlaceholder": "Search tags...",
-    "clearAll": "Clear all"
+    "clearAll": "Clear all",
+    "capacity": "Player capacity",
+    "minCapacity": "Minimum capacity",
+    "maxCapacity": "Maximum capacity",
+    "capacityTo": "to",
+    "capacityUnit": "players",
+    "removeCapacity": "Remove capacity filter",
+    "platform": "Platform",
+    "platforms": "Platforms",
+    "removePlatform": "Remove platform filter"
   },
   "pagination": {
     "prev": "Prev",
@@ -87,5 +126,83 @@
   "theme": {
     "lightMode": "Switch to light mode",
     "darkMode": "Switch to dark mode"
+  },
+  "share": {
+    "share": "Share",
+    "success": "VRChat world URL copied",
+    "error": "Could not copy link"
+  },
+  "worldCard": {
+    "saveToList": "Save to list",
+    "savedToList": "Saved to list"
+  },
+  "lists": {
+    "title": "My Lists",
+    "subtitle": "Create and manage your saved world collections.",
+    "newList": "New list",
+    "createList": "Create list",
+    "editList": "Edit list",
+    "deleteList": "Delete list",
+    "deleteConfirm": "Delete \"{{name}}\"? This cannot be undone.",
+    "listName": "List name",
+    "listNamePlaceholder": "e.g. Favorites",
+    "listIcon": "Icon",
+    "listIconPlaceholder": "Emoji or Lucide icon name",
+    "listIconHint": "Leave empty to use the default star icon.",
+    "listColor": "Color",
+    "nameRequired": "Please enter a list name.",
+    "saveToList": "Save to list",
+    "createNewListInline": "Create new list",
+    "noListsYet": "You haven't created any lists yet.",
+    "emptyTitle": "No lists yet",
+    "emptySubtitle": "Create a list to start saving worlds.",
+    "emptyDetailTitle": "No worlds in this list",
+    "emptyDetailSubtitle": "Add worlds from the Worlds page.",
+    "worldCount": "{{count}} worlds",
+    "updated": "Updated {{date}}",
+    "remove": "Remove",
+    "removeWorld": "Remove world from list",
+    "removeWorldConfirmTitle": "Remove world",
+    "removeWorldConfirmMessage": "Are you sure you want to remove this world from the list?",
+    "dontAskAgain": "Don't ask again",
+    "dontAskAgainHint": "You can change this anytime in Settings.",
+    "loadWorldError": "Could not load world details",
+    "maxWorldsReached": "Lists can hold up to {{count}} worlds. Remove one before adding more.",
+    "listNotFound": "List not found",
+    "storageError": "Failed to save your lists",
+    "storageErrorMessage": "Could not save lists: {{message}}",
+    "importExport": "Import / Export",
+    "importLists": "Import",
+    "exportList": "Export list",
+    "transferYourLists": "Transfer your lists",
+    "transferYourListsHint": "Lists are stored only in this browser. Export a backup or share them with a friend, then import the file anywhere.",
+    "exportAllLists": "Export list (.json)",
+    "importFromFile": "Import from file",
+    "dragAndDropJson": "Drag and drop a .json list file here",
+    "importPreview": "Import preview",
+    "importSummary": "{{new}} new, {{updated}} updated, {{unchanged}} unchanged · {{worlds}} worlds · {{removed}} removed",
+    "importRowNew": "New",
+    "importRowUpdated": "Updated",
+    "importListsButton": "Import {{count}} lists",
+    "validatingWorlds": "Checking worlds against the API...",
+    "removedWorldsWarning": "{{count}} world(s) were not found and will be skipped.",
+    "removedWorldsForList": "{{count}} removed",
+    "deleteConfirmTitle": "Delete list",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This cannot be undone.",
+    "couldNotImport": "Could not import lists",
+    "invalidBackup": "Invalid list backup",
+    "invalidBackupDescription": "The file does not contain a recognized lists snapshot. Make sure you exported it from this app.",
+    "tryAnotherFile": "Try another file",
+    "importSuccess": "Imported {{lists}} lists with {{worlds}} worlds from {{filename}}.",
+    "importError": {
+      "fileTooLarge": "File is too large. Maximum size is 5 MB.",
+      "invalidJson": "The file is not valid JSON.",
+      "missingVersionOrLists": "Missing required version or lists field.",
+      "unsupportedSchemaVersion": "This backup format is not supported.",
+      "listsNotArray": "lists must be an array.",
+      "noValidLists": "No valid lists were found in the file.",
+      "readFailed": "Could not read the file.",
+      "unknown": "An unknown import error occurred."
+    }
   }
 }

@@ -49,18 +49,41 @@ export async function fetchWorlds(params?: {
   offset?: number;
   tag?: string[];
   quality?: ('good' | 'bad')[];
+  search?: string;
+  minCapacity?: number;
+  maxCapacity?: number;
+  platform?: string[];
+  worldId?: string[];
 }): Promise<PaginatedWorlds> {
   const qs = new URLSearchParams();
   if (params?.limit !== undefined) qs.set('limit', String(params.limit));
   if (params?.offset !== undefined) qs.set('offset', String(params.offset));
+  if (params?.search?.trim()) qs.set('search', params.search.trim());
+  if (params?.minCapacity !== undefined) qs.set('minCapacity', String(params.minCapacity));
+  if (params?.maxCapacity !== undefined) qs.set('maxCapacity', String(params.maxCapacity));
   if (params?.tag?.length) {
     for (const t of params.tag) qs.append('tag', t);
   }
   if (params?.quality?.length) {
     for (const q of params.quality) qs.append('quality', q);
   }
+  if (params?.platform?.length) {
+    for (const p of params.platform) qs.append('platform', p);
+  }
+  if (params?.worldId?.length) {
+    for (const id of params.worldId) qs.append('worldId', id);
+  }
   const query = qs.toString();
   return request(`/api/worlds${query ? `?${query}` : ''}`);
+}
+
+export async function fetchWorldsByIds(worldIds: string[]): Promise<World[]> {
+  if (worldIds.length === 0) return [];
+  const params = new URLSearchParams();
+  for (const id of worldIds) params.append('worldId', id);
+  const res = await request<{ worlds: World[] } | World[]>(`/api/worlds?${params.toString()}`);
+  if (Array.isArray(res)) return res;
+  return res.worlds ?? [];
 }
 
 export async function fetchWorld(worldId: string): Promise<World> {
