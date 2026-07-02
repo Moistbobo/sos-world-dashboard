@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useWorld } from './useApi';
+import { useFilterCounts, useWorld } from './useApi';
 import * as client from '../api/client';
-import type { World } from '../types';
+import type { FilterCountsResponse, World } from '../types';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -110,5 +110,48 @@ describe('useWorld', () => {
     const { result } = renderHook(() => useWorld(undefined), { wrapper: Wrapper });
     expect(result.current.data).toBeUndefined();
     expect(result.current.isPending).toBe(true);
+  });
+});
+
+describe('useFilterCounts', () => {
+  beforeEach(() => {
+    queryClient.clear();
+    vi.clearAllMocks();
+  });
+
+  it('fetches filter counts with the provided params', async () => {
+    const response: FilterCountsResponse = {
+      qualityCounts: [{ quality: 'good', count: 5 }],
+      platformCounts: [{ platform: 'android', count: 3 }],
+    };
+
+    vi.spyOn(client, 'fetchFilterCounts').mockResolvedValue(response);
+
+    const { result } = renderHook(
+      () =>
+        useFilterCounts({
+          search: 'test',
+          tag: ['chill'],
+          quality: ['good'],
+          platform: ['android'],
+          minCapacity: 10,
+          maxCapacity: 40,
+        }),
+      { wrapper: Wrapper }
+    );
+
+    expect(result.current.isPending).toBe(true);
+
+    await waitFor(() => expect(result.current.isPending).toBe(false));
+
+    expect(result.current.data).toEqual(response);
+    expect(client.fetchFilterCounts).toHaveBeenCalledWith({
+      search: 'test',
+      tag: ['chill'],
+      quality: ['good'],
+      platform: ['android'],
+      minCapacity: 10,
+      maxCapacity: 40,
+    });
   });
 });
