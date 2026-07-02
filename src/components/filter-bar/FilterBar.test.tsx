@@ -12,6 +12,8 @@ const defaultProps = {
   onToggleQuality: vi.fn(),
   onClear: vi.fn(),
   availableTags: [] as { tag: string; count: number }[],
+  qualityCounts: [] as { quality: 'good' | 'bad'; count: number }[],
+  platformCounts: [] as { platform: string; count: number }[],
   capacityRange: { min: MIN_CAPACITY, max: MAX_CAPACITY },
   onCapacityChange: vi.fn(),
   selectedPlatforms: [] as string[],
@@ -135,5 +137,57 @@ describe('FilterBar', () => {
     await user.click(screen.getByRole('button', { name: /clear all/i }));
 
     expect(onClear).toHaveBeenCalled();
+  });
+});
+
+describe('FilterBar counts', () => {
+  it('renders quality counts in expanded quality buttons', async () => {
+    const user = userEvent.setup();
+    renderFilterBar({
+      qualityCounts: [
+        { quality: 'good', count: 123 },
+        { quality: 'bad', count: 12 },
+      ],
+    });
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+
+    expect(screen.getByRole('button', { name: /Good\s*\(123\)/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Bad\s*\(12\)/ })).toBeInTheDocument();
+  });
+
+  it('renders platform counts in expanded platform buttons', async () => {
+    const user = userEvent.setup();
+    renderFilterBar({
+      platformCounts: [
+        { platform: 'standalonewindows', count: 80 },
+        { platform: 'android', count: 45 },
+        { platform: 'ios', count: 6 },
+      ],
+    });
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+
+    expect(screen.getByRole('button', { name: /Desktop\s*\(80\)/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Android\s*\(45\)/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /iOS\s*\(6\)/ })).toBeInTheDocument();
+  });
+
+  it('does not show counts on selected quality chips in collapsed bar', () => {
+    renderFilterBar({
+      selectedQuality: ['good'],
+      qualityCounts: [{ quality: 'good', count: 123 }],
+    });
+
+    expect(screen.queryByText(/Good \(123\)/)).not.toBeInTheDocument();
+  });
+
+  it('does not show counts on selected platform chips in collapsed bar', () => {
+    renderFilterBar({
+      selectedPlatforms: ['android'],
+      platformCounts: [{ platform: 'android', count: 45 }],
+    });
+
+    expect(screen.queryByText(/Android \(45\)/)).not.toBeInTheDocument();
   });
 });

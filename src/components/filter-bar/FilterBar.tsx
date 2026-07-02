@@ -18,6 +18,8 @@ interface FilterBarProps {
   onToggleQuality: (quality: 'good' | 'bad') => void;
   onClear: () => void;
   availableTags: { tag: string; count: number }[];
+  qualityCounts: { quality: 'good' | 'bad'; count: number }[];
+  platformCounts: { platform: string; count: number }[];
   capacityRange: CapacityRangeValue;
   onCapacityChange: (range: CapacityRangeValue) => void;
   selectedPlatforms: string[];
@@ -33,6 +35,8 @@ export function FilterBar({
   onToggleQuality,
   onClear,
   availableTags,
+  qualityCounts,
+  platformCounts,
   capacityRange,
   onCapacityChange,
   selectedPlatforms,
@@ -43,6 +47,8 @@ export function FilterBar({
   const [expanded, setExpanded] = useState(false);
 
   const tagFilters = [...availableTags].sort((a, b) => a.tag.localeCompare(b.tag));
+  const qualityCountMap = new Map(qualityCounts.map((q) => [q.quality, q.count]));
+  const platformCountMap = new Map(platformCounts.map((p) => [p.platform, p.count]));
 
   const isCapacityActive =
     capacityRange.min > MIN_CAPACITY || capacityRange.max < MAX_CAPACITY;
@@ -196,21 +202,27 @@ export function FilterBar({
           <div className="mb-3">
             <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.quality')}</label>
             <div className="flex gap-2">
-              {(['good', 'bad'] as const).map((q) => (
-                <button
-                  key={q}
-                  onClick={() => onToggleQuality(q)}
-                  className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
-                    selectedQuality.includes(q)
-                      ? q === 'good'
-                        ? 'border-green-500/40 bg-green-500/15 text-green-300'
-                        : 'border-red-500/40 bg-red-500/15 text-red-300'
-                      : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
-                  }`}
-                >
-                  {q === 'good' ? t('filter.good') : t('filter.bad')}
-                </button>
-              ))}
+              {(['good', 'bad'] as const).map((q) => {
+                const count = qualityCountMap.get(q);
+                return (
+                  <button
+                    key={q}
+                    onClick={() => onToggleQuality(q)}
+                    className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                      selectedQuality.includes(q)
+                        ? q === 'good'
+                          ? 'border-green-500/40 bg-green-500/15 text-green-300'
+                          : 'border-red-500/40 bg-red-500/15 text-red-300'
+                        : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
+                    }`}
+                  >
+                    {q === 'good' ? t('filter.good') : t('filter.bad')}
+                    {count !== undefined && (
+                      <span className="text-slate-400 dark:text-slate-500"> ({count})</span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -219,6 +231,7 @@ export function FilterBar({
             <div className="flex flex-wrap gap-1.5 pr-1">
               {COMMON_PLATFORM_VALUES.map((p) => {
                 const label = getPlatformLabel(p);
+                const count = platformCountMap.get(p);
                 return (
                   <button
                     key={p}
@@ -231,6 +244,9 @@ export function FilterBar({
                     }`}
                   >
                     {label}
+                    {count !== undefined && (
+                      <span className="text-slate-400 dark:text-slate-500"> ({count})</span>
+                    )}
                   </button>
                 );
               })}
