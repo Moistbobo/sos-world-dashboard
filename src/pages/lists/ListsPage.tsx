@@ -69,14 +69,16 @@ export function ListsPage() {
 
   const handleImport = useCallback(
     (incoming: WorldList[], filename: string) => {
-      importLists(incoming);
-      toast.success(
-        t('lists.importSuccess', {
-          lists: incoming.length,
-          worlds: incoming.reduce((sum, list) => sum + list.worldIds.length, 0),
-          filename,
-        }),
-      );
+      const result = importLists(incoming);
+      if (result.ok) {
+        toast.success(
+          t('lists.importSuccess', {
+            lists: incoming.length,
+            worlds: incoming.reduce((sum, list) => sum + list.worldIds.length, 0),
+            filename,
+          }),
+        );
+      }
     },
     [importLists, t],
   );
