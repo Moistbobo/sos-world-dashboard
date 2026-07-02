@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Toaster } from 'sonner';
 import { Layout } from './components/layout';
 import { DashboardPage } from './pages/dashboard';
 import { WorldsPage } from './pages/worlds';
@@ -12,7 +11,6 @@ import { SettingsPage } from './pages/settings';
 export default function App() {
   return (
     <BrowserRouter>
-      <Toaster position="bottom-right" richColors />
       <Layout>
         <Routes>
           <Route path="/" element={<DashboardPage />} />
