@@ -10,6 +10,7 @@ import { WorldsPreferencesProvider } from './contexts/WorldsPreferencesContext';
 import { ListsPreferencesProvider } from './contexts/ListsPreferencesContext';
 import { ListsProvider } from './contexts/ListsContext';
 import { Analytics } from '@vercel/analytics/react';
+import { Toaster } from './components/toaster';
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             </ListsProvider>
           </ListsPreferencesProvider>
         </WorldsPreferencesProvider>
+        <Toaster />
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

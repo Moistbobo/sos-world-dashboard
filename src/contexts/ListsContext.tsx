@@ -8,8 +8,6 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
 import type { CreateListInput, WorldList } from '../types/lists';
 import {
   createList as makeList,
@@ -23,20 +21,26 @@ import {
   serializeLists,
 } from '../utils/listsImportExport';
 
+export type AddWorldResult =
+  | { ok: true }
+  | { ok: false; reason: 'missing' | 'not-found' | 'max-reached' | 'already-added' };
+
+export type ImportResult = { ok: true } | { ok: false; error: string };
+
 interface ListsContextValue {
   lists: WorldList[];
   error: string | null;
   createList(input: CreateListInput): WorldList;
   updateList(id: string, input: Partial<CreateListInput>): WorldList | undefined;
   deleteList(id: string): boolean;
-  addWorldToList(listId: string | undefined, worldId: string): boolean;
+  addWorldToList(listId: string | undefined, worldId: string): AddWorldResult;
   removeWorldFromList(listId: string | undefined, worldId: string): void;
   isWorldInList(worldId: string, listId: string): boolean;
   isWorldInAnyList(worldId: string): boolean;
   getList(listId: string): WorldList | undefined;
   clearError(): void;
   exportList(list: WorldList): void;
-  importLists(lists: WorldList[]): void;
+  importLists(lists: WorldList[]): ImportResult;
 }
 
 const ListsContext = createContext<ListsContextValue | null>(null);
@@ -55,7 +59,6 @@ function nowIso(): string {
 export const MAX_WORLDS_PER_LIST = 250;
 
 export function ListsProvider({ children }: { children: ReactNode }) {
-  const { t } = useTranslation();
   const [lists, setLists] = useState<WorldList[]>(() => loadLists().lists);
   const [error, setError] = useState<string | null>(() => loadLists().error);
   const listsRef = useRef(lists);
@@ -70,13 +73,13 @@ export function ListsProvider({ children }: { children: ReactNode }) {
       const { error: saveError } = saveLists(nextLists);
       if (saveError) {
         setError(saveError);
-        toast.error(t('lists.storageError'));
       } else if (error) {
         setError(null);
       }
       setLists(nextLists);
+      return saveError;
     },
-    [t, error],
+    [error],
   );
 
   const createList = useCallback(
@@ -124,24 +127,23 @@ export function ListsProvider({ children }: { children: ReactNode }) {
   );
 
   const addWorldToList = useCallback(
-    (listId: string | undefined, worldId: string) => {
-      if (!listId || !worldId.trim()) return false;
+    (listId: string | undefined, worldId: string): AddWorldResult => {
+      if (!listId || !worldId.trim()) return { ok: false, reason: 'missing' };
       const list = listsRef.current.find((l) => l.id === listId);
-      if (!list) return false;
+      if (!list) return { ok: false, reason: 'not-found' };
       if (list.worldIds.length >= MAX_WORLDS_PER_LIST) {
-        toast.error(t('lists.maxWorldsReached', { count: MAX_WORLDS_PER_LIST }));
-        return false;
+        return { ok: false, reason: 'max-reached' };
       }
-      if (list.worldIds.includes(worldId)) return false;
+      if (list.worldIds.includes(worldId)) return { ok: false, reason: 'already-added' };
       const next = listsRef.current.map((l) =>
         l.id === listId
           ? { ...l, worldIds: [...l.worldIds, worldId], updatedAt: nowIso() }
           : l,
       );
       commit(next);
-      return true;
+      return { ok: true };
     },
-    [commit, t],
+    [commit],
   );
 
   const removeWorldFromList = useCallback(
@@ -188,9 +190,13 @@ export function ListsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const importLists = useCallback(
-    (incoming: WorldList[]) => {
+    (incoming: WorldList[]): ImportResult => {
       const next = mergeListsById(listsRef.current, incoming);
-      commit(next);
+      const saveError = commit(next);
+      if (saveError) {
+        return { ok: false, error: saveError };
+      }
+      return { ok: true };
     },
     [commit],
   );

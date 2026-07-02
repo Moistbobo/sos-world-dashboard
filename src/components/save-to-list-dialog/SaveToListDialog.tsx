@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { X, Plus } from 'lucide-react';
 import { useLists, MAX_WORLDS_PER_LIST } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../list-form-dialog/ListFormDialog';
@@ -31,8 +32,11 @@ export function SaveToListDialog({
   const toggle = (listId: string) => {
     if (isWorldInList(worldId, listId)) {
       removeWorldFromList(listId, worldId);
-    } else {
-      addWorldToList(listId, worldId);
+      return;
+    }
+    const result = addWorldToList(listId, worldId);
+    if (!result.ok && result.reason === 'max-reached') {
+      toast.error(t('lists.maxWorldsReached', { count: MAX_WORLDS_PER_LIST }));
     }
   };
 
