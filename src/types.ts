@@ -28,6 +28,21 @@ export interface TagsResponse {
   tags: TagCount[];
 }
 
+export interface QualityCount {
+  quality: 'good' | 'bad';
+  count: number;
+}
+
+export interface PlatformCount {
+  platform: string;
+  count: number;
+}
+
+export interface FilterCountsResponse {
+  qualityCounts: QualityCount[];
+  platformCounts: PlatformCount[];
+}
+
 export interface HealthResponse {
   status: 'ok';
   worldCount: number;

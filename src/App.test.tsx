@@ -38,6 +38,12 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 vi.mock('./hooks/useApi', () => ({
   useHealth: () => ({ isPending: false, isError: false }),
   useTags: () => ({ data: { tags: [] } }),
+  useFilterCounts: () => ({
+    data: { qualityCounts: [], platformCounts: [] },
+    isPending: false,
+    isError: false,
+    error: null,
+  }),
   useWorlds: () => ({
     data: { worlds: mockWorlds, total: 1, limit: 20, offset: 0 },
     isPending: false,

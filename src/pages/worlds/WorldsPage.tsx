@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
-import { useInfiniteWorlds, useTags, useWorlds } from '../../hooks/useApi';
+import { useInfiniteWorlds, useTags, useWorlds, useFilterCounts } from '../../hooks/useApi';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
 import { FilterBar } from '../../components/filter-bar';
 import { Pagination } from '../../components/pagination';
@@ -48,6 +48,15 @@ export function WorldsPage() {
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   const { data: tagsData } = useTags();
+
+  const { data: filterCountsData } = useFilterCounts({
+    search: searchQuery,
+    minCapacity: capacityRange.min,
+    maxCapacity: capacityRange.max,
+    tag: selectedTags,
+    quality: selectedQuality,
+    platform: selectedPlatforms,
+  });
 
   const paginationQuery = useWorlds({
     limit,
@@ -239,6 +248,8 @@ export function WorldsPage() {
         onToggleQuality={handleToggleQuality}
         onClear={handleClear}
         availableTags={tagsData?.tags || []}
+        qualityCounts={filterCountsData?.qualityCounts || []}
+        platformCounts={filterCountsData?.platformCounts || []}
         capacityRange={capacityRange}
         onCapacityChange={handleCapacityChange}
         selectedPlatforms={selectedPlatforms}
