@@ -9,6 +9,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { WorldsPreferencesProvider } from './contexts/WorldsPreferencesContext';
 import { ListsPreferencesProvider } from './contexts/ListsPreferencesContext';
 import { ListsProvider } from './contexts/ListsContext';
+import { Analytics } from '@vercel/analytics/react';
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <ListsPreferencesProvider>
             <ListsProvider>
               <App />
+              <Analytics />
             </ListsProvider>
           </ListsPreferencesProvider>
         </WorldsPreferencesProvider>
