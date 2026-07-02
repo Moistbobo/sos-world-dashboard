@@ -21,9 +21,9 @@ function LocationProbe() {
   );
 }
 
-function Wrapper({ children }: { children: React.ReactNode }) {
+function Wrapper({ children, initialEntries = ['/worlds/wrld_123'] }: { children: React.ReactNode; initialEntries?: string[] }) {
   return (
-    <MemoryRouter initialEntries={['/worlds/wrld_123']} future={{ v7_startTransition: true }}>
+    <MemoryRouter initialEntries={initialEntries} future={{ v7_startTransition: true }}>
       <QueryClientProvider client={queryClient}>
         <ListsProvider>{children}</ListsProvider>
         <LocationProbe />
@@ -136,6 +136,48 @@ describe('WorldDetailPage', () => {
 
     expect(screen.getByTestId('current-location')).toHaveTextContent('/worlds');
     expect(screen.getByTestId('current-location')).toHaveTextContent('platform=standalonewindows');
+  });
+
+  it('navigates back when the background backdrop is clicked', async () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper initialEntries={['/worlds', '/worlds/wrld_123']}>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const backdrop = screen.getByTestId('world-detail-backdrop');
+    await userEvent.click(backdrop);
+
+    expect(screen.getByTestId('current-location')).toHaveTextContent('/worlds');
+  });
+
+  it('does not navigate back when clicking inside the world card', async () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper initialEntries={['/worlds', '/worlds/wrld_123']}>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const heading = screen.getByRole('heading', { name: /Test World/i });
+    await userEvent.click(heading);
+
+    expect(screen.getByTestId('current-location')).toHaveTextContent('/worlds/wrld_123');
   });
 
   it('renders a save-to-list button', () => {
