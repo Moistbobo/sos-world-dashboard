@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash, Star } from 'lucide-react';
 import { useWorld } from '../../hooks/useApi';
 import { TagBadge } from '../../components/tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
 import { getWorldAddDate } from '../../utils/worldAddDate';
 import { ShareButton } from '../../components/share-button';
+import { WorldAddDate } from '../../components/world-add-date';
 import { useLists } from '../../contexts/ListsContext';
 import { SaveToListDialog } from '../../components/save-to-list-dialog/SaveToListDialog';
 
@@ -223,10 +224,11 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
               </div>
               <div className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4 text-slate-400 dark:text-slate-500" />
-                {t(
-                  w.internalAddDate ? 'worldDetail.tagged' : 'worldDetail.added',
-                  { date: new Date(getWorldAddDate(w)).toLocaleString() },
-                )}
+                <Trans
+                  i18nKey={w.internalAddDate ? 'worldDetail.tagged' : 'worldDetail.added'}
+                  values={{ date: new Date(getWorldAddDate(w)).toLocaleString() }}
+                  components={{ date: <WorldAddDate world={w} variant="datetime" /> }}
+                />
               </div>
             </div>
 
