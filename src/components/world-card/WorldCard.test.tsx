@@ -141,4 +141,12 @@ describe('WorldCard', () => {
     await userEvent.click(saveButton);
     expect(onSelect).not.toHaveBeenCalled();
   });
+
+  it('marks the dashboard add date with an underline tooltip', () => {
+    render(<WorldCard world={mockWorld} />, { wrapper: Wrapper });
+    const date = screen.getByTitle(/Date added to this dashboard/i);
+    expect(date).toBeInTheDocument();
+    expect(date).toHaveClass('underline');
+    expect(date).toHaveClass('decoration-dotted');
+  });
 });
