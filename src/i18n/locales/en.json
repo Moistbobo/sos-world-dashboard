@@ -132,6 +132,9 @@
     "success": "VRChat world URL copied",
     "error": "Could not copy link"
   },
+  "worldAddDate": {
+    "tooltip": "Date added to this dashboard, not the world's VRChat creation date."
+  },
   "worldCard": {
     "saveToList": "Save to list",
     "savedToList": "Saved to list"
