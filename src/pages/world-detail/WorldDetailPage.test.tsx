@@ -197,4 +197,25 @@ describe('WorldDetailPage', () => {
 
     expect(screen.getByRole('button', { name: /save to list/i })).toBeInTheDocument();
   });
+
+  it('marks the dashboard add date with an underline tooltip', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const date = screen.getByTitle(/Date added to this dashboard/i);
+    expect(date).toBeInTheDocument();
+    expect(date).toHaveClass('underline');
+    expect(date).toHaveClass('decoration-dotted');
+  });
 });

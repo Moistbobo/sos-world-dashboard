@@ -69,8 +69,8 @@
     "noQuality": "No quality rating",
     "capacity": "Capacity: {{capacity}}",
     "id": "ID: {{id}}",
-    "added": "Added on: {{date}}",
-    "tagged": "Tagged on: {{date}}",
+    "added": "Added on: \u003cdate\u003e{{date}}\u003c/date\u003e",
+    "tagged": "Tagged on: \u003cdate\u003e{{date}}\u003c/date\u003e",
     "platforms": "Platforms",
     "tags": "Tags",
     "openInVRChat": "Open in VRChat",
@@ -131,6 +131,9 @@
     "share": "Share",
     "success": "VRChat world URL copied",
     "error": "Could not copy link"
+  },
+  "worldAddDate": {
+    "tooltip": "Date added to this dashboard, not the world's VRChat creation date."
   },
   "worldCard": {
     "saveToList": "Save to list",
