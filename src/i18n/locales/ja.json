@@ -69,8 +69,8 @@
     "noQuality": "品質評価なし",
     "capacity": "定員: {{capacity}}",
     "id": "ID: {{id}}",
-    "added": "{{date}} に追加",
-    "tagged": "{{date}} にタグ付け",
+    "added": "\u003cdate\u003e{{date}}\u003c/date\u003e に追加",
+    "tagged": "\u003cdate\u003e{{date}}\u003c/date\u003e にタグ付け",
     "platforms": "プラットフォーム",
     "tags": "タグ",
     "openInVRChat": "VRChat で開く",
@@ -131,6 +131,9 @@
     "share": "共有",
     "success": "VRChatワールドURLをコピーしました",
     "error": "リンクをコピーできませんでした"
+  },
+  "worldAddDate": {
+    "tooltip": "このダッシュボードに追加された日付です。VRChatのワールド作成日ではありません。"
   },
   "worldCard": {
     "saveToList": "リストに保存",
