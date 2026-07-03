@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import type { World } from '../../types';
 import { TagBadge } from '../tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
+import { getWorldAddDate } from '../../utils/worldAddDate';
 import { ShareButton } from '../share-button';
-import { WorldAddDate } from '../world-add-date';
 import { useLists } from '../../contexts/ListsContext';
 import { SaveToListDialog } from '../save-to-list-dialog/SaveToListDialog';
 
@@ -101,9 +101,9 @@ export function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemo
             <Users className="h-3 w-3" />
             {world.capacity}
           </span>
-          <span className="inline-flex items-center gap-1">
+          <span className="inline-flex items-center gap-1" title={world.internalAddDate ? t('worldCard.tagged') : t('worldCard.added')}>
             <Calendar className="h-3 w-3" />
-            <WorldAddDate world={world} />
+            {new Date(getWorldAddDate(world)).toLocaleDateString()}
           </span>
         </div>
 
