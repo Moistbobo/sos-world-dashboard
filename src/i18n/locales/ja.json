@@ -133,7 +133,7 @@
     "error": "リンクをコピーできませんでした"
   },
   "worldAddDate": {
-    "tooltip": "Date added to this dashboard, not the world's VRChat creation date."
+    "tooltip": "このダッシュボードに追加された日付です。VRChatのワールド作成日ではありません。"
   },
   "worldCard": {
     "saveToList": "リストに保存",
