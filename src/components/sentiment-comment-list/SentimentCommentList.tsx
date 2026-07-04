@@ -32,7 +32,12 @@ export function SentimentCommentList({ comments }: SentimentCommentListProps) {
           <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
             <span className="font-medium text-slate-700 dark:text-slate-300">{comment.username}</span>
             <span title={new Date(comment.created_at).toLocaleString()}>
-              {t('sentiment.comments.postedAt', { time: formatTimeAgo(comment.created_at) })}
+              {(() => {
+                const time = formatTimeAgo(comment.created_at);
+                return time === 'just now'
+                  ? t('sentiment.comments.justNow')
+                  : t('sentiment.comments.postedAt', { time });
+              })()}
             </span>
           </div>
           <p className="mt-1 whitespace-pre-wrap text-sm text-slate-800 dark:text-slate-200">

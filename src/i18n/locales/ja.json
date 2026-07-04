@@ -94,6 +94,7 @@
       "submit": "コメントを投稿",
       "count": "{{count}} / {{max}}",
       "submitError": "コメントを投稿できませんでした: {{message}}",
+      "justNow": "たった今",
       "postedAt": "{{time}}前"
     },
     "validation": {

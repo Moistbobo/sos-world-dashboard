@@ -94,6 +94,7 @@
       "submit": "Post comment",
       "count": "{{count}} / {{max}}",
       "submitError": "Could not post comment: {{message}}",
+      "justNow": "Just now",
       "postedAt": "{{time}} ago"
     },
     "validation": {
