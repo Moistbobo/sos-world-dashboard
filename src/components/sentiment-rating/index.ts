@@ -1,0 +1,1 @@
+export { SentimentRating } from './SentimentRating';

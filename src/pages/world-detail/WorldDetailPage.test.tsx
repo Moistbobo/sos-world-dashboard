@@ -8,6 +8,19 @@ import * as useApi from '../../hooks/useApi';
 import { ListsProvider } from '../../contexts/ListsContext';
 import type { World } from '../../types';
 
+vi.mock('../../components/sentiment-section', () => ({
+  SentimentSection: ({ worldId }: { worldId: string }) => (
+    <div data-testid="sentiment-section">Sentiment {worldId}</div>
+  ),
+}));
+
+vi.mock('../../hooks/useSentiment', () => ({
+  useRatings: () => ({ data: { worldId: 'w1', good: 0, bad: 0, userRating: null }, isLoading: false }),
+  useComments: () => ({ data: [], isLoading: false }),
+  useSubmitRating: () => ({ isPending: false, mutateAsync: vi.fn() }),
+  useSubmitComment: () => ({ isPending: false, mutateAsync: vi.fn() }),
+}));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: false },
@@ -217,5 +230,45 @@ describe('WorldDetailPage', () => {
     expect(date).toBeInTheDocument();
     expect(date).toHaveClass('underline');
     expect(date).toHaveClass('decoration-dotted');
+  });
+
+  it('renders the sentiment section when community sentiment is enabled', async () => {
+    vi.stubEnv('VITE_ENABLE_COMMUNITY_SENTIMENT', 'true');
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(await screen.findByTestId('sentiment-section')).toBeInTheDocument();
+    vi.unstubAllEnvs();
+  });
+
+  it('does not render the sentiment section when community sentiment is disabled', () => {
+    vi.stubEnv('VITE_ENABLE_COMMUNITY_SENTIMENT', 'false');
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(screen.queryByTestId('sentiment-section')).not.toBeInTheDocument();
+    vi.unstubAllEnvs();
   });
 });

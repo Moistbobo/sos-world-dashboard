@@ -50,6 +50,7 @@ stats.html
 .vercel
 .env*
 pi/
+.pi-subagents/
 brainstorm/
-docs/superpowers
+brainstorm/superpowers
 .worktrees/
