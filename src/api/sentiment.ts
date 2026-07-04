@@ -26,7 +26,7 @@ export async function fetchRatings(worldId: string): Promise<RatingSummary> {
     .from('ratings_summary')
     .select('*')
     .eq('world_id', worldId)
-    .single();
+    .maybeSingle();
 
   if (error) throw new Error(error.message);
 

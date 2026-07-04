@@ -48,7 +48,7 @@ describe('fetchRatings', () => {
   it('returns aggregate counts and null user rating when no session', async () => {
     mocks.select.mockReturnValueOnce({
       eq: vi.fn().mockReturnValue({
-        single: vi.fn().mockReturnValue({
+        maybeSingle: vi.fn().mockReturnValue({
           data: { world_id: 'wrld_123', good: 2, bad: 1, user_rating: null },
           error: null,
         }),
@@ -57,6 +57,20 @@ describe('fetchRatings', () => {
 
     const result = await fetchRatings('wrld_123');
     expect(result).toEqual({ worldId: 'wrld_123', good: 2, bad: 1, userRating: null });
+  });
+
+  it('returns zeros when the world has no ratings', async () => {
+    mocks.select.mockReturnValueOnce({
+      eq: vi.fn().mockReturnValue({
+        maybeSingle: vi.fn().mockReturnValue({
+          data: null,
+          error: null,
+        }),
+      }),
+    });
+
+    const result = await fetchRatings('wrld_new');
+    expect(result).toEqual({ worldId: 'wrld_new', good: 0, bad: 0, userRating: null });
   });
 });
 
