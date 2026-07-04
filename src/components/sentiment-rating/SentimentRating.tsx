@@ -1,4 +1,4 @@
-import { ThumbsUp, ThumbsDown, X } from 'lucide-react';
+import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { RatingSummary } from '../../types';
 
@@ -35,18 +35,6 @@ export function SentimentRating({ summary, isLoading, isSubmitting, onRate, onRe
           {summary?.good ?? 0}
         </span>
       </button>
-      {isGoodActive && (
-        <button
-          type="button"
-          disabled={isLoading || isSubmitting}
-          onClick={onRemove}
-          aria-label={t('sentiment.ratings.removeRating')}
-          className="btn-secondary p-2 text-sm"
-          data-testid="remove-rating"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      )}
       <button
         type="button"
         disabled={isLoading || isSubmitting}
@@ -64,18 +52,6 @@ export function SentimentRating({ summary, isLoading, isSubmitting, onRate, onRe
           {summary?.bad ?? 0}
         </span>
       </button>
-      {isBadActive && (
-        <button
-          type="button"
-          disabled={isLoading || isSubmitting}
-          onClick={onRemove}
-          aria-label={t('sentiment.ratings.removeRating')}
-          className="btn-secondary p-2 text-sm"
-          data-testid="remove-rating"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      )}
     </div>
   );
 }

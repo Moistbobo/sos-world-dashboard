@@ -51,14 +51,4 @@ describe('SentimentRating', () => {
     fireEvent.click(screen.getByRole('button', { name: /Good/i }));
     expect(onRemove).toHaveBeenCalled();
   });
-
-  it('calls onRemove when X is clicked', () => {
-    const onRemove = vi.fn();
-    renderComponent({
-      summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'good' },
-      onRemove,
-    });
-    fireEvent.click(screen.getByTestId('remove-rating'));
-    expect(onRemove).toHaveBeenCalled();
-  });
 });

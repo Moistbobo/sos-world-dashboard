@@ -77,16 +77,4 @@ describe('SentimentSection', () => {
     fireEvent.click(screen.getByRole('button', { name: /Good/i }));
     expect(deleteRating.mutateAsync).toHaveBeenCalledWith({ worldId: 'w1' });
   });
-
-  it('uses deleteRating when user clicks the X', () => {
-    const deleteRating = { ...defaultMutation, mutateAsync: vi.fn().mockResolvedValue(undefined) };
-    mocks.useDeleteRating.mockReturnValue(deleteRating);
-    mocks.useRatings.mockReturnValue({
-      data: { worldId: 'w1', good: 1, bad: 0, userRating: 'good' as const },
-      isLoading: false,
-    });
-    render(<SentimentSection worldId="w1" />, { wrapper });
-    fireEvent.click(screen.getByTestId('remove-rating'));
-    expect(deleteRating.mutateAsync).toHaveBeenCalledWith({ worldId: 'w1' });
-  });
 });
