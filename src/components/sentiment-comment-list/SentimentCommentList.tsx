@@ -86,8 +86,9 @@ export function SentimentCommentList({ comments }: SentimentCommentListProps) {
         {sorted.map((comment) => (
           <li key={comment.id} className="rounded-lg border border-slate-200 p-3 dark:border-slate-700/50">
             <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-              <span title={formatTimestamp(comment.created_at)}>{formatTimestamp(comment.created_at)}</span>
               <AuthorLabel username={comment.username} isCurrentUser={comment.user_id === currentUserId} />
+              <span title={formatTimestamp(comment.created_at)}>{formatTimestamp(comment.created_at)}</span>
+              <span title={comment.id}>{comment.id.split('-').pop()}</span>
             </div>
             <p className="mt-1 whitespace-pre-wrap text-sm text-slate-800 dark:text-slate-200">
               {comment.content}
