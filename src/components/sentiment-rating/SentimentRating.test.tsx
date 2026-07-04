@@ -82,4 +82,20 @@ describe('SentimentRating', () => {
     expect(fill.children[1]).toHaveStyle('width: 25%');
     expect(fill.children[1]).toHaveTextContent('25%');
   });
+
+  it('recolors the good count badge green when the user voted good', () => {
+    renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'good' } });
+    const goodButton = screen.getByRole('button', { name: /Good/i });
+    const badge = goodButton.querySelector('span.rounded-full');
+    expect(badge).toHaveClass('bg-emerald-500');
+    expect(badge).toHaveClass('text-white');
+  });
+
+  it('recolors the bad count badge red when the user voted bad', () => {
+    renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'bad' } });
+    const badButton = screen.getByRole('button', { name: /Bad/i });
+    const badge = badButton.querySelector('span.rounded-full');
+    expect(badge).toHaveClass('bg-rose-500');
+    expect(badge).toHaveClass('text-white');
+  });
 });

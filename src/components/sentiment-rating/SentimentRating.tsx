@@ -64,7 +64,13 @@ export function SentimentRating({
           <span className="flex items-center gap-2">
             <ThumbsUp className="h-4 w-4" />
             <span>{t('sentiment.ratings.good')}</span>
-            <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs dark:bg-slate-700">
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs ${
+                isGoodActive
+                  ? 'bg-emerald-500 text-white'
+                  : 'bg-slate-200 dark:bg-slate-700'
+              }`}
+            >
               {summary?.good ?? 0}
             </span>
           </span>
@@ -77,7 +83,13 @@ export function SentimentRating({
           aria-pressed={isBadActive}
         >
           <span className="flex items-center gap-2">
-            <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs dark:bg-slate-700">
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs ${
+                isBadActive
+                  ? 'bg-rose-500 text-white'
+                  : 'bg-slate-200 dark:bg-slate-700'
+              }`}
+            >
               {summary?.bad ?? 0}
             </span>
             <span>{t('sentiment.ratings.bad')}</span>
