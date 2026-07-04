@@ -91,15 +91,17 @@ describe('SentimentRating', () => {
     expect(fill.children[1]).toHaveTextContent('25%');
   });
 
-  it('recolors the good label green when the user voted good', () => {
-    renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'good' } });
+  it('scales the thumbs up icon on the good half hover', () => {
+    renderComponent();
     const goodButton = screen.getByRole('button', { name: /Good/i });
-    expect(goodButton).toHaveClass('text-emerald-700');
+    const icon = goodButton.querySelector('svg');
+    expect(icon).toHaveClass('group-hover:scale-110');
   });
 
-  it('recolors the bad label red when the user voted bad', () => {
-    renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'bad' } });
+  it('scales the thumbs down icon on the bad half hover', () => {
+    renderComponent();
     const badButton = screen.getByRole('button', { name: /Bad/i });
-    expect(badButton).toHaveClass('text-rose-700');
+    const icon = badButton.querySelector('svg');
+    expect(icon).toHaveClass('group-hover:scale-110');
   });
 });

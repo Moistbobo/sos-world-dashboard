@@ -85,15 +85,11 @@ export function SentimentRating({
           type="button"
           disabled={isLoading || isSubmitting}
           onClick={handleGoodClick}
-          className={`relative z-10 flex w-1/2 items-center justify-start px-4 text-sm font-medium transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
-            isGoodActive
-              ? 'text-emerald-700 focus-visible:ring-emerald-500 dark:text-emerald-300'
-              : 'text-slate-700 hover:text-emerald-700 focus-visible:ring-emerald-500 dark:text-slate-200 dark:hover:text-emerald-300'
-          }`}
+          className="group relative z-10 flex w-1/2 items-center justify-start px-4 text-sm font-medium text-slate-700 transition-colors duration-150 ease-out hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-200 dark:hover:text-white"
           aria-pressed={isGoodActive}
         >
           <span className="flex items-center gap-2">
-            <ThumbsUp className="h-4 w-4" />
+            <ThumbsUp className="h-4 w-4 transition-transform duration-150 ease-out group-hover:scale-110" />
             <span>{t('sentiment.ratings.good')}</span>
           </span>
         </button>
@@ -101,16 +97,12 @@ export function SentimentRating({
           type="button"
           disabled={isLoading || isSubmitting}
           onClick={handleBadClick}
-          className={`relative z-10 flex w-1/2 items-center justify-end px-4 text-sm font-medium transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
-            isBadActive
-              ? 'text-rose-700 focus-visible:ring-rose-500 dark:text-rose-300'
-              : 'text-slate-700 hover:text-rose-700 focus-visible:ring-rose-500 dark:text-slate-200 dark:hover:text-rose-300'
-          }`}
+          className="group relative z-10 flex w-1/2 items-center justify-end px-4 text-sm font-medium text-slate-700 transition-colors duration-150 ease-out hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-200 dark:hover:text-white"
           aria-pressed={isBadActive}
         >
           <span className="flex items-center gap-2">
             <span>{t('sentiment.ratings.bad')}</span>
-            <ThumbsDown className="h-4 w-4" />
+            <ThumbsDown className="h-4 w-4 transition-transform duration-150 ease-out group-hover:scale-110" />
           </span>
         </button>
       </div>
