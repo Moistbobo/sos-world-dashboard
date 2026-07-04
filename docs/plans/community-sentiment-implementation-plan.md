@@ -24,12 +24,23 @@ Before implementation begins, the following must be done in the Supabase dashboa
 
 1. Create a new Supabase project for the dashboard.
 2. Save the project's `URL` and **publishable key** (`sb_publishable_...`). Legacy `anon` keys still work, but Supabase recommends publishable keys for new browser clients and will remove legacy keys in late 2026.
-3. In Database → SQL Editor, create the `ratings` and `comments` tables (exact schema below).
+3. In Database → SQL Editor, run the schema setup scripts in section 4 in order (`ratings` → `comments` → optional FKs → `ratings_summary` view → grants).
 4. Enable **Anonymous Sign-Ins** in Authentication → Providers → Anonymous.
-5. Configure RLS policies (exact SQL below).
-6. (Optional but recommended) create a Supabase Edge Function for rate-limiting/abuse prevention.
+5. Enable **CAPTCHA** in Authentication → Bot and Abuse Protection (Cloudflare Turnstile or hCaptcha) and add the site key to your environment as `VITE_TURNSTILE_SITE_KEY`.
+6. Configure RLS policies (included in the schema scripts below).
+7. (Optional but recommended) create a Supabase Edge Function for rate-limiting/abuse prevention.
 
-## 4. Supabase schema
+## 4. Supabase setup scripts
+
+Run the following scripts in your project's **SQL Editor** (or via a Supabase migration) in order. After enabling CAPTCHA, the frontend now passes a captcha token when creating the first anonymous session.
+
+### Order of operations
+
+1. Create `ratings` and `comments` tables (4.1 and 4.2).
+2. Add foreign keys (4.3) if you want cascade cleanup.
+3. Create `ratings_summary` view (4.4) and grant select (4.5).
+4. Enable Anonymous Sign-Ins in the dashboard.
+5. Enable Cloudflare Turnstile / CAPTCHA in the dashboard and add `VITE_TURNSTILE_SITE_KEY` to your environment.
 
 ### 4.1 `ratings` table
 
@@ -136,7 +147,60 @@ create policy "Anonymous users can insert their own comments"
   );
 ```
 
-### 4.3 Notes on schema
+### 4.3 Foreign keys for cascade cleanup (optional but recommended)
+
+If you plan to purge stale anonymous users, add foreign keys from `ratings` and `comments` to `auth.users(id)` with `on delete cascade`. This ensures deleting an anonymous user removes their ratings and comments automatically.
+
+```sql
+alter table public.ratings
+  add constraint ratings_user_id_fkey
+  foreign key (user_id) references auth.users(id) on delete cascade;
+
+alter table public.comments
+  add constraint comments_user_id_fkey
+  foreign key (user_id) references auth.users(id) on delete cascade;
+```
+
+### 4.4 Public aggregate view (required)
+
+The frontend now reads from `ratings_summary` instead of scanning raw `ratings` rows. This hides `user_id` from public readers and computes counts server-side. Requires Postgres 15+ for `security_invoker`.
+
+```sql
+create view public.ratings_summary with (security_invoker = true) as
+select
+  world_id,
+  count(*) filter (where value = 'good')::int as good,
+  count(*) filter (where value = 'bad')::int as bad,
+  (select value
+   from public.ratings r2
+   where r2.world_id = r.world_id
+     and r2.user_id = auth.uid()
+   limit 1) as user_rating
+from public.ratings r
+group by world_id;
+```
+
+### 4.5 Data API grants for the view
+
+If your project does not have **Default privileges for new entities** enabled in Data API settings, grant access to the summary view explicitly:
+
+```sql
+grant select on public.ratings_summary to anon, authenticated;
+```
+
+### 4.6 Automatic cleanup of stale anonymous users (optional)
+
+Enable `pg_cron` in the dashboard (**Database → Extensions → pg_cron**) and schedule a nightly job. The foreign keys above ensure ratings and comments are cascade-deleted.
+
+```sql
+select cron.schedule(
+  'cleanup-stale-anonymous-users',
+  '0 3 * * *',
+  $$ delete from auth.users where is_anonymous is true and created_at < now() - interval '30 days' $$
+);
+```
+
+### 4.7 Notes on schema
 
 - `world_id` is stored as `text` because the dashboard's `World.worldId` is a VRChat-derived string, not a UUID.
 - `user_id` is the Supabase anonymous user UUID returned by `signInAnonymously()`.
@@ -144,6 +208,7 @@ create policy "Anonymous users can insert their own comments"
 - `ratings` has a unique constraint `(world_id, user_id)` to enforce one rating per anonymous user per world.
 - The `authenticated` Postgres role is used by signed-in anonymous users. The `anon` role is for unauthenticated requests using only the publishable key. Read policies target both so feedback is visible to everyone; insert policies target only signed-in anonymous users and verify the JWT's `is_anonymous` claim.
 - Use the **publishable key** (`sb_publishable_...`) in the browser. Do not expose the secret/service-role key.
+- The frontend reads ratings through the `ratings_summary` view, not the raw `ratings` table. Make sure the view is granted `select` to `anon` and `authenticated`.
 
 ## 5. Frontend implementation steps
 
@@ -163,9 +228,10 @@ VITE_API_BEARER_TOKEN=your-bearer-token-here
 
 VITE_SUPABASE_URL=https://<project>.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+VITE_TURNSTILE_SITE_KEY=0x00000000000000000000FF
 ```
 
-Add the same to local `.env.local` once Supabase is configured.
+Add the same to local `.env.local` once Supabase and Turnstile are configured.
 
 ### 5.3 Create Supabase client
 
@@ -184,7 +250,14 @@ if (typeof key !== 'string' || !key) {
   throw new Error('Missing VITE_SUPABASE_PUBLISHABLE_KEY');
 }
 
-export const supabase = createClient(url, key);
+// Defensive: ensure the anonymous session persists across page reloads
+// so the same anonymous user_id is reused for community sentiment.
+// supabase-js defaults this to true, but we set it explicitly to guard against regressions.
+export const supabase = createClient(url, key, {
+  auth: {
+    persistSession: true,
+  },
+});
 ```
 
 ### 5.4 Create username generator (sub-issue #17)
@@ -213,12 +286,12 @@ Rules:
 
 Functions:
 
-- `fetchRatings(worldId: string): Promise<RatingSummary>`
+- `fetchRatings(worldId: string): Promise<RatingSummary>` — reads from `ratings_summary` view.
 - `fetchComments(worldId: string): Promise<Comment[]>`
-- `submitRating(worldId: string, value: 'good' | 'bad'): Promise<void>`
-- `updateRating(worldId: string, value: 'good' | 'bad'): Promise<void>`
-- `deleteRating(worldId: string): Promise<void>`
-- `submitComment(worldId: string, content: string): Promise<Comment>`
+- `submitRating(worldId: string, value: 'good' | 'bad', captchaToken?: string): Promise<void>`
+- `updateRating(worldId: string, value: 'good' | 'bad', captchaToken?: string): Promise<void>`
+- `deleteRating(worldId: string, captchaToken?: string): Promise<void>`
+- `submitComment(worldId: string, content: string, captchaToken?: string): Promise<Comment>`
 
 Internal helpers:
 
