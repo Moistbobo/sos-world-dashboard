@@ -93,7 +93,8 @@
       "count": "{{count}} / {{max}}",
       "submitError": "コメントを投稿できませんでした: {{message}}",
       "justNow": "たった今",
-      "postedAt": "{{time}}前"
+      "postedAt": "{{time}}前",
+      "youIndicator": "（あなた）"
     },
     "validation": {
       "tooLong": "コメントは256文字以内にしてください。",
