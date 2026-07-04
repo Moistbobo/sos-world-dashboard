@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { validateComment } from '../../utils/commentValidation';
+import { validateComment, MAX_LENGTH } from '../../utils/commentValidation';
 import type { CommentValidationError } from '../../utils/commentValidation';
 
 interface SentimentCommentFormProps {
   isSubmitting: boolean;
   onSubmit: (content: string) => void;
 }
-
-const MAX_LENGTH = 256;
 
 const errorKeyMap: Record<CommentValidationError, string> = {
   tooLong: 'sentiment.validation.tooLong',

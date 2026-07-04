@@ -10,7 +10,7 @@ export type CommentValidationError =
   | 'noExcessWhitespace'
   | 'empty';
 
-const MAX_LENGTH = 256;
+export const MAX_LENGTH = 256;
 const URL_RE = /https?:\/\/|www\./i;
 const EMAIL_RE = /\S+@\S+\.\S+/i;
 const MARKUP_RE = /<[^>]+>|\[[^\]]*\]\([^)]*\)|\*\*|__|`|#+/;

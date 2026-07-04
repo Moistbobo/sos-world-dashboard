@@ -47,9 +47,21 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
   const isCaptchaCancelled = (err: unknown): boolean =>
     err instanceof Error && err.message === 'Captcha challenge was cancelled';
 
-  const handleRate = async (value: 'good' | 'bad') => {
+  const withCaptcha = async (
+    action: (captchaToken?: string) => Promise<unknown>,
+    errorKey: string,
+  ) => {
     try {
       const captchaToken = await getCaptchaToken();
+      await action(captchaToken);
+    } catch (err) {
+      if (isCaptchaCancelled(err)) return;
+      toast.error(t(errorKey, { message: (err as Error).message }));
+    }
+  };
+
+  const handleRate = async (value: 'good' | 'bad') => {
+    await withCaptcha(async (captchaToken) => {
       if (!ratings?.userRating) {
         await submitRating.mutateAsync({ worldId, value, captchaToken });
       } else if (ratings.userRating !== value) {
@@ -57,30 +69,21 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
       } else {
         await deleteRating.mutateAsync({ worldId, captchaToken });
       }
-    } catch (err) {
-      if (isCaptchaCancelled(err)) return;
-      toast.error(t('sentiment.ratings.submitError', { message: (err as Error).message }));
-    }
+    }, 'sentiment.ratings.submitError');
   };
 
   const handleRemove = async () => {
-    try {
-      const captchaToken = await getCaptchaToken();
-      await deleteRating.mutateAsync({ worldId, captchaToken });
-    } catch (err) {
-      if (isCaptchaCancelled(err)) return;
-      toast.error(t('sentiment.ratings.removeRatingError', { message: (err as Error).message }));
-    }
+    await withCaptcha(
+      (captchaToken) => deleteRating.mutateAsync({ worldId, captchaToken }),
+      'sentiment.ratings.removeRatingError',
+    );
   };
 
   const handleComment = async (content: string) => {
-    try {
-      const captchaToken = await getCaptchaToken();
-      await submitComment.mutateAsync({ worldId, content, captchaToken });
-    } catch (err) {
-      if (isCaptchaCancelled(err)) return;
-      toast.error(t('sentiment.comments.submitError', { message: (err as Error).message }));
-    }
+    await withCaptcha(
+      (captchaToken) => submitComment.mutateAsync({ worldId, content, captchaToken }),
+      'sentiment.comments.submitError',
+    );
   };
 
   return (

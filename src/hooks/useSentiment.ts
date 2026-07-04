@@ -27,119 +27,95 @@ export function useComments(worldId: string | undefined) {
   });
 }
 
-export function useSubmitRating() {
+type RatingMutationVariables = {
+  worldId: string;
+  value?: 'good' | 'bad';
+  captchaToken?: string;
+};
+
+function useRatingMutation<TVariables extends RatingMutationVariables>(
+  mutationFn: (variables: TVariables) => Promise<void>,
+  computeNext: (previous: RatingSummary, variables: TVariables) => RatingSummary | undefined,
+) {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: ({
-      worldId,
-      value,
-      captchaToken,
-    }: {
-      worldId: string;
-      value: 'good' | 'bad';
-      captchaToken?: string;
-    }) => submitRating(worldId, value, captchaToken),
-    onMutate: async ({ worldId, value }) => {
-      const queryKey = ['ratings', worldId];
+    mutationFn,
+    onMutate: async (variables) => {
+      const queryKey = ['ratings', variables.worldId];
       await queryClient.cancelQueries({ queryKey });
       const previous = queryClient.getQueryData<RatingSummary>(queryKey);
 
       if (previous) {
-        const next: RatingSummary = { ...previous };
-        if (previous.userRating && previous.userRating !== value) {
-          next[previous.userRating]--;
-          next[value]++;
-        } else if (!previous.userRating) {
-          next[value]++;
+        const next = computeNext(previous, variables);
+        if (next) {
+          queryClient.setQueryData(queryKey, next);
         }
-        next.userRating = value;
-        queryClient.setQueryData(queryKey, next);
       }
 
       return { previous };
     },
-    onError: (_err, _variables, context) => {
+    onError: (_err, variables, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(['ratings', _variables.worldId], context.previous);
+        queryClient.setQueryData(['ratings', variables.worldId], context.previous);
       }
     },
-    onSettled: (_, __, { worldId }) => {
-      queryClient.invalidateQueries({ queryKey: ['ratings', worldId] });
+    onSettled: (_, __, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['ratings', variables.worldId] });
     },
   });
+}
+
+export function useSubmitRating() {
+  return useRatingMutation(
+    ({ worldId, value, captchaToken }) => submitRating(worldId, value!, captchaToken),
+    (previous, { value }) => {
+      if (!value) return undefined;
+      const next: RatingSummary = { ...previous };
+      if (previous.userRating && previous.userRating !== value) {
+        next[previous.userRating] = Math.max(0, next[previous.userRating] - 1);
+        next[value]++;
+      } else if (!previous.userRating) {
+        next[value]++;
+      } else {
+        return undefined;
+      }
+      next.userRating = value;
+      return next;
+    },
+  );
 }
 
 export function useUpdateRating() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({
-      worldId,
-      value,
-      captchaToken,
-    }: {
-      worldId: string;
-      value: 'good' | 'bad';
-      captchaToken?: string;
-    }) => updateRating(worldId, value, captchaToken),
-    onMutate: async ({ worldId, value }) => {
-      const queryKey = ['ratings', worldId];
-      await queryClient.cancelQueries({ queryKey });
-      const previous = queryClient.getQueryData<RatingSummary>(queryKey);
-
-      if (previous?.userRating && previous.userRating !== value) {
-        const next: RatingSummary = {
-          ...previous,
-          good: value === 'good' ? previous.good + 1 : Math.max(0, previous.good - 1),
-          bad: value === 'bad' ? previous.bad + 1 : Math.max(0, previous.bad - 1),
-          userRating: value,
-        };
-        queryClient.setQueryData(queryKey, next);
+  return useRatingMutation(
+    ({ worldId, value, captchaToken }) => updateRating(worldId, value!, captchaToken),
+    (previous, { value }) => {
+      if (!value || !previous.userRating || previous.userRating === value) {
+        return undefined;
       }
-
-      return { previous };
+      return {
+        ...previous,
+        good: value === 'good' ? previous.good + 1 : Math.max(0, previous.good - 1),
+        bad: value === 'bad' ? previous.bad + 1 : Math.max(0, previous.bad - 1),
+        userRating: value,
+      };
     },
-    onError: (_err, _variables, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(['ratings', _variables.worldId], context.previous);
-      }
-    },
-    onSettled: (_, __, { worldId }) => {
-      queryClient.invalidateQueries({ queryKey: ['ratings', worldId] });
-    },
-  });
+  );
 }
 
 export function useDeleteRating() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ worldId, captchaToken }: { worldId: string; captchaToken?: string }) =>
-      deleteRating(worldId, captchaToken),
-    onMutate: async ({ worldId }) => {
-      const queryKey = ['ratings', worldId];
-      await queryClient.cancelQueries({ queryKey });
-      const previous = queryClient.getQueryData<RatingSummary>(queryKey);
-
-      if (previous?.userRating) {
-        const next: RatingSummary = {
-          ...previous,
-          good: previous.userRating === 'good' ? Math.max(0, previous.good - 1) : previous.good,
-          bad: previous.userRating === 'bad' ? Math.max(0, previous.bad - 1) : previous.bad,
-          userRating: null,
-        };
-        queryClient.setQueryData(queryKey, next);
-      }
-
-      return { previous };
+  return useRatingMutation(
+    ({ worldId, captchaToken }) => deleteRating(worldId, captchaToken),
+    (previous) => {
+      if (!previous.userRating) return undefined;
+      return {
+        ...previous,
+        good: previous.userRating === 'good' ? Math.max(0, previous.good - 1) : previous.good,
+        bad: previous.userRating === 'bad' ? Math.max(0, previous.bad - 1) : previous.bad,
+        userRating: null,
+      };
     },
-    onError: (_err, { worldId }, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(['ratings', worldId], context.previous);
-      }
-    },
-    onSettled: (_, __, { worldId }) => {
-      queryClient.invalidateQueries({ queryKey: ['ratings', worldId] });
-    },
-  });
+  );
 }
 
 export function useSubmitComment() {

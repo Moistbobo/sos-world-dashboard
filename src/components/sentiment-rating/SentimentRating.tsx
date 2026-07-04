@@ -10,6 +10,33 @@ interface SentimentRatingProps {
   onRemove: () => void;
 }
 
+interface BarSegmentProps {
+  percent: number;
+  isActive: boolean;
+  colorClass: string;
+  activeTextClass: string;
+  label: string;
+}
+
+function BarSegment({ percent, isActive, colorClass, activeTextClass, label }: BarSegmentProps) {
+  if (percent <= 0) return null;
+  return (
+    <div
+      className={`h-full ${colorClass}`}
+      style={{ width: `${percent}%` }}
+      title={`${percent}% ${label}`}
+    >
+      <span
+        className={`flex h-full items-center justify-center text-lg font-semibold ${
+          isActive ? activeTextClass : 'text-white'
+        }`}
+      >
+        {percent}%
+      </span>
+    </div>
+  );
+}
+
 export function SentimentRating({
   summary,
   isLoading,
@@ -56,36 +83,20 @@ export function SentimentRating({
           className="pointer-events-none absolute inset-y-0 left-0 z-0 flex h-full w-full"
           data-testid="rating-fill-container"
         >
-          <div
-            className="h-full bg-emerald-500"
-            style={{ width: `${goodPercent}%` }}
-            title={`${goodPercent}% ${t('sentiment.ratings.good')}`}
-          >
-            {goodPercent > 0 && (
-              <span
-                className={`flex h-full items-center justify-center text-lg font-semibold ${
-                  isGoodActive ? 'text-emerald-800 dark:text-emerald-900' : 'text-white'
-                }`}
-              >
-                {goodPercent}%
-              </span>
-            )}
-          </div>
-          <div
-            className="h-full bg-rose-500"
-            style={{ width: `${badPercent}%` }}
-            title={`${badPercent}% ${t('sentiment.ratings.bad')}`}
-          >
-            {badPercent > 0 && (
-              <span
-                className={`flex h-full items-center justify-center text-lg font-semibold ${
-                  isBadActive ? 'text-rose-800 dark:text-rose-900' : 'text-white'
-                }`}
-              >
-                {badPercent}%
-              </span>
-            )}
-          </div>
+          <BarSegment
+            percent={goodPercent}
+            isActive={isGoodActive}
+            colorClass="bg-emerald-500"
+            activeTextClass="text-emerald-800 dark:text-emerald-900"
+            label={t('sentiment.ratings.good')}
+          />
+          <BarSegment
+            percent={badPercent}
+            isActive={isBadActive}
+            colorClass="bg-rose-500"
+            activeTextClass="text-rose-800 dark:text-rose-900"
+            label={t('sentiment.ratings.bad')}
+          />
         </div>
         <button
           type="button"
