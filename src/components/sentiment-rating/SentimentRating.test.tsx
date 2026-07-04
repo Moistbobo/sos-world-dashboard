@@ -26,7 +26,6 @@ describe('SentimentRating', () => {
     renderComponent();
     const goodButton = screen.getByRole('button', { name: /Good/i });
     const badButton = screen.getByRole('button', { name: /Bad/i });
-    // The buttons should only contain their labels, not numeric counts
     expect(goodButton).toHaveTextContent(/^Good$/);
     expect(badButton).toHaveTextContent(/^Bad$/);
   });
@@ -92,17 +91,15 @@ describe('SentimentRating', () => {
     expect(fill.children[1]).toHaveTextContent('25%');
   });
 
-  it('highlights the good half when the user voted good', () => {
+  it('recolors the good label green when the user voted good', () => {
     renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'good' } });
     const goodButton = screen.getByRole('button', { name: /Good/i });
-    expect(goodButton).toHaveClass('bg-emerald-500/10');
     expect(goodButton).toHaveClass('text-emerald-700');
   });
 
-  it('highlights the bad half when the user voted bad', () => {
+  it('recolors the bad label red when the user voted bad', () => {
     renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'bad' } });
     const badButton = screen.getByRole('button', { name: /Bad/i });
-    expect(badButton).toHaveClass('bg-rose-500/10');
     expect(badButton).toHaveClass('text-rose-700');
   });
 });
