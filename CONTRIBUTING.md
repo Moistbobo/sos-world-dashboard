@@ -91,3 +91,22 @@ Use a **single major tag** at the start of the PR title in square brackets, foll
   - ❌ `[FEAT](platform): add platform label mapping`
 - Keep the description concise and focused on what the PR introduces.
 - Commit messages inside the PR may continue to use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`).
+
+## Local Supabase setup
+
+The community sentiment feature stores ratings and comments in Supabase.
+
+1. Create a new project in the [Supabase dashboard](https://supabase.com/dashboard).
+2. Open Project Settings → API and copy the project URL and **publishable key** (`sb_publishable_...`) into `.env.local`:
+   ```env
+   VITE_SUPABASE_URL=https://<project>.supabase.co
+   VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+   ```
+3. Enable **Anonymous Sign-Ins** in Authentication → Providers → Anonymous.
+4. Open Database → SQL Editor and run the schema SQL in `docs/plans/community-sentiment-implementation-plan.md` section 4 to create the `ratings` and `comments` tables and their RLS policies.
+5. Install the Supabase JavaScript client:
+   ```bash
+   pnpm add @supabase/supabase-js
+   ```
+
+After these steps, `pnpm run dev` will be able to connect to your Supabase project.
