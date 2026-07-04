@@ -61,6 +61,7 @@ Copy `.env.example` to `.env.local`. Vite exposes only `VITE_*` env vars to the 
 ## Feature Flags
 
 - `VITE_ENABLE_COMMUNITY_SENTIMENT` gates the sentiment UI. `SentimentSection` itself does not read the flag; the parent (`WorldDetailPage`) decides whether to render it.
+- The Settings page includes a placeholder "Experimental features" toggle. It is currently visual only and is not persisted or wired to any behavior.
 
 ## Build-injected Globals
 
