@@ -46,26 +46,25 @@ export function SentimentRating({
       <p className="text-xs text-slate-500 dark:text-slate-400">
         {t('sentiment.ratings.ratingBarLabel')}
       </p>
-      <div className="relative flex h-12 w-full overflow-hidden rounded-full border border-slate-300 bg-slate-200 dark:border-slate-600 dark:bg-slate-700">
+      <div
+        className="relative flex h-12 w-full overflow-hidden rounded-full border border-slate-300 bg-slate-200 dark:border-slate-600 dark:bg-slate-700"
+        aria-label={t('sentiment.ratings.ratingBarLabel')}
+        aria-valuenow={goodPercent}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        role="progressbar"
+      >
         <button
           type="button"
           disabled={isLoading || isSubmitting}
           onClick={handleGoodClick}
-          className={`relative z-10 flex w-1/2 items-center justify-start px-4 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
-            isGoodActive
-              ? 'bg-emerald-500/15 text-emerald-700 ring-2 ring-inset ring-emerald-500 focus-visible:ring-emerald-500 dark:text-emerald-300'
-              : 'bg-emerald-500/10 text-slate-700 hover:bg-emerald-500/20 focus-visible:ring-emerald-500 dark:text-slate-200'
-          }`}
+          className="relative z-10 flex w-1/2 items-center justify-start px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-emerald-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-200"
           aria-pressed={isGoodActive}
         >
           <span className="flex items-center gap-2">
             <ThumbsUp className="h-4 w-4" />
             <span>{t('sentiment.ratings.good')}</span>
-            <span
-              className={`rounded-full px-2 py-0.5 text-xs ${
-                isGoodActive ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-700'
-              }`}
-            >
+            <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs dark:bg-slate-700">
               {summary?.good ?? 0}
             </span>
           </span>
@@ -74,19 +73,11 @@ export function SentimentRating({
           type="button"
           disabled={isLoading || isSubmitting}
           onClick={handleBadClick}
-          className={`relative z-10 flex w-1/2 items-center justify-end px-4 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
-            isBadActive
-              ? 'bg-rose-500/15 text-rose-700 ring-2 ring-inset ring-rose-500 focus-visible:ring-rose-500 dark:text-rose-300'
-              : 'bg-rose-500/10 text-slate-700 hover:bg-rose-500/20 focus-visible:ring-rose-500 dark:text-slate-200'
-          }`}
+          className="relative z-10 flex w-1/2 items-center justify-end px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-rose-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-200"
           aria-pressed={isBadActive}
         >
           <span className="flex items-center gap-2">
-            <span
-              className={`rounded-full px-2 py-0.5 text-xs ${
-                isBadActive ? 'bg-rose-500 text-white' : 'bg-slate-200 dark:bg-slate-700'
-              }`}
-            >
+            <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs dark:bg-slate-700">
               {summary?.bad ?? 0}
             </span>
             <span>{t('sentiment.ratings.bad')}</span>
@@ -94,15 +85,11 @@ export function SentimentRating({
           </span>
         </button>
         <div
-          className="pointer-events-none absolute inset-y-0 left-0 z-0 flex w-full"
-          aria-label={t('sentiment.ratings.ratingBarLabel')}
-          aria-valuenow={goodPercent}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          role="progressbar"
+          className="pointer-events-none absolute inset-y-0 left-0 z-0 flex h-full w-full"
+          data-testid="rating-fill-container"
         >
           <div
-            className="h-full bg-emerald-500/80"
+            className="h-full bg-emerald-500"
             style={{ width: `${goodPercent}%` }}
             title={`${goodPercent}% ${t('sentiment.ratings.good')}`}
           >
@@ -113,7 +100,7 @@ export function SentimentRating({
             )}
           </div>
           <div
-            className="h-full bg-rose-500/80"
+            className="h-full bg-rose-500"
             style={{ width: `${badPercent}%` }}
             title={`${badPercent}% ${t('sentiment.ratings.bad')}`}
           >

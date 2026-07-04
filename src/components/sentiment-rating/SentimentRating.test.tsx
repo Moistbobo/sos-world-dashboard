@@ -76,10 +76,10 @@ describe('SentimentRating', () => {
 
   it('fills the bar proportionally to good and bad percentages', () => {
     renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: null } });
-    const bar = screen.getByRole('progressbar', { name: /rating distribution/i });
-    expect(bar.children[0]).toHaveStyle('width: 75%');
-    expect(bar.children[0]).toHaveTextContent('75%');
-    expect(bar.children[1]).toHaveStyle('width: 25%');
-    expect(bar.children[1]).toHaveTextContent('25%');
+    const fill = screen.getByTestId('rating-fill-container');
+    expect(fill.children[0]).toHaveStyle('width: 75%');
+    expect(fill.children[0]).toHaveTextContent('75%');
+    expect(fill.children[1]).toHaveStyle('width: 25%');
+    expect(fill.children[1]).toHaveTextContent('25%');
   });
 });
