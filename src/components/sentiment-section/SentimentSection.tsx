@@ -58,7 +58,7 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
   };
 
   return (
-    <section className="card p-5 sm:p-6" data-testid="sentiment-section" aria-label={t('sentiment.comments.title')}>
+    <div data-testid="sentiment-section">
       <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-white">
         {t('sentiment.comments.title')}
       </h2>
@@ -78,6 +78,6 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
         />
       </div>
       <SentimentCommentList comments={comments} />
-    </section>
+    </div>
   );
 }
