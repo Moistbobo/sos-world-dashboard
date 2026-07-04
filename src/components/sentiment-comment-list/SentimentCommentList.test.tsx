@@ -14,7 +14,7 @@ describe('SentimentCommentList', () => {
         id: 'c1',
         world_id: 'w1',
         user_id: 'u1',
-        username: 'happy-owl',
+        username: 'Anonymous',
         content: 'Nice!',
         created_at: new Date().toISOString(),
       },
@@ -31,7 +31,7 @@ describe('SentimentCommentList', () => {
         id: 'c1',
         world_id: 'w1',
         user_id: 'u1',
-        username: 'happy-owl',
+        username: 'Anonymous',
         content: 'Nice!',
         created_at: twoHoursAgo,
       },
@@ -46,13 +46,13 @@ describe('SentimentCommentList', () => {
         id: 'c1',
         world_id: 'w1',
         user_id: 'u1',
-        username: 'happy-owl',
+        username: 'Anonymous',
         content: 'Nice!',
         created_at: new Date().toISOString(),
       },
     ];
     render(<SentimentCommentList comments={comments} />);
-    expect(screen.getByText('happy-owl')).toBeInTheDocument();
+    expect(screen.getByText('Anonymous')).toBeInTheDocument();
     expect(screen.getByText('Nice!')).toBeInTheDocument();
   });
 });

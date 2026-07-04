@@ -78,7 +78,7 @@ export async function deleteRating(worldId: string): Promise<void> {
 
 export async function submitComment(worldId: string, content: string): Promise<Comment> {
   const user = await ensureAnonymousUser();
-  const username = generateUsername(user.id);
+  const username = generateUsername();
   const { data, error } = await supabase
     .from('comments')
     .insert({

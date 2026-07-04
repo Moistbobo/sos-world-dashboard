@@ -191,10 +191,8 @@ export const supabase = createClient(url, key);
 
 `src/utils/username.ts` and `src/utils/username.test.ts`
 
-- Deterministic AdjectiveAnimal from a Supabase anonymous UUID.
-- Curated, inoffensive word lists.
-- URL-safe output.
-- Target at least 1,000 combinations.
+- All anonymous users are shown as "Anonymous".
+- Stable across reloads because the display name is independent of the Supabase anonymous UUID.
 
 ### 5.5 Create validation utility (sub-issue #16)
 

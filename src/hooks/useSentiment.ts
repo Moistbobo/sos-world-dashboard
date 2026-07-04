@@ -7,6 +7,7 @@ import {
   updateRating,
   deleteRating,
 } from '../api/sentiment';
+import { generateUsername } from '../utils/username';
 import type { Comment, RatingSummary } from '../types';
 
 export function useRatings(worldId: string | undefined) {
@@ -139,7 +140,7 @@ export function useSubmitComment() {
         id: `optimistic-${Date.now()}`,
         world_id: worldId,
         user_id: '',
-        username: 'You',
+        username: generateUsername(),
         content,
         created_at: new Date().toISOString(),
       };

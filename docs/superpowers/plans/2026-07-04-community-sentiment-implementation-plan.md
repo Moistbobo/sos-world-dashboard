@@ -15,7 +15,7 @@
 | File | Responsibility |
 | --- | --- |
 | `src/lib/supabase.ts` | Create the single Supabase client from env vars. |
-| `src/utils/username.ts` | Deterministic AdjectiveAnimal username from a UUID. |
+| `src/utils/username.ts` | Returns "Anonymous" for every anonymous user. |
 | `src/utils/username.test.ts` | Tests for the username generator. |
 | `src/utils/commentValidation.ts` | Validate comment text length/content and return typed errors. |
 | `src/utils/commentValidation.test.ts` | Tests for comment validation. |
@@ -114,28 +114,9 @@ Create `src/utils/username.test.ts`:
 import { describe, expect, it } from 'vitest';
 import { generateUsername } from './username';
 
-const uuidA = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
-const uuidB = '8f410ce4-3b37-4cbe-8f21-b171f2f3890b';
-
 describe('generateUsername', () => {
-  it('returns a string from uuid', () => {
-    const result = generateUsername(uuidA);
-    expect(typeof result).toBe('string');
-    expect(result.length).toBeGreaterThan(0);
-  });
-
-  it('is deterministic for the same uuid', () => {
-    expect(generateUsername(uuidA)).toBe(generateUsername(uuidA));
-  });
-
-  it('produces different names for different uuids', () => {
-    expect(generateUsername(uuidA)).not.toBe(generateUsername(uuidB));
-  });
-
-  it('is url-safe and contains no spaces', () => {
-    const result = generateUsername(uuidA);
-    expect(result).not.toContain(' ');
-    expect(result).toMatch(/^[A-Za-z0-9-]+$/);
+  it('returns "Anonymous"', () => {
+    expect(generateUsername()).toBe('Anonymous');
   });
 });
 ```
@@ -152,31 +133,8 @@ Expected: FAIL — `generateUsername` is not defined.
 Create `src/utils/username.ts`:
 
 ```ts
-const adjectives = [
-  'happy', 'brave', 'clever', 'curious', 'friendly', 'gentle', 'jolly',
-  'kind', 'lively', 'merry', 'proud', 'silly', 'sleepy', 'witty', 'calm',
-  'eager', 'fancy', 'happy', 'noble', 'polite', 'sunny', 'warm', 'zesty',
-];
-
-const animals = [
-  'alpaca', 'badger', 'beaver', 'bison', 'camel', 'cobra', 'crane', 'dolphin',
-  'eagle', 'falcon', 'ferret', 'gecko', 'hare', 'heron', 'iguana', 'koala',
-  'lemur', 'llama', 'lynx', 'moose', 'otter', 'owl', 'panda', 'rabbit',
-  'raven', 'salmon', 'shark', 'sloth', 'snake', 'sparrow', 'stoat', 'swan',
-  'tapir', 'tiger', 'toucan', 'turtle', 'walrus', 'weasel', 'whale', 'wolf',
-  'wombat', 'zebra',
-];
-
-export function generateUsername(uuid: string): string {
-  if (!uuid) return 'anonymous-user';
-  // Remove dashes and treat the UUID as a 32-char hex string.
-  const digits = uuid.replace(/-/g, '');
-  // Split into two roughly equal halves and parse as integers.
-  const first = parseInt(digits.slice(0, 16), 16);
-  const second = parseInt(digits.slice(16, 32), 16);
-  const adjective = adjectives[first % adjectives.length];
-  const animal = animals[second % animals.length];
-  return `${adjective}-${animal}`;
+export function generateUsername(): string {
+  return 'Anonymous';
 }
 ```
 
@@ -554,7 +512,7 @@ export async function submitRating(worldId: string, value: 'good' | 'bad'): Prom
 
 export async function submitComment(worldId: string, content: string): Promise<Comment> {
   const user = await ensureAnonymousUser();
-  const username = generateUsername(user.id);
+  const username = generateUsername();
   const { data, error } = await supabase
     .from('comments')
     .insert({
@@ -1119,13 +1077,13 @@ describe('SentimentCommentList', () => {
         id: 'c1',
         world_id: 'w1',
         user_id: 'u1',
-        username: 'happy-owl',
+        username: 'Anonymous',
         content: 'Nice!',
         created_at: new Date().toISOString(),
       },
     ];
     render(<SentimentCommentList comments={comments} />);
-    expect(screen.getByText('happy-owl')).toBeInTheDocument();
+    expect(screen.getByText('Anonymous')).toBeInTheDocument();
     expect(screen.getByText('Nice!')).toBeInTheDocument();
   });
 });
