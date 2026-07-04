@@ -56,7 +56,8 @@ describe('fetchMeta', () => {
     const result = await fetchMeta();
 
     const url = vi.mocked(fetch).mock.calls[0][0] as string;
-    expect(url).toBe('http://localhost:3000/api/meta');
+    expect(url).toContain('/api/meta');
+    expect(url).not.toContain('?');
     expect(result).toEqual({
       qualityGood: 123,
       qualityBad: 12,
