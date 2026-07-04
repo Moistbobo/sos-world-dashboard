@@ -58,7 +58,7 @@ export function SentimentRating({ summary, isLoading, isSubmitting, onRate, onRe
         </button>
       </div>
       <div
-        className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700"
+        className="relative h-6 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700"
         aria-label={t('sentiment.ratings.ratingBarLabel')}
         aria-valuenow={goodPercent}
         aria-valuemin={0}
@@ -66,19 +66,25 @@ export function SentimentRating({ summary, isLoading, isSubmitting, onRate, onRe
         role="progressbar"
       >
         {total === 0 ? (
-          <div className="h-full w-full bg-slate-300 dark:bg-slate-600" />
+          <div className="flex h-full w-full items-center justify-center bg-slate-300 text-[10px] font-medium text-slate-600 dark:bg-slate-600 dark:text-slate-400">
+            {t('sentiment.ratings.noVotes')}
+          </div>
         ) : (
           <>
             <div
-              className="float-left h-full bg-green-500"
+              className="float-left flex h-full items-center justify-center bg-green-500 text-[10px] font-medium text-white"
               style={{ width: `${goodPercent}%` }}
               title={`${goodPercent}% ${t('sentiment.ratings.good')}`}
-            />
+            >
+              {goodPercent > 0 && `${goodPercent}%`}
+            </div>
             <div
-              className="float-left h-full bg-red-500"
+              className="float-left flex h-full items-center justify-center bg-red-500 text-[10px] font-medium text-white"
               style={{ width: `${badPercent}%` }}
               title={`${badPercent}% ${t('sentiment.ratings.bad')}`}
-            />
+            >
+              {badPercent > 0 && `${badPercent}%`}
+            </div>
           </>
         )}
       </div>
