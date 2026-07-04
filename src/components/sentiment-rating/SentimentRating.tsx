@@ -62,11 +62,7 @@ export function SentimentRating({
             title={`${goodPercent}% ${t('sentiment.ratings.good')}`}
           >
             {goodPercent > 0 && (
-              <span
-                className={`flex h-full items-center justify-center text-[40%] font-bold ${
-                  isGoodActive ? 'text-emerald-900 dark:text-emerald-950' : 'text-white'
-                }`}
-              >
+              <span className="flex h-full items-center justify-center text-xs font-medium text-white">
                 {goodPercent}%
               </span>
             )}
@@ -77,11 +73,7 @@ export function SentimentRating({
             title={`${badPercent}% ${t('sentiment.ratings.bad')}`}
           >
             {badPercent > 0 && (
-              <span
-                className={`flex h-full items-center justify-center text-[40%] font-bold ${
-                  isBadActive ? 'text-rose-900 dark:text-rose-950' : 'text-white'
-                }`}
-              >
+              <span className="flex h-full items-center justify-center text-xs font-medium text-white">
                 {badPercent}%
               </span>
             )}
