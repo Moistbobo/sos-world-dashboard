@@ -63,7 +63,7 @@ export function SentimentRating({
           >
             {goodPercent > 0 && (
               <span
-                className={`flex h-full items-center justify-center text-xs font-semibold ${
+                className={`flex h-full items-center justify-center text-lg font-semibold ${
                   isGoodActive ? 'text-emerald-800 dark:text-emerald-900' : 'text-white'
                 }`}
               >
@@ -78,7 +78,7 @@ export function SentimentRating({
           >
             {badPercent > 0 && (
               <span
-                className={`flex h-full items-center justify-center text-xs font-semibold ${
+                className={`flex h-full items-center justify-center text-lg font-semibold ${
                   isBadActive ? 'text-rose-800 dark:text-rose-900' : 'text-white'
                 }`}
               >
