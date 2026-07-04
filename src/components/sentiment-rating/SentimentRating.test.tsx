@@ -16,10 +16,19 @@ function renderComponent(props = {}) {
 }
 
 describe('SentimentRating', () => {
-  it('renders good and bad counts on the left and right halves', () => {
+  it('labels both halves', () => {
     renderComponent();
-    expect(screen.getByRole('button', { name: /Good/i })).toHaveTextContent('3');
-    expect(screen.getByRole('button', { name: /Bad/i })).toHaveTextContent('1');
+    expect(screen.getByRole('button', { name: /Good/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Bad/i })).toBeInTheDocument();
+  });
+
+  it('does not render individual vote counts on the buttons', () => {
+    renderComponent();
+    const goodButton = screen.getByRole('button', { name: /Good/i });
+    const badButton = screen.getByRole('button', { name: /Bad/i });
+    // The buttons should only contain their labels, not numeric counts
+    expect(goodButton).toHaveTextContent(/^Good$/);
+    expect(badButton).toHaveTextContent(/^Bad$/);
   });
 
   it('calls onRate("good") when the left half is clicked', () => {
@@ -83,19 +92,19 @@ describe('SentimentRating', () => {
     expect(fill.children[1]).toHaveTextContent('25%');
   });
 
-  it('recolors the good count badge green when the user voted good', () => {
+  it('outlines the good half when the user voted good', () => {
     renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'good' } });
     const goodButton = screen.getByRole('button', { name: /Good/i });
-    const badge = goodButton.querySelector('span.rounded-full');
-    expect(badge).toHaveClass('bg-emerald-500');
-    expect(badge).toHaveClass('text-white');
+    expect(goodButton).toHaveClass('ring-2');
+    expect(goodButton).toHaveClass('ring-emerald-500');
+    expect(goodButton).toHaveClass('bg-emerald-500/10');
   });
 
-  it('recolors the bad count badge red when the user voted bad', () => {
+  it('outlines the bad half when the user voted bad', () => {
     renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'bad' } });
     const badButton = screen.getByRole('button', { name: /Bad/i });
-    const badge = badButton.querySelector('span.rounded-full');
-    expect(badge).toHaveClass('bg-rose-500');
-    expect(badge).toHaveClass('text-white');
+    expect(badButton).toHaveClass('ring-2');
+    expect(badButton).toHaveClass('ring-rose-500');
+    expect(badButton).toHaveClass('bg-rose-500/10');
   });
 });

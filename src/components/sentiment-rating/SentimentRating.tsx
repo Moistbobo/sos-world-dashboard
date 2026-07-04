@@ -58,40 +58,30 @@ export function SentimentRating({
           type="button"
           disabled={isLoading || isSubmitting}
           onClick={handleGoodClick}
-          className="relative z-10 flex w-1/2 items-center justify-start px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-emerald-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-200"
+          className={`relative z-10 flex w-1/2 items-center justify-start px-4 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
+            isGoodActive
+              ? 'bg-emerald-500/10 text-emerald-700 ring-2 ring-inset ring-emerald-500 hover:bg-emerald-500/15 focus-visible:ring-emerald-500 dark:text-emerald-300'
+              : 'text-slate-700 hover:bg-emerald-500/10 focus-visible:ring-emerald-500 dark:text-slate-200'
+          }`}
           aria-pressed={isGoodActive}
         >
           <span className="flex items-center gap-2">
             <ThumbsUp className="h-4 w-4" />
             <span>{t('sentiment.ratings.good')}</span>
-            <span
-              className={`rounded-full px-2 py-0.5 text-xs ${
-                isGoodActive
-                  ? 'bg-emerald-500 text-white'
-                  : 'bg-slate-200 dark:bg-slate-700'
-              }`}
-            >
-              {summary?.good ?? 0}
-            </span>
           </span>
         </button>
         <button
           type="button"
           disabled={isLoading || isSubmitting}
           onClick={handleBadClick}
-          className="relative z-10 flex w-1/2 items-center justify-end px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-rose-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-200"
+          className={`relative z-10 flex w-1/2 items-center justify-end px-4 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
+            isBadActive
+              ? 'bg-rose-500/10 text-rose-700 ring-2 ring-inset ring-rose-500 hover:bg-rose-500/15 focus-visible:ring-rose-500 dark:text-rose-300'
+              : 'text-slate-700 hover:bg-rose-500/10 focus-visible:ring-rose-500 dark:text-slate-200'
+          }`}
           aria-pressed={isBadActive}
         >
           <span className="flex items-center gap-2">
-            <span
-              className={`rounded-full px-2 py-0.5 text-xs ${
-                isBadActive
-                  ? 'bg-rose-500 text-white'
-                  : 'bg-slate-200 dark:bg-slate-700'
-              }`}
-            >
-              {summary?.bad ?? 0}
-            </span>
             <span>{t('sentiment.ratings.bad')}</span>
             <ThumbsDown className="h-4 w-4" />
           </span>
