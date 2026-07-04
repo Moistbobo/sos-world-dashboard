@@ -83,7 +83,8 @@
       "bad": "悪い",
       "countGood": "良い {{count}}",
       "countBad": "悪い {{count}}",
-      "submitError": "評価を送信できませんでした: {{message}}"
+      "submitError": "評価を送信できませんでした: {{message}}",
+      "ratingBarLabel": "良い評価と悪い評価の割合"
     },
     "comments": {
       "title": "コミュニティコメント",

@@ -51,4 +51,23 @@ describe('SentimentRating', () => {
     fireEvent.click(screen.getByRole('button', { name: /Good/i }));
     expect(onRemove).toHaveBeenCalled();
   });
+
+  it('renders a good/bad distribution bar', () => {
+    renderComponent();
+    const bar = screen.getByRole('progressbar', { name: /rating distribution/i });
+    expect(bar).toBeInTheDocument();
+  });
+
+  it('shows a grey bar when there are no votes', () => {
+    renderComponent({ summary: { worldId: 'wrld_123', good: 0, bad: 0, userRating: null } });
+    const bar = screen.getByRole('progressbar', { name: /rating distribution/i });
+    expect(bar.firstChild).toHaveClass('bg-slate-300');
+  });
+
+  it('fills the bar proportionally to good and bad percentages', () => {
+    renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: null } });
+    const bar = screen.getByRole('progressbar', { name: /rating distribution/i });
+    expect(bar.children[0]).toHaveStyle('width: 75%');
+    expect(bar.children[1]).toHaveStyle('width: 25%');
+  });
 });

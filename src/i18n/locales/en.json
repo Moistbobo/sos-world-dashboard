@@ -83,7 +83,8 @@
       "bad": "Bad",
       "countGood": "{{count}} good",
       "countBad": "{{count}} bad",
-      "submitError": "Could not submit rating: {{message}}"
+      "submitError": "Could not submit rating: {{message}}",
+      "ratingBarLabel": "Good versus bad rating distribution"
     },
     "comments": {
       "title": "Community comments",
