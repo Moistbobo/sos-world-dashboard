@@ -54,6 +54,33 @@ export function SentimentRating({
         aria-valuemax={100}
         role="progressbar"
       >
+        <div
+          className="pointer-events-none absolute inset-y-0 left-0 z-0 flex h-full w-full"
+          data-testid="rating-fill-container"
+        >
+          <div
+            className="h-full bg-emerald-500"
+            style={{ width: `${goodPercent}%` }}
+            title={`${goodPercent}% ${t('sentiment.ratings.good')}`}
+          >
+            {goodPercent > 0 && (
+              <span className="flex h-full items-center justify-center text-xs font-medium text-white">
+                {goodPercent}%
+              </span>
+            )}
+          </div>
+          <div
+            className="h-full bg-rose-500"
+            style={{ width: `${badPercent}%` }}
+            title={`${badPercent}% ${t('sentiment.ratings.bad')}`}
+          >
+            {badPercent > 0 && (
+              <span className="flex h-full items-center justify-center text-xs font-medium text-white">
+                {badPercent}%
+              </span>
+            )}
+          </div>
+        </div>
         <button
           type="button"
           disabled={isLoading || isSubmitting}
@@ -86,33 +113,6 @@ export function SentimentRating({
             <ThumbsDown className="h-4 w-4" />
           </span>
         </button>
-        <div
-          className="pointer-events-none absolute inset-y-0 left-0 z-0 flex h-full w-full"
-          data-testid="rating-fill-container"
-        >
-          <div
-            className="h-full bg-emerald-500"
-            style={{ width: `${goodPercent}%` }}
-            title={`${goodPercent}% ${t('sentiment.ratings.good')}`}
-          >
-            {goodPercent > 0 && (
-              <span className="flex h-full items-center justify-center text-xs font-medium text-white">
-                {goodPercent}%
-              </span>
-            )}
-          </div>
-          <div
-            className="h-full bg-rose-500"
-            style={{ width: `${badPercent}%` }}
-            title={`${badPercent}% ${t('sentiment.ratings.bad')}`}
-          >
-            {badPercent > 0 && (
-              <span className="flex h-full items-center justify-center text-xs font-medium text-white">
-                {badPercent}%
-              </span>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );
