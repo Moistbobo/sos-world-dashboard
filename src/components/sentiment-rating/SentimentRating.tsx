@@ -72,14 +72,14 @@ export function SentimentRating({ summary, isLoading, isSubmitting, onRate, onRe
         ) : (
           <>
             <div
-              className="float-left flex h-full items-center justify-center bg-green-500 text-[10px] font-medium text-white"
+              className="float-left flex h-full items-center justify-center bg-emerald-500/80 text-[10px] font-medium text-white"
               style={{ width: `${goodPercent}%` }}
               title={`${goodPercent}% ${t('sentiment.ratings.good')}`}
             >
               {goodPercent > 0 && `${goodPercent}%`}
             </div>
             <div
-              className="float-left flex h-full items-center justify-center bg-red-500 text-[10px] font-medium text-white"
+              className="float-left flex h-full items-center justify-center bg-rose-500/80 text-[10px] font-medium text-white"
               style={{ width: `${badPercent}%` }}
               title={`${badPercent}% ${t('sentiment.ratings.bad')}`}
             >
