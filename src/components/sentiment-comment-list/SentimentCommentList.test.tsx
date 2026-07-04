@@ -162,7 +162,8 @@ describe('SentimentCommentList', () => {
     const listItem = (await screen.findByText('My comment')).closest('li');
     expect(listItem).toBeInTheDocument();
     const children = Array.from(listItem!.children[0].children);
-    expect(children[0]).toHaveTextContent(expected);
-    expect(children[1]).toHaveTextContent('Anonymous (You)');
+    expect(children[0]).toHaveTextContent('Anonymous (You)');
+    expect(children[1]).toHaveTextContent(expected);
+    expect(children[2]).toHaveTextContent('c1');
   });
 });
