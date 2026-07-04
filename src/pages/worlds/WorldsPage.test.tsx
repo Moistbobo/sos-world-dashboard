@@ -53,17 +53,13 @@ let infiniteHasNextPage = true;
 
 vi.mock('../../hooks/useApi', () => ({
   useTags: () => ({ data: { tags: [] } }),
-  useFilterCounts: () => ({
+  useMeta: () => ({
     data: {
-      qualityCounts: [
-        { quality: 'good', count: 123 },
-        { quality: 'bad', count: 12 },
-      ],
-      platformCounts: [
-        { platform: 'standalonewindows', count: 80 },
-        { platform: 'android', count: 45 },
-        { platform: 'ios', count: 6 },
-      ],
+      qualityGood: 123,
+      qualityBad: 12,
+      platformDesktop: 80,
+      platformAndroid: 45,
+      platformiOS: 6,
     },
     isPending: false,
     isError: false,

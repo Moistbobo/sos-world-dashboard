@@ -1,4 +1,4 @@
-import type { FilterCountsResponse, HealthResponse, PaginatedWorlds, TagsResponse, World } from '../types';
+import type { HealthResponse, MetaResponse, PaginatedWorlds, TagsResponse, World } from '../types';
 
 function getBaseUrl(): string {
   const url = import.meta.env.VITE_API_BASE_URL;
@@ -94,27 +94,6 @@ export async function fetchTags(): Promise<TagsResponse> {
   return request('/api/tags');
 }
 
-export async function fetchFilterCounts(params?: {
-  search?: string;
-  minCapacity?: number;
-  maxCapacity?: number;
-  tag?: string[];
-  quality?: ('good' | 'bad')[];
-  platform?: string[];
-}): Promise<FilterCountsResponse> {
-  const qs = new URLSearchParams();
-  if (params?.search?.trim()) qs.set('search', params.search.trim());
-  if (params?.minCapacity !== undefined) qs.set('minCapacity', String(params.minCapacity));
-  if (params?.maxCapacity !== undefined) qs.set('maxCapacity', String(params.maxCapacity));
-  if (params?.tag?.length) {
-    for (const t of params.tag) qs.append('tag', t);
-  }
-  if (params?.quality?.length) {
-    for (const q of params.quality) qs.append('quality', q);
-  }
-  if (params?.platform?.length) {
-    for (const p of params.platform) qs.append('platform', p);
-  }
-  const query = qs.toString();
-  return request(`/api/filter-counts${query ? `?${query}` : ''}`);
+export async function fetchMeta(): Promise<MetaResponse> {
+  return request('/api/meta');
 }
