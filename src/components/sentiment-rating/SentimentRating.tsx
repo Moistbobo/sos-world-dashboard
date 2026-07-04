@@ -47,7 +47,7 @@ export function SentimentRating({
         {t('sentiment.ratings.ratingBarLabel')}
       </p>
       <div
-        className="group relative flex h-12 w-full overflow-hidden rounded-full border border-slate-300 bg-slate-200 transition-transform duration-150 ease-out hover:scale-[1.02] dark:border-slate-600 dark:bg-slate-700"
+        className="relative flex h-12 w-full overflow-hidden rounded-full border border-slate-300 bg-slate-200 dark:border-slate-600 dark:bg-slate-700"
         aria-label={t('sentiment.ratings.ratingBarLabel')}
         aria-valuenow={goodPercent}
         aria-valuemin={0}
@@ -58,10 +58,10 @@ export function SentimentRating({
           type="button"
           disabled={isLoading || isSubmitting}
           onClick={handleGoodClick}
-          className={`relative z-10 flex w-1/2 items-center justify-start px-4 text-sm font-medium transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
+          className={`relative z-10 flex w-1/2 origin-left items-center justify-start px-4 text-sm font-medium transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
             isGoodActive
               ? 'bg-emerald-500/10 text-emerald-700 ring-2 ring-inset ring-emerald-500 focus-visible:ring-emerald-500 dark:text-emerald-300'
-              : 'text-slate-700 hover:text-emerald-700 focus-visible:ring-emerald-500 dark:text-slate-200 dark:hover:text-emerald-300'
+              : 'text-slate-700 hover:scale-105 hover:text-emerald-700 focus-visible:ring-emerald-500 dark:text-slate-200 dark:hover:text-emerald-300'
           }`}
           aria-pressed={isGoodActive}
         >
@@ -74,10 +74,10 @@ export function SentimentRating({
           type="button"
           disabled={isLoading || isSubmitting}
           onClick={handleBadClick}
-          className={`relative z-10 flex w-1/2 items-center justify-end px-4 text-sm font-medium transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
+          className={`relative z-10 flex w-1/2 origin-right items-center justify-end px-4 text-sm font-medium transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
             isBadActive
               ? 'bg-rose-500/10 text-rose-700 ring-2 ring-inset ring-rose-500 focus-visible:ring-rose-500 dark:text-rose-300'
-              : 'text-slate-700 hover:text-rose-700 focus-visible:ring-rose-500 dark:text-slate-200 dark:hover:text-rose-300'
+              : 'text-slate-700 hover:scale-105 hover:text-rose-700 focus-visible:ring-rose-500 dark:text-slate-200 dark:hover:text-rose-300'
           }`}
           aria-pressed={isBadActive}
         >
