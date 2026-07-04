@@ -105,20 +105,25 @@ describe('SentimentRating', () => {
     expect(icon).toHaveClass('group-hover:scale-110');
   });
 
-  it('shows "Your Vote" next to the good label when the user voted good', () => {
+  it('shows "Your Vote" with thumbs up under the bar when the user voted good', () => {
     renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'good' } });
-    const goodButton = screen.getByRole('button', { name: /Good/i });
-    expect(goodButton).toHaveTextContent(/Your Vote/);
+    expect(screen.getByText(/Your Vote/i)).toBeInTheDocument();
+    expect(screen.getByText(/Your Vote/i).parentElement).toContainHTML('svg');
   });
 
-  it('shows "Your Vote" next to the bad label when the user voted bad', () => {
+  it('shows "Your Vote" with thumbs down under the bar when the user voted bad', () => {
     renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'bad' } });
-    const badButton = screen.getByRole('button', { name: /Bad/i });
-    expect(badButton).toHaveTextContent(/Your Vote/);
+    expect(screen.getByText(/Your Vote/i)).toBeInTheDocument();
+    expect(screen.getByText(/Your Vote/i).parentElement).toContainHTML('svg');
   });
 
   it('does not show "Your Vote" when the user has not voted', () => {
     renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: null } });
     expect(screen.queryByText(/Your Vote/i)).not.toBeInTheDocument();
+  });
+
+  it('shows the rating distribution label under the bar when the user has not voted', () => {
+    renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: null } });
+    expect(screen.getByText(/rating distribution/i)).toBeInTheDocument();
   });
 });

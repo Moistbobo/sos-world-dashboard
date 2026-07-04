@@ -21,6 +21,7 @@ export function SentimentRating({
 
   const isGoodActive = summary?.userRating === 'good';
   const isBadActive = summary?.userRating === 'bad';
+  const hasVoted = isGoodActive || isBadActive;
   const total = (summary?.good ?? 0) + (summary?.bad ?? 0);
   const goodPercent = total > 0 ? Math.round(((summary?.good ?? 0) / total) * 100) : 0;
   const badPercent = total > 0 ? 100 - goodPercent : 0;
@@ -43,9 +44,6 @@ export function SentimentRating({
 
   return (
     <div className="space-y-2" data-testid="sentiment-rating">
-      <p className="text-xs text-slate-500 dark:text-slate-400">
-        {t('sentiment.ratings.ratingBarLabel')}
-      </p>
       <div
         className="relative flex h-12 w-full overflow-hidden rounded-full border border-slate-300 bg-slate-200 transition-shadow duration-150 ease-out hover:shadow-md dark:border-slate-600 dark:bg-slate-700"
         aria-label={t('sentiment.ratings.ratingBarLabel')}
@@ -91,11 +89,6 @@ export function SentimentRating({
           <span className="flex items-center gap-2">
             <ThumbsUp className="h-4 w-4 transition-transform duration-150 ease-out group-hover:scale-110" />
             <span>{t('sentiment.ratings.good')}</span>
-            {isGoodActive && (
-              <span className="text-xs text-emerald-600 dark:text-emerald-400">
-                {t('sentiment.ratings.yourVote')}
-              </span>
-            )}
           </span>
         </button>
         <button
@@ -106,16 +99,25 @@ export function SentimentRating({
           aria-pressed={isBadActive}
         >
           <span className="flex items-center gap-2">
-            {isBadActive && (
-              <span className="text-xs text-rose-600 dark:text-rose-400">
-                {t('sentiment.ratings.yourVote')}
-              </span>
-            )}
             <span>{t('sentiment.ratings.bad')}</span>
             <ThumbsDown className="h-4 w-4 transition-transform duration-150 ease-out group-hover:scale-110" />
           </span>
         </button>
       </div>
+      <p className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+        {hasVoted ? (
+          <>
+            <span>{t('sentiment.ratings.yourVote')}</span>
+            {isGoodActive ? (
+              <ThumbsUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+            ) : (
+              <ThumbsDown className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+            )}
+          </>
+        ) : (
+          <span>{t('sentiment.ratings.ratingBarLabel')}</span>
+        )}
+      </p>
     </div>
   );
 }
