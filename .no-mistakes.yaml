@@ -1,0 +1,22 @@
+agent: opencode
+allow_repo_commands: true
+commands:
+  test: "cp .env.example .env.local && pnpm install && pnpm test"
+  lint: "cp .env.example .env.local && pnpm install && pnpm lint"
+  build: "cp .env.example .env.local && pnpm install && pnpm build"
+  format: "pnpm lint"
+ignore_patterns:
+  - "dist/**"
+  - "node_modules/**"
+  - ".husky/_/**"
+  - "pr-assets/**"
+  - "coverage/**"
+auto_fix:
+  lint: 3
+  test: 3
+  build: 0
+  ci: 3
+test:
+  evidence:
+    store_in_repo: true
+    dir: .no-mistakes/evidence
