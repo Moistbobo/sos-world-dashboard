@@ -15,6 +15,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "^1.5.3",
     "@radix-ui/react-slider": "^1.4.1",
     "@supabase/supabase-js": "2.110.0",
     "@tanstack/react-query": "^5.101.0",

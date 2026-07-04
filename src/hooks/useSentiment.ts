@@ -30,8 +30,15 @@ export function useComments(worldId: string | undefined) {
 export function useSubmitRating() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ worldId, value }: { worldId: string; value: 'good' | 'bad' }) =>
-      submitRating(worldId, value),
+    mutationFn: ({
+      worldId,
+      value,
+      captchaToken,
+    }: {
+      worldId: string;
+      value: 'good' | 'bad';
+      captchaToken?: string;
+    }) => submitRating(worldId, value, captchaToken),
     onMutate: async ({ worldId, value }) => {
       const queryKey = ['ratings', worldId];
       await queryClient.cancelQueries({ queryKey });
@@ -65,8 +72,15 @@ export function useSubmitRating() {
 export function useUpdateRating() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ worldId, value }: { worldId: string; value: 'good' | 'bad' }) =>
-      updateRating(worldId, value),
+    mutationFn: ({
+      worldId,
+      value,
+      captchaToken,
+    }: {
+      worldId: string;
+      value: 'good' | 'bad';
+      captchaToken?: string;
+    }) => updateRating(worldId, value, captchaToken),
     onMutate: async ({ worldId, value }) => {
       const queryKey = ['ratings', worldId];
       await queryClient.cancelQueries({ queryKey });
@@ -98,7 +112,8 @@ export function useUpdateRating() {
 export function useDeleteRating() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ worldId }: { worldId: string }) => deleteRating(worldId),
+    mutationFn: ({ worldId, captchaToken }: { worldId: string; captchaToken?: string }) =>
+      deleteRating(worldId, captchaToken),
     onMutate: async ({ worldId }) => {
       const queryKey = ['ratings', worldId];
       await queryClient.cancelQueries({ queryKey });
@@ -131,8 +146,15 @@ export function useSubmitComment() {
   const queryClient = useQueryClient();
   const currentUserId = useCurrentUserId();
   return useMutation({
-    mutationFn: ({ worldId, content }: { worldId: string; content: string }) =>
-      submitComment(worldId, content),
+    mutationFn: ({
+      worldId,
+      content,
+      captchaToken,
+    }: {
+      worldId: string;
+      content: string;
+      captchaToken?: string;
+    }) => submitComment(worldId, content, captchaToken),
     onMutate: async ({ worldId, content }) => {
       const queryKey = ['comments', worldId];
       await queryClient.cancelQueries({ queryKey });

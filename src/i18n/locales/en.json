@@ -78,6 +78,10 @@
     "savedToList": "Saved to list"
   },
   "sentiment": {
+    "captcha": {
+      "description": "Please complete the verification below to post ratings or comments.",
+      "missingKey": "CAPTCHA is not configured. Please contact support."
+    },
     "ratings": {
       "good": "Good",
       "bad": "Bad",

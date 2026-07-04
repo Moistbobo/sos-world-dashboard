@@ -78,6 +78,10 @@
     "savedToList": "リストに保存済み"
   },
   "sentiment": {
+    "captcha": {
+      "description": "評価やコメントを投稿するには、以下の認証を完了してください。",
+      "missingKey": "CAPTCHAが設定されていません。サポートにお問い合わせください。"
+    },
     "ratings": {
       "good": "良い",
       "bad": "悪い",

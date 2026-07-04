@@ -2,38 +2,40 @@ import { supabase } from '../lib/supabase';
 import { generateUsername } from '../utils/username';
 import type { Comment, RatingSummary } from '../types';
 
-async function ensureAnonymousUser() {
+async function ensureAnonymousUser(captchaToken?: string) {
   const { data: sessionData } = await supabase.auth.getSession();
   const existing = sessionData.session?.user;
   if (existing?.is_anonymous) {
     return existing;
   }
-  const { data, error } = await supabase.auth.signInAnonymously();
+  const { data, error } = await supabase.auth.signInAnonymously({
+    options: captchaToken ? { captchaToken } : undefined,
+  });
   if (error) throw error;
   if (!data.user?.is_anonymous) throw new Error('Anonymous sign-in failed');
   return data.user;
 }
 
+export async function hasAnonymousSession(): Promise<boolean> {
+  const { data: sessionData } = await supabase.auth.getSession();
+  return sessionData.session?.user?.is_anonymous === true;
+}
+
 export async function fetchRatings(worldId: string): Promise<RatingSummary> {
-  const { data, error } = await supabase.from('ratings').select('value, user_id').eq('world_id', worldId);
+  const { data, error } = await supabase
+    .from('ratings_summary')
+    .select('*')
+    .eq('world_id', worldId)
+    .single();
+
   if (error) throw new Error(error.message);
 
-  let good = 0;
-  let bad = 0;
-  let userRating: 'good' | 'bad' | null = null;
-
-  const { data: sessionData } = await supabase.auth.getSession();
-  const currentUserId = sessionData.session?.user?.id;
-
-  for (const row of data ?? []) {
-    if (row.value === 'good') good++;
-    if (row.value === 'bad') bad++;
-    if (currentUserId && row.user_id === currentUserId) {
-      userRating = row.value as 'good' | 'bad';
-    }
-  }
-
-  return { worldId, good, bad, userRating };
+  return {
+    worldId,
+    good: data?.good ?? 0,
+    bad: data?.bad ?? 0,
+    userRating: data?.user_rating ?? null,
+  };
 }
 
 export async function fetchComments(worldId: string): Promise<Comment[]> {
@@ -46,8 +48,12 @@ export async function fetchComments(worldId: string): Promise<Comment[]> {
   return (data ?? []) as Comment[];
 }
 
-export async function submitRating(worldId: string, value: 'good' | 'bad'): Promise<void> {
-  const user = await ensureAnonymousUser();
+export async function submitRating(
+  worldId: string,
+  value: 'good' | 'bad',
+  captchaToken?: string,
+): Promise<void> {
+  const user = await ensureAnonymousUser(captchaToken);
   const { error } = await supabase.from('ratings').insert({
     world_id: worldId,
     user_id: user.id,
@@ -56,8 +62,12 @@ export async function submitRating(worldId: string, value: 'good' | 'bad'): Prom
   if (error) throw new Error(error.message);
 }
 
-export async function updateRating(worldId: string, value: 'good' | 'bad'): Promise<void> {
-  const user = await ensureAnonymousUser();
+export async function updateRating(
+  worldId: string,
+  value: 'good' | 'bad',
+  captchaToken?: string,
+): Promise<void> {
+  const user = await ensureAnonymousUser(captchaToken);
   const { error } = await supabase
     .from('ratings')
     .update({ value })
@@ -66,8 +76,8 @@ export async function updateRating(worldId: string, value: 'good' | 'bad'): Prom
   if (error) throw new Error(error.message);
 }
 
-export async function deleteRating(worldId: string): Promise<void> {
-  const user = await ensureAnonymousUser();
+export async function deleteRating(worldId: string, captchaToken?: string): Promise<void> {
+  const user = await ensureAnonymousUser(captchaToken);
   const { error } = await supabase
     .from('ratings')
     .delete()
@@ -76,8 +86,12 @@ export async function deleteRating(worldId: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
-export async function submitComment(worldId: string, content: string): Promise<Comment> {
-  const user = await ensureAnonymousUser();
+export async function submitComment(
+  worldId: string,
+  content: string,
+  captchaToken?: string,
+): Promise<Comment> {
+  const user = await ensureAnonymousUser(captchaToken);
   const username = generateUsername();
   const { data, error } = await supabase
     .from('comments')

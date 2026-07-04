@@ -10,4 +10,11 @@ if (typeof key !== 'string' || !key) {
   throw new Error('Missing VITE_SUPABASE_PUBLISHABLE_KEY');
 }
 
-export const supabase = createClient(url, key);
+// Defensive: ensure the anonymous session persists across page reloads
+// so the same anonymous user_id is reused for community sentiment.
+// supabase-js defaults this to true, but we set it explicitly to guard against regressions.
+export const supabase = createClient(url, key, {
+  auth: {
+    persistSession: true,
+  },
+});

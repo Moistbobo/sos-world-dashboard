@@ -72,7 +72,7 @@ describe('useSubmitRating', () => {
     vi.spyOn(sentimentApi, 'submitRating').mockResolvedValue(undefined);
     const { result } = renderHook(() => useSubmitRating(), { wrapper });
     await result.current.mutateAsync({ worldId: 'wrld_123', value: 'good' });
-    expect(sentimentApi.submitRating).toHaveBeenCalledWith('wrld_123', 'good');
+    expect(sentimentApi.submitRating).toHaveBeenCalledWith('wrld_123', 'good', undefined);
   });
 });
 
@@ -81,7 +81,7 @@ describe('useUpdateRating', () => {
     vi.spyOn(sentimentApi, 'updateRating').mockResolvedValue(undefined);
     const { result } = renderHook(() => useUpdateRating(), { wrapper });
     await result.current.mutateAsync({ worldId: 'wrld_123', value: 'bad' });
-    expect(sentimentApi.updateRating).toHaveBeenCalledWith('wrld_123', 'bad');
+    expect(sentimentApi.updateRating).toHaveBeenCalledWith('wrld_123', 'bad', undefined);
   });
 });
 
@@ -90,7 +90,7 @@ describe('useDeleteRating', () => {
     vi.spyOn(sentimentApi, 'deleteRating').mockResolvedValue(undefined);
     const { result } = renderHook(() => useDeleteRating(), { wrapper });
     await result.current.mutateAsync({ worldId: 'wrld_123' });
-    expect(sentimentApi.deleteRating).toHaveBeenCalledWith('wrld_123');
+    expect(sentimentApi.deleteRating).toHaveBeenCalledWith('wrld_123', undefined);
   });
 });
 
@@ -106,7 +106,7 @@ describe('useSubmitComment', () => {
     });
     const { result } = renderHook(() => useSubmitComment(), { wrapper });
     await result.current.mutateAsync({ worldId: 'wrld_123', content: 'hello' });
-    expect(sentimentApi.submitComment).toHaveBeenCalledWith('wrld_123', 'hello');
+    expect(sentimentApi.submitComment).toHaveBeenCalledWith('wrld_123', 'hello', undefined);
   });
 
   it('optimistically inserts a comment marked as the current user', async () => {

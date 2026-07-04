@@ -48,12 +48,10 @@ describe('fetchRatings', () => {
   it('returns aggregate counts and null user rating when no session', async () => {
     mocks.select.mockReturnValueOnce({
       eq: vi.fn().mockReturnValue({
-        data: [
-          { value: 'good' },
-          { value: 'good' },
-          { value: 'bad' },
-        ],
-        error: null,
+        single: vi.fn().mockReturnValue({
+          data: { world_id: 'wrld_123', good: 2, bad: 1, user_rating: null },
+          error: null,
+        }),
       }),
     });
 
@@ -116,6 +114,15 @@ describe('submitRating', () => {
     mocks.insert.mockReturnValueOnce({ data: null, error: null });
     await submitRating('wrld_123', 'good');
     expect(mocks.signInAnonymously).toHaveBeenCalled();
+    expect(mocks.insert).toHaveBeenCalled();
+  });
+
+  it('passes the captcha token to anonymous sign-in when provided', async () => {
+    mocks.insert.mockReturnValueOnce({ data: null, error: null });
+    await submitRating('wrld_123', 'good', 'turnstile-token');
+    expect(mocks.signInAnonymously).toHaveBeenCalledWith({
+      options: { captchaToken: 'turnstile-token' },
+    });
     expect(mocks.insert).toHaveBeenCalled();
   });
 });
