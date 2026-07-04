@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Languages, LayoutGrid, MousePointerClick, BellOff } from 'lucide-react';
+import { Languages, LayoutGrid, MousePointerClick, BellOff, FlaskConical } from 'lucide-react';
 import { LanguageSwitcher } from '../../components/language-switcher';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
 import { useListsPreferences } from '../../hooks/useListsPreferences';
@@ -76,6 +76,21 @@ export function SettingsPage() {
               {t('settings.skipRemoveWorldConfirmation')}
             </label>
             <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.skipRemoveWorldConfirmationHint')}</p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3">
+          <FlaskConical className="mt-0.5 h-4 w-4 text-slate-500 dark:text-slate-400" />
+          <div className="flex-1">
+            <label htmlFor="experimental-features" className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-800 dark:text-slate-200">
+              <input
+                id="experimental-features"
+                type="checkbox"
+                className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+              />
+              {t('settings.experimentalFeature')}
+            </label>
+            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.experimentalFeatureHint')}</p>
           </div>
         </div>
       </div>

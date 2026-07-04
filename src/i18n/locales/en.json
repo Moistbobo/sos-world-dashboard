@@ -133,6 +133,8 @@
     "scrollModePagination": "Pagination",
     "appVersion": "Version",
     "appVersionHint": "Dashboard version",
+    "experimentalFeature": "Experimental features",
+    "experimentalFeatureHint": "Toggle early-access features.",
     "skipRemoveWorldConfirmation": "Skip remove confirmation",
     "skipRemoveWorldConfirmationHint": "Don't show a confirmation when removing worlds from lists."
   },

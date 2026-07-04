@@ -133,6 +133,8 @@
     "scrollModePagination": "ページネーション",
     "appVersion": "バージョン",
     "appVersionHint": "ダッシュボードのバージョン",
+    "experimentalFeature": "実験的機能",
+    "experimentalFeatureHint": "早期アクセス機能を切り替えます。",
     "skipRemoveWorldConfirmation": "削除確認を省略",
     "skipRemoveWorldConfirmationHint": "リストからワールドを削除する際に確認ダイアログを表示しません。"
   },
