@@ -89,7 +89,8 @@
       "countBad": "{{count}} bad",
       "submitError": "Could not submit rating: {{message}}",
       "ratingBarLabel": "Good versus bad rating distribution",
-      "noVotes": "No votes yet"
+      "noVotes": "No votes yet",
+      "yourVote": "Your Vote"
     },
     "comments": {
       "title": "Community comments",

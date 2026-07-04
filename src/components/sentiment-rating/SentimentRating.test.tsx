@@ -104,4 +104,21 @@ describe('SentimentRating', () => {
     const icon = badButton.querySelector('svg');
     expect(icon).toHaveClass('group-hover:scale-110');
   });
+
+  it('shows "Your Vote" next to the good label when the user voted good', () => {
+    renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'good' } });
+    const goodButton = screen.getByRole('button', { name: /Good/i });
+    expect(goodButton).toHaveTextContent(/Your Vote/);
+  });
+
+  it('shows "Your Vote" next to the bad label when the user voted bad', () => {
+    renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'bad' } });
+    const badButton = screen.getByRole('button', { name: /Bad/i });
+    expect(badButton).toHaveTextContent(/Your Vote/);
+  });
+
+  it('does not show "Your Vote" when the user has not voted', () => {
+    renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: null } });
+    expect(screen.queryByText(/Your Vote/i)).not.toBeInTheDocument();
+  });
 });

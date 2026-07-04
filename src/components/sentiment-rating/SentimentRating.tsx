@@ -91,6 +91,11 @@ export function SentimentRating({
           <span className="flex items-center gap-2">
             <ThumbsUp className="h-4 w-4 transition-transform duration-150 ease-out group-hover:scale-110" />
             <span>{t('sentiment.ratings.good')}</span>
+            {isGoodActive && (
+              <span className="text-xs text-emerald-600 dark:text-emerald-400">
+                {t('sentiment.ratings.yourVote')}
+              </span>
+            )}
           </span>
         </button>
         <button
@@ -101,6 +106,11 @@ export function SentimentRating({
           aria-pressed={isBadActive}
         >
           <span className="flex items-center gap-2">
+            {isBadActive && (
+              <span className="text-xs text-rose-600 dark:text-rose-400">
+                {t('sentiment.ratings.yourVote')}
+              </span>
+            )}
             <span>{t('sentiment.ratings.bad')}</span>
             <ThumbsDown className="h-4 w-4 transition-transform duration-150 ease-out group-hover:scale-110" />
           </span>

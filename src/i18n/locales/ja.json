@@ -89,7 +89,8 @@
       "countBad": "悪い {{count}}",
       "submitError": "評価を送信できませんでした: {{message}}",
       "ratingBarLabel": "良い評価と悪い評価の割合",
-      "noVotes": "まだ投票がありません"
+      "noVotes": "まだ投票がありません",
+      "yourVote": "あなたの投票"
     },
     "comments": {
       "title": "コミュニティコメント",
