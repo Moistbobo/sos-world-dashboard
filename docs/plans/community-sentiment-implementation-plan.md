@@ -23,7 +23,7 @@ Add a public, Supabase-backed community sentiment feature to the SOS World Dashb
 Before implementation begins, the following must be done in the Supabase dashboard:
 
 1. Create a new Supabase project for the dashboard.
-2. Save the project's `URL` and `anon public key`.
+2. Save the project's `URL` and **publishable key** (`sb_publishable_...`). Legacy `anon` keys still work, but Supabase recommends publishable keys for new browser clients and will remove legacy keys in late 2026.
 3. In Database → SQL Editor, create the `ratings` and `comments` tables (exact schema below).
 4. Enable **Anonymous Sign-Ins** in Authentication → Providers → Anonymous.
 5. Configure RLS policies (exact SQL below).
@@ -48,17 +48,25 @@ create index idx_ratings_user_id on public.ratings(user_id);
 
 alter table public.ratings enable row level security;
 
--- Everyone can read ratings.
+-- Expose the table to the Data API for the roles used by RLS policies.
+-- (Skip these grants if your project's Data API settings already expose tables.)
+grant select on public.ratings to anon, authenticated;
+grant insert on public.ratings to authenticated;
+
+-- Allow public read access via publishable key or signed-in anonymous users.
 create policy "Ratings are publicly readable"
   on public.ratings for select
   to anon, authenticated
   using (true);
 
--- Anonymous users can insert only their own rating for a world, and only once.
+-- Only signed-in anonymous users can insert, and only their own rating.
 create policy "Anonymous users can insert their own rating"
   on public.ratings for insert
-  to anon
-  with check (auth.uid() = user_id);
+  to authenticated
+  with check (
+    (select (auth.jwt()->>'is_anonymous')::boolean) is true
+    and (select auth.uid()) = user_id
+  );
 
 -- Users cannot update or delete ratings directly (soft-delete/report can be added later).
 ```
@@ -81,25 +89,35 @@ create index idx_comments_created_at on public.comments(created_at desc);
 
 alter table public.comments enable row level security;
 
--- Everyone can read comments.
+-- Expose the table to the Data API for the roles used by RLS policies.
+-- (Skip these grants if your project's Data API settings already expose tables.)
+grant select on public.comments to anon, authenticated;
+grant insert on public.comments to authenticated;
+
+-- Allow public read access via publishable key or signed-in anonymous users.
 create policy "Comments are publicly readable"
   on public.comments for select
   to anon, authenticated
   using (true);
 
--- Anonymous users can insert only their own comments.
+-- Only signed-in anonymous users can insert, and only their own comments.
 create policy "Anonymous users can insert their own comments"
   on public.comments for insert
-  to anon
-  with check (auth.uid() = user_id);
+  to authenticated
+  with check (
+    (select (auth.jwt()->>'is_anonymous')::boolean) is true
+    and (select auth.uid()) = user_id
+  );
 ```
 
 ### 4.3 Notes on schema
 
 - `world_id` is stored as `text` because the dashboard's `World.worldId` is a VRChat-derived string, not a UUID.
-- `user_id` is the Supabase anonymous user UUID.
+- `user_id` is the Supabase anonymous user UUID returned by `signInAnonymously()`.
 - `username` is stored denormalized alongside comments so that the display name is stable even if the generation algorithm changes later.
 - `ratings` has a unique constraint `(world_id, user_id)` to enforce one rating per anonymous user per world.
+- The `authenticated` Postgres role is used by signed-in anonymous users. The `anon` role is for unauthenticated requests using only the publishable key. Read policies target both so feedback is visible to everyone; insert policies target only signed-in anonymous users and verify the JWT's `is_anonymous` claim.
+- Use the **publishable key** (`sb_publishable_...`) in the browser. Do not expose the secret/service-role key.
 
 ## 5. Frontend implementation steps
 
@@ -118,7 +136,7 @@ VITE_API_BASE_URL=https://api.example.com
 VITE_API_BEARER_TOKEN=your-bearer-token-here
 
 VITE_SUPABASE_URL=https://<project>.supabase.co
-VITE_SUPABASE_ANON_KEY=<your-anon-key>
+VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
 ```
 
 Add the same to local `.env.local` once Supabase is configured.
@@ -131,7 +149,14 @@ Add the same to local `.env.local` once Supabase is configured.
 import { createClient } from '@supabase/supabase-js';
 
 const url = import.meta.env.VITE_SUPABASE_URL;
-const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+if (typeof url !== 'string' || !url) {
+  throw new Error('Missing VITE_SUPABASE_URL');
+}
+if (typeof key !== 'string' || !key) {
+  throw new Error('Missing VITE_SUPABASE_PUBLISHABLE_KEY');
+}
 
 export const supabase = createClient(url, key);
 ```
@@ -171,8 +196,9 @@ Functions:
 
 Internal helpers:
 
-- Ensure anonymous sign-in before mutation.
+- Call `supabase.auth.signInAnonymously()` before any mutation if no session exists.
 - Derive and persist username on first interaction.
+- Use the returned `user.id` as `user_id` and verify `user.is_anonymous` is `true`.
 
 ### 5.7 TanStack Query hooks
 
@@ -237,7 +263,7 @@ Add new keys to `src/i18n/locales/en.json` and `ja.json`:
 
 - Start local dev with `.env.local` pointing at the Supabase project.
 - Submit ratings and comments in an incognito window.
-- Verify a second incognito session sees the same data without authentication.
+- Verify a second incognito session sees the same data without creating a permanent account.
 - Verify one rating per world per anonymous identity.
 
 ## 7. Documentation updates
@@ -267,6 +293,6 @@ Add new keys to `src/i18n/locales/en.json` and `ja.json`:
 
 ## 10. Risk notes
 
-- **Anonymous identity stability:** Supabase anonymous users are session-scoped unless `signInAnonymously` is called and the session is refreshed. Verify that the same browser gets the same `user_id` across reloads.
+- **Anonymous identity stability:** Calling `signInAnonymously()` creates a persistent user and session that is refreshed automatically. The same browser should get the same `user_id` across reloads until the user signs out or clears browsing data. Verify this behavior.
 - **Rate limiting:** RLS alone won't stop spam. Consider an Edge Function for submit throttling before public release.
 - **Existing `World.quality`:** Ensure community ratings are displayed separately and never sent to the existing REST backend as the curated `quality` value.
