@@ -72,6 +72,92 @@ Copy `.env.example` to `.env.local`. Vite exposes only `VITE_*` env vars to the 
 - `scripts/apply-rulesets.sh` applies GitHub rulesets via `gh` CLI; requires repo admin access.
 - `.github/rulesets/main.json` enforces squash-only merges on the default branch; `.github/rulesets/release-branches.json` enforces merge-commit only on `testnet` and `production`.
 
+## PR Evidence & Risk Assessment
+
+When preparing a pull request, follow `.github/pull_request_template.md`. Agents and contributors must fill out the **RISK RATING** and **E2E Evidence** sections before requesting human review.
+
+### E2E evidence
+
+- Run the app locally with `pnpm dev` (or `pnpm build && pnpm preview` for a production-like build).
+- Manually exercise the new feature or changed flow in a browser.
+- Capture at least one screenshot of the relevant UI state.
+- For multi-step flows (e.g. posting a comment, applying filters, navigating routes), prefer a screen recording or GIF.
+- Attach media **directly to the PR body** by dragging the files into the GitHub text area.
+- For terminal-only workflows, use the [`gh-image`](https://github.com/drogers0/gh-image) extension to upload media from `pr-assets/<branch-name>/` to GitHub's CDN and embed the returned markdown in the PR description:
+  ```bash
+  gh extension install drogers0/gh-image
+  gh image pr-assets/<branch-name>/*.png pr-assets/<branch-name>/*.webm
+  ```
+  Ensure you are logged into GitHub in a browser so `gh image` can extract a session token. If direct upload is not possible, save files under `pr-assets/<branch-name>/` and link to them; never commit screenshots or videos to the repo.
+- Media is only required when the PR is **user-facing** (UI/UX added or changed). For non-visual changes (e.g. dependency bump, config-only, refactor with no UI impact), explicitly state "No media needed — verified by tests/build" and check the build/test boxes instead.
+- Check dark mode and mobile widths when the PR touches UI.
+
+#### Automated screenshot helper
+
+For page-level screenshots, run the Playwright helper. It builds a production bundle pointed at a local mock API, starts a static server, and captures a full-page screenshot to `pr-assets/<branch-name>/`:
+
+```bash
+# from the repo root
+pnpm screenshot:pr
+
+# or specify the branch subfolder explicitly
+BRANCH_NAME=feat/my-feature pnpm screenshot:pr
+```
+
+Edit `scripts/capture-pr-screenshot.mjs` to point at the route and mock data relevant to the feature being reviewed.
+
+To also capture a short screen recording, set `CAPTURE_VIDEO=1`:
+
+```bash
+CAPTURE_VIDEO=1 pnpm screenshot:pr
+```
+
+This produces `pr-assets/<branch-name>/world-detail.webm` in addition to the screenshot.
+
+#### Attaching media to PRs automatically
+
+The `gh` CLI cannot natively attach local media files. Install the `gh-image` extension to upload images/videos to GitHub's CDN and receive ready-to-paste markdown:
+
+```bash
+gh extension install drogers0/gh-image --pin v1.1.0
+```
+
+Then upload files and paste the returned markdown into the PR description:
+
+```bash
+gh image pr-assets/<branch-name>/*.png pr-assets/<branch-name>/*.webm
+```
+
+##### Security rules for `gh-image`
+
+- **Never run `gh image extract-token` inside an agent session** or log its output. `user_session` cookies grant full GitHub account access.
+- **Never pass `--token` on the command line.** Prefer browser-cookie extraction (default) or set `GH_SESSION_TOKEN` via the environment. `--token` is visible in `ps aux`.
+- **Use a dedicated bot account for CI or shared environments.** Do not use a maintainer's personal session in CI, scheduled jobs, or long-lived env files.
+- **Only upload files under `pr-assets/<branch-name>/`.** Do not upload `.env` files, logs, build artifacts, or screenshots that may contain secrets or PII.
+- **Pin the extension version** and verify the installed binary against the published release checksum if you build from source.
+- **Revoke the session immediately** if a token value is ever exposed in a transcript, log, or shared channel.
+
+### Risk assessment
+
+Pick a single overall risk level using the badge in the template:
+
+- `low` — isolated change, limited files, no auth/security surface, no schema or env changes, well-covered by tests.
+- `medium` — touches shared components/pages, adds a dependency, changes data fetching shape, or involves user input/auth but follows existing patterns.
+- `high` — broad refactor, security-sensitive code, auth/token handling, schema migration, feature flag wiring, or changes that could break core user flows across the app.
+
+In the PR description, include the badge and a short bulleted rationale under `## RISK RATING`. Preferably link each bullet to the relevant diff file/line on GitHub (e.g. `https://github.com/Moistbobo/sos-world-dashboard/pull/NN/files#diff-...`).
+
+Consider these factors when rating and documenting blast radius:
+
+1. **Scope** — number of files and domains touched.
+2. **Blast radius** — can it break pages/flows outside the immediate feature?
+3. **Data/schema** — new tables, columns, localStorage keys, or env variables.
+4. **Auth/security** — credentials, JWT, RLS policies, secrets, third-party tokens, XSS/CSRF exposure.
+5. **Dependencies** — new packages or service integrations.
+
+Call out concrete security concerns (even if rated low) so reviewers know where to focus.
+
 ## Useful References
 
 - `CONTRIBUTING.md` covers PR title conventions (`[FEAT]: ...`), code organization, and the Supabase sentiment setup steps.
+- `.github/pull_request_template.md` is the source-of-truth PR template.
