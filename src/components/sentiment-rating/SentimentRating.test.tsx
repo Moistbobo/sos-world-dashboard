@@ -92,19 +92,17 @@ describe('SentimentRating', () => {
     expect(fill.children[1]).toHaveTextContent('25%');
   });
 
-  it('outlines the good half when the user voted good', () => {
+  it('highlights the good half when the user voted good', () => {
     renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'good' } });
     const goodButton = screen.getByRole('button', { name: /Good/i });
-    expect(goodButton).toHaveClass('ring-2');
-    expect(goodButton).toHaveClass('ring-emerald-500');
     expect(goodButton).toHaveClass('bg-emerald-500/10');
+    expect(goodButton).toHaveClass('text-emerald-700');
   });
 
-  it('outlines the bad half when the user voted bad', () => {
+  it('highlights the bad half when the user voted bad', () => {
     renderComponent({ summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'bad' } });
     const badButton = screen.getByRole('button', { name: /Bad/i });
-    expect(badButton).toHaveClass('ring-2');
-    expect(badButton).toHaveClass('ring-rose-500');
     expect(badButton).toHaveClass('bg-rose-500/10');
+    expect(badButton).toHaveClass('text-rose-700');
   });
 });
