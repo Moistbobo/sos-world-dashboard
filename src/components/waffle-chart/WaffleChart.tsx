@@ -24,22 +24,31 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
   const total = data.reduce((sum, d) => sum + d.value, 0);
   if (total === 0) return null;
 
-  // Build 100 cells, proportional to each item's share
-  let remaining = 100;
-  const cells: { name: string; color: string }[] = [];
+  // Build 100 cells using largest-remainder rounding so the waffle is always full
+  // while staying as close as possible to each item's true share.
+  const rawShares = data.map((item) => ({
+    name: item.name,
+    floor: Math.floor((item.value / total) * 100),
+    remainder: ((item.value / total) * 100) - Math.floor((item.value / total) * 100),
+  }));
+  const baseCells = rawShares.reduce((sum, s) => sum + s.floor, 0);
+  const cellsToDistribute = 100 - baseCells;
 
+  const sortedByRemainder = rawShares
+    .map((s, index) => ({ ...s, index }))
+    .sort((a, b) => b.remainder - a.remainder);
+  const extraCells = new Map<string, number>();
+  for (let i = 0; i < cellsToDistribute; i++) {
+    const item = sortedByRemainder[i % sortedByRemainder.length];
+    extraCells.set(item.name, (extraCells.get(item.name) ?? 0) + 1);
+  }
+
+  const cells: { name: string; color: string }[] = [];
   data.forEach((item) => {
+    const count = rawShares.find((s) => s.name === item.name)!.floor + (extraCells.get(item.name) ?? 0);
     const color = getColor?.(item.name) ?? '#6366f1';
-    const cellsForItem =
-      data.indexOf(item) === data.length - 1
-        ? remaining
-        : Math.max(1, Math.round((item.value / total) * 100));
-    remaining -= cellsForItem;
-    for (let j = 0; j < cellsForItem; j++) {
-      cells.push({
-        name: item.name,
-        color,
-      });
+    for (let j = 0; j < count; j++) {
+      cells.push({ name: item.name, color });
     }
   });
 
