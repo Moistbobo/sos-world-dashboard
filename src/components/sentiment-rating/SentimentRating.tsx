@@ -66,20 +66,20 @@ export function SentimentRating({ summary, isLoading, isSubmitting, onRate, onRe
         role="progressbar"
       >
         {total === 0 ? (
-          <div className="flex h-full w-full items-center justify-center bg-slate-300 text-[10px] font-medium text-slate-600 dark:bg-slate-600 dark:text-slate-400">
+          <div className="flex h-full w-full items-center justify-center bg-slate-300 text-xs font-medium text-slate-600 dark:bg-slate-600 dark:text-slate-400">
             {t('sentiment.ratings.noVotes')}
           </div>
         ) : (
           <>
             <div
-              className="float-left flex h-full items-center justify-center bg-emerald-500/80 text-[10px] font-medium text-white"
+              className="float-left flex h-full items-center justify-center bg-emerald-500/80 text-xs font-medium text-white"
               style={{ width: `${goodPercent}%` }}
               title={`${goodPercent}% ${t('sentiment.ratings.good')}`}
             >
               {goodPercent > 0 && `${goodPercent}%`}
             </div>
             <div
-              className="float-left flex h-full items-center justify-center bg-rose-500/80 text-[10px] font-medium text-white"
+              className="float-left flex h-full items-center justify-center bg-rose-500/80 text-xs font-medium text-white"
               style={{ width: `${badPercent}%` }}
               title={`${badPercent}% ${t('sentiment.ratings.bad')}`}
             >
