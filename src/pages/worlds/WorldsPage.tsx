@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
-import { useInfiniteWorlds, useTags, useWorlds, useFilterCounts } from '../../hooks/useApi';
+import { useInfiniteWorlds, useTags, useWorlds, useMeta } from '../../hooks/useApi';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
 import { FilterBar } from '../../components/filter-bar';
 import { Pagination } from '../../components/pagination';
@@ -49,14 +49,24 @@ export function WorldsPage() {
 
   const { data: tagsData } = useTags();
 
-  const { data: filterCountsData } = useFilterCounts({
-    search: searchQuery,
-    minCapacity: capacityRange.min,
-    maxCapacity: capacityRange.max,
-    tag: selectedTags,
-    quality: selectedQuality,
-    platform: selectedPlatforms,
-  });
+  const { data: metaData } = useMeta();
+
+  const qualityCounts = useMemo(
+    () => [
+      { quality: 'good' as const, count: metaData?.qualityGood ?? 0 },
+      { quality: 'bad' as const, count: metaData?.qualityBad ?? 0 },
+    ],
+    [metaData]
+  );
+
+  const platformCounts = useMemo(
+    () => [
+      { platform: 'standalonewindows', count: metaData?.platformDesktop ?? 0 },
+      { platform: 'android', count: metaData?.platformAndroid ?? 0 },
+      { platform: 'ios', count: metaData?.platformiOS ?? 0 },
+    ],
+    [metaData]
+  );
 
   const paginationQuery = useWorlds({
     limit,
@@ -248,8 +258,8 @@ export function WorldsPage() {
         onToggleQuality={handleToggleQuality}
         onClear={handleClear}
         availableTags={tagsData?.tags || []}
-        qualityCounts={filterCountsData?.qualityCounts || []}
-        platformCounts={filterCountsData?.platformCounts || []}
+        qualityCounts={qualityCounts}
+        platformCounts={platformCounts}
         capacityRange={capacityRange}
         onCapacityChange={handleCapacityChange}
         selectedPlatforms={selectedPlatforms}

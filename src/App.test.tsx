@@ -38,8 +38,14 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 vi.mock('./hooks/useApi', () => ({
   useHealth: () => ({ isPending: false, isError: false }),
   useTags: () => ({ data: { tags: [] } }),
-  useFilterCounts: () => ({
-    data: { qualityCounts: [], platformCounts: [] },
+  useMeta: () => ({
+    data: {
+      qualityGood: 0,
+      qualityBad: 0,
+      platformDesktop: 0,
+      platformAndroid: 0,
+      platformiOS: 0,
+    },
     isPending: false,
     isError: false,
     error: null,

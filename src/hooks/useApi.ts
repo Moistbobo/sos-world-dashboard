@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchFilterCounts, fetchHealth, fetchTags, fetchWorld, fetchWorlds } from '../api/client';
+import { fetchHealth, fetchMeta, fetchTags, fetchWorld, fetchWorlds } from '../api/client';
 import type { PaginatedWorlds } from '../types';
 
 export function useHealth() {
@@ -17,17 +17,11 @@ export function useTags() {
   });
 }
 
-export function useFilterCounts(params?: {
-  search?: string;
-  minCapacity?: number;
-  maxCapacity?: number;
-  tag?: string[];
-  quality?: ('good' | 'bad')[];
-  platform?: string[];
-}) {
+export function useMeta() {
   return useQuery({
-    queryKey: ['filter-counts', params],
-    queryFn: () => fetchFilterCounts(params),
+    queryKey: ['meta'],
+    queryFn: fetchMeta,
+    staleTime: 60_000,
   });
 }
 

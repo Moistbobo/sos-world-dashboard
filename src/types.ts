@@ -28,19 +28,12 @@ export interface TagsResponse {
   tags: TagCount[];
 }
 
-export interface QualityCount {
-  quality: 'good' | 'bad';
-  count: number;
-}
-
-export interface PlatformCount {
-  platform: string;
-  count: number;
-}
-
-export interface FilterCountsResponse {
-  qualityCounts: QualityCount[];
-  platformCounts: PlatformCount[];
+export interface MetaResponse {
+  qualityGood: number;
+  qualityBad: number;
+  platformDesktop: number;
+  platformAndroid: number;
+  platformiOS: number;
 }
 
 export interface HealthResponse {
