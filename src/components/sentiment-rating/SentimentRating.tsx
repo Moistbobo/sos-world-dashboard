@@ -10,7 +10,13 @@ interface SentimentRatingProps {
   onRemove: () => void;
 }
 
-export function SentimentRating({ summary, isLoading, isSubmitting, onRate, onRemove }: SentimentRatingProps) {
+export function SentimentRating({
+  summary,
+  isLoading,
+  isSubmitting,
+  onRate,
+  onRemove,
+}: SentimentRatingProps) {
   const { t } = useTranslation();
 
   const isGoodActive = summary?.userRating === 'good';
@@ -19,74 +25,105 @@ export function SentimentRating({ summary, isLoading, isSubmitting, onRate, onRe
   const goodPercent = total > 0 ? Math.round(((summary?.good ?? 0) / total) * 100) : 0;
   const badPercent = total > 0 ? 100 - goodPercent : 0;
 
+  const handleGoodClick = () => {
+    if (isGoodActive) {
+      onRemove();
+    } else {
+      onRate('good');
+    }
+  };
+
+  const handleBadClick = () => {
+    if (isBadActive) {
+      onRemove();
+    } else {
+      onRate('bad');
+    }
+  };
+
   return (
-    <div className="space-y-3" data-testid="sentiment-rating">
-      <div className="flex flex-wrap items-center gap-3">
+    <div className="space-y-2" data-testid="sentiment-rating">
+      <p className="text-xs text-slate-500 dark:text-slate-400">
+        {t('sentiment.ratings.ratingBarLabel')}
+      </p>
+      <div className="relative flex h-12 w-full overflow-hidden rounded-full border border-slate-300 bg-slate-200 dark:border-slate-600 dark:bg-slate-700">
         <button
           type="button"
           disabled={isLoading || isSubmitting}
-          onClick={() => (isGoodActive ? onRemove() : onRate('good'))}
-          className={`btn-secondary gap-2 text-sm ${
+          onClick={handleGoodClick}
+          className={`relative z-10 flex w-1/2 items-center justify-start px-4 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
             isGoodActive
-              ? 'border-green-500/50 bg-green-500/15 text-green-700 dark:text-green-300'
-              : ''
+              ? 'bg-emerald-600 text-white focus-visible:ring-emerald-500'
+              : 'bg-emerald-500/10 text-slate-700 hover:bg-emerald-500/20 focus-visible:ring-emerald-500 dark:text-slate-200'
           }`}
           aria-pressed={isGoodActive}
         >
-          <ThumbsUp className="h-4 w-4" />
-          {t('sentiment.ratings.good')}
-          <span className="ml-1 rounded-full bg-slate-200 px-2 py-0.5 text-xs dark:bg-slate-700">
-            {summary?.good ?? 0}
+          <span className="flex items-center gap-2">
+            <ThumbsUp className="h-4 w-4" />
+            <span>{t('sentiment.ratings.good')}</span>
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs ${
+                isGoodActive ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700'
+              }`}
+            >
+              {summary?.good ?? 0}
+            </span>
           </span>
         </button>
         <button
           type="button"
           disabled={isLoading || isSubmitting}
-          onClick={() => (isBadActive ? onRemove() : onRate('bad'))}
-          className={`btn-secondary gap-2 text-sm ${
+          onClick={handleBadClick}
+          className={`relative z-10 flex w-1/2 items-center justify-end px-4 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
             isBadActive
-              ? 'border-red-500/50 bg-red-500/15 text-red-700 dark:text-red-300'
-              : ''
+              ? 'bg-rose-600 text-white focus-visible:ring-rose-500'
+              : 'bg-rose-500/10 text-slate-700 hover:bg-rose-500/20 focus-visible:ring-rose-500 dark:text-slate-200'
           }`}
           aria-pressed={isBadActive}
         >
-          <ThumbsDown className="h-4 w-4" />
-          {t('sentiment.ratings.bad')}
-          <span className="ml-1 rounded-full bg-slate-200 px-2 py-0.5 text-xs dark:bg-slate-700">
-            {summary?.bad ?? 0}
+          <span className="flex items-center gap-2">
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs ${
+                isBadActive ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700'
+              }`}
+            >
+              {summary?.bad ?? 0}
+            </span>
+            <span>{t('sentiment.ratings.bad')}</span>
+            <ThumbsDown className="h-4 w-4" />
           </span>
         </button>
-      </div>
-      <div
-        className="relative h-6 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700"
-        aria-label={t('sentiment.ratings.ratingBarLabel')}
-        aria-valuenow={goodPercent}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        role="progressbar"
-      >
-        {total === 0 ? (
-          <div className="flex h-full w-full items-center justify-center bg-slate-300 text-xs font-medium text-slate-600 dark:bg-slate-600 dark:text-slate-400">
-            {t('sentiment.ratings.noVotes')}
+        <div
+          className="pointer-events-none absolute inset-y-0 left-0 z-0 flex w-full"
+          aria-label={t('sentiment.ratings.ratingBarLabel')}
+          aria-valuenow={goodPercent}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          role="progressbar"
+        >
+          <div
+            className="h-full bg-emerald-500/80"
+            style={{ width: `${goodPercent}%` }}
+            title={`${goodPercent}% ${t('sentiment.ratings.good')}`}
+          >
+            {goodPercent > 0 && (
+              <span className="flex h-full items-center justify-center text-xs font-medium text-white">
+                {goodPercent}%
+              </span>
+            )}
           </div>
-        ) : (
-          <>
-            <div
-              className="float-left flex h-full items-center justify-center bg-emerald-500/80 text-xs font-medium text-white"
-              style={{ width: `${goodPercent}%` }}
-              title={`${goodPercent}% ${t('sentiment.ratings.good')}`}
-            >
-              {goodPercent > 0 && `${goodPercent}%`}
-            </div>
-            <div
-              className="float-left flex h-full items-center justify-center bg-rose-500/80 text-xs font-medium text-white"
-              style={{ width: `${badPercent}%` }}
-              title={`${badPercent}% ${t('sentiment.ratings.bad')}`}
-            >
-              {badPercent > 0 && `${badPercent}%`}
-            </div>
-          </>
-        )}
+          <div
+            className="h-full bg-rose-500/80"
+            style={{ width: `${badPercent}%` }}
+            title={`${badPercent}% ${t('sentiment.ratings.bad')}`}
+          >
+            {badPercent > 0 && (
+              <span className="flex h-full items-center justify-center text-xs font-medium text-white">
+                {badPercent}%
+              </span>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
