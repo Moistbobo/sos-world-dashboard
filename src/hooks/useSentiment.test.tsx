@@ -9,7 +9,24 @@ import {
   useDeleteRating,
   useSubmitComment,
 } from './useSentiment';
+import { useCurrentUserId } from './useCurrentUser';
 import * as sentimentApi from '../api/sentiment';
+
+const mocks = vi.hoisted(() => ({
+  getSession: vi.fn(),
+  onAuthStateChange: vi.fn(() => ({
+    data: { subscription: { unsubscribe: vi.fn() } },
+  })),
+}));
+
+vi.mock('../lib/supabase', () => ({
+  supabase: {
+    auth: {
+      getSession: mocks.getSession,
+      onAuthStateChange: mocks.onAuthStateChange,
+    },
+  },
+}));
 
 function wrapper({ children }: { children: React.ReactNode }) {
   const queryClient = new QueryClient({
@@ -20,6 +37,7 @@ function wrapper({ children }: { children: React.ReactNode }) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mocks.getSession.mockResolvedValue({ data: { session: null }, error: null });
 });
 
 describe('useRatings', () => {
@@ -89,5 +107,43 @@ describe('useSubmitComment', () => {
     const { result } = renderHook(() => useSubmitComment(), { wrapper });
     await result.current.mutateAsync({ worldId: 'wrld_123', content: 'hello' });
     expect(sentimentApi.submitComment).toHaveBeenCalledWith('wrld_123', 'hello');
+  });
+
+  it('optimistically inserts a comment marked as the current user', async () => {
+    mocks.getSession.mockResolvedValue({
+      data: { session: { user: { id: 'u-current' } } },
+      error: null,
+    });
+    vi.spyOn(sentimentApi, 'submitComment').mockResolvedValue({
+      id: 'c2',
+      world_id: 'wrld_123',
+      user_id: 'u-current',
+      username: 'Anonymous',
+      content: 'hello',
+      created_at: '2024-01-01T00:00:00Z',
+    });
+
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    function TestWrapper({ children }: { children: React.ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+
+    const { result } = renderHook(
+      () => {
+        const userId = useCurrentUserId();
+        const submit = useSubmitComment();
+        return { userId, submit };
+      },
+      { wrapper: TestWrapper },
+    );
+
+    await waitFor(() => expect(result.current.userId).toBe('u-current'));
+    await result.current.submit.mutateAsync({ worldId: 'wrld_123', content: 'hello' });
+
+    const comments = queryClient.getQueryData(['comments', 'wrld_123']);
+    expect(comments).toHaveLength(1);
+    expect((comments as { user_id: string }[])[0].user_id).toBe('u-current');
   });
 });

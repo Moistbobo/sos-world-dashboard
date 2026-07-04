@@ -38,14 +38,14 @@ function AuthorLabel({
     <span
       className={`font-medium ${
         isCurrentUser
-          ? 'font-bold text-indigo-600 dark:text-indigo-300'
+          ? 'font-bold text-indigo-700 dark:text-indigo-300'
           : 'text-slate-700 dark:text-slate-300'
       }`}
       title={isCurrentUser ? t('sentiment.comments.youIndicator') : undefined}
     >
       {username}
       {isCurrentUser && (
-        <span className="ml-1 font-bold text-indigo-500 dark:text-indigo-300">
+        <span className="ml-1 font-bold text-indigo-600 dark:text-indigo-300">
           {' '}
           {t('sentiment.comments.youIndicator')}
         </span>
@@ -85,9 +85,9 @@ export function SentimentCommentList({ comments }: SentimentCommentListProps) {
       <ul className="space-y-3">
         {sorted.map((comment) => (
           <li key={comment.id} className="rounded-lg border border-slate-200 p-3 dark:border-slate-700/50">
-            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-              <AuthorLabel username={comment.username} isCurrentUser={comment.user_id === currentUserId} />
+            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
               <span title={formatTimestamp(comment.created_at)}>{formatTimestamp(comment.created_at)}</span>
+              <AuthorLabel username={comment.username} isCurrentUser={comment.user_id === currentUserId} />
             </div>
             <p className="mt-1 whitespace-pre-wrap text-sm text-slate-800 dark:text-slate-200">
               {comment.content}

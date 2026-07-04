@@ -140,4 +140,29 @@ describe('SentimentCommentList', () => {
     expect(youLabel.parentElement).toHaveTextContent('Anonymous (You)');
     expect(screen.getAllByText('Anonymous')).toHaveLength(2);
   });
+
+  it('renders the timestamp left of the author label', async () => {
+    mocks.getSession.mockResolvedValue({
+      data: { session: { user: { id: 'u-current' } } },
+      error: null,
+    });
+    const date = new Date('2026-06-27T21:22:20Z');
+    const expected = `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}/${String(date.getFullYear() % 100).padStart(2, '0')}(${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()]})${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+    const comments = [
+      {
+        id: 'c1',
+        world_id: 'w1',
+        user_id: 'u-current',
+        username: 'Anonymous',
+        content: 'My comment',
+        created_at: '2026-06-27T21:22:20Z',
+      },
+    ];
+    render(<SentimentCommentList comments={comments} />);
+    const listItem = (await screen.findByText('My comment')).closest('li');
+    expect(listItem).toBeInTheDocument();
+    const children = Array.from(listItem!.children[0].children);
+    expect(children[0]).toHaveTextContent(expected);
+    expect(children[1]).toHaveTextContent('Anonymous (You)');
+  });
 });

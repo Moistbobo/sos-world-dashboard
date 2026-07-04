@@ -7,6 +7,7 @@ import {
   updateRating,
   deleteRating,
 } from '../api/sentiment';
+import { useCurrentUserId } from './useCurrentUser';
 import { generateUsername } from '../utils/username';
 import type { Comment, RatingSummary } from '../types';
 
@@ -128,6 +129,7 @@ export function useDeleteRating() {
 
 export function useSubmitComment() {
   const queryClient = useQueryClient();
+  const currentUserId = useCurrentUserId();
   return useMutation({
     mutationFn: ({ worldId, content }: { worldId: string; content: string }) =>
       submitComment(worldId, content),
@@ -139,7 +141,7 @@ export function useSubmitComment() {
       const optimistic: Comment = {
         id: `optimistic-${Date.now()}`,
         world_id: worldId,
-        user_id: '',
+        user_id: currentUserId ?? '',
         username: generateUsername(),
         content,
         created_at: new Date().toISOString(),
