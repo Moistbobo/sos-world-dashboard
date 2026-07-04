@@ -4,12 +4,13 @@ import type { Comment, RatingSummary } from '../types';
 
 async function ensureAnonymousUser() {
   const { data: sessionData } = await supabase.auth.getSession();
-  if (sessionData.session?.user) {
-    return sessionData.session.user;
+  const existing = sessionData.session?.user;
+  if (existing?.is_anonymous) {
+    return existing;
   }
   const { data, error } = await supabase.auth.signInAnonymously();
   if (error) throw error;
-  if (!data.user) throw new Error('Anonymous sign-in failed');
+  if (!data.user?.is_anonymous) throw new Error('Anonymous sign-in failed');
   return data.user;
 }
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash, Star } from 'lucide-react';
@@ -10,7 +10,10 @@ import { ShareButton } from '../../components/share-button';
 import { WorldAddDate } from '../../components/world-add-date';
 import { useLists } from '../../contexts/ListsContext';
 import { SaveToListDialog } from '../../components/save-to-list-dialog/SaveToListDialog';
-import { SentimentSection } from '../../components/sentiment-section';
+
+const SentimentSection = lazy(() =>
+  import('../../components/sentiment-section').then((m) => ({ default: m.SentimentSection })),
+);
 
 export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
   const navigate = useNavigate();
@@ -284,7 +287,9 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
               <SaveToListDialog worldId={w.worldId} open={saveOpen} onOpenChange={setSaveOpen} />
             </div>
             <div className="mt-6">
-              <SentimentSection worldId={w.worldId} />
+              <Suspense fallback={<div className="h-24 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />}>
+                <SentimentSection worldId={w.worldId} />
+              </Suspense>
             </div>
           </div>
         </div>

@@ -67,6 +67,39 @@ describe('fetchComments', () => {
   });
 });
 
+describe('ensureAnonymousUser (via submitRating)', () => {
+  it('reuses an existing anonymous session user', async () => {
+    mocks.getSession.mockResolvedValueOnce({
+      data: { session: { user: { id: 'user-existing', is_anonymous: true } } },
+      error: null,
+    });
+    mocks.insert.mockReturnValueOnce({ data: null, error: null });
+    await submitRating('wrld_123', 'good');
+    expect(mocks.signInAnonymously).not.toHaveBeenCalled();
+    expect(mocks.insert).toHaveBeenCalled();
+  });
+
+  it('signs in anonymously when the existing user is not anonymous', async () => {
+    mocks.getSession.mockResolvedValueOnce({
+      data: { session: { user: { id: 'user-existing', is_anonymous: false } } },
+      error: null,
+    });
+    mocks.insert.mockReturnValueOnce({ data: null, error: null });
+    await submitRating('wrld_123', 'good');
+    expect(mocks.signInAnonymously).toHaveBeenCalled();
+    expect(mocks.insert).toHaveBeenCalled();
+  });
+
+  it('throws if anonymous sign-in does not return an anonymous user', async () => {
+    mocks.getSession.mockResolvedValueOnce({ data: { session: null }, error: null });
+    mocks.signInAnonymously.mockResolvedValueOnce({
+      data: { user: { id: 'user-1' } },
+      error: null,
+    });
+    await expect(submitRating('wrld_123', 'good')).rejects.toThrow('Anonymous sign-in failed');
+  });
+});
+
 describe('submitRating', () => {
   it('signs in anonymously and inserts rating', async () => {
     mocks.insert.mockReturnValueOnce({ data: null, error: null });

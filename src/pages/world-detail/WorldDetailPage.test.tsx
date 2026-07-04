@@ -8,6 +8,12 @@ import * as useApi from '../../hooks/useApi';
 import { ListsProvider } from '../../contexts/ListsContext';
 import type { World } from '../../types';
 
+vi.mock('../../components/sentiment-section', () => ({
+  SentimentSection: ({ worldId }: { worldId: string }) => (
+    <div data-testid="sentiment-section">Sentiment {worldId}</div>
+  ),
+}));
+
 vi.mock('../../hooks/useSentiment', () => ({
   useRatings: () => ({ data: { worldId: 'w1', good: 0, bad: 0, userRating: null }, isLoading: false }),
   useComments: () => ({ data: [], isLoading: false }),

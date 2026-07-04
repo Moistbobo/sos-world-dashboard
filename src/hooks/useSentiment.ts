@@ -23,7 +23,31 @@ export function useSubmitRating() {
   return useMutation({
     mutationFn: ({ worldId, value }: { worldId: string; value: 'good' | 'bad' }) =>
       submitRating(worldId, value),
-    onSuccess: (_, { worldId }) => {
+    onMutate: async ({ worldId, value }) => {
+      const queryKey = ['ratings', worldId];
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<RatingSummary>(queryKey);
+
+      if (previous) {
+        const next: RatingSummary = { ...previous };
+        if (previous.userRating && previous.userRating !== value) {
+          next[previous.userRating]--;
+          next[value]++;
+        } else if (!previous.userRating) {
+          next[value]++;
+        }
+        next.userRating = value;
+        queryClient.setQueryData(queryKey, next);
+      }
+
+      return { previous };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['ratings', _variables.worldId], context.previous);
+      }
+    },
+    onSettled: (_, __, { worldId }) => {
       queryClient.invalidateQueries({ queryKey: ['ratings', worldId] });
     },
   });
@@ -34,7 +58,29 @@ export function useSubmitComment() {
   return useMutation({
     mutationFn: ({ worldId, content }: { worldId: string; content: string }) =>
       submitComment(worldId, content),
-    onSuccess: (_, { worldId }) => {
+    onMutate: async ({ worldId, content }) => {
+      const queryKey = ['comments', worldId];
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<Comment[]>(queryKey) ?? [];
+
+      const optimistic: Comment = {
+        id: `optimistic-${Date.now()}`,
+        world_id: worldId,
+        user_id: '',
+        username: 'You',
+        content,
+        created_at: new Date().toISOString(),
+      };
+
+      queryClient.setQueryData(queryKey, [optimistic, ...previous]);
+      return { previous };
+    },
+    onError: (_err, { worldId }, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['comments', worldId], context.previous);
+      }
+    },
+    onSettled: (_, __, { worldId }) => {
       queryClient.invalidateQueries({ queryKey: ['comments', worldId] });
     },
   });
