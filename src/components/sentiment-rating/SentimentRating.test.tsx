@@ -16,18 +16,14 @@ function renderComponent(props = {}) {
 }
 
 describe('SentimentRating', () => {
-  it('labels both halves', () => {
-    renderComponent();
-    expect(screen.getByRole('button', { name: /Good/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Bad/i })).toBeInTheDocument();
-  });
-
-  it('does not render individual vote counts on the buttons', () => {
+  it('renders only thumbs up and thumbs down icons in the bar', () => {
     renderComponent();
     const goodButton = screen.getByRole('button', { name: /Good/i });
     const badButton = screen.getByRole('button', { name: /Bad/i });
-    expect(goodButton).toHaveTextContent(/^Good$/);
-    expect(badButton).toHaveTextContent(/^Bad$/);
+    expect(goodButton).toHaveTextContent('');
+    expect(badButton).toHaveTextContent('');
+    expect(goodButton.querySelector('svg')).toBeInTheDocument();
+    expect(badButton.querySelector('svg')).toBeInTheDocument();
   });
 
   it('calls onRate("good") when the left half is clicked', () => {
