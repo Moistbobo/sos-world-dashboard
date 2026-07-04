@@ -1,7 +1,8 @@
 const adjectives = [
   'happy', 'brave', 'clever', 'curious', 'friendly', 'gentle', 'jolly',
   'kind', 'lively', 'merry', 'proud', 'silly', 'sleepy', 'witty', 'calm',
-  'eager', 'fancy', 'happy', 'noble', 'polite', 'sunny', 'warm', 'zesty',
+  'eager', 'fancy', 'cheerful', 'noble', 'polite', 'sunny', 'warm', 'zesty',
+  'bright', 'bold', 'graceful', 'joyful',
 ];
 
 const animals = [
