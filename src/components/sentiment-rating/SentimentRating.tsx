@@ -53,7 +53,7 @@ export function SentimentRating({
           onClick={handleGoodClick}
           className={`relative z-10 flex w-1/2 items-center justify-start px-4 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
             isGoodActive
-              ? 'bg-emerald-600 text-white focus-visible:ring-emerald-500'
+              ? 'bg-emerald-500/15 text-emerald-700 ring-2 ring-inset ring-emerald-500 focus-visible:ring-emerald-500 dark:text-emerald-300'
               : 'bg-emerald-500/10 text-slate-700 hover:bg-emerald-500/20 focus-visible:ring-emerald-500 dark:text-slate-200'
           }`}
           aria-pressed={isGoodActive}
@@ -63,7 +63,7 @@ export function SentimentRating({
             <span>{t('sentiment.ratings.good')}</span>
             <span
               className={`rounded-full px-2 py-0.5 text-xs ${
-                isGoodActive ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700'
+                isGoodActive ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-700'
               }`}
             >
               {summary?.good ?? 0}
@@ -76,7 +76,7 @@ export function SentimentRating({
           onClick={handleBadClick}
           className={`relative z-10 flex w-1/2 items-center justify-end px-4 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
             isBadActive
-              ? 'bg-rose-600 text-white focus-visible:ring-rose-500'
+              ? 'bg-rose-500/15 text-rose-700 ring-2 ring-inset ring-rose-500 focus-visible:ring-rose-500 dark:text-rose-300'
               : 'bg-rose-500/10 text-slate-700 hover:bg-rose-500/20 focus-visible:ring-rose-500 dark:text-slate-200'
           }`}
           aria-pressed={isBadActive}
@@ -84,7 +84,7 @@ export function SentimentRating({
           <span className="flex items-center gap-2">
             <span
               className={`rounded-full px-2 py-0.5 text-xs ${
-                isBadActive ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700'
+                isBadActive ? 'bg-rose-500 text-white' : 'bg-slate-200 dark:bg-slate-700'
               }`}
             >
               {summary?.bad ?? 0}
