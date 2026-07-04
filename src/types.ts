@@ -41,3 +41,27 @@ export interface HealthResponse {
   worldCount: number;
   dbVersion: number;
 }
+
+export interface Rating {
+  id: string;
+  world_id: string;
+  user_id: string;
+  value: 'good' | 'bad';
+  created_at: string;
+}
+
+export interface RatingSummary {
+  worldId: string;
+  good: number;
+  bad: number;
+  userRating: 'good' | 'bad' | null;
+}
+
+export interface Comment {
+  id: string;
+  world_id: string;
+  user_id: string;
+  username: string;
+  content: string;
+  created_at: string;
+}

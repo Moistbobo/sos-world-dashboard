@@ -77,6 +77,41 @@
     "saveToList": "Save to list",
     "savedToList": "Saved to list"
   },
+  "sentiment": {
+    "captcha": {
+      "description": "Please complete the verification below to post ratings or comments.",
+      "missingKey": "CAPTCHA is not configured. Please contact support."
+    },
+    "ratings": {
+      "good": "Good",
+      "bad": "Bad",
+      "countGood": "{{count}} good",
+      "countBad": "{{count}} bad",
+      "submitError": "Could not submit rating: {{message}}",
+      "ratingBarLabel": "Good versus bad rating distribution",
+      "noVotes": "No votes yet",
+      "yourVote": "Your Vote"
+    },
+    "comments": {
+      "title": "Community comments",
+      "empty": "No comments yet. Be the first!",
+      "placeholder": "Write a short comment...",
+      "submit": "Post comment",
+      "count": "{{count}} / {{max}}",
+      "submitError": "Could not post comment: {{message}}",
+      "youIndicator": "(You)",
+      "newestFirst": "Newest first",
+      "oldestFirst": "Oldest first"
+    },
+    "validation": {
+      "tooLong": "Comment must be 256 characters or less.",
+      "noLinks": "Links are not allowed.",
+      "noEmails": "Email addresses are not allowed.",
+      "noMarkup": "Formatting or HTML is not allowed.",
+      "noExcessWhitespace": "Too many line breaks or spaces.",
+      "empty": "Please write something."
+    }
+  },
   "tags": {
     "title": "Tags",
     "subtitle": "Explore tag usage across tracked worlds.",

@@ -1,0 +1,1 @@
+export { SentimentSection } from './SentimentSection';
