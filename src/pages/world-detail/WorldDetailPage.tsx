@@ -286,15 +286,17 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
               </button>
               <SaveToListDialog worldId={w.worldId} open={saveOpen} onOpenChange={setSaveOpen} />
             </div>
-            <div className="mt-6">
-              {import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 'true' ? (
-                <Suspense fallback={<div className="h-24 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />}>
-                  <SentimentSection worldId={w.worldId} />
-                </Suspense>
-              ) : null}
-            </div>
           </div>
         </div>
+
+        {import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 'true' && (
+          <div className="space-y-5">
+            <hr className="border-slate-200 dark:border-slate-700/50" />
+            <Suspense fallback={<div className="h-24 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />}>
+              <SentimentSection worldId={w.worldId} />
+            </Suspense>
+          </div>
+        )}
       </div>
     </div>
   );
