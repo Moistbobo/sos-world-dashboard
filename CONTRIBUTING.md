@@ -101,12 +101,19 @@ The community sentiment feature stores ratings and comments in Supabase.
    ```env
    VITE_SUPABASE_URL=https://<project>.supabase.co
    VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+   VITE_ENABLE_COMMUNITY_SENTIMENT=true
    ```
 3. Enable **Anonymous Sign-Ins** in Authentication → Providers → Anonymous.
 4. Open Database → SQL Editor and run the schema SQL in `docs/plans/community-sentiment-implementation-plan.md` section 4 to create the `ratings` and `comments` tables and their RLS policies.
-5. Install the Supabase JavaScript client:
+5. Optionally set `VITE_ENABLE_COMMUNITY_SENTIMENT=false` to hide the community sentiment UI without removing the Supabase setup.
+6. Install the Supabase JavaScript client:
    ```bash
    pnpm add @supabase/supabase-js
    ```
 
 After these steps, `pnpm run dev` will be able to connect to your Supabase project.
+
+## Feature flags
+
+- `VITE_ENABLE_COMMUNITY_SENTIMENT` controls whether the community sentiment section (ratings and comments) is visible on the world detail page. It is a build-time/public flag because it gates client-side UI only.
+- New sentiment UI or data fetching must respect this flag. `SentimentSection` does not read the flag itself; the parent page decides whether to render it.

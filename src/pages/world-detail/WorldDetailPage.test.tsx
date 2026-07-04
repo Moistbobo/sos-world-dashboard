@@ -231,4 +231,44 @@ describe('WorldDetailPage', () => {
     expect(date).toHaveClass('underline');
     expect(date).toHaveClass('decoration-dotted');
   });
+
+  it('renders the sentiment section when community sentiment is enabled', async () => {
+    vi.stubEnv('VITE_ENABLE_COMMUNITY_SENTIMENT', 'true');
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(await screen.findByTestId('sentiment-section')).toBeInTheDocument();
+    vi.unstubAllEnvs();
+  });
+
+  it('does not render the sentiment section when community sentiment is disabled', () => {
+    vi.stubEnv('VITE_ENABLE_COMMUNITY_SENTIMENT', 'false');
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(screen.queryByTestId('sentiment-section')).not.toBeInTheDocument();
+    vi.unstubAllEnvs();
+  });
 });
