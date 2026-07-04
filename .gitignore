@@ -54,3 +54,6 @@ pi/
 brainstorm/
 brainstorm/superpowers
 .worktrees/
+
+# PR evidence media (screenshots, videos, GIFs) — organized by branch
+pr-assets/
