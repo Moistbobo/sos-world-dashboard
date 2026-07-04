@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { SentimentCommentList } from './SentimentCommentList';
 
 const mocks = vi.hoisted(() => ({
@@ -29,7 +29,9 @@ describe('SentimentCommentList', () => {
     expect(screen.getByText(/no comments yet/i)).toBeInTheDocument();
   });
 
-  it('renders recent comment as "just now" without "ago"', () => {
+  it('renders timestamps in MM/DD/YY(ddd)HH:mm:ss format', () => {
+    const date = new Date('2026-06-27T21:22:20Z');
+    const expected = `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}/${String(date.getFullYear() % 100).padStart(2, '0')}(${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()]})${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
     const comments = [
       {
         id: 'c1',
@@ -37,28 +39,60 @@ describe('SentimentCommentList', () => {
         user_id: 'u1',
         username: 'Anonymous',
         content: 'Nice!',
-        created_at: new Date().toISOString(),
+        created_at: '2026-06-27T21:22:20Z',
       },
     ];
     render(<SentimentCommentList comments={comments} />);
-    expect(screen.getByText('Just now')).toBeInTheDocument();
-    expect(screen.queryByText(/ago/i)).not.toBeInTheDocument();
+    expect(screen.getByText(expected)).toBeInTheDocument();
   });
 
-  it('renders older comment with "ago"', () => {
-    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+  it('orders comments newest first by default', () => {
     const comments = [
       {
         id: 'c1',
         world_id: 'w1',
         user_id: 'u1',
         username: 'Anonymous',
-        content: 'Nice!',
-        created_at: twoHoursAgo,
+        content: 'First',
+        created_at: '2026-06-27T20:00:00Z',
+      },
+      {
+        id: 'c2',
+        world_id: 'w1',
+        user_id: 'u1',
+        username: 'Anonymous',
+        content: 'Second',
+        created_at: '2026-06-27T21:00:00Z',
       },
     ];
     render(<SentimentCommentList comments={comments} />);
-    expect(screen.getByText('2h ago')).toBeInTheDocument();
+    const items = screen.getAllByText(/First|Second/);
+    expect(items[0]).toHaveTextContent('Second');
+  });
+
+  it('toggles to oldest first', () => {
+    const comments = [
+      {
+        id: 'c1',
+        world_id: 'w1',
+        user_id: 'u1',
+        username: 'Anonymous',
+        content: 'First',
+        created_at: '2026-06-27T20:00:00Z',
+      },
+      {
+        id: 'c2',
+        world_id: 'w1',
+        user_id: 'u1',
+        username: 'Anonymous',
+        content: 'Second',
+        created_at: '2026-06-27T21:00:00Z',
+      },
+    ];
+    render(<SentimentCommentList comments={comments} />);
+    fireEvent.click(screen.getByRole('button', { name: /Newest first/i }));
+    const items = screen.getAllByText(/First|Second/);
+    expect(items[0]).toHaveTextContent('First');
   });
 
   it('renders comments', () => {

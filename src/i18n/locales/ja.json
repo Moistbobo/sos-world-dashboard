@@ -92,9 +92,9 @@
       "submit": "コメントを投稿",
       "count": "{{count}} / {{max}}",
       "submitError": "コメントを投稿できませんでした: {{message}}",
-      "justNow": "たった今",
-      "postedAt": "{{time}}前",
-      "youIndicator": "（あなた）"
+      "youIndicator": "（あなた）",
+      "newestFirst": "新しい順",
+      "oldestFirst": "古い順"
     },
     "validation": {
       "tooLong": "コメントは256文字以内にしてください。",

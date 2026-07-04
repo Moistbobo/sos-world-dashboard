@@ -92,9 +92,9 @@
       "submit": "Post comment",
       "count": "{{count}} / {{max}}",
       "submitError": "Could not post comment: {{message}}",
-      "justNow": "Just now",
-      "postedAt": "{{time}} ago",
-      "youIndicator": "(You)"
+      "youIndicator": "(You)",
+      "newestFirst": "Newest first",
+      "oldestFirst": "Oldest first"
     },
     "validation": {
       "tooLong": "Comment must be 256 characters or less.",
