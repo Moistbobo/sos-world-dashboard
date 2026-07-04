@@ -10,6 +10,7 @@ import { ShareButton } from '../../components/share-button';
 import { WorldAddDate } from '../../components/world-add-date';
 import { useLists } from '../../contexts/ListsContext';
 import { SaveToListDialog } from '../../components/save-to-list-dialog/SaveToListDialog';
+import { SentimentSection } from '../../components/sentiment-section';
 
 export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
   const navigate = useNavigate();
@@ -281,6 +282,9 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
                 {isWorldInAnyList(w.worldId) ? t('worldDetail.savedToList') : t('worldDetail.saveToList')}
               </button>
               <SaveToListDialog worldId={w.worldId} open={saveOpen} onOpenChange={setSaveOpen} />
+            </div>
+            <div className="mt-6">
+              <SentimentSection worldId={w.worldId} />
             </div>
           </div>
         </div>

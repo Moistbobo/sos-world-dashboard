@@ -8,6 +8,13 @@ import * as useApi from '../../hooks/useApi';
 import { ListsProvider } from '../../contexts/ListsContext';
 import type { World } from '../../types';
 
+vi.mock('../../hooks/useSentiment', () => ({
+  useRatings: () => ({ data: { worldId: 'w1', good: 0, bad: 0, userRating: null }, isLoading: false }),
+  useComments: () => ({ data: [], isLoading: false }),
+  useSubmitRating: () => ({ isPending: false, mutateAsync: vi.fn() }),
+  useSubmitComment: () => ({ isPending: false, mutateAsync: vi.fn() }),
+}));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: false },
