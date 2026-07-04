@@ -1,5 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchComments, fetchRatings, submitComment, submitRating } from '../api/sentiment';
+import {
+  fetchComments,
+  fetchRatings,
+  submitComment,
+  submitRating,
+  updateRating,
+  deleteRating,
+} from '../api/sentiment';
 import type { Comment, RatingSummary } from '../types';
 
 export function useRatings(worldId: string | undefined) {
@@ -45,6 +52,71 @@ export function useSubmitRating() {
     onError: (_err, _variables, context) => {
       if (context?.previous) {
         queryClient.setQueryData(['ratings', _variables.worldId], context.previous);
+      }
+    },
+    onSettled: (_, __, { worldId }) => {
+      queryClient.invalidateQueries({ queryKey: ['ratings', worldId] });
+    },
+  });
+}
+
+export function useUpdateRating() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ worldId, value }: { worldId: string; value: 'good' | 'bad' }) =>
+      updateRating(worldId, value),
+    onMutate: async ({ worldId, value }) => {
+      const queryKey = ['ratings', worldId];
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<RatingSummary>(queryKey);
+
+      if (previous?.userRating && previous.userRating !== value) {
+        const next: RatingSummary = {
+          ...previous,
+          good: value === 'good' ? previous.good + 1 : Math.max(0, previous.good - 1),
+          bad: value === 'bad' ? previous.bad + 1 : Math.max(0, previous.bad - 1),
+          userRating: value,
+        };
+        queryClient.setQueryData(queryKey, next);
+      }
+
+      return { previous };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['ratings', _variables.worldId], context.previous);
+      }
+    },
+    onSettled: (_, __, { worldId }) => {
+      queryClient.invalidateQueries({ queryKey: ['ratings', worldId] });
+    },
+  });
+}
+
+export function useDeleteRating() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ worldId }: { worldId: string }) => deleteRating(worldId),
+    onMutate: async ({ worldId }) => {
+      const queryKey = ['ratings', worldId];
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<RatingSummary>(queryKey);
+
+      if (previous?.userRating) {
+        const next: RatingSummary = {
+          ...previous,
+          good: previous.userRating === 'good' ? Math.max(0, previous.good - 1) : previous.good,
+          bad: previous.userRating === 'bad' ? Math.max(0, previous.bad - 1) : previous.bad,
+          userRating: null,
+        };
+        queryClient.setQueryData(queryKey, next);
+      }
+
+      return { previous };
+    },
+    onError: (_err, { worldId }, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['ratings', worldId], context.previous);
       }
     },
     onSettled: (_, __, { worldId }) => {

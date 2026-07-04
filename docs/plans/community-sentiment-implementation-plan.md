@@ -52,6 +52,8 @@ alter table public.ratings enable row level security;
 -- (Skip these grants if your project's Data API settings already expose tables.)
 grant select on public.ratings to anon, authenticated;
 grant insert on public.ratings to authenticated;
+grant update on public.ratings to authenticated;
+grant delete on public.ratings to authenticated;
 
 -- Allow public read access via publishable key or signed-in anonymous users.
 create policy "Ratings are publicly readable"
@@ -68,7 +70,31 @@ create policy "Anonymous users can insert their own rating"
     and (select auth.uid()) = user_id
   );
 
--- Users cannot update or delete ratings directly (soft-delete/report can be added later).
+-- Signed-in anonymous users can update their own rating.
+create policy "Anonymous users can update their own rating"
+  on public.ratings for update
+  to authenticated
+  using (
+    (select (auth.jwt()->>'is_anonymous')::boolean) is true
+    and (select auth.uid()) = user_id
+  )
+  with check (
+    (select (auth.jwt()->>'is_anonymous')::boolean) is true
+    and (select auth.uid()) = user_id
+  );
+
+-- Signed-in anonymous users can delete their own rating.
+create policy "Anonymous users can delete their own rating"
+  on public.ratings for delete
+  to authenticated
+  using (
+    (select (auth.jwt()->>'is_anonymous')::boolean) is true
+    and (select auth.uid()) = user_id
+  );
+
+-- Note: The application treats an update to the opposite value as a delete+insert
+-- (good count decrements and bad count increments). The `with check` clauses above
+-- ensure the row remains owned by the same anonymous user after an update.
 ```
 
 ### 4.2 `comments` table
@@ -192,6 +218,8 @@ Functions:
 - `fetchRatings(worldId: string): Promise<RatingSummary>`
 - `fetchComments(worldId: string): Promise<Comment[]>`
 - `submitRating(worldId: string, value: 'good' | 'bad'): Promise<void>`
+- `updateRating(worldId: string, value: 'good' | 'bad'): Promise<void>`
+- `deleteRating(worldId: string): Promise<void>`
 - `submitComment(worldId: string, content: string): Promise<Comment>`
 
 Internal helpers:
@@ -206,7 +234,9 @@ Internal helpers:
 
 - `useRatings(worldId)` — fetch aggregate counts and current user's rating.
 - `useComments(worldId)` — fetch comment list.
-- `useSubmitRating()` — mutation with optimistic update.
+- `useSubmitRating()` — mutation with optimistic update when the user has not rated yet.
+- `useUpdateRating()` — mutation with optimistic update when the user switches their rating.
+- `useDeleteRating()` — mutation with optimistic update when the user removes their rating.
 - `useSubmitComment()` — mutation with cache invalidation/optimistic append.
 
 ### 5.8 UI components (sub-issue #18)

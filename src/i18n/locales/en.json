@@ -83,7 +83,9 @@
       "bad": "Bad",
       "countGood": "{{count}} good",
       "countBad": "{{count}} bad",
-      "submitError": "Could not submit rating: {{message}}"
+      "submitError": "Could not submit rating: {{message}}",
+      "removeRating": "Remove rating",
+      "removeRatingError": "Could not remove rating: {{message}}"
     },
     "comments": {
       "title": "Community comments",

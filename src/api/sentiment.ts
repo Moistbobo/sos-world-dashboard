@@ -56,6 +56,26 @@ export async function submitRating(worldId: string, value: 'good' | 'bad'): Prom
   if (error) throw new Error(error.message);
 }
 
+export async function updateRating(worldId: string, value: 'good' | 'bad'): Promise<void> {
+  const user = await ensureAnonymousUser();
+  const { error } = await supabase
+    .from('ratings')
+    .update({ value })
+    .eq('world_id', worldId)
+    .eq('user_id', user.id);
+  if (error) throw new Error(error.message);
+}
+
+export async function deleteRating(worldId: string): Promise<void> {
+  const user = await ensureAnonymousUser();
+  const { error } = await supabase
+    .from('ratings')
+    .delete()
+    .eq('world_id', worldId)
+    .eq('user_id', user.id);
+  if (error) throw new Error(error.message);
+}
+
 export async function submitComment(worldId: string, content: string): Promise<Comment> {
   const user = await ensureAnonymousUser();
   const username = generateUsername(user.id);

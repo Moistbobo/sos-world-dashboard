@@ -83,7 +83,9 @@
       "bad": "悪い",
       "countGood": "良い {{count}}",
       "countBad": "悪い {{count}}",
-      "submitError": "評価を送信できませんでした: {{message}}"
+      "submitError": "評価を送信できませんでした: {{message}}",
+      "removeRating": "評価を削除",
+      "removeRatingError": "評価を削除できませんでした: {{message}}"
     },
     "comments": {
       "title": "コミュニティコメント",

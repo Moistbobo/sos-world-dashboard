@@ -3,7 +3,14 @@ import { toast } from 'sonner';
 import { SentimentRating } from '../sentiment-rating';
 import { SentimentCommentForm } from '../sentiment-comment-form';
 import { SentimentCommentList } from '../sentiment-comment-list';
-import { useComments, useRatings, useSubmitComment, useSubmitRating } from '../../hooks/useSentiment';
+import {
+  useComments,
+  useRatings,
+  useSubmitComment,
+  useSubmitRating,
+  useUpdateRating,
+  useDeleteRating,
+} from '../../hooks/useSentiment';
 
 interface SentimentSectionProps {
   worldId: string;
@@ -14,13 +21,31 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
   const { data: ratings, isLoading: ratingsLoading } = useRatings(worldId);
   const { data: comments } = useComments(worldId);
   const submitRating = useSubmitRating();
+  const updateRating = useUpdateRating();
+  const deleteRating = useDeleteRating();
   const submitComment = useSubmitComment();
+
+  const isSubmitting = submitRating.isPending || updateRating.isPending || deleteRating.isPending;
 
   const handleRate = async (value: 'good' | 'bad') => {
     try {
-      await submitRating.mutateAsync({ worldId, value });
+      if (!ratings?.userRating) {
+        await submitRating.mutateAsync({ worldId, value });
+      } else if (ratings.userRating !== value) {
+        await updateRating.mutateAsync({ worldId, value });
+      } else {
+        await deleteRating.mutateAsync({ worldId });
+      }
     } catch (err) {
       toast.error(t('sentiment.ratings.submitError', { message: (err as Error).message }));
+    }
+  };
+
+  const handleRemove = async () => {
+    try {
+      await deleteRating.mutateAsync({ worldId });
+    } catch (err) {
+      toast.error(t('sentiment.ratings.removeRatingError', { message: (err as Error).message }));
     }
   };
 
@@ -41,8 +66,9 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
         <SentimentRating
           summary={ratings}
           isLoading={ratingsLoading}
-          isSubmitting={submitRating.isPending}
+          isSubmitting={isSubmitting}
           onRate={handleRate}
+          onRemove={handleRemove}
         />
       </div>
       <div className="mb-6">

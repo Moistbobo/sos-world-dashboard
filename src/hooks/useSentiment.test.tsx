@@ -1,7 +1,14 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useRatings, useComments, useSubmitRating, useSubmitComment } from './useSentiment';
+import {
+  useRatings,
+  useComments,
+  useSubmitRating,
+  useUpdateRating,
+  useDeleteRating,
+  useSubmitComment,
+} from './useSentiment';
 import * as sentimentApi from '../api/sentiment';
 
 function wrapper({ children }: { children: React.ReactNode }) {
@@ -48,6 +55,24 @@ describe('useSubmitRating', () => {
     const { result } = renderHook(() => useSubmitRating(), { wrapper });
     await result.current.mutateAsync({ worldId: 'wrld_123', value: 'good' });
     expect(sentimentApi.submitRating).toHaveBeenCalledWith('wrld_123', 'good');
+  });
+});
+
+describe('useUpdateRating', () => {
+  it('calls updateRating', async () => {
+    vi.spyOn(sentimentApi, 'updateRating').mockResolvedValue(undefined);
+    const { result } = renderHook(() => useUpdateRating(), { wrapper });
+    await result.current.mutateAsync({ worldId: 'wrld_123', value: 'bad' });
+    expect(sentimentApi.updateRating).toHaveBeenCalledWith('wrld_123', 'bad');
+  });
+});
+
+describe('useDeleteRating', () => {
+  it('calls deleteRating', async () => {
+    vi.spyOn(sentimentApi, 'deleteRating').mockResolvedValue(undefined);
+    const { result } = renderHook(() => useDeleteRating(), { wrapper });
+    await result.current.mutateAsync({ worldId: 'wrld_123' });
+    expect(sentimentApi.deleteRating).toHaveBeenCalledWith('wrld_123');
   });
 });
 
