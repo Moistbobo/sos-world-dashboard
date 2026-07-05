@@ -69,14 +69,16 @@ export function ListsPage() {
 
   const handleImport = useCallback(
     (incoming: WorldList[], filename: string) => {
-      importLists(incoming);
-      toast.success(
-        t('lists.importSuccess', {
-          lists: incoming.length,
-          worlds: incoming.reduce((sum, list) => sum + list.worldIds.length, 0),
-          filename,
-        }),
-      );
+      const result = importLists(incoming);
+      if (result.ok) {
+        toast.success(
+          t('lists.importSuccess', {
+            lists: incoming.length,
+            worlds: incoming.reduce((sum, list) => sum + list.worldIds.length, 0),
+            filename,
+          }),
+        );
+      }
     },
     [importLists, t],
   );
@@ -114,7 +116,7 @@ export function ListsPage() {
       </div>
 
       {error && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-300">
+        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300">
           {t('lists.storageErrorMessage', { message: error })}
           <button onClick={clearError} className="ml-2 underline">
             {t('common.dismiss')}

@@ -8,6 +8,19 @@ import * as useApi from '../../hooks/useApi';
 import { ListsProvider } from '../../contexts/ListsContext';
 import type { World } from '../../types';
 
+vi.mock('../../components/sentiment-section', () => ({
+  SentimentSection: ({ worldId }: { worldId: string }) => (
+    <div data-testid="sentiment-section">Sentiment {worldId}</div>
+  ),
+}));
+
+vi.mock('../../hooks/useSentiment', () => ({
+  useRatings: () => ({ data: { worldId: 'w1', good: 0, bad: 0, userRating: null }, isLoading: false }),
+  useComments: () => ({ data: [], isLoading: false }),
+  useSubmitRating: () => ({ isPending: false, mutateAsync: vi.fn() }),
+  useSubmitComment: () => ({ isPending: false, mutateAsync: vi.fn() }),
+}));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: false },
@@ -21,9 +34,9 @@ function LocationProbe() {
   );
 }
 
-function Wrapper({ children }: { children: React.ReactNode }) {
+function Wrapper({ children, initialEntries = ['/worlds/wrld_123'] }: { children: React.ReactNode; initialEntries?: string[] }) {
   return (
-    <MemoryRouter initialEntries={['/worlds/wrld_123']} future={{ v7_startTransition: true }}>
+    <MemoryRouter initialEntries={initialEntries} future={{ v7_startTransition: true }}>
       <QueryClientProvider client={queryClient}>
         <ListsProvider>{children}</ListsProvider>
         <LocationProbe />
@@ -138,6 +151,48 @@ describe('WorldDetailPage', () => {
     expect(screen.getByTestId('current-location')).toHaveTextContent('platform=standalonewindows');
   });
 
+  it('navigates back when the background backdrop is clicked', async () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper initialEntries={['/worlds', '/worlds/wrld_123']}>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const backdrop = screen.getByTestId('world-detail-backdrop');
+    await userEvent.click(backdrop);
+
+    expect(screen.getByTestId('current-location')).toHaveTextContent('/worlds');
+  });
+
+  it('does not navigate back when clicking inside the world card', async () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper initialEntries={['/worlds', '/worlds/wrld_123']}>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const heading = screen.getByRole('heading', { name: /Test World/i });
+    await userEvent.click(heading);
+
+    expect(screen.getByTestId('current-location')).toHaveTextContent('/worlds/wrld_123');
+  });
+
   it('renders a save-to-list button', () => {
     vi.spyOn(useApi, 'useWorld').mockReturnValue({
       data: createWorld(),
@@ -154,5 +209,66 @@ describe('WorldDetailPage', () => {
     );
 
     expect(screen.getByRole('button', { name: /save to list/i })).toBeInTheDocument();
+  });
+
+  it('marks the dashboard add date with an underline tooltip', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const date = screen.getByTitle(/Date added to this dashboard/i);
+    expect(date).toBeInTheDocument();
+    expect(date).toHaveClass('underline');
+    expect(date).toHaveClass('decoration-dotted');
+  });
+
+  it('renders the sentiment section when community sentiment is enabled', async () => {
+    vi.stubEnv('VITE_ENABLE_COMMUNITY_SENTIMENT', 'true');
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(await screen.findByTestId('sentiment-section')).toBeInTheDocument();
+    vi.unstubAllEnvs();
+  });
+
+  it('does not render the sentiment section when community sentiment is disabled', () => {
+    vi.stubEnv('VITE_ENABLE_COMMUNITY_SENTIMENT', 'false');
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(screen.queryByTestId('sentiment-section')).not.toBeInTheDocument();
+    vi.unstubAllEnvs();
   });
 });

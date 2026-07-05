@@ -53,6 +53,18 @@ let infiniteHasNextPage = true;
 
 vi.mock('../../hooks/useApi', () => ({
   useTags: () => ({ data: { tags: [] } }),
+  useMeta: () => ({
+    data: {
+      qualityGood: 123,
+      qualityBad: 12,
+      platformDesktop: 80,
+      platformAndroid: 45,
+      platformiOS: 6,
+    },
+    isPending: false,
+    isError: false,
+    error: null,
+  }),
   useWorlds: () => ({
     data: { worlds: mockWorlds, total: 1, limit: 20, offset: 0 },
     isPending: false,
@@ -150,6 +162,19 @@ describe('WorldsPage', () => {
   it('renders the number of results from the filtered query', () => {
     renderPage(<WorldsPage />);
     expect(screen.getByText(/Number of results: 1/i)).toBeInTheDocument();
+  });
+
+  it('renders quality and platform counts in the expanded filter bar', async () => {
+    const user = userEvent.setup();
+
+    renderPage(<WorldsPage />);
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+
+    expect(screen.getByRole('button', { name: /Good\s*\(123\)/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Bad\s*\(12\)/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Desktop\s*\(80\)/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Android\s*\(45\)/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /iOS\s*\(6\)/ })).toBeInTheDocument();
   });
 
   it('navigates to world detail when a card is selected', async () => {

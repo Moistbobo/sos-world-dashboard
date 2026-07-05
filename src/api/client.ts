@@ -1,4 +1,4 @@
-import type { HealthResponse, PaginatedWorlds, TagsResponse, World } from '../types';
+import type { HealthResponse, MetaResponse, PaginatedWorlds, TagsResponse, World } from '../types';
 
 function getBaseUrl(): string {
   const url = import.meta.env.VITE_API_BASE_URL;
@@ -92,4 +92,8 @@ export async function fetchWorld(worldId: string): Promise<World> {
 
 export async function fetchTags(): Promise<TagsResponse> {
   return request('/api/tags');
+}
+
+export async function fetchMeta(): Promise<MetaResponse> {
+  return request('/api/meta');
 }

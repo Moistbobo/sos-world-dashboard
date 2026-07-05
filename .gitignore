@@ -50,6 +50,10 @@ stats.html
 .vercel
 .env*
 pi/
+.pi-subagents/
 brainstorm/
-docs/superpowers
+brainstorm/superpowers
 .worktrees/
+
+# PR evidence media (screenshots, videos, GIFs) — organized by branch
+pr-assets/

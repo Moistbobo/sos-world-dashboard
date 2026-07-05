@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useWorld } from './useApi';
+import { useMeta, useWorld } from './useApi';
 import * as client from '../api/client';
-import type { World } from '../types';
+import type { MetaResponse, World } from '../types';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -110,5 +110,33 @@ describe('useWorld', () => {
     const { result } = renderHook(() => useWorld(undefined), { wrapper: Wrapper });
     expect(result.current.data).toBeUndefined();
     expect(result.current.isPending).toBe(true);
+  });
+});
+
+describe('useMeta', () => {
+  beforeEach(() => {
+    queryClient.clear();
+    vi.clearAllMocks();
+  });
+
+  it('fetches meta data without params', async () => {
+    const response: MetaResponse = {
+      qualityGood: 123,
+      qualityBad: 12,
+      platformDesktop: 80,
+      platformAndroid: 45,
+      platformiOS: 6,
+    };
+
+    vi.spyOn(client, 'fetchMeta').mockResolvedValue(response);
+
+    const { result } = renderHook(() => useMeta(), { wrapper: Wrapper });
+
+    expect(result.current.isPending).toBe(true);
+
+    await waitFor(() => expect(result.current.isPending).toBe(false));
+
+    expect(result.current.data).toEqual(response);
+    expect(client.fetchMeta).toHaveBeenCalled();
   });
 });
