@@ -90,7 +90,7 @@ export function FilterBar({
         </button>
 
         {isCapacityActive && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-300 ring-1 ring-indigo-500/30">
+          <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-700 ring-1 ring-indigo-500/30 dark:text-indigo-300">
             <span>{capacityRange.min}–{capacityRange.max} {t('filter.capacityUnit')}</span>
             <button
               onClick={(e) => {
@@ -98,7 +98,7 @@ export function FilterBar({
                 onCapacityChange({ min: MIN_CAPACITY, max: MAX_CAPACITY });
               }}
               aria-label={t('filter.removeCapacity')}
-              className="hover:text-white"
+              className="hover:text-indigo-900 dark:hover:text-white"
             >
               <X className="h-3 w-3" />
             </button>
@@ -108,7 +108,7 @@ export function FilterBar({
         {selectedTags.map((t) => (
           <span
             key={t}
-            className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-300 ring-1 ring-indigo-500/30"
+            className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-700 ring-1 ring-indigo-500/30 dark:text-indigo-300"
           >
             <span className="leading-none">{getEmojiForTag(t)}</span>
             <span>{t}</span>
@@ -117,7 +117,7 @@ export function FilterBar({
                 e.stopPropagation();
                 onRemoveTag(t);
               }}
-              className="hover:text-white"
+              className="hover:text-indigo-900 dark:hover:text-white"
             >
               <X className="h-3 w-3" />
             </button>
@@ -127,7 +127,7 @@ export function FilterBar({
         {selectedPlatforms.map((p) => (
           <span
             key={p}
-            className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-300 ring-1 ring-indigo-500/30"
+            className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-700 ring-1 ring-indigo-500/30 dark:text-indigo-300"
           >
             <span>{getPlatformLabel(p)}</span>
             <button
@@ -136,7 +136,7 @@ export function FilterBar({
                 onRemovePlatform(p);
               }}
               aria-label={t('filter.removePlatform')}
-              className="hover:text-white"
+              className="hover:text-indigo-900 dark:hover:text-white"
             >
               <X className="h-3 w-3" />
             </button>
@@ -148,8 +148,8 @@ export function FilterBar({
             key={q}
             className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ${
               q === 'good'
-                ? 'bg-green-500/20 text-green-300 ring-green-500/30'
-                : 'bg-red-500/20 text-red-300 ring-red-500/30'
+                ? 'bg-green-500/20 text-green-700 ring-green-500/30 dark:text-green-300'
+                : 'bg-red-500/20 text-red-700 ring-red-500/30 dark:text-red-300'
             }`}
           >
             {q}
@@ -158,7 +158,7 @@ export function FilterBar({
                 e.stopPropagation();
                 onToggleQuality(q);
               }}
-              className="hover:text-white"
+              className={`hover:text-${q === 'good' ? 'green' : 'red'}-900 dark:hover:text-white`}
             >
               <X className="h-3 w-3" />
             </button>
@@ -189,7 +189,7 @@ export function FilterBar({
                   onClick={() => onToggleTag(t.tag)}
                   className={`rounded-md border px-2 py-1 text-xs transition ${
                     selectedTags.includes(t.tag)
-                      ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-300'
+                      ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'
                       : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
                   }`}
                 >
@@ -211,8 +211,8 @@ export function FilterBar({
                     className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
                       selectedQuality.includes(q)
                         ? q === 'good'
-                          ? 'border-green-500/40 bg-green-500/15 text-green-300'
-                          : 'border-red-500/40 bg-red-500/15 text-red-300'
+                          ? 'border-green-500/40 bg-green-500/15 text-green-700 dark:text-green-300'
+                          : 'border-red-500/40 bg-red-500/15 text-red-700 dark:text-red-300'
                         : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
                     }`}
                   >
@@ -239,7 +239,7 @@ export function FilterBar({
                     onClick={() => onTogglePlatform(p)}
                     className={`rounded-md border px-2 py-1 text-xs transition ${
                       selectedPlatforms.includes(p)
-                        ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-300'
+                        ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'
                         : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
                     }`}
                   >

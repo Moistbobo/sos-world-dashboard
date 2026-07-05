@@ -142,14 +142,14 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
       {/* Custom tooltip */}
       {hovered && (
         <div
-          className="pointer-events-none fixed z-50 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-xs text-white shadow-lg"
+          className="pointer-events-none fixed z-50 rounded-md border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 shadow-lg dark:border-slate-600 dark:bg-slate-800 dark:text-white"
           style={{
             left: tooltipPos.x + 12,
             top: tooltipPos.y - 12,
           }}
         >
           <div className="font-semibold">{hovered.name}</div>
-          <div className="text-slate-300">
+          <div className="text-slate-500 dark:text-slate-300">
             {hovered.value} ({hovered.pct.toFixed(1)}%)
           </div>
         </div>
@@ -160,7 +160,7 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
         {data.map((item) => (
           <div
             key={item.name}
-            className="flex items-center gap-1.5 text-xs text-slate-300"
+            className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300"
           >
             <span
               className="inline-block h-3 w-3 rounded-sm"
@@ -168,7 +168,7 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
             />
             <span className="leading-none">{getEmojiForTag(item.name)}</span>
             <span className="max-w-[120px] truncate">{item.name}</span>
-            <span className="text-slate-500">({item.value})</span>
+            <span className="text-slate-500 dark:text-slate-500">({item.value})</span>
           </div>
         ))}
       </div>
