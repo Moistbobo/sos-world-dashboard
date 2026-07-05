@@ -3,6 +3,8 @@
   - Keep the sections below filled in; do not delete them.
   - Remove any checklist items or subsection comments that are genuinely not applicable, but state why in the PR description.
   - Non-visual PRs (e.g. dependency bumps, config changes, refactors with no UI/UX impact) may skip screenshots/video, but must still explain why in the E2E Evidence section.
+  - For PRs targeting `testnet` or `production`, use the release template instead:
+    `.github/PULL_REQUEST_TEMPLATE/release.md`
 -->
 
 ## Summary
