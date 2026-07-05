@@ -116,7 +116,7 @@ export function ListsPage() {
       </div>
 
       {error && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-300">
+        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300">
           {t('lists.storageErrorMessage', { message: error })}
           <button onClick={clearError} className="ml-2 underline">
             {t('common.dismiss')}

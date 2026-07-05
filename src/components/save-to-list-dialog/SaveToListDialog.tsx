@@ -54,7 +54,7 @@ export function SaveToListDialog({
       >
         <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-base font-semibold dark:text-white">
+            <h3 className="text-base font-semibold text-slate-900 dark:text-white">
               {t('lists.saveToList')}
             </h3>
             <button
