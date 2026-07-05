@@ -1,13 +1,16 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { toast } from 'sonner';
 import { ListsProvider } from '../../contexts/ListsContext';
 import { ListsPage } from './ListsPage';
 import * as listsImportExport from '../../utils/listsImportExport';
 
 beforeEach(() => {
   window.localStorage.clear();
+  vi.mocked(toast.success).mockClear();
+  vi.spyOn(listsImportExport, 'validateWorldIds').mockImplementation(async (ids) => ids);
 });
 
 function Wrapper({ children }: { children: React.ReactNode }) {
@@ -28,7 +31,29 @@ const sampleList = {
   updatedAt: '2024-01-01T00:00:00.000Z',
 };
 
+function createJsonFile(contents: object, name = 'backup.json') {
+  const blob = new Blob([JSON.stringify(contents)], { type: 'application/json' });
+  return new File([blob], name, { type: 'application/json' });
+}
+
 describe('ListsPage', () => {
+  it('shows a success toast after importing a valid file', async () => {
+    const user = userEvent.setup();
+    render(<ListsPage />, { wrapper: Wrapper });
+    await user.click(screen.getByRole('button', { name: /^import$/i }));
+
+    const dropZone = screen.getByText(/drag and drop/i).parentElement!;
+    const file = createJsonFile({ version: 1, lists: [sampleList] });
+    fireEvent.drop(dropZone, { dataTransfer: { files: [file] } });
+
+    await screen.findByText(/import preview/i);
+    await user.click(screen.getByRole('button', { name: /import 1 list/i }));
+
+    expect(toast.success).toHaveBeenCalledWith(
+      expect.stringContaining('Imported'),
+    );
+  });
+
   it('shows empty state', () => {
     render(<ListsPage />, { wrapper: Wrapper });
     expect(screen.getByText(/no lists yet/i)).toBeInTheDocument();

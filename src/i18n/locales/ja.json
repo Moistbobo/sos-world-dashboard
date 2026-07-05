@@ -69,13 +69,48 @@
     "noQuality": "品質評価なし",
     "capacity": "定員: {{capacity}}",
     "id": "ID: {{id}}",
-    "added": "{{date}} に追加",
-    "tagged": "{{date}} にタグ付け",
+    "added": "\u003cdate\u003e{{date}}\u003c/date\u003e に追加",
+    "tagged": "\u003cdate\u003e{{date}}\u003c/date\u003e にタグ付け",
     "platforms": "プラットフォーム",
     "tags": "タグ",
     "openInVRChat": "VRChat で開く",
     "saveToList": "リストに保存",
     "savedToList": "リストに保存済み"
+  },
+  "sentiment": {
+    "captcha": {
+      "description": "評価やコメントを投稿するには、以下の認証を完了してください。",
+      "missingKey": "CAPTCHAが設定されていません。サポートにお問い合わせください。"
+    },
+    "ratings": {
+      "good": "良い",
+      "bad": "悪い",
+      "countGood": "良い {{count}}",
+      "countBad": "悪い {{count}}",
+      "submitError": "評価を送信できませんでした: {{message}}",
+      "ratingBarLabel": "良い評価と悪い評価の割合",
+      "noVotes": "まだ投票がありません",
+      "yourVote": "あなたの投票"
+    },
+    "comments": {
+      "title": "コミュニティコメント",
+      "empty": "まだコメントはありません。最初のコメントを書きませんか？",
+      "placeholder": "短いコメントを書く...",
+      "submit": "コメントを投稿",
+      "count": "{{count}} / {{max}}",
+      "submitError": "コメントを投稿できませんでした: {{message}}",
+      "youIndicator": "（あなた）",
+      "newestFirst": "新しい順",
+      "oldestFirst": "古い順"
+    },
+    "validation": {
+      "tooLong": "コメントは256文字以内にしてください。",
+      "noLinks": "リンクは許可されていません。",
+      "noEmails": "メールアドレスは許可されていません。",
+      "noMarkup": "書式やHTMLは許可されていません。",
+      "noExcessWhitespace": "改行や空白が多すぎます。",
+      "empty": "何かを書いてください。"
+    }
   },
   "tags": {
     "title": "タグ",
@@ -131,6 +166,9 @@
     "share": "共有",
     "success": "VRChatワールドURLをコピーしました",
     "error": "リンクをコピーできませんでした"
+  },
+  "worldAddDate": {
+    "tooltip": "このダッシュボードに追加された日付です。VRChatのワールド作成日ではありません。"
   },
   "worldCard": {
     "saveToList": "リストに保存",

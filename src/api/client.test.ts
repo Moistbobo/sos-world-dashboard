@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fetchWorlds } from './client';
+import { fetchMeta, fetchWorlds } from './client';
 
 globalThis.fetch = vi.fn();
 
@@ -35,5 +35,35 @@ describe('fetchWorlds', () => {
     const url = vi.mocked(fetch).mock.calls[0][0] as string;
     expect(url).toContain('platform=android');
     expect(url).toContain('platform=ios');
+  });
+});
+
+describe('fetchMeta', () => {
+  it('fetches /api/meta with no query params', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          qualityGood: 123,
+          qualityBad: 12,
+          platformDesktop: 80,
+          platformAndroid: 45,
+          platformiOS: 6,
+        }),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchMeta();
+
+    const url = vi.mocked(fetch).mock.calls[0][0] as string;
+    expect(url).toContain('/api/meta');
+    expect(url).not.toContain('?');
+    expect(result).toEqual({
+      qualityGood: 123,
+      qualityBad: 12,
+      platformDesktop: 80,
+      platformAndroid: 45,
+      platformiOS: 6,
+    });
   });
 });

@@ -1,5 +1,20 @@
 import '@testing-library/jest-dom'
 import '../i18n'
+import { vi } from 'vitest';
+
+vi.mock('sonner', () => ({
+  Toaster: () => null,
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+    loading: vi.fn(),
+    message: vi.fn(),
+    dismiss: vi.fn(),
+    promise: vi.fn(),
+  },
+}));
 
 class MockIntersectionObserver implements IntersectionObserver {
   root: Document | Element | null = null;

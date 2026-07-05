@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { X, Plus } from 'lucide-react';
 import { useLists, MAX_WORLDS_PER_LIST } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../list-form-dialog/ListFormDialog';
@@ -31,8 +32,11 @@ export function SaveToListDialog({
   const toggle = (listId: string) => {
     if (isWorldInList(worldId, listId)) {
       removeWorldFromList(listId, worldId);
-    } else {
-      addWorldToList(listId, worldId);
+      return;
+    }
+    const result = addWorldToList(listId, worldId);
+    if (!result.ok && result.reason === 'max-reached') {
+      toast.error(t('lists.maxWorldsReached', { count: MAX_WORLDS_PER_LIST }));
     }
   };
 
@@ -50,7 +54,7 @@ export function SaveToListDialog({
       >
         <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-base font-semibold dark:text-white">
+            <h3 className="text-base font-semibold text-slate-900 dark:text-white">
               {t('lists.saveToList')}
             </h3>
             <button

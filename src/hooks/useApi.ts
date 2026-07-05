@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchHealth, fetchTags, fetchWorld, fetchWorlds } from '../api/client';
+import { fetchHealth, fetchMeta, fetchTags, fetchWorld, fetchWorlds } from '../api/client';
 import type { PaginatedWorlds } from '../types';
 
 export function useHealth() {
@@ -14,6 +14,14 @@ export function useTags() {
   return useQuery({
     queryKey: ['tags'],
     queryFn: fetchTags,
+  });
+}
+
+export function useMeta() {
+  return useQuery({
+    queryKey: ['meta'],
+    queryFn: fetchMeta,
+    staleTime: 60_000,
   });
 }
 

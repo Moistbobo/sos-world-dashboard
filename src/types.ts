@@ -28,8 +28,40 @@ export interface TagsResponse {
   tags: TagCount[];
 }
 
+export interface MetaResponse {
+  qualityGood: number;
+  qualityBad: number;
+  platformDesktop: number;
+  platformAndroid: number;
+  platformiOS: number;
+}
+
 export interface HealthResponse {
   status: 'ok';
   worldCount: number;
   dbVersion: number;
+}
+
+export interface Rating {
+  id: string;
+  world_id: string;
+  user_id: string;
+  value: 'good' | 'bad';
+  created_at: string;
+}
+
+export interface RatingSummary {
+  worldId: string;
+  good: number;
+  bad: number;
+  userRating: 'good' | 'bad' | null;
+}
+
+export interface Comment {
+  id: string;
+  world_id: string;
+  user_id: string;
+  username: string;
+  content: string;
+  created_at: string;
 }
