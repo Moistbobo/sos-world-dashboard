@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash, Star } from 'lucide-react';
 import { useWorld } from '../../hooks/useApi';
@@ -18,11 +18,20 @@ const SentimentSection = lazy(() =>
 export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const location = useLocation();
   const { worldId: paramWorldId } = useParams<{ worldId: string }>();
   const worldId = worldIdProp ?? paramWorldId;
   const { isWorldInAnyList } = useLists();
   const [saveOpen, setSaveOpen] = useState(false);
   const { data, isPending, isError, error, isFetching } = useWorld(worldId);
+
+  function handleGoBack() {
+    if (location.key === 'default') {
+      navigate('/worlds');
+    } else {
+      navigate(-1);
+    }
+  }
 
   if (isPending && !data) {
     return (
@@ -31,7 +40,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
         className="-m-4 min-h-[calc(100vh-3.5rem)] cursor-pointer p-4 lg:-m-6 lg:p-6"
         onClick={(e) => {
           if (e.currentTarget === e.target) {
-            navigate(-1);
+            handleGoBack();
           }
         }}
       >
@@ -118,14 +127,14 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
         className="-m-4 min-h-[calc(100vh-3.5rem)] cursor-pointer p-4 lg:-m-6 lg:p-6"
         onClick={(e) => {
           if (e.currentTarget === e.target) {
-            navigate(-1);
+            handleGoBack();
           }
         }}
       >
         <div className="mx-auto max-w-3xl space-y-5">
           <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={() => handleGoBack()}
             className="btn-ghost gap-1.5 text-sm"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -148,14 +157,14 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
       onClick={(e) => {
         // Only navigate when the user clicks the empty background area, not the card.
         if (e.currentTarget === e.target) {
-          navigate(-1);
+          handleGoBack();
         }
       }}
     >
       <div className="mx-auto max-w-3xl space-y-5">
         <button
           type="button"
-          onClick={() => navigate(-1)}
+          onClick={() => handleGoBack()}
           className="btn-ghost gap-1.5 text-sm"
         >
           <ArrowLeft className="h-4 w-4" />
