@@ -74,7 +74,7 @@ Copy `.env.example` to `.env.local`. Vite exposes only `VITE_*` env vars to the 
 
 ## PR Evidence & Risk Assessment
 
-When preparing a pull request, follow `.github/pull_request_template.md`. Agents and contributors must fill out the **RISK RATING** and **E2E Evidence** sections before requesting human review.
+When preparing a pull request, follow `.github/pull_request_template.md`. PRs targeting the `testnet` or `production` release branches should instead use `.github/PULL_REQUEST_TEMPLATE/release.md`, which only requires a Summary and Verification checklist. Agents and contributors must fill out the **RISK RATING** and **E2E Evidence** sections before requesting human review (these sections are not required for release-branch PRs using the release template).
 
 ### E2E evidence
 
