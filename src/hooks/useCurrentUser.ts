@@ -7,6 +7,11 @@ export function useCurrentUserId(): string | null {
   useEffect(() => {
     let cancelled = false;
     let unsubscribe = () => {};
+    if (!supabase) {
+      return () => {
+        cancelled = true;
+      };
+    }
     supabase.auth.getSession().then(({ data }) => {
       if (!cancelled) {
         setUserId(data.session?.user?.id ?? null);

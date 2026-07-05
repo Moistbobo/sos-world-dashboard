@@ -131,7 +131,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
             <ArrowLeft className="h-4 w-4" />
             {t('common.back')}
           </button>
-          <div className="card p-8 text-center text-sm text-red-600 dark:text-red-300">
+          <div className="card p-8 text-center text-sm text-red-700 dark:text-red-300">
             {t('worldDetail.loadError', { message: error?.message || 'Not found' })}
           </div>
         </div>
@@ -172,7 +172,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
             </div>
           )}
           {isError && (
-            <div className="border-b border-red-500/20 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-300">
+            <div className="border-b border-red-500/20 bg-red-500/10 p-3 text-xs text-red-700 dark:text-red-300">
               {t('worldDetail.refreshError', { message: error?.message })}
             </div>
           )}
@@ -200,12 +200,12 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
               </div>
               <div className="shrink-0">
                 {w.quality === 'good' && (
-                  <span className="rounded-lg bg-green-500/15 px-3 py-1 text-xs font-semibold text-green-400 ring-1 ring-green-500/30">
+                  <span className="rounded-lg bg-green-500/15 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-500/30 dark:text-green-400">
                     {t('worldDetail.qualityGood')}
                   </span>
                 )}
                 {w.quality === 'bad' && (
-                  <span className="rounded-lg bg-red-500/15 px-3 py-1 text-xs font-semibold text-red-400 ring-1 ring-red-500/30">
+                  <span className="rounded-lg bg-red-500/15 px-3 py-1 text-xs font-semibold text-red-700 ring-1 ring-red-500/30 dark:text-red-400">
                     {t('worldDetail.qualityBad')}
                   </span>
                 )}

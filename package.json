@@ -12,7 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "screenshot:pr": "cross-env VITE_API_BASE_URL=http://localhost:9877 vite build && node scripts/capture-pr-screenshot.mjs",
+    "screenshot:pr": "node scripts/capture-pr-screenshot.mjs",
     "prepare": "husky"
   },
   "dependencies": {
