@@ -39,6 +39,62 @@ const mockHealth = {
   dbVersion: 1,
 };
 
+const mockTags = {
+  tags: [
+    { tag: 'kino', count: 420 },
+    { tag: 'chill', count: 380 },
+    { tag: 'comfy', count: 310 },
+    { tag: 'adventure', count: 250 },
+    { tag: 'horror', count: 180 },
+    { tag: 'game', count: 160 },
+    { tag: 'gallery', count: 140 },
+    { tag: 'meme', count: 120 },
+    { tag: 'puzzle', count: 95 },
+    { tag: 'driving', count: 80 },
+    { tag: 'tech', count: 70 },
+    { tag: 'nature', count: 55 },
+    { tag: 'gamerip', count: 40 },
+    { tag: 'portal', count: 30 },
+    { tag: 'quest', count: 25 },
+    { tag: 'pc', count: 20 },
+    { tag: 'nsfw', count: 15 },
+    { tag: 'relaxing', count: 10 },
+    { tag: 'social', count: 8 },
+    { tag: 'music', count: 5 },
+    { tag: 'avatar', count: 2 },
+  ],
+};
+
+function makeWorld(id, name, tags, quality = 'good') {
+  return {
+    worldId: id,
+    name,
+    authorName: 'SOSContributor',
+    capacity: 24,
+    platforms: ['standalonewindows', 'android'],
+    tags,
+    imageUrl: 'https://placehold.co/1200x600/6366f1/ffffff?text=VRChat+World',
+    vrchatUrl: `https://vrchat.com/home/world/${id}`,
+    quality,
+    createdAt: '2024-01-15T00:00:00.000Z',
+    internalAddDate: '2024-06-01T00:00:00.000Z',
+  };
+}
+
+const mockWorlds = {
+  total: 6,
+  limit: 20,
+  offset: 0,
+  worlds: [
+    makeWorld('wrld_demo_0000-0000-0000-000000000001', 'Moonlit Rooftop Garden', ['chill', 'social', 'japanese', 'night'], 'good'),
+    makeWorld('wrld_demo_0000-0000-0000-000000000002', 'Neon City Drive', ['driving', 'tech', 'pc'], 'good'),
+    makeWorld('wrld_demo_0000-0000-0000-000000000003', 'Cozy Cottage Cove', ['comfy', 'nature', 'relaxing'], 'good'),
+    makeWorld('wrld_demo_0000-0000-0000-000000000004', 'Horror Hospital', ['horror', 'game', 'quest'], 'bad'),
+    makeWorld('wrld_demo_0000-0000-0000-000000000005', 'Puzzle Palace', ['puzzle', 'gallery', 'pc'], 'good'),
+    makeWorld('wrld_demo_0000-0000-0000-000000000006', 'Meme Mansion', ['meme', 'social', 'avatar'], 'good'),
+  ],
+};
+
 function apiResponse(res, data) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', '*');
@@ -64,6 +120,18 @@ const server = http.createServer(async (req, res) => {
   }
   if (url === '/api/meta') {
     return apiResponse(res, mockMeta);
+  }
+  if (url === '/api/tags') {
+    return apiResponse(res, mockTags);
+  }
+  if (url.startsWith('/api/worlds')) {
+    const parsed = new URL(url, 'http://localhost:9877');
+    const worldId = parsed.pathname.match(/^\/api\/worlds\/(.+)$/)?.[1];
+    if (worldId) {
+      const world = mockWorlds.worlds.find((w) => w.worldId === worldId);
+      return apiResponse(res, world ?? mockWorld);
+    }
+    return apiResponse(res, mockWorlds);
   }
 
   // Static files from dist/
@@ -103,17 +171,36 @@ function setTheme(page, theme) {
   }, theme);
 }
 
-async function captureVariant(browser, theme, { recordVideo, outDir }) {
-  const context = await browser.newContext({
-    viewport: { width: 1280, height: 900 },
-    recordVideo: recordVideo ? { dir: outDir, size: { width: 1280, height: 900 } } : undefined,
-  });
-  const page = await context.newPage();
+const ROUTES = [
+  { name: 'tags', path: '/tags', waitForText: null },
+  { name: 'dashboard', path: '/', waitForText: null },
+  { name: 'worlds', path: '/worlds', waitForText: null },
+  { name: 'world-detail', path: `/worlds/${WORLD_ID}`, waitForText: WORLD_NAME },
+  { name: 'lists', path: '/lists', waitForText: null },
+];
 
-  await page.goto(`http://localhost:9877/worlds/${WORLD_ID}`, { waitUntil: 'networkidle' });
+async function waitForReady(page, routeName, waitForText) {
+  // Give the page a moment to render skeletons/lists.
+  await page.waitForTimeout(500);
 
-  // Wait for the real world name to appear instead of skeleton placeholders.
-  await page.waitForFunction((name) => document.body.innerText.includes(name), WORLD_NAME, { timeout: 10000 });
+  if (waitForText) {
+    await page.waitForFunction((name) => document.body.innerText.includes(name), waitForText, { timeout: 10000 });
+  } else {
+    // Wait for at least one non-skeleton card/chart/list row to appear.
+    try {
+      if (routeName === 'tags') {
+        await page.waitForSelector('[data-testid="waffle-chart"], .grid > div', { timeout: 10000 });
+      } else if (routeName === 'dashboard') {
+        await page.waitForSelector('.card, [class*="recharts"]', { timeout: 10000 });
+      } else if (routeName === 'worlds') {
+        await page.waitForSelector('[data-testid="world-card"], .grid > div', { timeout: 10000 });
+      } else if (routeName === 'lists') {
+        await page.waitForSelector('.card, button', { timeout: 10000 });
+      }
+    } catch {
+      // Fallback: just wait for network idle to finish.
+    }
+  }
 
   // Wait for images to finish loading before applying theme.
   await page.evaluate(() =>
@@ -129,12 +216,23 @@ async function captureVariant(browser, theme, { recordVideo, outDir }) {
         ),
     ),
   );
+}
+
+async function captureVariant(browser, theme, route, { recordVideo, outDir }) {
+  const context = await browser.newContext({
+    viewport: { width: 1280, height: 900 },
+    recordVideo: recordVideo ? { dir: outDir, size: { width: 1280, height: 900 } } : undefined,
+  });
+  const page = await context.newPage();
+
+  await page.goto(`http://localhost:9877${route.path}`, { waitUntil: 'networkidle' });
+  await waitForReady(page, route.name, route.waitForText);
 
   // Set theme and wait for any CSS transition to settle.
   await setTheme(page, theme);
   await page.waitForTimeout(500);
 
-  const screenshotPath = path.join(outDir, `world-detail_${theme}.png`);
+  const screenshotPath = path.join(outDir, `${route.name}_${theme}.png`);
   await page.screenshot({ path: screenshotPath, fullPage: true });
 
   let videoPath = null;
@@ -159,12 +257,11 @@ async function captureVariant(browser, theme, { recordVideo, outDir }) {
     await context.close();
 
     // Playwright names video files automatically; rename the one generated by this context.
-    const expectedFinalName = `world-detail_${theme}.webm`;
-    const expectedTempPrefix = 'video';
+    const expectedFinalName = `${route.name}_${theme}.webm`;
     const videoFiles = readdirSync(outDir).filter((f) => f.endsWith('.webm'));
     videoPath = path.join(outDir, expectedFinalName);
     // Rename the most recent generic .webm if it has not already been renamed.
-    const unclaimed = videoFiles.find((f) => !f.startsWith('world-detail_'));
+    const unclaimed = videoFiles.find((f) => !f.startsWith(`${route.name}_`));
     if (unclaimed) {
       await fs.rename(path.join(outDir, unclaimed), videoPath);
     }
@@ -183,17 +280,20 @@ server.listen(9877, async () => {
   const captureVideo = process.env.CAPTURE_VIDEO === '1';
   const browser = await chromium.launch({ headless: true });
 
-  const light = await captureVariant(browser, 'light', { recordVideo: captureVideo, outDir });
-  const dark = await captureVariant(browser, 'dark', { recordVideo: captureVideo, outDir });
+  for (const route of ROUTES) {
+    const light = await captureVariant(browser, 'light', route, { recordVideo: captureVideo, outDir });
+    const dark = await captureVariant(browser, 'dark', route, { recordVideo: captureVideo, outDir });
+
+    console.log(`${route.name} light screenshot:`, light.screenshotPath);
+    console.log(`${route.name} dark screenshot:`, dark.screenshotPath);
+    if (captureVideo) {
+      console.log(`${route.name} light video:`, light.videoPath);
+      console.log(`${route.name} dark video:`, dark.videoPath);
+    }
+  }
 
   await browser.close();
   server.close(() => {
-    console.log('Light screenshot:', light.screenshotPath);
-    console.log('Dark screenshot:', dark.screenshotPath);
-    if (captureVideo) {
-      console.log('Light video:', light.videoPath);
-      console.log('Dark video:', dark.videoPath);
-    }
     process.exit(0);
   });
 });
