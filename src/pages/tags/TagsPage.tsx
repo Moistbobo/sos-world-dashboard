@@ -32,7 +32,7 @@ export function TagsPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t('tags.title')}</h1>
-          <p className="text-sm text-slate-400">{t('tags.subtitle')}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t('tags.subtitle')}</p>
         </div>
         <div className="relative max-w-xs">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
@@ -55,7 +55,7 @@ export function TagsPage() {
       {isPending && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className="card h-24 animate-pulse bg-slate-800" />
+            <div key={i} className="card h-24 animate-pulse bg-slate-200 dark:bg-slate-800" />
           ))}
         </div>
       )}
