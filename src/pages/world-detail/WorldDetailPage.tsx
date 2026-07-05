@@ -200,12 +200,12 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
               </div>
               <div className="shrink-0">
                 {w.quality === 'good' && (
-                  <span className="rounded-lg bg-green-500/15 px-3 py-1 text-xs font-semibold text-green-400 ring-1 ring-green-500/30">
+                  <span className="rounded-lg bg-green-500/15 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-500/30 dark:text-green-400">
                     {t('worldDetail.qualityGood')}
                   </span>
                 )}
                 {w.quality === 'bad' && (
-                  <span className="rounded-lg bg-red-500/15 px-3 py-1 text-xs font-semibold text-red-400 ring-1 ring-red-500/30">
+                  <span className="rounded-lg bg-red-500/15 px-3 py-1 text-xs font-semibold text-red-700 ring-1 ring-red-500/30 dark:text-red-400">
                     {t('worldDetail.qualityBad')}
                   </span>
                 )}
