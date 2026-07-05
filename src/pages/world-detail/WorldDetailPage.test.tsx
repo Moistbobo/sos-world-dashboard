@@ -172,6 +172,27 @@ describe('WorldDetailPage', () => {
     expect(screen.getByTestId('current-location')).toHaveTextContent('/worlds');
   });
 
+  it('navigates to the world list when the back button is clicked on a direct link', async () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper initialEntries={['/worlds/wrld_123']}>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const backButton = screen.getByRole('button', { name: /back/i });
+    await userEvent.click(backButton);
+
+    expect(screen.getByTestId('current-location')).toHaveTextContent('/worlds');
+  });
+
   it('does not navigate back when clicking inside the world card', async () => {
     vi.spyOn(useApi, 'useWorld').mockReturnValue({
       data: createWorld(),
