@@ -58,17 +58,15 @@ Pick **one** badge and delete the others:
    - **Screenshots** of the new/changed UI (at least one before/after or happy-path state).
    - **Screen recording** (preferred for flows >1 step, e.g. rating a world, posting a comment, navigating with filters). Use QuickTime, Loom, or `ffmpeg`/`asciinema` for CLI demos.
 4. Attach media **directly to the PR body** by dragging the files into the GitHub text area.
-5. For terminal-only workflows, use the [`gh-image`](https://github.com/drogers0/gh-image) extension to upload media from `pr-assets/<branch-name>/` to GitHub's CDN and embed the returned markdown:
+5. For terminal-only workflows, create a public gist and embed the raw image URLs:
    ```bash
-   gh extension install drogers0/gh-image --pin v1.1.0
-   gh image pr-assets/<branch-name>/*.png pr-assets/<branch-name>/*.webm
+   gh gist create pr-assets/<branch-name>/*.png --public --desc "E2E screenshots for <branch-name>"
    ```
-   Ensure you are logged into GitHub in a browser so `gh image` can extract a session token. If direct upload is not possible, save files under `pr-assets/<branch-name>/` and link to them; never commit screenshots or videos to the repo.
-   - **Never run `gh image extract-token` inside an agent session** or log its output. `user_session` cookies grant full GitHub account access.
-   - **Never pass `--token` on the command line.** Prefer browser-cookie extraction or set `GH_SESSION_TOKEN` via the environment.
-   - **Use a dedicated bot account for CI/shared environments.** Do not use a maintainer's personal session in CI or long-lived env files.
-   - **Only upload files under `pr-assets/<branch-name>/`.** Do not upload `.env` files, logs, build artifacts, or screenshots containing secrets/PII.
-   - **Revoke the session immediately** if a token value is ever exposed.
+   Open the created gist, click each image, and copy its **raw URL** (`https://gist.githubusercontent.com/<user>/<gist-id>/raw/<filename>`). Embed it as:
+   ```markdown
+   ![alt text](https://gist.githubusercontent.com/<user>/<gist-id>/raw/world-detail_light.png)
+   ```
+   Do not upload `.env` files, logs, build artifacts, or screenshots containing secrets/PII.
 
 ### Attachments
 

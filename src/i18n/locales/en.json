@@ -100,8 +100,8 @@
       "count": "{{count}} / {{max}}",
       "submitError": "Could not post comment: {{message}}",
       "youIndicator": "(You)",
-      "newestFirst": "Newest first",
-      "oldestFirst": "Oldest first"
+      "loadMore": "Load more",
+      "loadingMore": "Loading more comments..."
     },
     "validation": {
       "tooLong": "Comment must be 256 characters or less.",
