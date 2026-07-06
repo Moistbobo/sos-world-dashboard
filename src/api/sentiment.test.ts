@@ -75,18 +75,27 @@ describe('fetchRatings', () => {
 });
 
 describe('fetchComments', () => {
-  it('returns comments ordered by created_at desc', async () => {
-    mocks.select.mockReturnValueOnce({
-      eq: vi.fn().mockReturnValue({
-        order: vi.fn().mockReturnValue({
-          data: [{ id: 'c1', content: 'hi' }],
+  it('returns a paginated result with comments and total count', async () => {
+    mocks.select
+      .mockReturnValueOnce({
+        eq: vi.fn().mockReturnValue({
+          order: vi.fn().mockReturnValue({
+            range: vi.fn().mockReturnValue({
+              data: [{ id: 'c1', content: 'hi' }],
+              error: null,
+            }),
+          }),
+        }),
+      })
+      .mockReturnValueOnce({
+        eq: vi.fn().mockReturnValue({
+          count: 42,
           error: null,
         }),
-      }),
-    });
+      });
 
-    const result = await fetchComments('wrld_123');
-    expect(result).toEqual([{ id: 'c1', content: 'hi' }]);
+    const result = await fetchComments('wrld_123', { limit: 20, offset: 0 });
+    expect(result).toEqual({ comments: [{ id: 'c1', content: 'hi' }], total: 42 });
   });
 });
 

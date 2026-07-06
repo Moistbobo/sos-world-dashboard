@@ -16,7 +16,7 @@ vi.mock('../../components/sentiment-section', () => ({
 
 vi.mock('../../hooks/useSentiment', () => ({
   useRatings: () => ({ data: { worldId: 'w1', good: 0, bad: 0, userRating: null }, isLoading: false }),
-  useComments: () => ({ data: [], isLoading: false }),
+  useInfiniteComments: () => ({ data: { pages: [] }, isLoading: false, hasNextPage: false, isFetchingNextPage: false, fetchNextPage: vi.fn() }),
   useSubmitRating: () => ({ isPending: false, mutateAsync: vi.fn() }),
   useSubmitComment: () => ({ isPending: false, mutateAsync: vi.fn() }),
 }));
