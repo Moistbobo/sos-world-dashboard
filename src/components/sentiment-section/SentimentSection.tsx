@@ -5,7 +5,7 @@ import { SentimentCommentForm } from '../sentiment-comment-form';
 import { SentimentCommentList } from '../sentiment-comment-list';
 import { TurnstileChallenge } from '../turnstile-challenge';
 import {
-  useComments,
+  useInfiniteComments,
   useRatings,
   useSubmitComment,
   useSubmitRating,
@@ -23,7 +23,13 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
   const { t } = useTranslation();
   const siteKey = (import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined) ?? '';
   const { data: ratings, isLoading: ratingsLoading } = useRatings(worldId);
-  const { data: comments } = useComments(worldId);
+  const {
+    data,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInfiniteComments(worldId);
+  const comments = data?.pages.flatMap((page) => page.comments) ?? [];
   const submitRating = useSubmitRating();
   const updateRating = useUpdateRating();
   const deleteRating = useDeleteRating();
@@ -119,7 +125,12 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
           onSubmit={handleComment}
         />
       </div>
-      <SentimentCommentList comments={comments} />
+      <SentimentCommentList
+        comments={comments}
+        hasMore={!!hasNextPage}
+        isLoadingMore={isFetchingNextPage}
+        onLoadMore={() => fetchNextPage()}
+      />
     </div>
   );
 }

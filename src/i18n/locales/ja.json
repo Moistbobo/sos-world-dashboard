@@ -100,8 +100,8 @@
       "count": "{{count}} / {{max}}",
       "submitError": "コメントを投稿できませんでした: {{message}}",
       "youIndicator": "（あなた）",
-      "newestFirst": "新しい順",
-      "oldestFirst": "古い順"
+      "loadMore": "さらに読み込む",
+      "loadingMore": "コメントを読み込み中..."
     },
     "validation": {
       "tooLong": "コメントは256文字以内にしてください。",
