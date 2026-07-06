@@ -1,5 +1,22 @@
 # Contributing
 
+## Issue Templates
+
+Use the GitHub issue template in `.github/ISSUE_TEMPLATE/ticket.md` when filing tickets. The template supports bugs, features, and chores/maintenance in a single form.
+
+### Previs for UI/UX tickets
+
+If a ticket touches UI/UX, include a visual previs so reviewers can see the intended look and flow before implementation starts.
+
+1. Generate a self-contained HTML file that visually matches the current app as closely as possible (inlined CSS, inlined or Base64 images).
+2. Upload the HTML file as a [GitHub Gist](https://gist.github.com).
+3. Embed it in the issue using the Hyouji HTML renderer:
+   `https://www.hyouji.moe/?gist=https://gist.github.com/<user>/<gist-id>`
+
+   Example: https://www.hyouji.moe/?gist=https://gist.github.com/Moistbobo/2c8c0671ba55cc25bab183c3b6bcc3c8
+
+All issue templates include a **Previs** section with this checklist. Non-UI tickets can leave it unchecked.
+
 ## Pull Request Descriptions
 
 When opening a pull request that merges `main` into a release branch (`testnet` or `production`), include a list of the changes being merged in the PR description.

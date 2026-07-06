@@ -159,5 +159,5 @@ Call out concrete security concerns (even if rated low) so reviewers know where 
 
 ## Useful References
 
-- `CONTRIBUTING.md` covers PR title conventions (`[FEAT]: ...`), code organization, and the Supabase sentiment setup steps.
+- `CONTRIBUTING.md` covers PR title conventions (`[FEAT]: ...`), issue templates, the Previs workflow for UI/UX tickets, code organization, and the Supabase sentiment setup steps.
 - `.github/pull_request_template.md` is the source-of-truth PR template.
