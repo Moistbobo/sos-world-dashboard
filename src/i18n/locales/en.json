@@ -151,7 +151,14 @@
     "removeCapacity": "Remove capacity filter",
     "platform": "Platform",
     "platforms": "Platforms",
-    "removePlatform": "Remove platform filter"
+    "removePlatform": "Remove platform filter",
+    "dateTagged": "Date tagged",
+    "lastNDays_one": "Last {{count}} day",
+    "lastNDays_other": "Last {{count}} days",
+    "allTime": "All",
+    "custom": "Custom",
+    "days": "days",
+    "removeDateTagged": "Remove date tagged filter"
   },
   "pagination": {
     "prev": "Prev",

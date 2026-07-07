@@ -36,6 +36,24 @@ describe('fetchWorlds', () => {
     expect(url).toContain('platform=android');
     expect(url).toContain('platform=ios');
   });
+
+  it('includes dayRange query param when provided', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ worlds: [], total: 0, limit: 20, offset: 0 }), { status: 200 })
+    );
+    await fetchWorlds({ dayRange: 7 });
+    const url = vi.mocked(fetch).mock.calls[0][0] as string;
+    expect(url).toContain('dayRange=7');
+  });
+
+  it('does not include dayRange query param when not provided', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ worlds: [], total: 0, limit: 20, offset: 0 }), { status: 200 })
+    );
+    await fetchWorlds({ limit: 10 });
+    const url = vi.mocked(fetch).mock.calls[0][0] as string;
+    expect(url).not.toContain('dayRange');
+  });
 });
 
 describe('fetchMeta', () => {

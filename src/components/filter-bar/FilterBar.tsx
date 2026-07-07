@@ -10,6 +10,8 @@ import {
   MAX_CAPACITY,
 } from '../capacity-range';
 
+const PRESET_DAY_RANGES = [1, 7, 14, 30, 90, 180];
+
 interface FilterBarProps {
   selectedTags: string[];
   onToggleTag: (tag: string) => void;
@@ -25,6 +27,8 @@ interface FilterBarProps {
   selectedPlatforms: string[];
   onTogglePlatform: (platform: string) => void;
   onRemovePlatform: (platform: string) => void;
+  dayRange: number | null;
+  onDayRangeChange: (dayRange: number | null) => void;
 }
 
 export function FilterBar({
@@ -42,6 +46,8 @@ export function FilterBar({
   selectedPlatforms,
   onTogglePlatform,
   onRemovePlatform,
+  dayRange,
+  onDayRangeChange,
 }: FilterBarProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
@@ -53,17 +59,21 @@ export function FilterBar({
   const isCapacityActive =
     capacityRange.min > MIN_CAPACITY || capacityRange.max < MAX_CAPACITY;
 
+  const isDayRangeActive = dayRange !== null;
+
   const hasFilters =
     selectedTags.length > 0 ||
     selectedQuality.length > 0 ||
     isCapacityActive ||
-    selectedPlatforms.length > 0;
+    selectedPlatforms.length > 0 ||
+    isDayRangeActive;
 
   const activeFilterCount =
     selectedTags.length +
     selectedQuality.length +
     (isCapacityActive ? 1 : 0) +
-    selectedPlatforms.length;
+    selectedPlatforms.length +
+    (isDayRangeActive ? 1 : 0);
 
   return (
     <div className="card mb-4">
@@ -98,6 +108,22 @@ export function FilterBar({
                 onCapacityChange({ min: MIN_CAPACITY, max: MAX_CAPACITY });
               }}
               aria-label={t('filter.removeCapacity')}
+              className="hover:text-indigo-900 dark:hover:text-white"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </span>
+        )}
+
+        {isDayRangeActive && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-700 ring-1 ring-indigo-500/30 dark:text-indigo-300">
+            <span>🏷️ {t('filter.lastNDays', { count: dayRange })}</span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDayRangeChange(null);
+              }}
+              aria-label={t('filter.removeDateTagged')}
               className="hover:text-indigo-900 dark:hover:text-white"
             >
               <X className="h-3 w-3" />
@@ -261,6 +287,71 @@ export function FilterBar({
               max={capacityRange.max}
               onChange={onCapacityChange}
             />
+          </div>
+
+          <div className="mb-3">
+            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.dateTagged')}</label>
+            <div className="flex flex-wrap gap-1.5 pr-1">
+              {PRESET_DAY_RANGES.map((days) => {
+                const selected = dayRange === days;
+                return (
+                  <button
+                    key={days}
+                    data-testid={`day-range-preset-${days}`}
+                    onClick={() => onDayRangeChange(days)}
+                    className={`rounded-md border px-2 py-1 text-xs transition ${
+                      selected
+                        ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'
+                        : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
+                    }`}
+                  >
+                    {t('filter.lastNDays', { count: days })}
+                  </button>
+                );
+              })}
+              <button
+                data-testid="day-range-preset-all"
+                onClick={() => onDayRangeChange(null)}
+                className={`rounded-md border px-2 py-1 text-xs transition ${
+                  !isDayRangeActive
+                    ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'
+                    : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
+                }`}
+              >
+                {t('filter.allTime')}
+              </button>
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+              <label
+                htmlFor="custom-day-range"
+                className="text-xs font-medium text-slate-600 dark:text-slate-400"
+              >
+                {t('filter.custom')}:
+              </label>
+              <input
+                id="custom-day-range"
+                type="number"
+                min={1}
+                placeholder={t('filter.days')}
+                value={dayRange ?? ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '') {
+                    onDayRangeChange(null);
+                    return;
+                  }
+                  const parsed = Number(value);
+                  if (Number.isFinite(parsed) && parsed > 0) {
+                    onDayRangeChange(parsed);
+                  } else {
+                    onDayRangeChange(null);
+                  }
+                }}
+                className="input w-24"
+                aria-label={t('filter.custom')}
+              />
+              <span className="text-xs text-slate-500 dark:text-slate-400">{t('filter.days')}</span>
+            </div>
           </div>
         </div>
       )}
