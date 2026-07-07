@@ -157,6 +157,29 @@ Consider these factors when rating and documenting blast radius:
 
 Call out concrete security concerns (even if rated low) so reviewers know where to focus.
 
+## Standard Development Workflow
+
+Before any task involving code changes, follow this pipeline:
+
+1. **Worktree Initialization**
+   - Ensure local `main` is current: `git checkout main && git pull`.
+   - Automatically create a git worktree based on the latest `main` commit.
+
+2. **Branch Naming Convention**
+   - Pattern: `type/issue(optional)/description`
+   - Types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`.
+   - Description: Brief, lowercase, kebab-case, and under 10 words.
+   - Examples: `feat/15/add-new-menu`, `fix/text-alignment`.
+
+3. **Implementation & Verification**
+   - Perform all work within the created worktree.
+   - Mandatory verification before completion: run `pnpm lint` and `pnpm test`.
+
+4. **PR & Cleanup**
+   - Create a GitHub PR merging the worktree branch into `main`.
+   - Follow the `Pull Request Title Convention` in `CONTRIBUTING.md` (e.g., `[FEAT]: add new menu`).
+   - Remove the worktree directory and prune the branch after the PR is submitted.
+
 ## Ticket Creation
 
 Whenever creating a GitHub issue/ticket, always use the template located at `.github/ISSUE_TEMPLATE/ticket.md`.
