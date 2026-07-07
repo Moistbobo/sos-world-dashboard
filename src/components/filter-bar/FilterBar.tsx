@@ -51,6 +51,9 @@ export function FilterBar({
 }: FilterBarProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
+  const [customDayRangeInput, setCustomDayRangeInput] = useState(() =>
+    PRESET_DAY_RANGES.includes(dayRange ?? -1) ? '' : String(dayRange ?? '')
+  );
 
   const tagFilters = [...availableTags].sort((a, b) => a.tag.localeCompare(b.tag));
   const qualityCountMap = new Map(qualityCounts.map((q) => [q.quality, q.count]));
@@ -298,7 +301,10 @@ export function FilterBar({
                   <button
                     key={days}
                     data-testid={`day-range-preset-${days}`}
-                    onClick={() => onDayRangeChange(days)}
+                    onClick={() => {
+                      setCustomDayRangeInput('');
+                      onDayRangeChange(days);
+                    }}
                     className={`rounded-md border px-2 py-1 text-xs transition ${
                       selected
                         ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'
@@ -311,7 +317,10 @@ export function FilterBar({
               })}
               <button
                 data-testid="day-range-preset-all"
-                onClick={() => onDayRangeChange(null)}
+                onClick={() => {
+                  setCustomDayRangeInput('');
+                  onDayRangeChange(null);
+                }}
                 className={`rounded-md border px-2 py-1 text-xs transition ${
                   !isDayRangeActive
                     ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'
@@ -333,9 +342,10 @@ export function FilterBar({
                 type="number"
                 min={1}
                 placeholder={t('filter.days')}
-                value={dayRange ?? ''}
+                value={customDayRangeInput}
                 onChange={(e) => {
                   const value = e.target.value;
+                  setCustomDayRangeInput(value);
                   if (value === '') {
                     onDayRangeChange(null);
                     return;
