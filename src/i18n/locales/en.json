@@ -100,8 +100,8 @@
       "count": "{{count}} / {{max}}",
       "submitError": "Could not post comment: {{message}}",
       "youIndicator": "(You)",
-      "newestFirst": "Newest first",
-      "oldestFirst": "Oldest first"
+      "loadMore": "Load more",
+      "loadingMore": "Loading more comments..."
     },
     "validation": {
       "tooLong": "Comment must be 256 characters or less.",
@@ -151,7 +151,14 @@
     "removeCapacity": "Remove capacity filter",
     "platform": "Platform",
     "platforms": "Platforms",
-    "removePlatform": "Remove platform filter"
+    "removePlatform": "Remove platform filter",
+    "dateTagged": "Date tagged",
+    "lastNDays_one": "Last {{count}} day",
+    "lastNDays_other": "Last {{count}} days",
+    "allTime": "All",
+    "custom": "Custom",
+    "days": "days",
+    "removeDateTagged": "Remove date tagged filter"
   },
   "pagination": {
     "prev": "Prev",

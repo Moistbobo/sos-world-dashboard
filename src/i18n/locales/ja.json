@@ -100,8 +100,8 @@
       "count": "{{count}} / {{max}}",
       "submitError": "コメントを投稿できませんでした: {{message}}",
       "youIndicator": "（あなた）",
-      "newestFirst": "新しい順",
-      "oldestFirst": "古い順"
+      "loadMore": "さらに読み込む",
+      "loadingMore": "コメントを読み込み中..."
     },
     "validation": {
       "tooLong": "コメントは256文字以内にしてください。",
@@ -151,7 +151,14 @@
     "removeCapacity": "定員フィルタを解除",
     "platform": "プラットフォーム",
     "platforms": "プラットフォーム",
-    "removePlatform": "プラットフォームフィルタを解除"
+    "removePlatform": "プラットフォームフィルタを解除",
+    "dateTagged": "タグ付け日",
+    "lastNDays_one": "過去 {{count}} 日間",
+    "lastNDays_other": "過去 {{count}} 日間",
+    "allTime": "すべて",
+    "custom": "カスタム",
+    "days": "日",
+    "removeDateTagged": "タグ付け日フィルタを解除"
   },
   "pagination": {
     "prev": "前へ",
