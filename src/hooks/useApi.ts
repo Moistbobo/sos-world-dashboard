@@ -34,6 +34,7 @@ export function useWorlds(params?: {
   minCapacity?: number;
   maxCapacity?: number;
   platform?: string[];
+  dayRange?: number;
   enabled?: boolean;
 }) {
   return useQuery({
@@ -51,6 +52,7 @@ export function useInfiniteWorlds(params?: {
   minCapacity?: number;
   maxCapacity?: number;
   platform?: string[];
+  dayRange?: number;
   enabled?: boolean;
 }) {
   const limit = params?.limit ?? 20;

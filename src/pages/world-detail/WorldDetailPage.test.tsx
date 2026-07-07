@@ -16,7 +16,7 @@ vi.mock('../../components/sentiment-section', () => ({
 
 vi.mock('../../hooks/useSentiment', () => ({
   useRatings: () => ({ data: { worldId: 'w1', good: 0, bad: 0, userRating: null }, isLoading: false }),
-  useComments: () => ({ data: [], isLoading: false }),
+  useInfiniteComments: () => ({ data: { pages: [] }, isLoading: false, hasNextPage: false, isFetchingNextPage: false, fetchNextPage: vi.fn() }),
   useSubmitRating: () => ({ isPending: false, mutateAsync: vi.fn() }),
   useSubmitComment: () => ({ isPending: false, mutateAsync: vi.fn() }),
 }));
@@ -168,6 +168,27 @@ describe('WorldDetailPage', () => {
 
     const backdrop = screen.getByTestId('world-detail-backdrop');
     await userEvent.click(backdrop);
+
+    expect(screen.getByTestId('current-location')).toHaveTextContent('/worlds');
+  });
+
+  it('navigates to the world list when the back button is clicked on a direct link', async () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper initialEntries={['/worlds/wrld_123']}>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const backButton = screen.getByRole('button', { name: /back/i });
+    await userEvent.click(backButton);
 
     expect(screen.getByTestId('current-location')).toHaveTextContent('/worlds');
   });
