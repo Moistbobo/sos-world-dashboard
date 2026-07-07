@@ -302,7 +302,9 @@ export function FilterBar({
                     key={days}
                     data-testid={`day-range-preset-${days}`}
                     onClick={() => {
-                      setCustomDayRangeInput('');
+                      setCustomDayRangeInput((prev) =>
+                        prev !== '' && Number(prev) === days ? prev : ''
+                      );
                       onDayRangeChange(days);
                     }}
                     className={`rounded-md border px-2 py-1 text-xs transition ${
@@ -353,8 +355,6 @@ export function FilterBar({
                   const parsed = Number(value);
                   if (Number.isFinite(parsed) && parsed > 0) {
                     onDayRangeChange(parsed);
-                  } else {
-                    onDayRangeChange(null);
                   }
                 }}
                 className="input w-24"

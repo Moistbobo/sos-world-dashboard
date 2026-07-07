@@ -200,7 +200,7 @@ export function WorldsPage() {
   };
 
   const handleDayRangeChange = (next: number | null) => {
-    setDayRange((prev) => (prev === next ? null : next));
+    setDayRange(next);
     resetToFirstPage();
   };
 

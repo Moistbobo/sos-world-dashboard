@@ -262,7 +262,7 @@ describe('WorldsPage', () => {
       expect(window.location.search).toContain('dayRange=45');
     });
 
-    it('toggles day range off when the same preset is clicked twice', async () => {
+    it('keeps day range active when the same preset is clicked twice', async () => {
       const user = userEvent.setup();
       renderPage(<WorldsPage />);
       await user.click(screen.getByRole('button', { name: /filters/i }));
@@ -272,7 +272,7 @@ describe('WorldsPage', () => {
       expect(window.location.search).toContain('dayRange=14');
 
       await user.click(preset);
-      expect(window.location.search).not.toContain('dayRange=14');
+      expect(window.location.search).toContain('dayRange=14');
     });
 
     it('does not change custom input value when a preset is selected', async () => {
@@ -283,6 +283,18 @@ describe('WorldsPage', () => {
 
       const input = screen.getByRole('spinbutton', { name: /custom/i });
       expect(input).toHaveValue(null);
+    });
+
+    it('preserves custom input value when it matches the selected preset', async () => {
+      const user = userEvent.setup();
+      renderPage(<WorldsPage />);
+      await user.click(screen.getByRole('button', { name: /filters/i }));
+      const input = screen.getByRole('spinbutton', { name: /custom/i });
+      await user.type(input, '14');
+      await user.click(screen.getByTestId('day-range-preset-14'));
+
+      expect(input).toHaveValue(14);
+      expect(window.location.search).toContain('dayRange=14');
     });
 
     it('clears day range via the remove chip button', async () => {

@@ -191,6 +191,20 @@ describe('FilterBar', () => {
     expect(input).toHaveValue(null);
   });
 
+  it('preserves custom input value when it matches the selected preset', async () => {
+    const user = userEvent.setup();
+    const onDayRangeChange = vi.fn();
+    renderFilterBar({ dayRange: null, onDayRangeChange });
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+    const input = screen.getByRole('spinbutton', { name: /custom/i });
+    await user.type(input, '7');
+    await user.click(screen.getByTestId('day-range-preset-7'));
+
+    expect(input).toHaveValue(7);
+    expect(onDayRangeChange).toHaveBeenLastCalledWith(7);
+  });
+
   it('calls onDayRangeChange with null when All preset chip is clicked', async () => {
     const user = userEvent.setup();
     const onDayRangeChange = vi.fn();
