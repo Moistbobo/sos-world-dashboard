@@ -1,7 +1,7 @@
 ---
 name: Ticket
 about: File a bug, feature request, or chore/maintenance task
-title: '[CHORE]: '
+title: '[CHORE/FEAT/FIX/DOCS/CI/REFACTOR]: '
 labels: ''
 assignees: ''
 ---
