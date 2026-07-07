@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FilterBar } from '../filter-bar';
 import { MIN_CAPACITY, MAX_CAPACITY } from '../capacity-range';
@@ -19,6 +19,8 @@ const defaultProps = {
   selectedPlatforms: [] as string[],
   onTogglePlatform: vi.fn(),
   onRemovePlatform: vi.fn(),
+  dayRange: null as number | null,
+  onDayRangeChange: vi.fn(),
 };
 
 function renderFilterBar(props: Partial<typeof defaultProps> = {}) {
@@ -137,6 +139,92 @@ describe('FilterBar', () => {
     await user.click(screen.getByRole('button', { name: /clear all/i }));
 
     expect(onClear).toHaveBeenCalled();
+  });
+
+  it('renders date tagged section with presets and custom input when expanded', async () => {
+    const user = userEvent.setup();
+    renderFilterBar();
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+
+    expect(screen.getByText('Date tagged')).toBeInTheDocument();
+    expect(screen.getByTestId('day-range-preset-1')).toBeInTheDocument();
+    expect(screen.getByTestId('day-range-preset-7')).toBeInTheDocument();
+    expect(screen.getByTestId('day-range-preset-14')).toBeInTheDocument();
+    expect(screen.getByTestId('day-range-preset-30')).toBeInTheDocument();
+    expect(screen.getByTestId('day-range-preset-90')).toBeInTheDocument();
+    expect(screen.getByTestId('day-range-preset-180')).toBeInTheDocument();
+    expect(screen.getByTestId('day-range-preset-all')).toBeInTheDocument();
+    expect(screen.getByRole('spinbutton', { name: /custom/i })).toBeInTheDocument();
+  });
+
+  it('calls onDayRangeChange when a preset chip is clicked', async () => {
+    const user = userEvent.setup();
+    const onDayRangeChange = vi.fn();
+    renderFilterBar({ onDayRangeChange });
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+    await user.click(screen.getByTestId('day-range-preset-7'));
+
+    expect(onDayRangeChange).toHaveBeenCalledWith(7);
+  });
+
+  it('calls onDayRangeChange with null when All preset chip is clicked', async () => {
+    const user = userEvent.setup();
+    const onDayRangeChange = vi.fn();
+    renderFilterBar({ dayRange: 7, onDayRangeChange });
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+    await user.click(screen.getByTestId('day-range-preset-all'));
+
+    expect(onDayRangeChange).toHaveBeenCalledWith(null);
+  });
+
+  it('calls onDayRangeChange when a custom value is typed', async () => {
+    const user = userEvent.setup();
+    const onDayRangeChange = vi.fn();
+    renderFilterBar({ onDayRangeChange });
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+    const input = screen.getByRole('spinbutton', { name: /custom/i });
+    fireEvent.change(input, { target: { value: '45' } });
+
+    expect(onDayRangeChange).toHaveBeenLastCalledWith(45);
+  });
+
+  it('calls onDayRangeChange with null when custom value is cleared', async () => {
+    const user = userEvent.setup();
+    const onDayRangeChange = vi.fn();
+    renderFilterBar({ dayRange: 45, onDayRangeChange });
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+    const input = screen.getByRole('spinbutton', { name: /custom/i });
+    await user.clear(input);
+
+    expect(onDayRangeChange).toHaveBeenLastCalledWith(null);
+  });
+
+  it('shows active date range chip in collapsed bar', () => {
+    renderFilterBar({ dayRange: 7 });
+
+    expect(screen.getByText(/Last 7 days/)).toBeInTheDocument();
+  });
+
+  it('calls onDayRangeChange with null when active date chip X is clicked', async () => {
+    const user = userEvent.setup();
+    const onDayRangeChange = vi.fn();
+    renderFilterBar({ dayRange: 7, onDayRangeChange });
+
+    await user.click(screen.getByRole('button', { name: /remove date tagged filter/i }));
+
+    expect(onDayRangeChange).toHaveBeenCalledWith(null);
+  });
+
+  it('includes active date range in filter count badge', () => {
+    renderFilterBar({ dayRange: 7 });
+
+    const badge = screen.getByText('1');
+    expect(badge).toBeInTheDocument();
   });
 });
 
