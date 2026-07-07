@@ -5,7 +5,7 @@ import { SentimentSection } from './SentimentSection';
 
 const mocks = vi.hoisted(() => ({
   useRatings: vi.fn(),
-  useComments: vi.fn(),
+  useInfiniteComments: vi.fn(),
   useSubmitRating: vi.fn(),
   useUpdateRating: vi.fn(),
   useDeleteRating: vi.fn(),
@@ -15,7 +15,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('../../hooks/useSentiment', () => ({
   useRatings: () => mocks.useRatings(),
-  useComments: () => mocks.useComments(),
+  useInfiniteComments: () => mocks.useInfiniteComments(),
   useSubmitRating: () => mocks.useSubmitRating(),
   useUpdateRating: () => mocks.useUpdateRating(),
   useDeleteRating: () => mocks.useDeleteRating(),
@@ -42,7 +42,13 @@ function wrapper({ children }: { children: React.ReactNode }) {
 }
 
 const defaultRatings = { data: { worldId: 'w1', good: 0, bad: 0, userRating: null }, isLoading: false };
-const defaultComments = { data: [], isLoading: false };
+const defaultComments = {
+  data: { pages: [{ comments: [], total: 0 }] },
+  isLoading: false,
+  hasNextPage: false,
+  isFetchingNextPage: false,
+  fetchNextPage: vi.fn(),
+};
 const defaultMutation = { isPending: false, mutateAsync: vi.fn() };
 
 describe('SentimentSection', () => {
@@ -50,7 +56,7 @@ describe('SentimentSection', () => {
     vi.clearAllMocks();
     import.meta.env.VITE_TURNSTILE_SITE_KEY = 'test-site-key';
     mocks.useRatings.mockReturnValue(defaultRatings);
-    mocks.useComments.mockReturnValue(defaultComments);
+    mocks.useInfiniteComments.mockReturnValue(defaultComments);
     mocks.useSubmitRating.mockReturnValue(defaultMutation);
     mocks.useUpdateRating.mockReturnValue(defaultMutation);
     mocks.useDeleteRating.mockReturnValue(defaultMutation);

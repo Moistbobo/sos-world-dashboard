@@ -38,14 +38,43 @@ export async function fetchRatings(worldId: string): Promise<RatingSummary> {
   };
 }
 
-export async function fetchComments(worldId: string): Promise<Comment[]> {
-  const { data, error } = await supabase
-    .from('comments')
-    .select('*')
-    .eq('world_id', worldId)
-    .order('created_at', { ascending: false });
+export interface FetchCommentsParams {
+  limit?: number;
+  offset?: number;
+}
+
+export interface FetchCommentsResult {
+  comments: Comment[];
+  total: number;
+}
+
+export async function fetchComments(
+  worldId: string,
+  params: FetchCommentsParams = {},
+): Promise<FetchCommentsResult> {
+  const limit = params.limit ?? 20;
+  const offset = params.offset ?? 0;
+
+  const [{ data, error }, { count: total, error: countError }] = await Promise.all([
+    supabase
+      .from('comments')
+      .select('*')
+      .eq('world_id', worldId)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1),
+    supabase
+      .from('comments')
+      .select('id', { count: 'exact', head: true })
+      .eq('world_id', worldId),
+  ]);
+
   if (error) throw new Error(error.message);
-  return (data ?? []) as Comment[];
+  if (countError) throw new Error(countError.message);
+
+  return {
+    comments: (data ?? []) as Comment[],
+    total: total ?? 0,
+  };
 }
 
 export async function submitRating(

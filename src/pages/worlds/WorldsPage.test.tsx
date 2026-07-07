@@ -230,12 +230,62 @@ describe('WorldsPage', () => {
       expect(window.location.search).toContain('platform=android');
     });
 
-    it('clears platform filters via Clear all', async () => {
+  it('clears platform filters via Clear all', async () => {
+    const user = userEvent.setup();
+    window.history.pushState({}, '', '/worlds?platform=android');
+    renderPage(<WorldsPage />);
+    await user.click(screen.getByRole('button', { name: /clear all/i }));
+    expect(window.location.search).not.toContain('platform=android');
+  });
+
+  describe('WorldsPage date tagged filter', () => {
+    it('seeds day range from URL query param', () => {
+      window.history.pushState({}, '', '/worlds?dayRange=7');
+      renderPage(<WorldsPage />);
+      expect(screen.getByText('🏷️ Last 7 days')).toBeInTheDocument();
+    });
+
+    it('updates URL when a day range preset is selected', async () => {
       const user = userEvent.setup();
-      window.history.pushState({}, '', '/worlds?platform=android');
+      renderPage(<WorldsPage />);
+      await user.click(screen.getByRole('button', { name: /filters/i }));
+      await user.click(screen.getByTestId('day-range-preset-14'));
+      expect(window.location.search).toContain('dayRange=14');
+    });
+
+    it('updates URL when a custom day range is typed', async () => {
+      const user = userEvent.setup();
+      renderPage(<WorldsPage />);
+      await user.click(screen.getByRole('button', { name: /filters/i }));
+      const input = screen.getByRole('spinbutton', { name: /custom/i });
+      await user.type(input, '45');
+      expect(window.location.search).toContain('dayRange=45');
+    });
+
+    it('clears day range via the remove chip button', async () => {
+      const user = userEvent.setup();
+      window.history.pushState({}, '', '/worlds?dayRange=7');
+      renderPage(<WorldsPage />);
+      await user.click(screen.getByRole('button', { name: /remove date tagged filter/i }));
+      expect(window.location.search).not.toContain('dayRange=7');
+    });
+
+    it('clears day range via Clear all', async () => {
+      const user = userEvent.setup();
+      window.history.pushState({}, '', '/worlds?dayRange=7');
       renderPage(<WorldsPage />);
       await user.click(screen.getByRole('button', { name: /clear all/i }));
-      expect(window.location.search).not.toContain('platform=android');
+      expect(window.location.search).not.toContain('dayRange=7');
+    });
+
+    it('ignores invalid dayRange values in URL', async () => {
+      window.history.pushState({}, '', '/worlds?dayRange=abc');
+      renderPage(<WorldsPage />);
+      expect(screen.queryByRole('button', { name: /remove date tagged filter/i })).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect(window.location.search).not.toContain('dayRange=abc');
+      });
     });
   });
+});
 });

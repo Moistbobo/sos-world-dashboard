@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   useRatings,
-  useComments,
+  useInfiniteComments,
   useSubmitRating,
   useUpdateRating,
   useDeleteRating,
@@ -29,10 +29,10 @@ vi.mock('../lib/supabase', () => ({
 }));
 
 function wrapper({ children }: { children: React.ReactNode }) {
-  const queryClient = new QueryClient({
+  const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }
 
 beforeEach(() => {
@@ -54,16 +54,41 @@ describe('useRatings', () => {
   });
 });
 
-describe('useComments', () => {
-  it('fetches comments', async () => {
-    vi.spyOn(sentimentApi, 'fetchComments').mockResolvedValue([
-      { id: 'c1', world_id: 'wrld_123', user_id: 'u1', username: 'user1', content: 'hi', created_at: '2024-01-01T00:00:00Z' },
-    ]);
-    const { result } = renderHook(() => useComments('wrld_123'), { wrapper });
+describe('useInfiniteComments', () => {
+  it('fetches the first page of comments', async () => {
+    vi.spyOn(sentimentApi, 'fetchComments').mockResolvedValue({
+      comments: [
+        { id: 'c1', world_id: 'wrld_123', user_id: 'u1', username: 'user1', content: 'hi', created_at: '2024-01-01T00:00:00Z' },
+      ],
+      total: 1,
+    });
+    const { result } = renderHook(() => useInfiniteComments('wrld_123'), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data).toEqual([
-      { id: 'c1', world_id: 'wrld_123', user_id: 'u1', username: 'user1', content: 'hi', created_at: '2024-01-01T00:00:00Z' },
+    expect(result.current.data?.pages).toEqual([
+      {
+        comments: [
+          { id: 'c1', world_id: 'wrld_123', user_id: 'u1', username: 'user1', content: 'hi', created_at: '2024-01-01T00:00:00Z' },
+        ],
+        total: 1,
+      },
     ]);
+  });
+
+  it('has more pages when total exceeds loaded count', async () => {
+    vi.spyOn(sentimentApi, 'fetchComments').mockResolvedValue({
+      comments: Array.from({ length: 20 }, (_, i) => ({
+        id: `c${i}`,
+        world_id: 'wrld_123',
+        user_id: 'u1',
+        username: 'user1',
+        content: `comment ${i}`,
+        created_at: '2024-01-01T00:00:00Z',
+      })),
+      total: 42,
+    });
+    const { result } = renderHook(() => useInfiniteComments('wrld_123'), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.hasNextPage).toBe(true);
   });
 });
 
@@ -109,7 +134,7 @@ describe('useSubmitComment', () => {
     expect(sentimentApi.submitComment).toHaveBeenCalledWith('wrld_123', 'hello', undefined);
   });
 
-  it('optimistically inserts a comment marked as the current user', async () => {
+  it('optimistically inserts a comment into the first page marked as the current user', async () => {
     mocks.getSession.mockResolvedValue({
       data: { session: { user: { id: 'u-current' } } },
       error: null,
@@ -140,10 +165,26 @@ describe('useSubmitComment', () => {
     );
 
     await waitFor(() => expect(result.current.userId).toBe('u-current'));
+
+    queryClient.setQueryData(['comments', 'wrld_123'], {
+      pages: [
+        {
+          comments: [
+            { id: 'c1', world_id: 'wrld_123', user_id: 'u1', username: 'user1', content: 'hi', created_at: '2024-01-01T00:00:00Z' },
+          ],
+          total: 1,
+        },
+      ],
+      pageParams: [{ offset: 0, limit: 20 }],
+    });
+
     await result.current.submit.mutateAsync({ worldId: 'wrld_123', content: 'hello' });
 
-    const comments = queryClient.getQueryData(['comments', 'wrld_123']);
-    expect(comments).toHaveLength(1);
-    expect((comments as { user_id: string }[])[0].user_id).toBe('u-current');
+    const comments = queryClient.getQueryData(['comments', 'wrld_123']) as {
+      pages: { comments: { user_id: string }[]; total: number }[];
+    };
+    expect(comments.pages[0].comments).toHaveLength(2);
+    expect(comments.pages[0].comments[0].user_id).toBe('u-current');
+    expect(comments.pages[0].total).toBe(2);
   });
 });
