@@ -51,6 +51,9 @@ export function FilterBar({
 }: FilterBarProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
+  const [customDayRangeInput, setCustomDayRangeInput] = useState(() =>
+    PRESET_DAY_RANGES.includes(dayRange ?? -1) ? '' : String(dayRange ?? '')
+  );
 
   const tagFilters = [...availableTags].sort((a, b) => a.tag.localeCompare(b.tag));
   const qualityCountMap = new Map(qualityCounts.map((q) => [q.quality, q.count]));
@@ -333,9 +336,10 @@ export function FilterBar({
                 type="number"
                 min={1}
                 placeholder={t('filter.days')}
-                value={dayRange ?? ''}
+                value={customDayRangeInput}
                 onChange={(e) => {
                   const value = e.target.value;
+                  setCustomDayRangeInput(value);
                   if (value === '') {
                     onDayRangeChange(null);
                     return;
@@ -343,8 +347,6 @@ export function FilterBar({
                   const parsed = Number(value);
                   if (Number.isFinite(parsed) && parsed > 0) {
                     onDayRangeChange(parsed);
-                  } else {
-                    onDayRangeChange(null);
                   }
                 }}
                 className="input w-24"
