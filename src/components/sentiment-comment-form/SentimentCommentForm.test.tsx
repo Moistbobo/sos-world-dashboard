@@ -13,11 +13,13 @@ describe('SentimentCommentForm', () => {
     expect(onSubmit).toHaveBeenCalledWith('Great world!');
   });
 
-  it('shows validation error for url', () => {
-    render(<SentimentCommentForm isSubmitting={false} onSubmit={vi.fn()} />);
+  it('does not submit invalid comment containing url', () => {
+    const onSubmit = vi.fn();
+    render(<SentimentCommentForm isSubmitting={false} onSubmit={onSubmit} />);
     fireEvent.change(screen.getByPlaceholderText(/short comment/i), {
       target: { value: 'https://example.com' },
     });
-    expect(screen.getByText(/links are not allowed/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /post comment/i }));
+    expect(onSubmit).not.toHaveBeenCalled();
   });
 });
