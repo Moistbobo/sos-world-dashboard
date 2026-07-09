@@ -28,7 +28,7 @@ export function SentimentCommentForm({ isSubmitting, onSubmit }: SentimentCommen
   const length = content.trim().length;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2" data-testid="sentiment-comment-form">
+    <form onSubmit={handleSubmit} data-testid="sentiment-comment-form">
       <textarea
         value={content}
         onChange={(e) => handleChange(e.target.value)}
@@ -38,7 +38,7 @@ export function SentimentCommentForm({ isSubmitting, onSubmit }: SentimentCommen
         disabled={isSubmitting}
         className="w-full rounded-lg border border-slate-300 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-white"
       />
-      <div className="flex items-center justify-between gap-2">
+      <div className="mt-1 flex items-center justify-between gap-2">
         <span
           className={`text-xs text-slate-500 dark:text-slate-400 ${length > MAX_LENGTH ? 'text-red-500' : ''}`}
         >
