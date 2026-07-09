@@ -169,6 +169,45 @@ describe('FilterBar', () => {
     expect(onDayRangeChange).toHaveBeenCalledWith(7);
   });
 
+  it('calls onDayRangeChange with the selected preset value regardless of current selection', async () => {
+    const user = userEvent.setup();
+    const onDayRangeChange = vi.fn();
+    renderFilterBar({ dayRange: 7, onDayRangeChange });
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+    await user.click(screen.getByTestId('day-range-preset-7'));
+
+    expect(onDayRangeChange).toHaveBeenCalledWith(7);
+  });
+
+  it('preserves custom input value when a different preset is selected', async () => {
+    const user = userEvent.setup();
+    const onDayRangeChange = vi.fn();
+    renderFilterBar({ dayRange: null, onDayRangeChange });
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+    const input = screen.getByRole('spinbutton', { name: /custom/i });
+    await user.type(input, '45');
+    await user.click(screen.getByTestId('day-range-preset-7'));
+
+    expect(input).toHaveValue(45);
+    expect(onDayRangeChange).toHaveBeenLastCalledWith(7);
+  });
+
+  it('preserves custom input value when it matches the selected preset', async () => {
+    const user = userEvent.setup();
+    const onDayRangeChange = vi.fn();
+    renderFilterBar({ dayRange: null, onDayRangeChange });
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+    const input = screen.getByRole('spinbutton', { name: /custom/i });
+    await user.type(input, '7');
+    await user.click(screen.getByTestId('day-range-preset-7'));
+
+    expect(input).toHaveValue(7);
+    expect(onDayRangeChange).toHaveBeenLastCalledWith(7);
+  });
+
   it('calls onDayRangeChange with null when All preset chip is clicked', async () => {
     const user = userEvent.setup();
     const onDayRangeChange = vi.fn();
@@ -208,6 +247,12 @@ describe('FilterBar', () => {
     renderFilterBar({ dayRange: 7 });
 
     expect(screen.getByText(/Last 7 days/)).toBeInTheDocument();
+  });
+
+  it('keeps custom input empty for preset day range in collapsed bar', () => {
+    renderFilterBar({ dayRange: 7 });
+
+    expect(screen.queryByRole('spinbutton', { name: /custom/i })).not.toBeInTheDocument();
   });
 
   it('calls onDayRangeChange with null when active date chip X is clicked', async () => {
