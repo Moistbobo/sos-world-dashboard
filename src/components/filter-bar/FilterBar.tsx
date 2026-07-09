@@ -301,12 +301,7 @@ export function FilterBar({
                   <button
                     key={days}
                     data-testid={`day-range-preset-${days}`}
-                    onClick={() => {
-                      setCustomDayRangeInput((prev) =>
-                        prev !== '' && Number(prev) === days ? prev : ''
-                      );
-                      onDayRangeChange(days);
-                    }}
+                    onClick={() => onDayRangeChange(days)}
                     className={`rounded-md border px-2 py-1 text-xs transition ${
                       selected
                         ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'
@@ -319,10 +314,7 @@ export function FilterBar({
               })}
               <button
                 data-testid="day-range-preset-all"
-                onClick={() => {
-                  setCustomDayRangeInput('');
-                  onDayRangeChange(null);
-                }}
+                onClick={() => onDayRangeChange(null)}
                 className={`rounded-md border px-2 py-1 text-xs transition ${
                   !isDayRangeActive
                     ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'

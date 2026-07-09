@@ -275,14 +275,16 @@ describe('WorldsPage', () => {
       expect(window.location.search).toContain('dayRange=14');
     });
 
-    it('does not change custom input value when a preset is selected', async () => {
+    it('preserves custom input value when a different preset is selected', async () => {
       const user = userEvent.setup();
       renderPage(<WorldsPage />);
       await user.click(screen.getByRole('button', { name: /filters/i }));
+      const input = screen.getByRole('spinbutton', { name: /custom/i });
+      await user.type(input, '45');
       await user.click(screen.getByTestId('day-range-preset-14'));
 
-      const input = screen.getByRole('spinbutton', { name: /custom/i });
-      expect(input).toHaveValue(null);
+      expect(input).toHaveValue(45);
+      expect(window.location.search).toContain('dayRange=14');
     });
 
     it('preserves custom input value when it matches the selected preset', async () => {
