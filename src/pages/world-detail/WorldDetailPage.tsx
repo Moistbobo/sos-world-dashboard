@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useLayoutEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash, Star } from 'lucide-react';
@@ -24,6 +24,10 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
   const { isWorldInAnyList } = useLists();
   const [saveOpen, setSaveOpen] = useState(false);
   const { data, isPending, isError, error, isFetching } = useWorld(worldId);
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [worldId]);
 
   function handleGoBack() {
     if (location.key === 'default') {

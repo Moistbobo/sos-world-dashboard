@@ -61,8 +61,60 @@ const createWorld = (overrides: Partial<World> = {}): World => ({
 });
 
 describe('WorldDetailPage', () => {
+  let scrollTo: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    scrollTo.mockRestore();
+  });
+
+  it('resets scroll position to the top when entering a world detail page', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper initialEntries={['/worlds/wrld_123']}>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(scrollTo).toHaveBeenCalledWith(0, 0);
+  });
+
+  it('resets scroll position to the top when the world id changes', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    const { rerender } = render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_456" />
+      </Wrapper>,
+    );
+
+    expect(scrollTo).toHaveBeenCalledTimes(2);
+    expect(scrollTo).toHaveBeenLastCalledWith(0, 0);
   });
 
   it('renders a share button that copies the VRChat URL', async () => {
