@@ -25,7 +25,7 @@ export function SentimentCommentForm({ isSubmitting, onSubmit }: SentimentCommen
   const handleChange = (value: string) => {
     setContent(value);
     const result = validateComment(value);
-    setError(result.valid ? null : result.reason);
+    setError(result.valid || result.reason === 'empty' ? null : result.reason);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
