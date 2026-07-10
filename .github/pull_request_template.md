@@ -13,7 +13,7 @@
 
 - 
 
-## RISK RATING
+## Risk Rating
 
 > **Review effort guide for humans. Agents must fill in the impact badge and rationale before requesting review.**
 
