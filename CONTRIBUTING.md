@@ -90,7 +90,7 @@ When adding a new component or page, create a folder with a barrel file from the
 
 ## Pull Request Template
 
-All PRs must use `.github/pull_request_template.md` and fill out the **RISK RATING** and **E2E Evidence** sections. Media (screenshots/videos) is required only for user-facing changes that add or alter UI/UX. For non-visual changes (e.g. dependency bumps, config changes, refactors with no UI impact), explicitly note why no media is required and still complete the verification checklist.
+All PRs must use `.github/pull_request_template.md` and fill out the **Risk Rating** and **E2E Evidence** sections. Media (screenshots/videos) is required only for user-facing changes that add or alter UI/UX. For non-visual changes (e.g. dependency bumps, config changes, refactors with no UI impact), explicitly note why no media is required and still complete the verification checklist.
 
 ## Pull Request Title Convention
 
