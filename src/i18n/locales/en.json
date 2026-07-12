@@ -57,7 +57,9 @@
     "switchToInfinite": "Switch to endless scroll",
     "loadingMore": "Loading more worlds...",
     "backToTop": "Back to top",
-    "numberOfResults": "Number of results: {{count}}"
+    "numberOfResultsLabel": "Number of results:",
+    "numberOfResultsCount": "{{count}}",
+    "loadingResultCount": "Loading result count"
   },
   "worldDetail": {
     "loadError": "Failed to load world: {{message}}",
