@@ -67,12 +67,15 @@ vi.mock('./hooks/useApi', () => ({
     hasNextPage: false,
     isFetchingNextPage: false,
   }),
-  useWorld: (worldId: string | undefined) => ({
-    data: worldId === 'wrld_demo' ? mockWorlds[0] : undefined,
-    isPending: false,
-    isError: !worldId,
-    error: null,
-  }),
+  useWorld: (worldId: string | undefined) => {
+    const world = mockWorlds.find((w) => w.worldId === worldId);
+    return {
+      data: world,
+      isPending: false,
+      isError: !worldId,
+      error: null,
+    };
+  },
 }));
 
 describe('App routing', () => {

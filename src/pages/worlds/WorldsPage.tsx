@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
+import { BeatLoader } from 'react-spinners';
 import { useInfiniteWorlds, useTags, useWorlds, useMeta } from '../../hooks/useApi';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
 import { FilterBar } from '../../components/filter-bar';
@@ -31,6 +32,12 @@ export function WorldsPage() {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(() =>
     searchParams.getAll('platform')
   );
+  const [dayRange, setDayRange] = useState<number | null>(() => {
+    const raw = searchParams.get('dayRange');
+    if (!raw) return null;
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) && parsed > 0 && Number.isInteger(parsed) ? parsed : null;
+  });
   const [capacityRange, setCapacityRange] = useState(() => {
     const minRaw = searchParams.get('minCapacity');
     const maxRaw = searchParams.get('maxCapacity');
@@ -77,6 +84,7 @@ export function WorldsPage() {
     search: searchQuery,
     minCapacity: capacityRange.min,
     maxCapacity: capacityRange.max,
+    dayRange: dayRange ?? undefined,
     enabled: scrollMode === 'pagination',
   });
 
@@ -88,11 +96,12 @@ export function WorldsPage() {
     search: searchQuery,
     minCapacity: capacityRange.min,
     maxCapacity: capacityRange.max,
+    dayRange: dayRange ?? undefined,
     enabled: scrollMode === 'infinite',
   });
 
   // Update URL when filters change
-  const lastSearchRef = useRef('');
+  const lastSearchRef = useRef(searchParams.toString());
   useEffect(() => {
     const next = new URLSearchParams();
     if (selectedTags.length > 0) next.set('tag', selectedTags[0]);
@@ -102,11 +111,12 @@ export function WorldsPage() {
     for (const p of selectedPlatforms) {
       next.append('platform', p);
     }
+    if (dayRange !== null) next.set('dayRange', String(dayRange));
     const nextSearch = next.toString();
     if (nextSearch === lastSearchRef.current) return;
     lastSearchRef.current = nextSearch;
     setSearchParams(next, { replace: true });
-  }, [selectedTags, selectedQuality, capacityRange, selectedPlatforms, setSearchParams]);
+  }, [selectedTags, selectedQuality, capacityRange, selectedPlatforms, dayRange, setSearchParams]);
 
   // Debounce search input
   useEffect(() => {
@@ -190,11 +200,17 @@ export function WorldsPage() {
     resetToFirstPage();
   };
 
+  const handleDayRangeChange = (next: number | null) => {
+    setDayRange(next);
+    resetToFirstPage();
+  };
+
   const handleClear = () => {
     setSelectedTags([]);
     setSelectedQuality([]);
     setSelectedPlatforms([]);
     setCapacityRange({ min: MIN_CAPACITY, max: MAX_CAPACITY });
+    setDayRange(null);
     setSearchInput('');
     resetToFirstPage();
   };
@@ -213,6 +229,22 @@ export function WorldsPage() {
       }
       return nextTags;
     });
+    resetToFirstPage();
+  }, [searchParams, resetToFirstPage]);
+
+  // Keep the day range filter state in sync with the URL ?dayRange= param.
+  const previousUrlDayRangeRef = useRef<string | null>(searchParams.get('dayRange'));
+  useEffect(() => {
+    const urlDayRange = searchParams.get('dayRange');
+    if (urlDayRange === previousUrlDayRangeRef.current) return;
+
+    previousUrlDayRangeRef.current = urlDayRange;
+    const parsed = urlDayRange ? Number(urlDayRange) : null;
+    const next =
+      parsed !== null && Number.isFinite(parsed) && parsed > 0 && Number.isInteger(parsed)
+        ? parsed
+        : null;
+    setDayRange((prev) => (prev === next ? prev : next));
     resetToFirstPage();
   }, [searchParams, resetToFirstPage]);
 
@@ -265,6 +297,8 @@ export function WorldsPage() {
         selectedPlatforms={selectedPlatforms}
         onTogglePlatform={handleTogglePlatform}
         onRemovePlatform={handleRemovePlatform}
+        dayRange={dayRange}
+        onDayRangeChange={handleDayRangeChange}
       />
 
       <div className="flex items-center justify-between gap-3">
@@ -278,9 +312,14 @@ export function WorldsPage() {
             className="input w-full pl-9"
           />
         </div>
-        {!isPending && !isError && (
-          <p className="hidden text-sm text-slate-600 dark:text-slate-400 sm:block">
-            {t('worlds.numberOfResults', { count: total })}
+        {!isError && (
+          <p className="hidden items-center gap-2 text-sm text-slate-600 dark:text-slate-400 sm:flex">
+            <span>{t('worlds.numberOfResultsLabel')}</span>
+            {isPending ? (
+              <BeatLoader size={6} color="currentColor" aria-label={t('worlds.loadingResultCount')} />
+            ) : (
+              <span>{t('worlds.numberOfResultsCount', { count: total })}</span>
+            )}
           </p>
         )}
         <div className="flex items-center gap-1 rounded-lg border border-slate-300 bg-slate-100/50 p-0.5 dark:border-slate-700 dark:bg-slate-800/50">

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   fetchComments,
   fetchRatings,
@@ -7,6 +7,8 @@ import {
   updateRating,
   deleteRating,
 } from '../api/sentiment';
+import type { FetchCommentsResult } from '../api/sentiment';
+import type { InfiniteData } from '@tanstack/react-query';
 import { useCurrentUserId } from './useCurrentUser';
 import { generateUsername } from '../utils/username';
 import type { Comment, RatingSummary } from '../types';
@@ -19,10 +21,23 @@ export function useRatings(worldId: string | undefined) {
   });
 }
 
-export function useComments(worldId: string | undefined) {
-  return useQuery<Comment[]>({
+const COMMENTS_PAGE_SIZE = 20;
+
+interface CommentsPageParam {
+  offset: number;
+  limit: number;
+}
+
+export function useInfiniteComments(worldId: string | undefined) {
+  return useInfiniteQuery<FetchCommentsResult, Error, InfiniteData<FetchCommentsResult, CommentsPageParam>, (string | undefined)[], CommentsPageParam>({
     queryKey: ['comments', worldId],
-    queryFn: () => fetchComments(worldId!),
+    queryFn: ({ pageParam }) => fetchComments(worldId!, pageParam),
+    initialPageParam: { offset: 0, limit: COMMENTS_PAGE_SIZE },
+    getNextPageParam: (lastPage, allPages) => {
+      const loadedCount = allPages.reduce((sum, page) => sum + page.comments.length, 0);
+      if (lastPage.total <= loadedCount) return undefined;
+      return { offset: loadedCount, limit: COMMENTS_PAGE_SIZE };
+    },
     enabled: !!worldId,
   });
 }
@@ -134,7 +149,7 @@ export function useSubmitComment() {
     onMutate: async ({ worldId, content }) => {
       const queryKey = ['comments', worldId];
       await queryClient.cancelQueries({ queryKey });
-      const previous = queryClient.getQueryData<Comment[]>(queryKey) ?? [];
+      const previous = queryClient.getQueryData<InfiniteData<FetchCommentsResult, CommentsPageParam>>(queryKey);
 
       const optimistic: Comment = {
         id: `optimistic-${Date.now()}`,
@@ -145,7 +160,18 @@ export function useSubmitComment() {
         created_at: new Date().toISOString(),
       };
 
-      queryClient.setQueryData(queryKey, [optimistic, ...previous]);
+      if (previous) {
+        const next: InfiniteData<FetchCommentsResult, CommentsPageParam> = {
+          ...previous,
+          pages: previous.pages.map((page, index) =>
+            index === 0
+              ? { ...page, comments: [optimistic, ...page.comments], total: page.total + 1 }
+              : { ...page, total: page.total + 1 },
+          ),
+        };
+        queryClient.setQueryData<InfiniteData<FetchCommentsResult, CommentsPageParam>>(queryKey, next);
+      }
+
       return { previous };
     },
     onError: (_err, { worldId }, context) => {

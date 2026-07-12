@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   useRatings,
-  useComments,
+  useInfiniteComments,
   useSubmitRating,
   useUpdateRating,
   useDeleteRating,
@@ -11,6 +11,7 @@ import {
 } from './useSentiment';
 import { useCurrentUserId } from './useCurrentUser';
 import * as sentimentApi from '../api/sentiment';
+import type { RatingSummary } from '../types';
 
 const mocks = vi.hoisted(() => ({
   getSession: vi.fn(),
@@ -29,10 +30,10 @@ vi.mock('../lib/supabase', () => ({
 }));
 
 function wrapper({ children }: { children: React.ReactNode }) {
-  const queryClient = new QueryClient({
+  const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }
 
 beforeEach(() => {
@@ -41,7 +42,7 @@ beforeEach(() => {
 });
 
 describe('useRatings', () => {
-  it('fetches rating summary', async () => {
+  it('fetches rating summary for the given world', async () => {
     vi.spyOn(sentimentApi, 'fetchRatings').mockResolvedValue({
       worldId: 'wrld_123',
       good: 5,
@@ -50,47 +51,127 @@ describe('useRatings', () => {
     });
     const { result } = renderHook(() => useRatings('wrld_123'), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data).toEqual({ worldId: 'wrld_123', good: 5, bad: 1, userRating: null });
+    expect(sentimentApi.fetchRatings).toHaveBeenCalledWith('wrld_123');
+    expect(result.current.data).toMatchObject({ worldId: 'wrld_123', good: 5, bad: 1, userRating: null });
   });
 });
 
-describe('useComments', () => {
-  it('fetches comments', async () => {
-    vi.spyOn(sentimentApi, 'fetchComments').mockResolvedValue([
-      { id: 'c1', world_id: 'wrld_123', user_id: 'u1', username: 'user1', content: 'hi', created_at: '2024-01-01T00:00:00Z' },
-    ]);
-    const { result } = renderHook(() => useComments('wrld_123'), { wrapper });
+describe('useInfiniteComments', () => {
+  it('fetches the first page of comments with pagination params', async () => {
+    vi.spyOn(sentimentApi, 'fetchComments').mockResolvedValue({
+      comments: [
+        { id: 'c1', world_id: 'wrld_123', user_id: 'u1', username: 'user1', content: 'hi', created_at: '2024-01-01T00:00:00Z' },
+      ],
+      total: 1,
+    });
+    const { result } = renderHook(() => useInfiniteComments('wrld_123'), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data).toEqual([
-      { id: 'c1', world_id: 'wrld_123', user_id: 'u1', username: 'user1', content: 'hi', created_at: '2024-01-01T00:00:00Z' },
-    ]);
+    expect(sentimentApi.fetchComments).toHaveBeenCalledWith('wrld_123', { offset: 0, limit: 20 });
+    expect(result.current.data?.pages[0].comments).toHaveLength(1);
+    expect(result.current.data?.pages[0].comments[0].id).toBe('c1');
+    expect(result.current.data?.pages[0].total).toBe(1);
+    expect(result.current.hasNextPage).toBe(false);
+  });
+
+  it('has more pages when total exceeds loaded count', async () => {
+    vi.spyOn(sentimentApi, 'fetchComments').mockResolvedValue({
+      comments: Array.from({ length: 20 }, (_, i) => ({
+        id: `c${i}`,
+        world_id: 'wrld_123',
+        user_id: 'u1',
+        username: 'user1',
+        content: `comment ${i}`,
+        created_at: '2024-01-01T00:00:00Z',
+      })),
+      total: 42,
+    });
+    const { result } = renderHook(() => useInfiniteComments('wrld_123'), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.hasNextPage).toBe(true);
   });
 });
 
 describe('useSubmitRating', () => {
-  it('calls submitRating and invalidates rating query', async () => {
+  it('submits a rating and optimistically updates the summary', async () => {
     vi.spyOn(sentimentApi, 'submitRating').mockResolvedValue(undefined);
-    const { result } = renderHook(() => useSubmitRating(), { wrapper });
+
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    function TestWrapper({ children }: { children: React.ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+
+    queryClient.setQueryData(['ratings', 'wrld_123'], {
+      worldId: 'wrld_123',
+      good: 2,
+      bad: 1,
+      userRating: null,
+    });
+
+    const { result } = renderHook(() => useSubmitRating(), { wrapper: TestWrapper });
     await result.current.mutateAsync({ worldId: 'wrld_123', value: 'good' });
+
     expect(sentimentApi.submitRating).toHaveBeenCalledWith('wrld_123', 'good', undefined);
+
+    const summary = queryClient.getQueryData<RatingSummary>(['ratings', 'wrld_123']);
+    expect(summary).toMatchObject({ good: 3, bad: 1, userRating: 'good' });
   });
 });
 
 describe('useUpdateRating', () => {
-  it('calls updateRating', async () => {
+  it('updates a rating and switches the cached counts', async () => {
     vi.spyOn(sentimentApi, 'updateRating').mockResolvedValue(undefined);
-    const { result } = renderHook(() => useUpdateRating(), { wrapper });
+
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    function TestWrapper({ children }: { children: React.ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+
+    queryClient.setQueryData(['ratings', 'wrld_123'], {
+      worldId: 'wrld_123',
+      good: 2,
+      bad: 1,
+      userRating: 'good',
+    });
+
+    const { result } = renderHook(() => useUpdateRating(), { wrapper: TestWrapper });
     await result.current.mutateAsync({ worldId: 'wrld_123', value: 'bad' });
+
     expect(sentimentApi.updateRating).toHaveBeenCalledWith('wrld_123', 'bad', undefined);
+
+    const summary = queryClient.getQueryData<RatingSummary>(['ratings', 'wrld_123']);
+    expect(summary).toMatchObject({ good: 1, bad: 2, userRating: 'bad' });
   });
 });
 
 describe('useDeleteRating', () => {
-  it('calls deleteRating', async () => {
+  it('deletes a rating and removes it from the cached summary', async () => {
     vi.spyOn(sentimentApi, 'deleteRating').mockResolvedValue(undefined);
-    const { result } = renderHook(() => useDeleteRating(), { wrapper });
+
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    function TestWrapper({ children }: { children: React.ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+
+    queryClient.setQueryData(['ratings', 'wrld_123'], {
+      worldId: 'wrld_123',
+      good: 2,
+      bad: 1,
+      userRating: 'good',
+    });
+
+    const { result } = renderHook(() => useDeleteRating(), { wrapper: TestWrapper });
     await result.current.mutateAsync({ worldId: 'wrld_123' });
+
     expect(sentimentApi.deleteRating).toHaveBeenCalledWith('wrld_123', undefined);
+
+    const summary = queryClient.getQueryData<RatingSummary>(['ratings', 'wrld_123']);
+    expect(summary).toMatchObject({ good: 1, bad: 1, userRating: null });
   });
 });
 
@@ -109,7 +190,7 @@ describe('useSubmitComment', () => {
     expect(sentimentApi.submitComment).toHaveBeenCalledWith('wrld_123', 'hello', undefined);
   });
 
-  it('optimistically inserts a comment marked as the current user', async () => {
+  it('optimistically inserts a comment into the first page marked as the current user', async () => {
     mocks.getSession.mockResolvedValue({
       data: { session: { user: { id: 'u-current' } } },
       error: null,
@@ -140,10 +221,26 @@ describe('useSubmitComment', () => {
     );
 
     await waitFor(() => expect(result.current.userId).toBe('u-current'));
+
+    queryClient.setQueryData(['comments', 'wrld_123'], {
+      pages: [
+        {
+          comments: [
+            { id: 'c1', world_id: 'wrld_123', user_id: 'u1', username: 'user1', content: 'hi', created_at: '2024-01-01T00:00:00Z' },
+          ],
+          total: 1,
+        },
+      ],
+      pageParams: [{ offset: 0, limit: 20 }],
+    });
+
     await result.current.submit.mutateAsync({ worldId: 'wrld_123', content: 'hello' });
 
-    const comments = queryClient.getQueryData(['comments', 'wrld_123']);
-    expect(comments).toHaveLength(1);
-    expect((comments as { user_id: string }[])[0].user_id).toBe('u-current');
+    const comments = queryClient.getQueryData(['comments', 'wrld_123']) as {
+      pages: { comments: { user_id: string }[]; total: number }[];
+    };
+    expect(comments.pages[0].comments).toHaveLength(2);
+    expect(comments.pages[0].comments[0].user_id).toBe('u-current');
+    expect(comments.pages[0].total).toBe(2);
   });
 });

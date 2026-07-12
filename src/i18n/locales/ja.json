@@ -57,7 +57,9 @@
     "switchToInfinite": "無限スクロールに切り替え",
     "loadingMore": "さらに読み込み中...",
     "backToTop": "トップに戻る",
-    "numberOfResults": "結果件数: {{count}}"
+    "numberOfResultsLabel": "結果件数:",
+    "numberOfResultsCount": "{{count}}",
+    "loadingResultCount": "件数を読み込み中"
   },
   "worldDetail": {
     "loadError": "ワールドの読み込みに失敗しました: {{message}}",
@@ -74,6 +76,8 @@
     "platforms": "プラットフォーム",
     "tags": "タグ",
     "openInVRChat": "VRChat で開く",
+    "openImageLightbox": "{{name}} の画像をフルサイズで開く",
+    "imageLightbox": "{{name}} の画像",
     "saveToList": "リストに保存",
     "savedToList": "リストに保存済み"
   },
@@ -100,8 +104,9 @@
       "count": "{{count}} / {{max}}",
       "submitError": "コメントを投稿できませんでした: {{message}}",
       "youIndicator": "（あなた）",
-      "newestFirst": "新しい順",
-      "oldestFirst": "古い順"
+      "loadMore": "さらに読み込む",
+      "loadingMore": "コメントを読み込み中...",
+      "loading": "コメントを読み込み中..."
     },
     "validation": {
       "tooLong": "コメントは256文字以内にしてください。",
@@ -151,7 +156,14 @@
     "removeCapacity": "定員フィルタを解除",
     "platform": "プラットフォーム",
     "platforms": "プラットフォーム",
-    "removePlatform": "プラットフォームフィルタを解除"
+    "removePlatform": "プラットフォームフィルタを解除",
+    "dateTagged": "タグ付け日",
+    "lastNDays_one": "過去 {{count}} 日間",
+    "lastNDays_other": "過去 {{count}} 日間",
+    "allTime": "すべて",
+    "custom": "カスタム",
+    "days": "日",
+    "removeDateTagged": "タグ付け日フィルタを解除"
   },
   "pagination": {
     "prev": "前へ",

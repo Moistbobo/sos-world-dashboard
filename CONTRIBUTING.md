@@ -1,5 +1,22 @@
 # Contributing
 
+## Issue Templates
+
+Use the GitHub issue template in `.github/ISSUE_TEMPLATE/ticket.md` when filing tickets. The template supports bugs, features, and chores/maintenance in a single form.
+
+### Previs for UI/UX tickets
+
+If a ticket touches UI/UX, include a visual previs so reviewers can see the intended look and flow before implementation starts.
+
+1. Generate a self-contained HTML file that visually matches the current app as closely as possible (inlined CSS, inlined or Base64 images).
+2. Upload the HTML file as a [GitHub Gist](https://gist.github.com).
+3. Embed it in the issue using the Hyouji HTML renderer:
+   `https://www.hyouji.moe/?gist=https://gist.github.com/<user>/<gist-id>`
+
+   Example: https://www.hyouji.moe/?gist=https://gist.github.com/Moistbobo/2c8c0671ba55cc25bab183c3b6bcc3c8
+
+All issue templates include a **Previs** section with this checklist. Non-UI tickets can leave it unchecked.
+
 ## Pull Request Descriptions
 
 When opening a pull request that merges `main` into a release branch (`testnet` or `production`), include a list of the changes being merged in the PR description.
@@ -73,7 +90,7 @@ When adding a new component or page, create a folder with a barrel file from the
 
 ## Pull Request Template
 
-All PRs must use `.github/pull_request_template.md` and fill out the **RISK RATING** and **E2E Evidence** sections. Media (screenshots/videos) is required only for user-facing changes that add or alter UI/UX. For non-visual changes (e.g. dependency bumps, config changes, refactors with no UI impact), explicitly note why no media is required and still complete the verification checklist.
+All PRs must use `.github/pull_request_template.md` and fill out the **Risk Rating** and **E2E Evidence** sections. Media (screenshots/videos) is required only for user-facing changes that add or alter UI/UX. For non-visual changes (e.g. dependency bumps, config changes, refactors with no UI impact), explicitly note why no media is required and still complete the verification checklist.
 
 ## Pull Request Title Convention
 

@@ -1,7 +1,7 @@
-import { lazy, Suspense, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash, Star } from 'lucide-react';
+import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash, Star, X } from 'lucide-react';
 import { useWorld } from '../../hooks/useApi';
 import { TagBadge } from '../../components/tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
@@ -18,11 +18,50 @@ const SentimentSection = lazy(() =>
 export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const location = useLocation();
   const { worldId: paramWorldId } = useParams<{ worldId: string }>();
   const worldId = worldIdProp ?? paramWorldId;
   const { isWorldInAnyList } = useLists();
   const [saveOpen, setSaveOpen] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const { data, isPending, isError, error, isFetching } = useWorld(worldId);
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [worldId]);
+
+  function handleGoBack() {
+    if (location.key === 'default') {
+      navigate('/worlds');
+    } else {
+      navigate(-1);
+    }
+  }
+
+  useEffect(() => {
+    if (lightboxOpen) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [lightboxOpen]);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setLightboxOpen(false);
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxOpen]);
 
   if (isPending && !data) {
     return (
@@ -31,7 +70,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
         className="-m-4 min-h-[calc(100vh-3.5rem)] cursor-pointer p-4 lg:-m-6 lg:p-6"
         onClick={(e) => {
           if (e.currentTarget === e.target) {
-            navigate(-1);
+            handleGoBack();
           }
         }}
       >
@@ -118,14 +157,14 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
         className="-m-4 min-h-[calc(100vh-3.5rem)] cursor-pointer p-4 lg:-m-6 lg:p-6"
         onClick={(e) => {
           if (e.currentTarget === e.target) {
-            navigate(-1);
+            handleGoBack();
           }
         }}
       >
         <div className="mx-auto max-w-3xl space-y-5">
           <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={() => handleGoBack()}
             className="btn-ghost gap-1.5 text-sm"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -148,14 +187,14 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
       onClick={(e) => {
         // Only navigate when the user clicks the empty background area, not the card.
         if (e.currentTarget === e.target) {
-          navigate(-1);
+          handleGoBack();
         }
       }}
     >
       <div className="mx-auto max-w-3xl space-y-5">
         <button
           type="button"
-          onClick={() => navigate(-1)}
+          onClick={() => handleGoBack()}
           className="btn-ghost gap-1.5 text-sm"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -178,17 +217,53 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
           )}
           <div className="relative h-56 bg-slate-200 sm:h-72 dark:bg-slate-800">
             {w.imageUrl ? (
-              <img
-                src={w.imageUrl}
-                alt={w.name}
-                className="h-full w-full object-cover"
-              />
+              <button
+                type="button"
+                onClick={() => setLightboxOpen(true)}
+                className="h-full w-full cursor-pointer"
+                aria-label={t('worldDetail.openImageLightbox', { name: w.name })}
+              >
+                <img
+                  src={w.imageUrl}
+                  alt={w.name}
+                  className="h-full w-full object-cover"
+                />
+              </button>
             ) : (
               <div className="flex h-full w-full items-center justify-center text-slate-400 dark:text-slate-600">
                 <Globe className="h-16 w-16" />
               </div>
             )}
           </div>
+
+          {lightboxOpen && w.imageUrl && (
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label={t('worldDetail.imageLightbox', { name: w.name })}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+              onClick={(e) => {
+                if (e.currentTarget === e.target) {
+                  setLightboxOpen(false);
+                }
+              }}
+              data-testid="world-image-lightbox"
+            >
+              <button
+                type="button"
+                onClick={() => setLightboxOpen(false)}
+                className="absolute right-4 top-4 rounded-full bg-black/50 p-2 text-white transition hover:bg-black/70"
+                aria-label={t('common.close')}
+              >
+                <X className="h-6 w-6" />
+              </button>
+              <img
+                src={w.imageUrl}
+                alt={w.name}
+                className="max-h-[90vh] max-w-[90vw] object-contain"
+              />
+            </div>
+          )}
 
           <div className="p-5 sm:p-6">
             <div className="flex items-start justify-between gap-4">

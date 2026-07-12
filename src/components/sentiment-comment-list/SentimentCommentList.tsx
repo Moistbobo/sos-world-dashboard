@@ -1,12 +1,15 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowDownWideNarrow, ArrowUpWideNarrow } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useCurrentUserId } from '../../hooks/useCurrentUser';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import type { Comment } from '../../types';
 
 interface SentimentCommentListProps {
   comments: Comment[] | undefined;
+  isLoading?: boolean;
+  hasMore?: boolean;
+  isLoadingMore?: boolean;
+  onLoadMore?: () => void;
 }
 
 function AuthorLabel({
@@ -37,36 +40,35 @@ function AuthorLabel({
   );
 }
 
-export function SentimentCommentList({ comments }: SentimentCommentListProps) {
+export function SentimentCommentList({
+  comments,
+  isLoading = false,
+  hasMore = false,
+  isLoadingMore = false,
+  onLoadMore,
+}: SentimentCommentListProps) {
   const { t } = useTranslation();
   const currentUserId = useCurrentUserId();
-  const [order, setOrder] = useState<'desc' | 'asc'>('desc');
+
+  if (isLoading) {
+    return (
+      <div className="space-y-3" aria-busy="true" data-testid="sentiment-comment-list-loading">
+        <div className="h-4 w-3/4 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+        <div className="h-4 w-1/2 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+        <div className="h-4 w-5/6 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+        <p className="sr-only">{t('sentiment.comments.loading')}</p>
+      </div>
+    );
+  }
 
   if (!comments || comments.length === 0) {
     return <p className="text-sm text-slate-500 dark:text-slate-400">{t('sentiment.comments.empty')}</p>;
   }
 
-  const sorted = [...comments].sort((a, b) => {
-    const aTime = new Date(a.created_at).getTime();
-    const bTime = new Date(b.created_at).getTime();
-    return order === 'desc' ? bTime - aTime : aTime - bTime;
-  });
-
   return (
     <div className="space-y-3" data-testid="sentiment-comment-list">
-      <div className="flex items-center justify-end">
-        <button
-          type="button"
-          onClick={() => setOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
-          className="btn-ghost inline-flex items-center gap-1.5 text-xs"
-          aria-label={order === 'desc' ? t('sentiment.comments.newestFirst') : t('sentiment.comments.oldestFirst')}
-        >
-          {order === 'desc' ? <ArrowDownWideNarrow className="h-3.5 w-3.5" /> : <ArrowUpWideNarrow className="h-3.5 w-3.5" />}
-          {order === 'desc' ? t('sentiment.comments.newestFirst') : t('sentiment.comments.oldestFirst')}
-        </button>
-      </div>
       <ul className="space-y-3">
-        {sorted.map((comment) => (
+        {comments.map((comment) => (
           <li key={comment.id} className="rounded-lg border border-slate-200 p-3 dark:border-slate-700/50">
             <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
               <AuthorLabel username={comment.username} isCurrentUser={comment.user_id === currentUserId} />
@@ -79,6 +81,18 @@ export function SentimentCommentList({ comments }: SentimentCommentListProps) {
           </li>
         ))}
       </ul>
+      {hasMore && (
+        <button
+          type="button"
+          onClick={onLoadMore}
+          disabled={isLoadingMore}
+          className="btn-secondary flex w-full items-center justify-center gap-2"
+          aria-busy={isLoadingMore}
+        >
+          {isLoadingMore && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+          {isLoadingMore ? t('sentiment.comments.loadingMore') : t('sentiment.comments.loadMore')}
+        </button>
+      )}
     </div>
   );
 }
