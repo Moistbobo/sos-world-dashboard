@@ -76,6 +76,8 @@
     "platforms": "プラットフォーム",
     "tags": "タグ",
     "openInVRChat": "VRChat で開く",
+    "openImageLightbox": "{{name}} の画像をフルサイズで開く",
+    "imageLightbox": "{{name}} の画像",
     "saveToList": "リストに保存",
     "savedToList": "リストに保存済み"
   },
