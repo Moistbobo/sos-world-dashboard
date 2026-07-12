@@ -50,6 +50,8 @@ const mockWorlds = [
 ];
 
 let infiniteHasNextPage = true;
+let infiniteIsPending = false;
+let paginationIsPending = false;
 
 vi.mock('../../hooks/useApi', () => ({
   useTags: () => ({ data: { tags: [] } }),
@@ -66,15 +68,15 @@ vi.mock('../../hooks/useApi', () => ({
     error: null,
   }),
   useWorlds: () => ({
-    data: { worlds: mockWorlds, total: 1, limit: 20, offset: 0 },
-    isPending: false,
+    data: paginationIsPending ? undefined : { worlds: mockWorlds, total: 1, limit: 20, offset: 0 },
+    isPending: paginationIsPending,
     isError: false,
     error: null,
     refetch: vi.fn(),
   }),
   useInfiniteWorlds: () => ({
-    data: { pages: [{ worlds: mockWorlds, total: 1, limit: 20, offset: 0 }] },
-    isPending: false,
+    data: infiniteIsPending ? undefined : { pages: [{ worlds: mockWorlds, total: 1, limit: 20, offset: 0 }] },
+    isPending: infiniteIsPending,
     isError: false,
     error: null,
     refetch: vi.fn(),
@@ -94,6 +96,8 @@ vi.mock('../../hooks/useApi', () => ({
 describe('WorldsPage', () => {
   beforeEach(() => {
     infiniteHasNextPage = true;
+    infiniteIsPending = false;
+    paginationIsPending = false;
     queryClient.clear();
     window.localStorage.clear();
     window.history.pushState({}, '', '/');
@@ -161,7 +165,16 @@ describe('WorldsPage', () => {
 
   it('renders the number of results from the filtered query', () => {
     renderPage(<WorldsPage />);
-    expect(screen.getByText(/Number of results: 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/Number of results:/i)).toBeInTheDocument();
+    expect(screen.getByText('1')).toBeInTheDocument();
+  });
+
+  it('keeps the number of results label visible while count is loading', () => {
+    infiniteIsPending = true;
+    renderPage(<WorldsPage />);
+    expect(screen.getByText(/Number of results:/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/loading result count/i)).toBeInTheDocument();
+    infiniteIsPending = false;
   });
 
   it('renders quality and platform counts in the expanded filter bar', async () => {

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
+import { BeatLoader } from 'react-spinners';
 import { useInfiniteWorlds, useTags, useWorlds, useMeta } from '../../hooks/useApi';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
 import { FilterBar } from '../../components/filter-bar';
@@ -311,9 +312,14 @@ export function WorldsPage() {
             className="input w-full pl-9"
           />
         </div>
-        {!isPending && !isError && (
-          <p className="hidden text-sm text-slate-600 dark:text-slate-400 sm:block">
-            {t('worlds.numberOfResults', { count: total })}
+        {!isError && (
+          <p className="hidden items-center gap-2 text-sm text-slate-600 dark:text-slate-400 sm:flex">
+            <span>{t('worlds.numberOfResultsLabel')}</span>
+            {isPending ? (
+              <BeatLoader size={6} color="currentColor" aria-label={t('worlds.loadingResultCount')} />
+            ) : (
+              <span>{t('worlds.numberOfResultsCount', { count: total })}</span>
+            )}
           </p>
         )}
         <div className="flex items-center gap-1 rounded-lg border border-slate-300 bg-slate-100/50 p-0.5 dark:border-slate-700 dark:bg-slate-800/50">
