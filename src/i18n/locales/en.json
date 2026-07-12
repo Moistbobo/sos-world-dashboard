@@ -76,6 +76,8 @@
     "platforms": "Platforms",
     "tags": "Tags",
     "openInVRChat": "Open in VRChat",
+    "openImageLightbox": "Open full-size image of {{name}}",
+    "imageLightbox": "Image of {{name}}",
     "saveToList": "Save to list",
     "savedToList": "Saved to list"
   },
