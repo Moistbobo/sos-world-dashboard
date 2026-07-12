@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useMeta, useWorld } from './useApi';
 import * as client from '../api/client';
-import type { MetaResponse, World } from '../types';
+import type { World } from '../types';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -120,15 +120,13 @@ describe('useMeta', () => {
   });
 
   it('fetches meta data without params', async () => {
-    const response: MetaResponse = {
+    vi.spyOn(client, 'fetchMeta').mockResolvedValue({
       qualityGood: 123,
       qualityBad: 12,
       platformDesktop: 80,
       platformAndroid: 45,
       platformiOS: 6,
-    };
-
-    vi.spyOn(client, 'fetchMeta').mockResolvedValue(response);
+    });
 
     const { result } = renderHook(() => useMeta(), { wrapper: Wrapper });
 
@@ -136,7 +134,14 @@ describe('useMeta', () => {
 
     await waitFor(() => expect(result.current.isPending).toBe(false));
 
-    expect(result.current.data).toEqual(response);
-    expect(client.fetchMeta).toHaveBeenCalled();
+    expect(result.current.data).toEqual({
+      qualityGood: 123,
+      qualityBad: 12,
+      platformDesktop: 80,
+      platformAndroid: 45,
+      platformiOS: 6,
+    });
+    expect(client.fetchMeta).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(client.fetchMeta).mock.calls[0]).toHaveLength(1);
   });
 });
