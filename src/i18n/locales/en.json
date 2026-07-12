@@ -101,7 +101,8 @@
       "submitError": "Could not post comment: {{message}}",
       "youIndicator": "(You)",
       "loadMore": "Load more",
-      "loadingMore": "Loading more comments..."
+      "loadingMore": "Loading more comments...",
+      "loading": "Loading comments..."
     },
     "validation": {
       "tooLong": "Comment must be 256 characters or less.",

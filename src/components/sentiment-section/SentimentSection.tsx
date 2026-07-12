@@ -25,6 +25,7 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
   const { data: ratings, isLoading: ratingsLoading } = useRatings(worldId);
   const {
     data,
+    isLoading,
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
@@ -127,6 +128,7 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
       </div>
       <SentimentCommentList
         comments={comments}
+        isLoading={isLoading}
         hasMore={!!hasNextPage}
         isLoadingMore={isFetchingNextPage}
         onLoadMore={() => fetchNextPage()}

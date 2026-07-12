@@ -101,7 +101,8 @@
       "submitError": "コメントを投稿できませんでした: {{message}}",
       "youIndicator": "（あなた）",
       "loadMore": "さらに読み込む",
-      "loadingMore": "コメントを読み込み中..."
+      "loadingMore": "コメントを読み込み中...",
+      "loading": "コメントを読み込み中..."
     },
     "validation": {
       "tooLong": "コメントは256文字以内にしてください。",

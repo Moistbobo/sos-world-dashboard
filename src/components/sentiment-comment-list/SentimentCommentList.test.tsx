@@ -29,6 +29,12 @@ describe('SentimentCommentList', () => {
     expect(screen.getByText(/no comments yet/i)).toBeInTheDocument();
   });
 
+  it('shows loading skeleton while fetching', () => {
+    render(<SentimentCommentList comments={[]} isLoading={true} />);
+    expect(screen.getByTestId('sentiment-comment-list-loading')).toBeInTheDocument();
+    expect(screen.queryByText(/no comments yet/i)).not.toBeInTheDocument();
+  });
+
   it('renders timestamps in MM/DD/YY(ddd)HH:mm:ss format', () => {
     const date = new Date('2026-06-27T21:22:20Z');
     const expected = `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}/${String(date.getFullYear() % 100).padStart(2, '0')}(${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()]})${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
