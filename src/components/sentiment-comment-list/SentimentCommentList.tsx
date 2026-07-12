@@ -6,6 +6,7 @@ import type { Comment } from '../../types';
 
 interface SentimentCommentListProps {
   comments: Comment[] | undefined;
+  isLoading?: boolean;
   hasMore?: boolean;
   isLoadingMore?: boolean;
   onLoadMore?: () => void;
@@ -41,12 +42,24 @@ function AuthorLabel({
 
 export function SentimentCommentList({
   comments,
+  isLoading = false,
   hasMore = false,
   isLoadingMore = false,
   onLoadMore,
 }: SentimentCommentListProps) {
   const { t } = useTranslation();
   const currentUserId = useCurrentUserId();
+
+  if (isLoading) {
+    return (
+      <div className="space-y-3" aria-busy="true" data-testid="sentiment-comment-list-loading">
+        <div className="h-4 w-3/4 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+        <div className="h-4 w-1/2 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+        <div className="h-4 w-5/6 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+        <p className="sr-only">{t('sentiment.comments.loading')}</p>
+      </div>
+    );
+  }
 
   if (!comments || comments.length === 0) {
     return <p className="text-sm text-slate-500 dark:text-slate-400">{t('sentiment.comments.empty')}</p>;
