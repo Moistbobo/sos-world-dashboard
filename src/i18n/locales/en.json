@@ -57,7 +57,9 @@
     "switchToInfinite": "Switch to endless scroll",
     "loadingMore": "Loading more worlds...",
     "backToTop": "Back to top",
-    "numberOfResults": "Number of results: {{count}}"
+    "numberOfResultsLabel": "Number of results:",
+    "numberOfResultsCount": "{{count}}",
+    "loadingResultCount": "Loading result count"
   },
   "worldDetail": {
     "loadError": "Failed to load world: {{message}}",
@@ -74,6 +76,8 @@
     "platforms": "Platforms",
     "tags": "Tags",
     "openInVRChat": "Open in VRChat",
+    "openImageLightbox": "Open full-size image of {{name}}",
+    "imageLightbox": "Image of {{name}}",
     "saveToList": "Save to list",
     "savedToList": "Saved to list"
   },
@@ -101,7 +105,8 @@
       "submitError": "Could not post comment: {{message}}",
       "youIndicator": "(You)",
       "loadMore": "Load more",
-      "loadingMore": "Loading more comments..."
+      "loadingMore": "Loading more comments...",
+      "loading": "Loading comments..."
     },
     "validation": {
       "tooLong": "Comment must be 256 characters or less.",

@@ -74,7 +74,7 @@ Copy `.env.example` to `.env.local`. Vite exposes only `VITE_*` env vars to the 
 
 ## PR Evidence & Risk Assessment
 
-When preparing a pull request, follow `.github/pull_request_template.md`. PRs targeting the `testnet` or `production` release branches should instead use `.github/PULL_REQUEST_TEMPLATE/release.md`, which only requires a Summary and Verification checklist. Agents and contributors must fill out the **RISK RATING** and **E2E Evidence** sections before requesting human review (these sections are not required for release-branch PRs using the release template).
+When preparing a pull request, follow `.github/pull_request_template.md`. PRs targeting the `testnet` or `production` release branches should instead use `.github/PULL_REQUEST_TEMPLATE/release.md`, which only requires a Summary and Verification checklist. Agents and contributors must fill out the **Risk Rating** and **E2E Evidence** sections before requesting human review (these sections are not required for release-branch PRs using the release template).
 
 ### E2E evidence
 
@@ -145,7 +145,7 @@ Pick a single overall risk level using the badge in the template:
 - `medium` — touches shared components/pages, adds a dependency, changes data fetching shape, or involves user input/auth but follows existing patterns.
 - `high` — broad refactor, security-sensitive code, auth/token handling, schema migration, feature flag wiring, or changes that could break core user flows across the app.
 
-In the PR description, include the badge and a short bulleted rationale under `## RISK RATING`. Preferably link each bullet to the relevant diff file/line on GitHub (e.g. `https://github.com/Moistbobo/sos-world-dashboard/pull/NN/files#diff-...`).
+In the PR description, include the badge and a short bulleted rationale under `## Risk Rating`. Preferably link each bullet to the relevant diff file/line on GitHub (e.g. `https://github.com/Moistbobo/sos-world-dashboard/pull/NN/files#diff-...`).
 
 Consider these factors when rating and documenting blast radius:
 
@@ -157,7 +157,6 @@ Consider these factors when rating and documenting blast radius:
 
 Call out concrete security concerns (even if rated low) so reviewers know where to focus.
 
-## Useful References
+## Ticket Creation
 
-- `CONTRIBUTING.md` covers PR title conventions (`[FEAT]: ...`), issue templates, the Previs workflow for UI/UX tickets, code organization, and the Supabase sentiment setup steps.
-- `.github/pull_request_template.md` is the source-of-truth PR template.
+Whenever creating a GitHub issue/ticket, always use the template located at `.github/ISSUE_TEMPLATE/ticket.md`.

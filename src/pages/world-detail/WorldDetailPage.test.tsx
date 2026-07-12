@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
@@ -61,8 +61,60 @@ const createWorld = (overrides: Partial<World> = {}): World => ({
 });
 
 describe('WorldDetailPage', () => {
+  let scrollTo: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    scrollTo.mockRestore();
+  });
+
+  it('resets scroll position to the top when entering a world detail page', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper initialEntries={['/worlds/wrld_123']}>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(scrollTo).toHaveBeenCalledWith(0, 0);
+  });
+
+  it('resets scroll position to the top when the world id changes', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    const { rerender } = render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_456" />
+      </Wrapper>,
+    );
+
+    expect(scrollTo).toHaveBeenCalledTimes(2);
+    expect(scrollTo).toHaveBeenLastCalledWith(0, 0);
   });
 
   it('renders a share button that copies the VRChat URL', async () => {
@@ -291,5 +343,100 @@ describe('WorldDetailPage', () => {
 
     expect(screen.queryByTestId('sentiment-section')).not.toBeInTheDocument();
     vi.unstubAllEnvs();
+  });
+
+  it('opens a full-screen lightbox when the world image is clicked', async () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const imageButton = screen.getByRole('button', { name: /open full-size image of Test World/i });
+    await userEvent.click(imageButton);
+
+    const lightbox = screen.getByTestId('world-image-lightbox');
+    expect(lightbox).toBeInTheDocument();
+    expect(lightbox).toHaveAttribute('role', 'dialog');
+    expect(lightbox).toHaveAttribute('aria-modal', 'true');
+    expect(document.body).toHaveClass('overflow-hidden');
+
+    const lightboxImage = within(lightbox).getByAltText(/Test World/i);
+    expect(lightboxImage).toHaveClass('object-contain');
+  });
+
+  it('closes the lightbox when the backdrop or X button is clicked', async () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: /open full-size image of Test World/i }));
+    expect(screen.getByTestId('world-image-lightbox')).toBeInTheDocument();
+
+    const closeButton = screen.getByRole('button', { name: /close/i });
+    await userEvent.click(closeButton);
+
+    expect(screen.queryByTestId('world-image-lightbox')).not.toBeInTheDocument();
+    expect(document.body).not.toHaveClass('overflow-hidden');
+  });
+
+  it('does not open a lightbox when the world has no image', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld({ imageUrl: '' }),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(screen.queryByRole('button', { name: /open full-size image/i })).not.toBeInTheDocument();
+    expect(screen.queryByTestId('world-image-lightbox')).not.toBeInTheDocument();
+  });
+
+  it('closes the lightbox when Escape is pressed', async () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: /open full-size image of Test World/i }));
+    expect(screen.getByTestId('world-image-lightbox')).toBeInTheDocument();
+
+    await userEvent.keyboard('{Escape}');
+
+    expect(screen.queryByTestId('world-image-lightbox')).not.toBeInTheDocument();
   });
 });

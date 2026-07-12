@@ -57,7 +57,9 @@
     "switchToInfinite": "無限スクロールに切り替え",
     "loadingMore": "さらに読み込み中...",
     "backToTop": "トップに戻る",
-    "numberOfResults": "結果件数: {{count}}"
+    "numberOfResultsLabel": "結果件数:",
+    "numberOfResultsCount": "{{count}}",
+    "loadingResultCount": "件数を読み込み中"
   },
   "worldDetail": {
     "loadError": "ワールドの読み込みに失敗しました: {{message}}",
@@ -74,6 +76,8 @@
     "platforms": "プラットフォーム",
     "tags": "タグ",
     "openInVRChat": "VRChat で開く",
+    "openImageLightbox": "{{name}} の画像をフルサイズで開く",
+    "imageLightbox": "{{name}} の画像",
     "saveToList": "リストに保存",
     "savedToList": "リストに保存済み"
   },
@@ -101,7 +105,8 @@
       "submitError": "コメントを投稿できませんでした: {{message}}",
       "youIndicator": "（あなた）",
       "loadMore": "さらに読み込む",
-      "loadingMore": "コメントを読み込み中..."
+      "loadingMore": "コメントを読み込み中...",
+      "loading": "コメントを読み込み中..."
     },
     "validation": {
       "tooLong": "コメントは256文字以内にしてください。",

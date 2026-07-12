@@ -20,10 +20,6 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 }
 
 describe('sanity', () => {
-  it('should pass', () => {
-    expect(true).toBe(true)
-  })
-
   it('renders app without crashing', () => {
     render(<App />, { wrapper: Wrapper })
     expect(document.body).toBeInTheDocument()

@@ -69,6 +69,15 @@ describe('SentimentSection', () => {
     expect(screen.getByTestId('sentiment-section')).toBeInTheDocument();
   });
 
+  it('passes loading state to comment list', () => {
+    mocks.useInfiniteComments.mockReturnValue({
+      ...defaultComments,
+      isLoading: true,
+    });
+    render(<SentimentSection worldId="w1" />, { wrapper });
+    expect(screen.getByTestId('sentiment-comment-list-loading')).toBeInTheDocument();
+  });
+
   it('uses submitRating when user has no rating and clicks a rating', async () => {
     const submitRating = { ...defaultMutation, mutateAsync: vi.fn().mockResolvedValue(undefined) };
     mocks.useSubmitRating.mockReturnValue(submitRating);
