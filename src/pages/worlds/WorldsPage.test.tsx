@@ -157,6 +157,30 @@ describe('WorldsPage', () => {
     expect(screen.getByLabelText(/back to top/i)).toBeInTheDocument();
   });
 
+  it('does not scroll to top when filters change in infinite scroll mode', async () => {
+    const user = userEvent.setup();
+    const scrollToSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+
+    renderPage(<WorldsPage />);
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+    await user.click(screen.getByRole('button', { name: /Good\s*\(123\)/ }));
+
+    expect(scrollToSpy).not.toHaveBeenCalled();
+
+    scrollToSpy.mockRestore();
+  });
+
+  it('does not scroll to top when toggling scroll mode', () => {
+    const scrollToSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+
+    renderPage(<WorldsPage />);
+    fireEvent.click(screen.getByRole('button', { name: /switch to pagination/i }));
+
+    expect(scrollToSpy).not.toHaveBeenCalled();
+
+    scrollToSpy.mockRestore();
+  });
+
   it('renders mapped platform labels in list view', () => {
     window.localStorage.setItem('sos-worlds-view-mode', 'list');
     renderPage(<WorldsPage />);
