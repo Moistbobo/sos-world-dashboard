@@ -154,15 +154,11 @@ export function WorldsPage() {
   const handleToggleMode = () => {
     setScrollMode(scrollMode === 'infinite' ? 'pagination' : 'infinite');
     setOffset(0);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const resetToFirstPage = useCallback(() => {
     setOffset(0);
-    if (scrollMode === 'infinite') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [scrollMode]);
+  }, []);
 
   const handleToggleTag = (tag: string) => {
     setSelectedTags((prev) =>
