@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { Globe, Users, Calendar, ExternalLink, Star, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { World } from '../../types';
@@ -17,7 +17,7 @@ interface WorldCardProps {
   onRemove?: () => void;
 }
 
-export function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemove }: WorldCardProps) {
+export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemove }: WorldCardProps) {
   const { t } = useTranslation();
   const { isWorldInAnyList } = useLists();
   const [saveOpen, setSaveOpen] = useState(false);
@@ -158,4 +158,4 @@ export function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemo
       <SaveToListDialog worldId={world.worldId} open={saveOpen} onOpenChange={setSaveOpen} />
     </div>
   );
-}
+});
