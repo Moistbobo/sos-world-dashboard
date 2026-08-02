@@ -8,9 +8,10 @@ import { getPlatformLabel } from '../../utils/platformLabel';
 interface WorldListRowProps {
   world: World;
   onSelect: (worldId: string) => void;
+  onAuthorClick?: (authorName: string) => void;
 }
 
-export const WorldListRow = memo(function WorldListRow({ world, onSelect }: WorldListRowProps) {
+export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuthorClick }: WorldListRowProps) {
   const { t } = useTranslation();
 
   return (
@@ -30,8 +31,31 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect }: Worl
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{world.name}</p>
         <p className="truncate text-xs text-slate-500 dark:text-slate-400">
-          {t('common.byAuthor', { author: world.authorName || t('common.unknown') })} · {world.capacity}{' '}
-          capacity · {world.platforms.map(getPlatformLabel).join(', ')}
+          {world.authorName && onAuthorClick ? (
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAuthorClick(world.authorName);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onAuthorClick(world.authorName);
+                }
+              }}
+              className="cursor-pointer rounded hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 dark:hover:text-indigo-400"
+              aria-label={t('common.byAuthor', { author: world.authorName })}
+              title={t('common.byAuthor', { author: world.authorName })}
+            >
+              {t('common.byAuthor', { author: world.authorName })}
+            </span>
+          ) : (
+            t('common.byAuthor', { author: world.authorName || t('common.unknown') })
+          )}{' '}
+          · {world.capacity} capacity · {world.platforms.map(getPlatformLabel).join(', ')}
         </p>
       </div>
       <div className="hidden flex-wrap gap-1 sm:flex">

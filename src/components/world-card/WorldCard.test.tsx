@@ -141,4 +141,67 @@ describe('WorldCard', () => {
     await userEvent.click(saveButton);
     expect(onSelect).not.toHaveBeenCalled();
   });
+
+  it('renders the author as a clickable button when onAuthorClick is provided', () => {
+    render(
+      <WorldCard world={mockWorld} onSelect={vi.fn()} onAuthorClick={vi.fn()} />,
+      { wrapper: Wrapper },
+    );
+    const authorButton = screen.getByRole('button', { name: /by tester/i });
+    expect(authorButton).toBeInTheDocument();
+    expect(authorButton.tagName).toBe('BUTTON');
+  });
+
+  it('calls onAuthorClick with the author name when the author is clicked', async () => {
+    const onAuthorClick = vi.fn();
+    render(
+      <WorldCard
+        world={mockWorld}
+        onSelect={vi.fn()}
+        onAuthorClick={onAuthorClick}
+      />,
+      { wrapper: Wrapper },
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: /by tester/i }));
+
+    expect(onAuthorClick).toHaveBeenCalledWith('Tester');
+  });
+
+  it('does not trigger card navigation when the author is clicked', async () => {
+    const onSelect = vi.fn();
+    render(
+      <WorldCard
+        world={mockWorld}
+        onSelect={onSelect}
+        onAuthorClick={vi.fn()}
+      />,
+      { wrapper: Wrapper },
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: /by tester/i }));
+
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it('renders the author as plain text when authorName is missing', () => {
+    const onAuthorClick = vi.fn();
+    render(
+      <WorldCard
+        world={{ ...mockWorld, authorName: '' }}
+        onSelect={vi.fn()}
+        onAuthorClick={onAuthorClick}
+      />,
+      { wrapper: Wrapper },
+    );
+
+    expect(screen.queryByRole('button', { name: /by/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/unknown/i)).toBeInTheDocument();
+  });
+
+  it('renders the author as plain text when onAuthorClick is not provided', () => {
+    render(<WorldCard world={mockWorld} onSelect={vi.fn()} />, { wrapper: Wrapper });
+    expect(screen.queryByRole('button', { name: /by tester/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/by tester/i)).toBeInTheDocument();
+  });
 });

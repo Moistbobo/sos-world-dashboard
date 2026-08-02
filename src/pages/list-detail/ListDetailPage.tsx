@@ -164,6 +164,7 @@ export function ListDetailPage({
                   world={entry.data!}
                   onSelect={(id) => navigate(`/worlds/${id}`)}
                   onRemove={() => handleRemove(entry.worldId)}
+                  onAuthorClick={(author) => navigate(`/worlds?search=${encodeURIComponent(author)}`)}
                 />
               ))}
             </div>
