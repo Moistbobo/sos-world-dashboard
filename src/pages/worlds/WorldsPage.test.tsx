@@ -157,6 +157,30 @@ describe('WorldsPage', () => {
     expect(screen.getByLabelText(/back to top/i)).toBeInTheDocument();
   });
 
+  it('does not scroll to top when filters change in infinite scroll mode', async () => {
+    const user = userEvent.setup();
+    const scrollToSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+
+    renderPage(<WorldsPage />);
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+    await user.click(screen.getByRole('button', { name: /Good\s*\(123\)/ }));
+
+    expect(scrollToSpy).not.toHaveBeenCalled();
+
+    scrollToSpy.mockRestore();
+  });
+
+  it('does not scroll to top when toggling scroll mode', () => {
+    const scrollToSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+
+    renderPage(<WorldsPage />);
+    fireEvent.click(screen.getByRole('button', { name: /switch to pagination/i }));
+
+    expect(scrollToSpy).not.toHaveBeenCalled();
+
+    scrollToSpy.mockRestore();
+  });
+
   it('renders mapped platform labels in list view', () => {
     window.localStorage.setItem('sos-worlds-view-mode', 'list');
     renderPage(<WorldsPage />);
@@ -334,6 +358,84 @@ describe('WorldsPage', () => {
       expect(screen.queryByRole('button', { name: /remove date tagged filter/i })).not.toBeInTheDocument();
       await waitFor(() => {
         expect(window.location.search).not.toContain('dayRange=abc');
+      });
+    });
+  });
+
+  describe('WorldsPage author filter', () => {
+    it('seeds the search input from the ?search= URL param', () => {
+      window.history.pushState({}, '', '/worlds?search=Tester');
+      renderPage(<WorldsPage />);
+      const searchInput = screen.getByPlaceholderText(/search/i) as HTMLInputElement;
+      expect(searchInput.value).toBe('Tester');
+    });
+
+    it('fills the search input and syncs URL when the author is clicked', async () => {
+      const user = userEvent.setup();
+      window.history.pushState({}, '', '/worlds');
+      renderPage(<WorldsPage />);
+
+      const authorButton = screen.getByRole('button', { name: /by tester/i });
+      await user.click(authorButton);
+
+      const searchInput = screen.getByPlaceholderText(/search/i) as HTMLInputElement;
+      expect(searchInput.value).toBe('Tester');
+      await waitFor(() => {
+        expect(window.location.search).toContain('search=Tester');
+      });
+    });
+
+    it('replaces the existing search when a new author is clicked', async () => {
+      const user = userEvent.setup();
+      window.history.pushState({}, '', '/worlds?search=quest');
+      renderPage(<WorldsPage />);
+
+      const searchInput = screen.getByPlaceholderText(/search/i) as HTMLInputElement;
+      expect(searchInput.value).toBe('quest');
+
+      await user.click(screen.getByRole('button', { name: /by tester/i }));
+
+      expect(searchInput.value).toBe('Tester');
+      await waitFor(() => {
+        expect(window.location.search).toContain('search=Tester');
+        expect(window.location.search).not.toContain('quest');
+      });
+    });
+
+    it('preserves other URL filters when an author is clicked', async () => {
+      const user = userEvent.setup();
+      window.history.pushState({}, '', '/worlds?tag=chill');
+      renderPage(<WorldsPage />);
+
+      await user.click(screen.getByRole('button', { name: /by tester/i }));
+
+      await waitFor(() => {
+        expect(window.location.search).toContain('tag=chill');
+        expect(window.location.search).toContain('search=Tester');
+      });
+    });
+
+    it('wires the author click in the list view', async () => {
+      const user = userEvent.setup();
+      window.localStorage.setItem('sos-worlds-view-mode', 'list');
+      window.history.pushState({}, '', '/worlds');
+      renderPage(<WorldsPage />);
+
+      const authorSpan = screen.getByLabelText(/by tester/i);
+      await user.click(authorSpan);
+
+      const searchInput = screen.getByPlaceholderText(/search/i) as HTMLInputElement;
+      expect(searchInput.value).toBe('Tester');
+    });
+
+    it('clears the search param from the URL when the input is emptied', async () => {
+      const user = userEvent.setup();
+      window.history.pushState({}, '', '/worlds?search=Tester');
+      renderPage(<WorldsPage />);
+      const searchInput = screen.getByPlaceholderText(/search/i) as HTMLInputElement;
+      await user.clear(searchInput);
+      await waitFor(() => {
+        expect(window.location.search).not.toContain('search=Tester');
       });
     });
   });

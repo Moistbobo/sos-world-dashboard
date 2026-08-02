@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Activity, Globe, Tags, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +17,14 @@ export function DashboardPage() {
 
   const topTags = tagsData?.tags.slice(0, 10) || [];
   const latestWorlds = worldsData?.worlds || [];
+
+  const latestWorldId = latestWorlds[0]?.worldId;
+  const latestAddDate = latestWorldId ? getWorldAddDate(latestWorlds[0]) : undefined;
+  const latestDateLabel = useMemo(
+    () => (latestAddDate ? new Date(latestAddDate).toLocaleDateString() : '-'),
+    [latestAddDate],
+  );
+  const topTagMaxCount = topTags[0]?.count;
 
   return (
     <div className="space-y-6">
@@ -42,7 +51,7 @@ export function DashboardPage() {
         />
         <StatCard
           label={t('dashboard.latest')}
-          value={latestWorlds.length > 0 ? new Date(getWorldAddDate(latestWorlds[0])).toLocaleDateString() : '-'}
+          value={latestDateLabel}
           icon={<Clock className="h-5 w-5" />}
         />
       </div>
@@ -72,6 +81,7 @@ export function DashboardPage() {
                       onSelect={(id) => navigate(`/worlds/${id}`)}
                       onTagClick={(tag) => navigate(`/worlds?tag=${encodeURIComponent(tag)}`)}
                       onPlatformClick={(platform) => navigate(`/worlds?platform=${encodeURIComponent(platform)}`)}
+                      onAuthorClick={(author) => navigate(`/worlds?search=${encodeURIComponent(author)}`)}
                     />
                   ))}
             </div>
@@ -90,7 +100,7 @@ export function DashboardPage() {
                     <div key={i} className="h-4 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
                   ))
                 : topTags.map((t) => {
-                    const max = topTags[0]?.count || 1;
+                    const max = topTagMaxCount || 1;
                     const pct = Math.round((t.count / max) * 100);
                     return (
                       <button
