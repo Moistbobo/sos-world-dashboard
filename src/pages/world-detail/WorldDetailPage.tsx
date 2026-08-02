@@ -7,6 +7,7 @@ import { TagBadge } from '../../components/tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
 import { getWorldAddDate } from '../../utils/worldAddDate';
 import { ShareButton } from '../../components/share-button';
+import { CopyWorldId } from '../../components/copy-world-id';
 import { WorldAddDate } from '../../components/world-add-date';
 import { useLists } from '../../contexts/ListsContext';
 import { SaveToListDialog } from '../../components/save-to-list-dialog/SaveToListDialog';
@@ -297,10 +298,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
                 <Users className="h-4 w-4 text-slate-400 dark:text-slate-500" />
                 {t('worldDetail.capacity', { capacity: w.capacity })}
               </div>
-              <div className="flex items-center gap-1.5">
-                <Hash className="h-4 w-4 text-slate-400 dark:text-slate-500" />
-                {t('worldDetail.id', { id: w.worldId })}
-              </div>
+              <CopyWorldId worldId={w.worldId} />
               <div className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4 text-slate-400 dark:text-slate-500" />
                 <Trans

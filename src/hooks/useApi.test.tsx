@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useMeta, useWorld } from './useApi';
+import { useMeta, useTags, useWorld } from './useApi';
 import * as client from '../api/client';
 import type { World } from '../types';
 
@@ -143,5 +143,25 @@ describe('useMeta', () => {
     });
     expect(client.fetchMeta).toHaveBeenCalledTimes(1);
     expect(vi.mocked(client.fetchMeta).mock.calls[0]).toHaveLength(1);
+  });
+});
+
+describe('useTags', () => {
+  beforeEach(() => {
+    queryClient.clear();
+    vi.clearAllMocks();
+  });
+
+  it('sets an explicit staleTime so the cached value is reused on remount', async () => {
+    const fetchSpy = vi.spyOn(client, 'fetchTags').mockResolvedValue({ tags: [] });
+
+    const first = renderHook(() => useTags(), { wrapper: Wrapper });
+    await waitFor(() => expect(first.result.current.isPending).toBe(false));
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+    first.unmount();
+
+    renderHook(() => useTags(), { wrapper: Wrapper });
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
   });
 });
