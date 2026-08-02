@@ -15,9 +15,10 @@ interface WorldCardProps {
   onPlatformClick?: (platform: string) => void;
   onSelect?: (worldId: string) => void;
   onRemove?: () => void;
+  onAuthorClick?: (authorName: string) => void;
 }
 
-export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemove }: WorldCardProps) {
+export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemove, onAuthorClick }: WorldCardProps) {
   const { t } = useTranslation();
   const { isWorldInAnyList } = useLists();
   const [saveOpen, setSaveOpen] = useState(false);
@@ -92,9 +93,24 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
         <h3 className="text-sm font-semibold text-slate-900 line-clamp-1 dark:text-white" title={world.name}>
           {world.name}
         </h3>
-        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-          {t('common.byAuthor', { author: world.authorName || t('common.unknown') })}
-        </p>
+        {world.authorName && onAuthorClick ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onAuthorClick(world.authorName);
+            }}
+            className="relative z-30 mt-0.5 -mx-1 self-start rounded px-1 text-xs text-slate-500 transition hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 dark:text-slate-400 dark:hover:text-indigo-400"
+            aria-label={t('common.byAuthor', { author: world.authorName })}
+            title={t('common.byAuthor', { author: world.authorName })}
+          >
+            {t('common.byAuthor', { author: world.authorName })}
+          </button>
+        ) : (
+          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+            {t('common.byAuthor', { author: world.authorName || t('common.unknown') })}
+          </p>
+        )}
 
         <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
           <span className="inline-flex items-center gap-1">

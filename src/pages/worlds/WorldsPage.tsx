@@ -31,6 +31,7 @@ export function WorldsPage() {
     handleDayRangeChange,
     searchInput,
     setSearchInput,
+    handleAuthorClick,
     handleClear,
     availableTags,
     qualityCounts,
@@ -195,6 +196,7 @@ export function WorldsPage() {
               onSelect={onSelect}
               onTagClick={onTagClick}
               onPlatformClick={onPlatformClick}
+              onAuthorClick={handleAuthorClick}
             />
           ))}
         </div>
@@ -203,7 +205,12 @@ export function WorldsPage() {
       {!isPending && !isError && worlds.length > 0 && viewMode === 'list' && (
         <div className="space-y-3">
           {worlds.map((w) => (
-            <WorldListRow key={w.worldId} world={w} onSelect={onSelect} />
+            <WorldListRow
+              key={w.worldId}
+              world={w}
+              onSelect={onSelect}
+              onAuthorClick={handleAuthorClick}
+            />
           ))}
         </div>
       )}

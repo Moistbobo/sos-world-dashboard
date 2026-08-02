@@ -49,8 +49,8 @@ export function useWorldsFilters(scrollMode: ScrollMode) {
       max: Math.max(nextMin, nextMax),
     };
   });
-  const [searchInput, setSearchInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState(() => searchParams.get('search') ?? '');
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') ?? '');
 
   const { data: tagsData } = useTags();
   const { data: metaData } = useMeta();
@@ -109,15 +109,15 @@ export function useWorldsFilters(scrollMode: ScrollMode) {
       next.append('platform', p);
     }
     if (dayRange !== null) next.set('dayRange', String(dayRange));
+    if (searchQuery) next.set('search', searchQuery);
     const nextSearch = next.toString();
     if (nextSearch === lastSearchRef.current) return;
     lastSearchRef.current = nextSearch;
     setSearchParams(next, { replace: true });
-  }, [selectedTags, selectedQuality, capacityRange, selectedPlatforms, dayRange, setSearchParams]);
+  }, [selectedTags, selectedQuality, capacityRange, selectedPlatforms, dayRange, searchQuery, setSearchParams]);
 
   // Debounce search input
   useEffect(() => {
-    console.log('search Input changed');
     const timer = setTimeout(() => setSearchQuery(searchInput.trim()), 300);
     return () => clearTimeout(timer);
   }, [searchInput]);
@@ -174,8 +174,16 @@ export function useWorldsFilters(scrollMode: ScrollMode) {
     setCapacityRange({ min: MIN_CAPACITY, max: MAX_CAPACITY });
     setDayRange(null);
     setSearchInput('');
+    setSearchQuery('');
     resetToFirstPage();
   };
+
+  const handleAuthorClick = useCallback((authorName: string) => {
+    const trimmed = authorName.trim();
+    setSearchInput(trimmed);
+    setSearchQuery(trimmed);
+    setOffset(0);
+  }, []);
 
   // Keep the tag filter state in sync with the URL ?tag= param.
   const previousUrlTagRef = useRef<string | null>(searchParams.get('tag'));
@@ -207,6 +215,21 @@ export function useWorldsFilters(scrollMode: ScrollMode) {
         ? parsed
         : null;
     setDayRange((prev) => (prev === next ? prev : next));
+    resetToFirstPage();
+  }, [searchParams, resetToFirstPage]);
+
+  // Keep the search input/query in sync with the URL ?search= param so
+  // navigation from other pages (e.g. Dashboard -> /worlds?search=...) seeds
+  // the search bar, and back/forward navigation updates it.
+  const previousUrlSearchRef = useRef<string | null>(searchParams.get('search'));
+  useEffect(() => {
+    const urlSearch = searchParams.get('search');
+    if (urlSearch === previousUrlSearchRef.current) return;
+
+    previousUrlSearchRef.current = urlSearch;
+    const next = urlSearch ?? '';
+    setSearchInput((prev) => (prev === next ? prev : next));
+    setSearchQuery((prev) => (prev === next ? prev : next));
     resetToFirstPage();
   }, [searchParams, resetToFirstPage]);
 
@@ -260,6 +283,8 @@ export function useWorldsFilters(scrollMode: ScrollMode) {
     handleDayRangeChange,
     searchInput,
     setSearchInput,
+    searchQuery,
+    handleAuthorClick,
     handleClear,
     availableTags: tagsData?.tags || [],
     qualityCounts,
