@@ -16,6 +16,11 @@
     "closeSidebar": "Close sidebar",
     "version": "Version"
   },
+  "api": {
+    "toast": {
+      "unreachable": "API is unreachable"
+    }
+  },
   "common": {
     "back": "Back",
     "details": "Details",

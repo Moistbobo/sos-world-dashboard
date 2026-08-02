@@ -52,8 +52,8 @@ export function useWorldsFilters(scrollMode: ScrollMode) {
   const [searchInput, setSearchInput] = useState(() => searchParams.get('search') ?? '');
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') ?? '');
 
-  const { data: tagsData } = useTags();
-  const { data: metaData } = useMeta();
+  const { data: tagsData } = useTags({ suppressErrorToast: true });
+  const { data: metaData } = useMeta({ suppressErrorToast: true });
 
   const qualityCounts = useMemo(
     () => [
@@ -72,30 +72,36 @@ export function useWorldsFilters(scrollMode: ScrollMode) {
     [metaData]
   );
 
-  const paginationQuery = useWorlds({
-    limit,
-    offset,
-    tag: selectedTags,
-    quality: selectedQuality,
-    platform: selectedPlatforms,
-    search: searchQuery,
-    minCapacity: capacityRange.min,
-    maxCapacity: capacityRange.max,
-    dayRange: dayRange ?? undefined,
-    enabled: scrollMode === 'pagination',
-  });
+  const paginationQuery = useWorlds(
+    {
+      limit,
+      offset,
+      tag: selectedTags,
+      quality: selectedQuality,
+      platform: selectedPlatforms,
+      search: searchQuery,
+      minCapacity: capacityRange.min,
+      maxCapacity: capacityRange.max,
+      dayRange: dayRange ?? undefined,
+      enabled: scrollMode === 'pagination',
+    },
+    { suppressErrorToast: true },
+  );
 
-  const infiniteQuery = useInfiniteWorlds({
-    limit,
-    tag: selectedTags,
-    quality: selectedQuality,
-    platform: selectedPlatforms,
-    search: searchQuery,
-    minCapacity: capacityRange.min,
-    maxCapacity: capacityRange.max,
-    dayRange: dayRange ?? undefined,
-    enabled: scrollMode === 'infinite',
-  });
+  const infiniteQuery = useInfiniteWorlds(
+    {
+      limit,
+      tag: selectedTags,
+      quality: selectedQuality,
+      platform: selectedPlatforms,
+      search: searchQuery,
+      minCapacity: capacityRange.min,
+      maxCapacity: capacityRange.max,
+      dayRange: dayRange ?? undefined,
+      enabled: scrollMode === 'infinite',
+    },
+    { suppressErrorToast: true },
+  );
 
   // Update URL when filters change
   const lastSearchRef = useRef(searchParams.toString());

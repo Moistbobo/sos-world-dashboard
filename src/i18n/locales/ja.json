@@ -16,6 +16,11 @@
     "closeSidebar": "サイドバーを閉じる",
     "version": "バージョン"
   },
+  "api": {
+    "toast": {
+      "unreachable": "API に接続できません"
+    }
+  },
   "common": {
     "back": "戻る",
     "details": "詳細",
