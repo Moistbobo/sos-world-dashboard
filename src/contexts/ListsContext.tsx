@@ -163,6 +163,16 @@ export function ListsProvider({ children }: { children: ReactNode }) {
     [commit],
   );
 
+  const worldIdSet = useMemo(() => {
+    const set = new Set<string>();
+    for (const list of lists) {
+      for (const worldId of list.worldIds) {
+        set.add(worldId);
+      }
+    }
+    return set;
+  }, [lists]);
+
   const isWorldInList = useCallback(
     (worldId: string, listId: string) =>
       lists.some(
@@ -172,8 +182,8 @@ export function ListsProvider({ children }: { children: ReactNode }) {
   );
 
   const isWorldInAnyList = useCallback(
-    (worldId: string) => lists.some((list) => list.worldIds.includes(worldId)),
-    [lists],
+    (worldId: string) => worldIdSet.has(worldId),
+    [worldIdSet],
   );
 
   const getList = useCallback(
