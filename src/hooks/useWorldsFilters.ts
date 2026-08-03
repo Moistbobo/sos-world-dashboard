@@ -14,9 +14,13 @@ type ScrollMode = 'infinite' | 'pagination';
  * memoized row components (WorldCard, WorldListRow) do not re-render when the
  * page re-renders on filter-state-only changes.
  */
-export function useWorldsFilters(scrollMode: ScrollMode) {
+export function useWorldsFilters(
+  scrollMode: ScrollMode,
+  options?: { suppressErrorToast?: boolean },
+) {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const suppressErrorToast = options?.suppressErrorToast;
 
   const [limit] = useState(20);
   const [offset, setOffset] = useState(0);
@@ -52,8 +56,8 @@ export function useWorldsFilters(scrollMode: ScrollMode) {
   const [searchInput, setSearchInput] = useState(() => searchParams.get('search') ?? '');
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') ?? '');
 
-  const { data: tagsData } = useTags({ suppressErrorToast: true });
-  const { data: metaData } = useMeta({ suppressErrorToast: true });
+  const { data: tagsData } = useTags({ suppressErrorToast });
+  const { data: metaData } = useMeta({ suppressErrorToast });
 
   const qualityCounts = useMemo(
     () => [
@@ -85,7 +89,7 @@ export function useWorldsFilters(scrollMode: ScrollMode) {
       dayRange: dayRange ?? undefined,
       enabled: scrollMode === 'pagination',
     },
-    { suppressErrorToast: true },
+    { suppressErrorToast },
   );
 
   const infiniteQuery = useInfiniteWorlds(
@@ -100,7 +104,7 @@ export function useWorldsFilters(scrollMode: ScrollMode) {
       dayRange: dayRange ?? undefined,
       enabled: scrollMode === 'infinite',
     },
-    { suppressErrorToast: true },
+    { suppressErrorToast },
   );
 
   // Update URL when filters change

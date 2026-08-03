@@ -13,22 +13,19 @@ import {
 } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { useHealth } from './useApi';
+import { useHealth } from './useHealth';
 
 const DEFAULT_RETRY = 3;
 
 export function useApiDownToast() {
   const { isError } = useHealth();
   const { t } = useTranslation();
-  const hasShownRef = useRef(false);
+  const hasFiredRef = useRef(false);
 
   useEffect(() => {
-    if (isError && !hasShownRef.current) {
-      hasShownRef.current = true;
-      toast.warning(t('api.toast.unreachable'));
-    }
-    if (!isError) {
-      hasShownRef.current = false;
+    if (isError && !hasFiredRef.current) {
+      hasFiredRef.current = true;
+      toast.warning(t('layout.unreachable'), { duration: 4000 });
     }
   }, [isError, t]);
 }
@@ -49,6 +46,8 @@ function isFinalFailure<TError>(
   if (!isError) return false;
   if (retry === false) return true;
   if (typeof retry === 'number') return failureCount > retry;
+  // retry: true means "retry forever" in TanStack Query v5; a query with
+  // unlimited retries never reaches a "final" state, so no toast is emitted.
   if (retry === true) return false;
   return failureCount > DEFAULT_RETRY;
 }
@@ -75,6 +74,9 @@ function useFinalErrorToast(
     }
 
     if (isFinal && error && lastShownForError.current !== error) {
+      // Dedup is by error reference identity, so a stale-while-revalidate
+      // refetch that fails with a fresh Error instance will re-fire the toast.
+      // That is the intended behavior; a future reader should not "fix" it.
       lastShownForError.current = error;
       toast.error(getErrorMessage(error, fallbackMessage));
     }

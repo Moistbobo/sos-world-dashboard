@@ -11,15 +11,11 @@
     "apiStatus": "API status:",
     "online": "Online",
     "offline": "Offline / Unauthorized",
+    "unreachable": "API is unreachable",
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
     "closeSidebar": "Close sidebar",
     "version": "Version"
-  },
-  "api": {
-    "toast": {
-      "unreachable": "API is unreachable"
-    }
   },
   "common": {
     "back": "Back",

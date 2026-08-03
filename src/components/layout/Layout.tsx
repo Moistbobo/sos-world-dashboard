@@ -14,7 +14,7 @@ import {
   ChevronsRight,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useHealth } from '../../hooks/useApi';
+import { useHealth } from '../../hooks/useHealth';
 import { useApiDownToast } from '../../hooks/useApiToasts';
 import { ThemeToggle } from '../theme-toggle';
 

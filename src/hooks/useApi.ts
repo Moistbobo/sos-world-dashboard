@@ -1,16 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { fetchHealth, fetchMeta, fetchTags, fetchWorld, fetchWorlds } from '../api/client';
+import { fetchMeta, fetchTags, fetchWorld, fetchWorlds } from '../api/client';
 import type { PaginatedWorlds } from '../types';
 import { useApiInfiniteQuery, useApiQuery } from './useApiToasts';
-
-export function useHealth() {
-  return useApiQuery({
-    queryKey: ['health'],
-    queryFn: fetchHealth,
-    staleTime: 30_000,
-    suppressErrorToast: true,
-  });
-}
 
 export function useTags(options?: { suppressErrorToast?: boolean }) {
   return useApiQuery({

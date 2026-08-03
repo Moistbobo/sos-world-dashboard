@@ -28,7 +28,7 @@ describe('useApiDownToast', () => {
     renderHook(() => useApiDownToast(), { wrapper: Wrapper });
 
     await waitFor(() => expect(toast.warning).toHaveBeenCalledTimes(1));
-    expect(toast.warning).toHaveBeenCalledWith('API is unreachable');
+    expect(toast.warning).toHaveBeenCalledWith('API is unreachable', { duration: 4000 });
 
     await new Promise((r) => setTimeout(r, 30));
     expect(toast.warning).toHaveBeenCalledTimes(1);
@@ -36,7 +36,28 @@ describe('useApiDownToast', () => {
     spy.mockRestore();
   });
 
-  it('resets the shown flag on remount, allowing the toast to fire again on a new offline transition', async () => {
+  it('does not re-fire the toast when the health query flaps (error -> ok -> error)', async () => {
+    const spy = vi.spyOn(client, 'fetchHealth').mockRejectedValue(new Error('boom'));
+
+    renderHook(() => useApiDownToast(), { wrapper: Wrapper });
+    await waitFor(() => expect(toast.warning).toHaveBeenCalledTimes(1));
+
+    spy.mockResolvedValue({ status: 'ok' } as never);
+    await queryClient.invalidateQueries({ queryKey: ['health'] });
+    await waitFor(() => expect(queryClient.getQueryState(['health'])?.status).toBe('success'));
+    await new Promise((r) => setTimeout(r, 20));
+    expect(toast.warning).toHaveBeenCalledTimes(1);
+
+    spy.mockRejectedValue(new Error('boom again'));
+    await queryClient.invalidateQueries({ queryKey: ['health'] });
+    await waitFor(() => expect(queryClient.getQueryState(['health'])?.status).toBe('error'));
+    await new Promise((r) => setTimeout(r, 20));
+    expect(toast.warning).toHaveBeenCalledTimes(1);
+
+    spy.mockRestore();
+  });
+
+  it('fires again after a remount (a fresh ref re-arms the one-shot latch)', async () => {
     const spy = vi.spyOn(client, 'fetchHealth').mockRejectedValue(new Error('boom'));
 
     const first = renderHook(() => useApiDownToast(), { wrapper: Wrapper });
