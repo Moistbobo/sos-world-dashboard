@@ -203,7 +203,7 @@ export function WorldsPage() {
       )}
 
       {!isPending && !isError && worlds.length > 0 && viewMode === 'list' && (
-        <div className="space-y-3">
+        <div className="space-y-3 w-full min-w-0">
           {worlds.map((w) => (
             <WorldListRow
               key={w.worldId}

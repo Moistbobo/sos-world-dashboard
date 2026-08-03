@@ -17,7 +17,7 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
   return (
     <button
       onClick={() => onSelect(world.worldId)}
-      className="card flex w-full items-center gap-4 p-3 text-left transition hover:border-slate-400 dark:hover:border-slate-600"
+      className="card flex w-full min-w-0 items-center gap-3 p-3 text-left transition hover:border-slate-400 sm:gap-4 dark:hover:border-slate-600"
     >
       <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-800">
         {world.imageUrl ? (
