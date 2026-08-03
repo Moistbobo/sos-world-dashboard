@@ -187,6 +187,18 @@ describe('WorldsPage', () => {
     expect(screen.getByText(/Desktop, Android/)).toBeInTheDocument();
   });
 
+  it('constrains the list container to the available width so rows cannot overflow', () => {
+    window.localStorage.setItem('sos-worlds-view-mode', 'list');
+    renderPage(<WorldsPage />);
+    const listContainer = document.querySelector('.space-y-3.w-full.min-w-0');
+    expect(listContainer).not.toBeNull();
+    const rows = listContainer?.querySelectorAll('button.card') ?? [];
+    expect(rows.length).toBeGreaterThan(0);
+    rows.forEach((row) => {
+      expect(row).toHaveClass('min-w-0');
+    });
+  });
+
   it('renders the number of results from the filtered query', () => {
     renderPage(<WorldsPage />);
     expect(screen.getByText(/Number of results:/i)).toBeInTheDocument();
