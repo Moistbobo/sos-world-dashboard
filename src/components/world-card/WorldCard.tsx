@@ -17,7 +17,7 @@ interface WorldCardProps {
   onSelect?: (worldId: string) => void;
   onRemove?: () => void;
   onAuthorClick?: (authorName: string) => void;
-  ratingSummary?: RatingSummary | undefined;
+  ratingSummary?: RatingSummary | null | undefined;
 }
 
 export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemove, onAuthorClick, ratingSummary }: WorldCardProps) {
@@ -161,7 +161,14 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
         </div>
 
         {ratingSummary !== undefined && (
-          <WorldRatingBar summary={ratingSummary} variant="card" />
+          <WorldRatingBar
+            summary={
+              ratingSummary === null
+                ? { worldId: world.worldId, good: 0, bad: 0, userRating: null }
+                : ratingSummary
+            }
+            variant="card"
+          />
         )}
 
         <div className="mt-auto pt-3 flex items-center justify-center gap-2">

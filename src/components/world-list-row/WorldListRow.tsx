@@ -10,7 +10,7 @@ interface WorldListRowProps {
   world: World;
   onSelect: (worldId: string) => void;
   onAuthorClick?: (authorName: string) => void;
-  ratingSummary?: RatingSummary | undefined;
+  ratingSummary?: RatingSummary | null | undefined;
 }
 
 export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuthorClick, ratingSummary }: WorldListRowProps) {
@@ -69,7 +69,14 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
         )}
       </div>
       {ratingSummary !== undefined && (
-        <WorldRatingBar summary={ratingSummary} variant="list" />
+        <WorldRatingBar
+          summary={
+            ratingSummary === null
+              ? { worldId: world.worldId, good: 0, bad: 0, userRating: null }
+              : ratingSummary
+          }
+          variant="list"
+        />
       )}
       <div className="shrink-0 text-xs text-slate-400 dark:text-slate-500">
         {world.quality === 'good' ? '✅' : world.quality === 'bad' ? '❌' : '—'}

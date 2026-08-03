@@ -205,7 +205,7 @@ export function WorldsPage() {
               onTagClick={onTagClick}
               onPlatformClick={onPlatformClick}
               onAuthorClick={handleAuthorClick}
-              ratingSummary={ratingSummaries?.get(w.worldId)}
+              ratingSummary={ratingSummaries ? ratingSummaries.get(w.worldId) ?? null : undefined}
             />
           ))}
         </div>
@@ -219,7 +219,7 @@ export function WorldsPage() {
               world={w}
               onSelect={onSelect}
               onAuthorClick={handleAuthorClick}
-              ratingSummary={ratingSummaries?.get(w.worldId)}
+              ratingSummary={ratingSummaries ? ratingSummaries.get(w.worldId) ?? null : undefined}
             />
           ))}
         </div>

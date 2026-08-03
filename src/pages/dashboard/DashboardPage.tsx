@@ -90,7 +90,7 @@ export function DashboardPage() {
                       onTagClick={(tag) => navigate(`/worlds?tag=${encodeURIComponent(tag)}`)}
                       onPlatformClick={(platform) => navigate(`/worlds?platform=${encodeURIComponent(platform)}`)}
                       onAuthorClick={(author) => navigate(`/worlds?search=${encodeURIComponent(author)}`)}
-                      ratingSummary={ratingSummaries?.get(w.worldId)}
+                      ratingSummary={ratingSummaries ? ratingSummaries.get(w.worldId) ?? null : undefined}
                     />
                   ))}
             </div>

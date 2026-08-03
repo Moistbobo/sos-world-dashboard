@@ -175,7 +175,7 @@ export function ListDetailPage({
                   onSelect={(id) => navigate(`/worlds/${id}`)}
                   onRemove={() => handleRemove(entry.worldId)}
                   onAuthorClick={(author) => navigate(`/worlds?search=${encodeURIComponent(author)}`)}
-                  ratingSummary={ratingSummaries?.get(entry.worldId)}
+                  ratingSummary={ratingSummaries ? ratingSummaries.get(entry.worldId) ?? null : undefined}
                 />
               ))}
             </div>
