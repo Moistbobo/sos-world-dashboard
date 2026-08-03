@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
-    exclude: ['node_modules', '.worktrees/**', '.opencode/**'],
+    exclude: ['node_modules', '.worktrees/**', '.opencode/**', 'e2e/**'],
   },
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),

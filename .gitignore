@@ -27,6 +27,8 @@ lerna-debug.log*
 
 # Testing
 coverage/
+playwright-report/
+test-results/
 
 # Husky (generated internals)
 .husky/_
