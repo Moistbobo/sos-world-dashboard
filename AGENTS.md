@@ -17,6 +17,8 @@ pnpm lint         # eslint . --report-unused-disable-directives --max-warnings 0
 pnpm test         # vitest run
 pnpm test:watch   # vitest in watch mode
 pnpm test:ui      # vitest --ui
+pnpm test:e2e     # playwright test (full browser, headless)
+pnpm test:e2e:ui  # playwright test --ui
 ```
 
 ## Verification Order
@@ -30,6 +32,14 @@ pnpm test:ui      # vitest --ui
 - Vitest is configured inside `vite.config.ts`: `globals: true`, `environment: 'jsdom'`, setup file `src/test/setup.ts`.
 - `src/test/setup.ts` mocks `sonner`, polyfills `IntersectionObserver` / `ResizeObserver`, and imports i18n so translations load in tests.
 - Many component/page tests use MSW-style fetch mocking and `vi.useFakeTimers()`; check existing tests before inventing new patterns.
+
+## End-to-end (Playwright)
+
+- `e2e/` is the Playwright Test suite. `vite.config.ts` excludes it from Vitest's globs.
+- `playwright.config.ts` boots the real Vite dev server on port 5180 with overridden `VITE_*` envs (the API base URL points at a port nothing listens on — every `/api/*` request is intercepted by `page.route()` in `e2e/fixtures/mock-api.ts`).
+- Mock API fixture lives in `e2e/fixtures/worlds-fixtures.ts` and uses the same response shapes as the real backend in `src/api/client.ts`.
+- Helpers: `visitWorlds(page, options)` seeds localStorage + registers the mock, then navigates; `expandFilters(page)` opens the filter panel; `waitForWorldsRequest(page, predicate)` resolves the next matching `/api/worlds` request URL.
+- First-time setup: `pnpm exec playwright install chromium` (already installed on macOS via `~/Library/Caches/ms-playwright/`).
 
 ## Environment
 
