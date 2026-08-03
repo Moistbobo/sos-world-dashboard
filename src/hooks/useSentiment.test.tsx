@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   useRatings,
   useInfiniteComments,
+  useRatingsForWorldIds,
   useSubmitRating,
   useUpdateRating,
   useDeleteRating,
@@ -53,6 +54,89 @@ describe('useRatings', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(sentimentApi.fetchRatings).toHaveBeenCalledWith('wrld_123');
     expect(result.current.data).toMatchObject({ worldId: 'wrld_123', good: 5, bad: 1, userRating: null });
+  });
+});
+
+describe('useRatingsForWorldIds', () => {
+  function makeMap(entries: Record<string, { good: number; bad: number; userRating?: 'good' | 'bad' | null }>): Map<string, RatingSummary> {
+    return new Map(
+      Object.entries(entries).map(([worldId, v]) => [
+        worldId,
+        { worldId, good: v.good, bad: v.bad, userRating: v.userRating ?? null },
+      ]),
+    );
+  }
+
+  it('issues one batched fetch for the visible world ids', async () => {
+    const spy = vi
+      .spyOn(sentimentApi, 'fetchRatingsForWorldIds')
+      .mockResolvedValue(makeMap({ wrld_a: { good: 5, bad: 1 }, wrld_b: { good: 0, bad: 3 } }));
+
+    const { result } = renderHook(() => useRatingsForWorldIds(['wrld_a', 'wrld_b']), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(['wrld_a', 'wrld_b']);
+    expect(result.current.data?.get('wrld_a')).toMatchObject({ good: 5, bad: 1 });
+    expect(result.current.data?.get('wrld_b')).toMatchObject({ good: 0, bad: 3 });
+  });
+
+  it('reuses the cached batch when the same set is requested in a different order', async () => {
+    const spy = vi
+      .spyOn(sentimentApi, 'fetchRatingsForWorldIds')
+      .mockResolvedValue(makeMap({ wrld_a: { good: 1, bad: 0 }, wrld_b: { good: 0, bad: 1 } }));
+
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    function TestWrapper({ children }: { children: React.ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+
+    const first = renderHook(() => useRatingsForWorldIds(['wrld_a', 'wrld_b']), { wrapper: TestWrapper });
+    await waitFor(() => expect(first.result.current.isSuccess).toBe(true));
+
+    const second = renderHook(() => useRatingsForWorldIds(['wrld_b', 'wrld_a']), { wrapper: TestWrapper });
+    await waitFor(() => expect(second.result.current.isSuccess).toBe(true));
+
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not fetch when the input is empty', async () => {
+    const spy = vi
+      .spyOn(sentimentApi, 'fetchRatingsForWorldIds')
+      .mockResolvedValue(new Map());
+
+    const { result } = renderHook(() => useRatingsForWorldIds([]), { wrapper });
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(spy).not.toHaveBeenCalled();
+    expect(result.current.isFetching).toBe(false);
+    expect(result.current.data).toBeUndefined();
+  });
+
+  it('treats a repeated request for the same set as a cache hit', async () => {
+    const spy = vi
+      .spyOn(sentimentApi, 'fetchRatingsForWorldIds')
+      .mockResolvedValue(makeMap({ wrld_a: { good: 2, bad: 0 } }));
+
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    function TestWrapper({ children }: { children: React.ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+
+    const hook = renderHook(
+      ({ ids }: { ids: string[] }) => useRatingsForWorldIds(ids),
+      { wrapper: TestWrapper, initialProps: { ids: ['wrld_a'] as string[] } },
+    );
+    await waitFor(() => expect(hook.result.current.isSuccess).toBe(true));
+
+    hook.rerender({ ids: ['wrld_a'] });
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });
 

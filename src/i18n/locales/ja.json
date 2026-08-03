@@ -97,8 +97,11 @@
       "countBad": "悪い {{count}}",
       "submitError": "評価を送信できませんでした: {{message}}",
       "ratingBarLabel": "良い評価と悪い評価の割合",
-      "noVotes": "まだ投票がありません",
-      "yourVote": "あなたの投票"
+      "noVotes": "まだ評価はありません",
+      "yourVote": "あなたの投票",
+      "distributionLabel": "{{count}}件の評価のうち{{percent}}%が良い評価",
+      "totalRatings": "{{count}}件の評価",
+      "totalRatings_one": "1件の評価"
     },
     "comments": {
       "title": "コミュニティコメント",

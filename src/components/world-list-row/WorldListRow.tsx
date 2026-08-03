@@ -1,17 +1,19 @@
 import { memo } from 'react';
 import { List } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { World } from '../../types';
+import type { RatingSummary, World } from '../../types';
 import { TagBadge } from '../tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
+import { WorldRatingBar } from '../world-rating-bar';
 
 interface WorldListRowProps {
   world: World;
   onSelect: (worldId: string) => void;
   onAuthorClick?: (authorName: string) => void;
+  ratingSummary?: RatingSummary | undefined;
 }
 
-export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuthorClick }: WorldListRowProps) {
+export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuthorClick, ratingSummary }: WorldListRowProps) {
   const { t } = useTranslation();
 
   return (
@@ -66,6 +68,9 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
           <span className="text-xs text-slate-400 dark:text-slate-500">+{world.tags.length - 3}</span>
         )}
       </div>
+      {ratingSummary !== undefined && (
+        <WorldRatingBar summary={ratingSummary} variant="list" />
+      )}
       <div className="shrink-0 text-xs text-slate-400 dark:text-slate-500">
         {world.quality === 'good' ? '✅' : world.quality === 'bad' ? '❌' : '—'}
       </div>

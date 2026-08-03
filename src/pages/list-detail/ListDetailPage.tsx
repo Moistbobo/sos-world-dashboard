@@ -7,11 +7,13 @@ import { useListsPreferences } from '../../hooks/useListsPreferences';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
 import { useWorldsByIds } from '../../hooks/useWorldsByIds';
+import { useRatingsForWorldIds } from '../../hooks/useSentiment';
 import { Pagination } from '../../components/pagination';
 import { WorldCard } from '../../components/world-card/WorldCard';
 import { ConfirmDialog } from '../../components/confirm-dialog';
 
 const WORLDS_PER_PAGE = 28;
+const SENTIMENT_ENABLED = import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 'true';
 
 export function ListDetailPage({
   listId: listIdProp,
@@ -36,6 +38,14 @@ export function ListDetailPage({
   }, [list, offset]);
 
   const { worlds, isPending } = useWorldsByIds(paginatedIds);
+
+  const visibleWorldIds = useMemo(
+    () => worlds.filter((entry) => entry.data).map((entry) => entry.worldId),
+    [worlds],
+  );
+  const { data: ratingSummaries } = useRatingsForWorldIds(
+    SENTIMENT_ENABLED ? visibleWorldIds : [],
+  );
 
   const listIds = useMemo(() => new Set(list?.worldIds ?? []), [list]);
   const visibleWorlds = useMemo(
@@ -165,6 +175,7 @@ export function ListDetailPage({
                   onSelect={(id) => navigate(`/worlds/${id}`)}
                   onRemove={() => handleRemove(entry.worldId)}
                   onAuthorClick={(author) => navigate(`/worlds?search=${encodeURIComponent(author)}`)}
+                  ratingSummary={ratingSummaries?.get(entry.worldId)}
                 />
               ))}
             </div>
