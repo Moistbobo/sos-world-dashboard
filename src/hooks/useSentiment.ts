@@ -3,6 +3,7 @@ import type { InfiniteData } from '@tanstack/react-query';
 import {
   fetchComments,
   fetchRatings,
+  fetchRatingsForWorldIds,
   submitComment,
   submitRating,
   updateRating,
@@ -19,6 +20,16 @@ export function useRatings(worldId: string | undefined) {
     queryKey: ['ratings', worldId],
     queryFn: () => fetchRatings(worldId!),
     enabled: !!worldId,
+  });
+}
+
+export function useRatingsForWorldIds(worldIds: readonly string[]) {
+  const sortedKey = Array.from(new Set(worldIds)).sort().join('|');
+  return useApiQuery<Map<string, RatingSummary>>({
+    queryKey: ['ratings-batch', sortedKey],
+    queryFn: () => fetchRatingsForWorldIds(worldIds),
+    enabled: worldIds.length > 0,
+    staleTime: 60_000,
   });
 }
 
