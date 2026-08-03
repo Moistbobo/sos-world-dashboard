@@ -1,13 +1,14 @@
 import { memo, useState } from 'react';
 import { Globe, Users, Calendar, ExternalLink, Star, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { World } from '../../types';
+import type { RatingSummary, World } from '../../types';
 import { TagBadge } from '../tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
 import { getWorldAddDate } from '../../utils/worldAddDate';
 import { ShareButton } from '../share-button';
 import { useLists } from '../../contexts/ListsContext';
 import { SaveToListDialog } from '../save-to-list-dialog/SaveToListDialog';
+import { WorldRatingBar } from '../world-rating-bar';
 
 interface WorldCardProps {
   world: World;
@@ -16,9 +17,10 @@ interface WorldCardProps {
   onSelect?: (worldId: string) => void;
   onRemove?: () => void;
   onAuthorClick?: (authorName: string) => void;
+  ratingSummary?: RatingSummary | null | undefined;
 }
 
-export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemove, onAuthorClick }: WorldCardProps) {
+export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemove, onAuthorClick, ratingSummary }: WorldCardProps) {
   const { t } = useTranslation();
   const { isWorldInAnyList } = useLists();
   const [saveOpen, setSaveOpen] = useState(false);
@@ -157,6 +159,17 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
             </span>
           )}
         </div>
+
+        {ratingSummary !== undefined && (
+          <WorldRatingBar
+            summary={
+              ratingSummary === null
+                ? { worldId: world.worldId, good: 0, bad: 0, userRating: null }
+                : ratingSummary
+            }
+            variant="card"
+          />
+        )}
 
         <div className="mt-auto pt-3 flex items-center justify-center gap-2">
           <a

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import {
   fetchRatings,
+  fetchRatingsForWorldIds,
   fetchComments,
   submitRating,
   updateRating,
@@ -71,6 +72,66 @@ describe('fetchRatings', () => {
 
     const result = await fetchRatings('wrld_new');
     expect(result).toEqual({ worldId: 'wrld_new', good: 0, bad: 0, userRating: null });
+  });
+});
+
+describe('fetchRatingsForWorldIds', () => {
+  it('returns an empty map without issuing a Supabase query for an empty input', async () => {
+    const result = await fetchRatingsForWorldIds([]);
+    expect(result.size).toBe(0);
+    expect(mocks.select).not.toHaveBeenCalled();
+  });
+
+  it('issues a single .in("world_id", [...]) query for the provided ids', async () => {
+    const inMock = vi.fn().mockReturnValue({
+      data: [
+        { world_id: 'wrld_a', good: 5, bad: 1, user_rating: null },
+        { world_id: 'wrld_b', good: 0, bad: 3, user_rating: 'bad' },
+      ],
+      error: null,
+    });
+    mocks.select.mockReturnValueOnce({ in: inMock });
+
+    const result = await fetchRatingsForWorldIds(['wrld_a', 'wrld_b']);
+
+    expect(mocks.select).toHaveBeenCalledTimes(1);
+    expect(inMock).toHaveBeenCalledWith('world_id', ['wrld_a', 'wrld_b']);
+    expect(result.get('wrld_a')).toEqual({
+      worldId: 'wrld_a',
+      good: 5,
+      bad: 1,
+      userRating: null,
+    });
+    expect(result.get('wrld_b')).toEqual({
+      worldId: 'wrld_b',
+      good: 0,
+      bad: 3,
+      userRating: 'bad',
+    });
+  });
+
+  it('deduplicates ids before querying', async () => {
+    const inMock = vi.fn().mockReturnValue({ data: [], error: null });
+    mocks.select.mockReturnValueOnce({ in: inMock });
+
+    await fetchRatingsForWorldIds(['wrld_a', 'wrld_a', 'wrld_b']);
+
+    expect(inMock).toHaveBeenCalledWith('world_id', ['wrld_a', 'wrld_b']);
+  });
+
+  it('returns an empty map (not an error) for worlds with no summary rows', async () => {
+    mocks.select.mockReturnValueOnce({ in: vi.fn().mockReturnValue({ data: [], error: null }) });
+
+    const result = await fetchRatingsForWorldIds(['wrld_x', 'wrld_y']);
+    expect(result.size).toBe(0);
+  });
+
+  it('throws on a Supabase error', async () => {
+    mocks.select.mockReturnValueOnce({
+      in: vi.fn().mockReturnValue({ data: null, error: { message: 'batch failed' } }),
+    });
+
+    await expect(fetchRatingsForWorldIds(['wrld_a'])).rejects.toThrow('batch failed');
   });
 });
 

@@ -38,6 +38,32 @@ export async function fetchRatings(worldId: string): Promise<RatingSummary> {
   };
 }
 
+export async function fetchRatingsForWorldIds(
+  worldIds: readonly string[],
+): Promise<Map<string, RatingSummary>> {
+  const result = new Map<string, RatingSummary>();
+  const uniqueIds = Array.from(new Set(worldIds));
+  if (uniqueIds.length === 0) return result;
+
+  const { data, error } = await supabase
+    .from('ratings_summary')
+    .select('*')
+    .in('world_id', uniqueIds);
+
+  if (error) throw new Error(error.message);
+
+  for (const row of data ?? []) {
+    const r = row as { world_id: string; good: number; bad: number; user_rating: 'good' | 'bad' | null };
+    result.set(r.world_id, {
+      worldId: r.world_id,
+      good: r.good ?? 0,
+      bad: r.bad ?? 0,
+      userRating: r.user_rating ?? null,
+    });
+  }
+  return result;
+}
+
 export interface FetchCommentsParams {
   limit?: number;
   offset?: number;
