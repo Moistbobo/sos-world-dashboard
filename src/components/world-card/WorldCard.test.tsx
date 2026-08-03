@@ -224,13 +224,11 @@ describe('WorldCard', () => {
     expect(bar).toHaveTextContent('80%');
   });
 
-  it('renders the empty rating bar when ratingSummary is null (no ratings for this world)', () => {
+  it('hides the rating bar when ratingSummary is null (no ratings for this world)', () => {
     render(
       <WorldCard world={mockWorld} onSelect={vi.fn()} ratingSummary={null} />,
       { wrapper: Wrapper },
     );
-    const bar = screen.getByTestId('world-rating-bar-card');
-    expect(bar).toBeInTheDocument();
-    expect(bar).toHaveTextContent(/no ratings yet/i);
+    expect(screen.queryByTestId('world-rating-bar-card')).not.toBeInTheDocument();
   });
 });

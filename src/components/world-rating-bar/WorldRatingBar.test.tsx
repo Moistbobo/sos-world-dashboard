@@ -5,22 +5,15 @@ import type { RatingSummary } from '../../types';
 
 describe('WorldRatingBar', () => {
   describe('card variant', () => {
-    it('renders the empty state when summary is undefined', () => {
-      render(<WorldRatingBar summary={undefined} variant="card" />);
-      expect(screen.getByText(/no ratings yet/i)).toBeInTheDocument();
-      expect(screen.getByTestId('world-rating-bar-card')).toBeInTheDocument();
+    it('renders nothing when summary is undefined', () => {
+      const { container } = render(<WorldRatingBar summary={undefined} variant="card" />);
+      expect(container).toBeEmptyDOMElement();
     });
 
-    it('renders the empty state when both counts are zero', () => {
-      const summary: RatingSummary = { worldId: 'wrld_1', good: 0, bad: 0, userRating: null };
-      render(<WorldRatingBar summary={summary} variant="card" />);
-      expect(screen.getByText(/no ratings yet/i)).toBeInTheDocument();
-    });
-
-    it('does not render any percent or count when empty', () => {
+    it('renders nothing when both counts are zero', () => {
       const summary: RatingSummary = { worldId: 'wrld_1', good: 0, bad: 0, userRating: null };
       const { container } = render(<WorldRatingBar summary={summary} variant="card" />);
-      expect(container.querySelector('span.font-semibold')).toBeNull();
+      expect(container).toBeEmptyDOMElement();
     });
 
     it('renders a filled bar with good and bad segments proportional to the counts', () => {
@@ -44,10 +37,9 @@ describe('WorldRatingBar', () => {
   });
 
   describe('list variant', () => {
-    it('renders the empty state when summary is undefined', () => {
-      render(<WorldRatingBar summary={undefined} variant="list" />);
-      expect(screen.getByText(/no ratings yet/i)).toBeInTheDocument();
-      expect(screen.getByTestId('world-rating-bar-list')).toBeInTheDocument();
+    it('renders nothing when summary is undefined', () => {
+      const { container } = render(<WorldRatingBar summary={undefined} variant="list" />);
+      expect(container).toBeEmptyDOMElement();
     });
 
     it('renders a filled bar for the list row', () => {
