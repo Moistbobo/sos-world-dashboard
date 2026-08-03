@@ -25,7 +25,9 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
   const { isWorldInAnyList } = useLists();
   const [saveOpen, setSaveOpen] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const { data, isPending, isError, error, isFetching } = useWorld(worldId);
+  const { data, isPending, isError, error, isFetching } = useWorld(worldId, {
+    suppressErrorToast: true,
+  });
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0);

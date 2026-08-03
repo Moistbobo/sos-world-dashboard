@@ -14,7 +14,8 @@ import {
   ChevronsRight,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useHealth } from '../../hooks/useApi';
+import { useHealth } from '../../hooks/useHealth';
+import { useApiDownToast } from '../../hooks/useApiToasts';
 import { ThemeToggle } from '../theme-toggle';
 
 import { getAppVersion } from '../../config/version';
@@ -23,6 +24,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { isPending, isError } = useHealth();
+  useApiDownToast();
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem('sos-sidebar-collapsed') === 'true';

@@ -1,63 +1,65 @@
-import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchHealth, fetchMeta, fetchTags, fetchWorld, fetchWorlds } from '../api/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { fetchMeta, fetchTags, fetchWorld, fetchWorlds } from '../api/client';
 import type { PaginatedWorlds } from '../types';
+import { useApiInfiniteQuery, useApiQuery } from './useApiToasts';
 
-export function useHealth() {
-  return useQuery({
-    queryKey: ['health'],
-    queryFn: fetchHealth,
-    staleTime: 30_000,
-  });
-}
-
-export function useTags() {
-  return useQuery({
+export function useTags(options?: { suppressErrorToast?: boolean }) {
+  return useApiQuery({
     queryKey: ['tags'],
     queryFn: fetchTags,
     staleTime: 60_000,
+    suppressErrorToast: options?.suppressErrorToast,
   });
 }
 
-export function useMeta() {
-  return useQuery({
+export function useMeta(options?: { suppressErrorToast?: boolean }) {
+  return useApiQuery({
     queryKey: ['meta'],
     queryFn: fetchMeta,
     staleTime: 60_000,
+    suppressErrorToast: options?.suppressErrorToast,
   });
 }
 
-export function useWorlds(params?: {
-  limit?: number;
-  offset?: number;
-  tag?: string[];
-  quality?: ('good' | 'bad')[];
-  search?: string;
-  minCapacity?: number;
-  maxCapacity?: number;
-  platform?: string[];
-  dayRange?: number;
-  enabled?: boolean;
-}) {
-  return useQuery({
+export function useWorlds(
+  params?: {
+    limit?: number;
+    offset?: number;
+    tag?: string[];
+    quality?: ('good' | 'bad')[];
+    search?: string;
+    minCapacity?: number;
+    maxCapacity?: number;
+    platform?: string[];
+    dayRange?: number;
+    enabled?: boolean;
+  },
+  options?: { suppressErrorToast?: boolean },
+) {
+  return useApiQuery({
     queryKey: ['worlds', params],
     queryFn: () => fetchWorlds(params),
     enabled: params?.enabled,
+    suppressErrorToast: options?.suppressErrorToast,
   });
 }
 
-export function useInfiniteWorlds(params?: {
-  limit?: number;
-  tag?: string[];
-  quality?: ('good' | 'bad')[];
-  search?: string;
-  minCapacity?: number;
-  maxCapacity?: number;
-  platform?: string[];
-  dayRange?: number;
-  enabled?: boolean;
-}) {
+export function useInfiniteWorlds(
+  params?: {
+    limit?: number;
+    tag?: string[];
+    quality?: ('good' | 'bad')[];
+    search?: string;
+    minCapacity?: number;
+    maxCapacity?: number;
+    platform?: string[];
+    dayRange?: number;
+    enabled?: boolean;
+  },
+  options?: { suppressErrorToast?: boolean },
+) {
   const limit = params?.limit ?? 20;
-  return useInfiniteQuery({
+  return useApiInfiniteQuery({
     queryKey: ['worlds-infinite', { ...params, limit }],
     queryFn: ({ pageParam }) =>
       fetchWorlds({
@@ -71,18 +73,23 @@ export function useInfiniteWorlds(params?: {
       return nextOffset < lastPage.total ? nextOffset : undefined;
     },
     enabled: params?.enabled,
+    suppressErrorToast: options?.suppressErrorToast,
   });
 }
 
-export function useWorld(worldId: string | undefined) {
+export function useWorld(
+  worldId: string | undefined,
+  options?: { suppressErrorToast?: boolean },
+) {
   const queryClient = useQueryClient();
-  return useQuery({
+  return useApiQuery({
     queryKey: ['world', worldId],
     queryFn: () => {
       if (!worldId) throw new Error('No worldId provided');
       return fetchWorld(worldId);
     },
     enabled: !!worldId,
+    suppressErrorToast: options?.suppressErrorToast,
     placeholderData: () => {
       if (!worldId) return undefined;
 

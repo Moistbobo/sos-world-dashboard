@@ -11,6 +11,7 @@
     "apiStatus": "API ステータス:",
     "online": "オンライン",
     "offline": "オフライン / 未認証",
+    "unreachable": "API に接続できません",
     "expandSidebar": "サイドバーを展開",
     "collapseSidebar": "サイドバーを折りたたむ",
     "closeSidebar": "サイドバーを閉じる",

@@ -47,7 +47,7 @@ export function WorldsPage() {
     onSelect,
     onTagClick,
     onPlatformClick,
-  } = useWorldsFilters(scrollMode);
+  } = useWorldsFilters(scrollMode, { suppressErrorToast: true });
 
   const [showBackToTop, setShowBackToTop] = useState(false);
 

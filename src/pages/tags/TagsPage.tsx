@@ -10,7 +10,7 @@ import { getTagColorHex } from '../../utils/tagColor';
 export function TagsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data, isPending, isError, error } = useTags();
+  const { data, isPending, isError, error } = useTags({ suppressErrorToast: true });
   const [search, setSearch] = useState('');
 
   const filtered = useMemo(() => {

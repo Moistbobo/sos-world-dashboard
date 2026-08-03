@@ -11,6 +11,7 @@
     "apiStatus": "API status:",
     "online": "Online",
     "offline": "Offline / Unauthorized",
+    "unreachable": "API is unreachable",
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
     "closeSidebar": "Close sidebar",

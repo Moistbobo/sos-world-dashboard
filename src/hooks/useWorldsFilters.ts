@@ -14,9 +14,13 @@ type ScrollMode = 'infinite' | 'pagination';
  * memoized row components (WorldCard, WorldListRow) do not re-render when the
  * page re-renders on filter-state-only changes.
  */
-export function useWorldsFilters(scrollMode: ScrollMode) {
+export function useWorldsFilters(
+  scrollMode: ScrollMode,
+  options?: { suppressErrorToast?: boolean },
+) {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const suppressErrorToast = options?.suppressErrorToast;
 
   const [limit] = useState(20);
   const [offset, setOffset] = useState(0);
@@ -52,8 +56,8 @@ export function useWorldsFilters(scrollMode: ScrollMode) {
   const [searchInput, setSearchInput] = useState(() => searchParams.get('search') ?? '');
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') ?? '');
 
-  const { data: tagsData } = useTags();
-  const { data: metaData } = useMeta();
+  const { data: tagsData } = useTags({ suppressErrorToast });
+  const { data: metaData } = useMeta({ suppressErrorToast });
 
   const qualityCounts = useMemo(
     () => [
@@ -72,30 +76,36 @@ export function useWorldsFilters(scrollMode: ScrollMode) {
     [metaData]
   );
 
-  const paginationQuery = useWorlds({
-    limit,
-    offset,
-    tag: selectedTags,
-    quality: selectedQuality,
-    platform: selectedPlatforms,
-    search: searchQuery,
-    minCapacity: capacityRange.min,
-    maxCapacity: capacityRange.max,
-    dayRange: dayRange ?? undefined,
-    enabled: scrollMode === 'pagination',
-  });
+  const paginationQuery = useWorlds(
+    {
+      limit,
+      offset,
+      tag: selectedTags,
+      quality: selectedQuality,
+      platform: selectedPlatforms,
+      search: searchQuery,
+      minCapacity: capacityRange.min,
+      maxCapacity: capacityRange.max,
+      dayRange: dayRange ?? undefined,
+      enabled: scrollMode === 'pagination',
+    },
+    { suppressErrorToast },
+  );
 
-  const infiniteQuery = useInfiniteWorlds({
-    limit,
-    tag: selectedTags,
-    quality: selectedQuality,
-    platform: selectedPlatforms,
-    search: searchQuery,
-    minCapacity: capacityRange.min,
-    maxCapacity: capacityRange.max,
-    dayRange: dayRange ?? undefined,
-    enabled: scrollMode === 'infinite',
-  });
+  const infiniteQuery = useInfiniteWorlds(
+    {
+      limit,
+      tag: selectedTags,
+      quality: selectedQuality,
+      platform: selectedPlatforms,
+      search: searchQuery,
+      minCapacity: capacityRange.min,
+      maxCapacity: capacityRange.max,
+      dayRange: dayRange ?? undefined,
+      enabled: scrollMode === 'infinite',
+    },
+    { suppressErrorToast },
+  );
 
   // Update URL when filters change
   const lastSearchRef = useRef(searchParams.toString());
