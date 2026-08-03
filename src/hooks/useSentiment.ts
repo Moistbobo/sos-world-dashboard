@@ -1,4 +1,5 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
+import type { InfiniteData } from '@tanstack/react-query';
 import {
   fetchComments,
   fetchRatings,
@@ -8,13 +9,13 @@ import {
   deleteRating,
 } from '../api/sentiment';
 import type { FetchCommentsResult } from '../api/sentiment';
-import type { InfiniteData } from '@tanstack/react-query';
+import { useApiInfiniteQuery, useApiMutation, useApiQuery } from './useApiToasts';
 import { useCurrentUserId } from './useCurrentUser';
 import { generateUsername } from '../utils/username';
 import type { Comment, RatingSummary } from '../types';
 
 export function useRatings(worldId: string | undefined) {
-  return useQuery<RatingSummary>({
+  return useApiQuery<RatingSummary>({
     queryKey: ['ratings', worldId],
     queryFn: () => fetchRatings(worldId!),
     enabled: !!worldId,
@@ -29,7 +30,7 @@ interface CommentsPageParam {
 }
 
 export function useInfiniteComments(worldId: string | undefined) {
-  return useInfiniteQuery<FetchCommentsResult, Error, InfiniteData<FetchCommentsResult, CommentsPageParam>, (string | undefined)[], CommentsPageParam>({
+  return useApiInfiniteQuery<FetchCommentsResult, Error, InfiniteData<FetchCommentsResult, CommentsPageParam>, (string | undefined)[], CommentsPageParam>({
     queryKey: ['comments', worldId],
     queryFn: ({ pageParam }) => fetchComments(worldId!, pageParam),
     initialPageParam: { offset: 0, limit: COMMENTS_PAGE_SIZE },
@@ -54,8 +55,9 @@ function useRatingMutation<TVariables extends RatingMutationVariables>(
 ) {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useApiMutation({
     mutationFn,
+    suppressErrorToast: true,
     onMutate: async (variables) => {
       const queryKey = ['ratings', variables.worldId];
       await queryClient.cancelQueries({ queryKey });
@@ -136,16 +138,13 @@ export function useDeleteRating() {
 export function useSubmitComment() {
   const queryClient = useQueryClient();
   const currentUserId = useCurrentUserId();
-  return useMutation({
-    mutationFn: ({
-      worldId,
-      content,
-      captchaToken,
-    }: {
+  return useApiMutation({
+    mutationFn: ({ worldId, content, captchaToken }: {
       worldId: string;
       content: string;
       captchaToken?: string;
     }) => submitComment(worldId, content, captchaToken),
+    suppressErrorToast: true,
     onMutate: async ({ worldId, content }) => {
       const queryKey = ['comments', worldId];
       await queryClient.cancelQueries({ queryKey });
