@@ -26,7 +26,7 @@ describe('WorldRatingBar', () => {
     it('renders a filled bar with good and bad segments proportional to the counts', () => {
       const summary: RatingSummary = { worldId: 'wrld_1', good: 3, bad: 1, userRating: null };
       const { container } = render(<WorldRatingBar summary={summary} variant="card" />);
-      const bar = screen.getByRole('img', { name: /75% good across 4 ratings/i });
+      const bar = screen.getByRole('img', { name: /75% good · 4 ratings/i });
       expect(bar).toBeInTheDocument();
       const fills = bar.querySelectorAll('div');
       const goodFill = Array.from(fills).find((el) => el.classList.contains('bg-emerald-500'));
@@ -53,7 +53,7 @@ describe('WorldRatingBar', () => {
     it('renders a filled bar for the list row', () => {
       const summary: RatingSummary = { worldId: 'wrld_1', good: 4, bad: 1, userRating: null };
       render(<WorldRatingBar summary={summary} variant="list" />);
-      const bar = screen.getByRole('img', { name: /80% good across 5 ratings/i });
+      const bar = screen.getByRole('img', { name: /80% good · 5 ratings/i });
       expect(bar).toBeInTheDocument();
       expect(screen.getByText(/80%/)).toBeInTheDocument();
       expect(screen.getByText(/good/i)).toBeInTheDocument();

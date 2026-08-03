@@ -33,7 +33,7 @@ export function WorldRatingBar({ summary, variant }: WorldRatingBarProps) {
           aria-label={
             isEmpty
               ? t('sentiment.ratings.noVotes')
-              : t('sentiment.ratings.distributionLabel', { percent: goodPercent, count: total })
+              : `${goodPercent}% ${t('sentiment.ratings.good')} · ${t('sentiment.ratings.totalRatings', { count: total })}`
           }
         >
           {!isEmpty && (
@@ -89,7 +89,7 @@ export function WorldRatingBar({ summary, variant }: WorldRatingBarProps) {
         aria-label={
           isEmpty
             ? t('sentiment.ratings.noVotes')
-            : t('sentiment.ratings.distributionLabel', { percent: goodPercent, count: total })
+            : `${goodPercent}% ${t('sentiment.ratings.good')} · ${t('sentiment.ratings.totalRatings', { count: total })}`
         }
       >
         {!isEmpty && (
