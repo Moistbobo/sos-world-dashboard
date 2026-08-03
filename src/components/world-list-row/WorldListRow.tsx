@@ -69,14 +69,16 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
         )}
       </div>
       {ratingSummary !== undefined && (
-        <WorldRatingBar
-          summary={
-            ratingSummary === null
-              ? { worldId: world.worldId, good: 0, bad: 0, userRating: null }
-              : ratingSummary
-          }
-          variant="list"
-        />
+        <div className="hidden shrink-0 sm:block">
+          <WorldRatingBar
+            summary={
+              ratingSummary === null
+                ? { worldId: world.worldId, good: 0, bad: 0, userRating: null }
+                : ratingSummary
+            }
+            variant="list"
+          />
+        </div>
       )}
       <div className="shrink-0 text-xs text-slate-400 dark:text-slate-500">
         {world.quality === 'good' ? '✅' : world.quality === 'bad' ? '❌' : '—'}
