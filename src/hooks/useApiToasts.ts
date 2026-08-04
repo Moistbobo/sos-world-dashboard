@@ -38,7 +38,7 @@ function getErrorMessage(error: unknown, fallback: string): string {
   return fallback;
 }
 
-function isFinalFailure<TError>(
+export function isFinalFailure<TError>(
   isError: boolean,
   failureCount: number,
   retry: UseQueryOptions<unknown, TError>['retry'],
@@ -52,7 +52,7 @@ function isFinalFailure<TError>(
   return failureCount > DEFAULT_RETRY;
 }
 
-function useFinalErrorToast(
+export function useFinalErrorToast(
   error: unknown,
   enabled: boolean,
   isFinal: boolean,

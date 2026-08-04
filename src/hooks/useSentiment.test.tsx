@@ -138,6 +138,84 @@ describe('useRatingsForWorldIds', () => {
 
     expect(spy).toHaveBeenCalledTimes(1);
   });
+
+  it('fetches only the newly added chunk when the id set grows', async () => {
+    const firstIds = Array.from({ length: 20 }, (_, i) => `w_${String(i).padStart(2, '0')}`);
+    const secondIds = Array.from({ length: 20 }, (_, i) => `w_${String(i + 20).padStart(2, '0')}`);
+    const allIds = [...firstIds, ...secondIds];
+
+    const spy = vi
+      .spyOn(sentimentApi, 'fetchRatingsForWorldIds')
+      .mockImplementation((ids) => {
+        const entries = Object.fromEntries(ids.map((id) => [id, { good: 1, bad: 0 }]));
+        return Promise.resolve(makeMap(entries));
+      });
+
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    function TestWrapper({ children }: { children: React.ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+
+    const hook = renderHook(
+      ({ ids }: { ids: string[] }) => useRatingsForWorldIds(ids),
+      { wrapper: TestWrapper, initialProps: { ids: firstIds } },
+    );
+    await waitFor(() => expect(hook.result.current.isSuccess).toBe(true));
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(firstIds);
+
+    hook.rerender({ ids: allIds });
+    await waitFor(() => expect(spy).toHaveBeenCalledTimes(2));
+    expect(spy).toHaveBeenLastCalledWith(secondIds);
+    expect(hook.result.current.data?.size).toBe(40);
+    expect(hook.result.current.data?.get('w_00')).toMatchObject({ good: 1, bad: 0 });
+    expect(hook.result.current.data?.get('w_39')).toMatchObject({ good: 1, bad: 0 });
+  });
+
+  it('keeps previously loaded summaries while a new chunk is still fetching', async () => {
+    const firstIds = Array.from({ length: 20 }, (_, i) => `w_${String(i).padStart(2, '0')}`);
+    const secondIds = Array.from({ length: 20 }, (_, i) => `w_${String(i + 20).padStart(2, '0')}`);
+    const allIds = [...firstIds, ...secondIds];
+
+    let resolveSecond!: (value: Map<string, RatingSummary>) => void;
+    const secondPromise = new Promise<Map<string, RatingSummary>>((resolve) => {
+      resolveSecond = resolve;
+    });
+    vi
+      .spyOn(sentimentApi, 'fetchRatingsForWorldIds')
+      .mockImplementationOnce((ids) =>
+        Promise.resolve(
+          makeMap(Object.fromEntries(ids.map((id) => [id, { good: 1, bad: 0 }]))),
+        ),
+      )
+      .mockImplementationOnce(() => secondPromise);
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    function TestWrapper({ children }: { children: React.ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+
+    const hook = renderHook(
+      ({ ids }: { ids: string[] }) => useRatingsForWorldIds(ids),
+      { wrapper: TestWrapper, initialProps: { ids: firstIds } },
+    );
+    await waitFor(() => expect(hook.result.current.isSuccess).toBe(true));
+
+    hook.rerender({ ids: allIds });
+    await waitFor(() => expect(hook.result.current.isFetching).toBe(true));
+    expect(hook.result.current.data?.get('w_00')).toMatchObject({ good: 1, bad: 0 });
+    expect(hook.result.current.data?.get('w_20')).toBeUndefined();
+
+    resolveSecond(
+      makeMap(Object.fromEntries(secondIds.map((id) => [id, { good: 2, bad: 1 }]))),
+    );
+    await waitFor(() => expect(hook.result.current.data?.get('w_20')).toMatchObject({ good: 2, bad: 1 }));
+    expect(hook.result.current.data?.get('w_00')).toMatchObject({ good: 1, bad: 0 });
+    expect(hook.result.current.data?.size).toBe(40);
+  });
 });
 
 describe('useInfiniteComments', () => {
