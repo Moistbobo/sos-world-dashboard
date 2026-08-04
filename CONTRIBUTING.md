@@ -110,6 +110,13 @@ Use a **single major tag** at the start of the PR title in square brackets, foll
 - Use **one** major tag only. Do not add scopes inside the tag.
   - ✅ `[FEAT]: add platform label mapping`
   - ❌ `[FEAT](platform): add platform label mapping`
+- The tag must be followed immediately by a colon, with no space in between.
+  - ✅ `[FEAT]: add user profile page`
+  - ❌ `[FEAT] add user profile page` — missing colon
+  - ❌ `[FEAT] : add user profile page` — space between the tag and the colon
+- PR titles use the square-bracket tag format, not Conventional Commits style. Commit-style tags are for commit messages only.
+  - ✅ `[CHORE]: upgrade Vitest to v5`
+  - ❌ `chore(CI): update workflow` — use `[CHORE]:` for PR titles
 - Keep the description concise and focused on what the PR introduces.
 - Commit messages inside the PR may continue to use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`).
 
