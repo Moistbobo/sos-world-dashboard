@@ -14,7 +14,8 @@ import {
   ChevronsRight,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useHealth } from '../../hooks/useApi';
+import { useHealth } from '../../hooks/useHealth';
+import { useApiDownToast } from '../../hooks/useApiToasts';
 import { ThemeToggle } from '../theme-toggle';
 
 import { getAppVersion } from '../../config/version';
@@ -23,6 +24,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { isPending, isError } = useHealth();
+  useApiDownToast();
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem('sos-sidebar-collapsed') === 'true';
@@ -154,7 +156,7 @@ export function Layout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Main */}
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate-200 bg-white/80 px-4 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
           <button className="lg:hidden" onClick={() => setSidebarOpen(true)}>
             <Menu className="h-5 w-5 text-slate-500 dark:text-slate-400" />
@@ -182,7 +184,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 p-4 lg:p-6">{children}</main>
+        <main className="min-w-0 flex-1 p-4 lg:p-6">{children}</main>
       </div>
     </div>
   );

@@ -204,4 +204,31 @@ describe('WorldCard', () => {
     expect(screen.queryByRole('button', { name: /by tester/i })).not.toBeInTheDocument();
     expect(screen.getByText(/by tester/i)).toBeInTheDocument();
   });
+
+  it('hides the rating bar when ratingSummary prop is not provided', () => {
+    render(<WorldCard world={mockWorld} onSelect={vi.fn()} />, { wrapper: Wrapper });
+    expect(screen.queryByTestId('world-rating-bar-card')).not.toBeInTheDocument();
+  });
+
+  it('renders a filled rating bar when a summary is provided', () => {
+    render(
+      <WorldCard
+        world={mockWorld}
+        onSelect={vi.fn()}
+        ratingSummary={{ worldId: 'wrld_test', good: 4, bad: 1, userRating: null }}
+      />,
+      { wrapper: Wrapper },
+    );
+    const bar = screen.getByTestId('world-rating-bar-card');
+    expect(bar).toBeInTheDocument();
+    expect(bar).toHaveTextContent('80%');
+  });
+
+  it('hides the rating bar when ratingSummary is null (no ratings for this world)', () => {
+    render(
+      <WorldCard world={mockWorld} onSelect={vi.fn()} ratingSummary={null} />,
+      { wrapper: Wrapper },
+    );
+    expect(screen.queryByTestId('world-rating-bar-card')).not.toBeInTheDocument();
+  });
 });

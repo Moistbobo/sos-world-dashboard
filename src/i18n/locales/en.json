@@ -11,6 +11,7 @@
     "apiStatus": "API status:",
     "online": "Online",
     "offline": "Offline / Unauthorized",
+    "unreachable": "API is unreachable",
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
     "closeSidebar": "Close sidebar",
@@ -96,8 +97,10 @@
       "countBad": "{{count}} bad",
       "submitError": "Could not submit rating: {{message}}",
       "ratingBarLabel": "Good versus bad rating distribution",
-      "noVotes": "No votes yet",
-      "yourVote": "Your Vote"
+      "yourVote": "Your Vote",
+      "distributionLabel": "{{percent}}% good across {{count}} ratings",
+      "totalRatings": "{{count}} ratings",
+      "totalRatings_one": "1 rating"
     },
     "comments": {
       "title": "Community comments",

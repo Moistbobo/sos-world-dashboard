@@ -1,13 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
 import { BeatLoader } from 'react-spinners';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
 import { useWorldsFilters } from '../../hooks/useWorldsFilters';
+import { useRatingsForWorldIds } from '../../hooks/useSentiment';
 import { FilterBar } from '../../components/filter-bar';
 import { Pagination } from '../../components/pagination';
 import { WorldCard } from '../../components/world-card';
 import { WorldListRow } from '../../components/world-list-row';
+
+const SENTIMENT_ENABLED = import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 'true';
 
 export function WorldsPage() {
   const { t } = useTranslation();
@@ -47,7 +50,12 @@ export function WorldsPage() {
     onSelect,
     onTagClick,
     onPlatformClick,
-  } = useWorldsFilters(scrollMode);
+  } = useWorldsFilters(scrollMode, { suppressErrorToast: true });
+
+  const visibleWorldIds = useMemo(() => worlds.map((w) => w.worldId), [worlds]);
+  const { data: ratingSummaries } = useRatingsForWorldIds(
+    SENTIMENT_ENABLED ? visibleWorldIds : [],
+  );
 
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -197,19 +205,21 @@ export function WorldsPage() {
               onTagClick={onTagClick}
               onPlatformClick={onPlatformClick}
               onAuthorClick={handleAuthorClick}
+              ratingSummary={ratingSummaries ? ratingSummaries.get(w.worldId) ?? null : undefined}
             />
           ))}
         </div>
       )}
 
       {!isPending && !isError && worlds.length > 0 && viewMode === 'list' && (
-        <div className="space-y-3">
+        <div className="space-y-3 w-full min-w-0">
           {worlds.map((w) => (
             <WorldListRow
               key={w.worldId}
               world={w}
               onSelect={onSelect}
               onAuthorClick={handleAuthorClick}
+              ratingSummary={ratingSummaries ? ratingSummaries.get(w.worldId) ?? null : undefined}
             />
           ))}
         </div>
