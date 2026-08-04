@@ -36,7 +36,6 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 }
 
 vi.mock('./hooks/useApi', () => ({
-  useHealth: () => ({ isPending: false, isError: false }),
   useTags: () => ({ data: { tags: [] } }),
   useMeta: () => ({
     data: {
@@ -76,6 +75,10 @@ vi.mock('./hooks/useApi', () => ({
       error: null,
     };
   },
+}));
+
+vi.mock('./hooks/useHealth', () => ({
+  useHealth: () => ({ isPending: false, isError: false }),
 }));
 
 describe('App routing', () => {

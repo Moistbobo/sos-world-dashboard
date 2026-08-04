@@ -1,23 +1,25 @@
 import { memo } from 'react';
 import { List } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { World } from '../../types';
+import type { RatingSummary, World } from '../../types';
 import { TagBadge } from '../tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
+import { WorldRatingBar } from '../world-rating-bar';
 
 interface WorldListRowProps {
   world: World;
   onSelect: (worldId: string) => void;
   onAuthorClick?: (authorName: string) => void;
+  ratingSummary?: RatingSummary | null | undefined;
 }
 
-export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuthorClick }: WorldListRowProps) {
+export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuthorClick, ratingSummary }: WorldListRowProps) {
   const { t } = useTranslation();
 
   return (
     <button
       onClick={() => onSelect(world.worldId)}
-      className="card flex w-full items-center gap-4 p-3 text-left transition hover:border-slate-400 dark:hover:border-slate-600"
+      className="card flex w-full min-w-0 items-center gap-3 p-3 text-left transition hover:border-slate-400 sm:gap-4 dark:hover:border-slate-600"
     >
       <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-800">
         {world.imageUrl ? (
@@ -66,6 +68,18 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
           <span className="text-xs text-slate-400 dark:text-slate-500">+{world.tags.length - 3}</span>
         )}
       </div>
+      {ratingSummary !== undefined && (
+        <div className="hidden shrink-0 sm:block">
+          <WorldRatingBar
+            summary={
+              ratingSummary === null
+                ? { worldId: world.worldId, good: 0, bad: 0, userRating: null }
+                : ratingSummary
+            }
+            variant="list"
+          />
+        </div>
+      )}
       <div className="shrink-0 text-xs text-slate-400 dark:text-slate-500">
         {world.quality === 'good' ? '✅' : world.quality === 'bad' ? '❌' : '—'}
       </div>

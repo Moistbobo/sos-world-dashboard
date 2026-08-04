@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useApiQuery } from './useApiToasts';
 import { fetchWorldsByIds } from '../api/client';
 import type { World } from '../types';
 
@@ -20,7 +20,7 @@ export function useWorldsByIds(worldIds: string[]) {
     isPending,
     isError,
     error,
-  } = useQuery({
+  } = useApiQuery({
     queryKey: ['worlds-by-ids', idKey],
     queryFn: () => fetchWorldsByIds(uniqueIds),
     enabled: uniqueIds.length > 0,

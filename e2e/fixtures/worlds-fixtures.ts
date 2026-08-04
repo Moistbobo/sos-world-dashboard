@@ -1,0 +1,82 @@
+import type { MetaResponse, PaginatedWorlds, TagsResponse, World } from '../src/types';
+
+export const worlds: World[] = [
+  {
+    worldId: 'wrld_chill_lounge',
+    name: 'Chill Lounge',
+    authorName: 'Tester',
+    capacity: 20,
+    platforms: ['standalonewindows', 'android'],
+    tags: ['chill', 'social'],
+    imageUrl: '',
+    vrchatUrl: '',
+    quality: 'good',
+    createdAt: '2024-01-01',
+    internalAddDate: new Date(Date.now() - 86_400_000).toISOString().slice(0, 10),
+  },
+  {
+    worldId: 'wrld_dance_party',
+    name: 'Dance Party',
+    authorName: 'Raver',
+    capacity: 50,
+    platforms: ['standalonewindows'],
+    tags: ['dance', 'social'],
+    imageUrl: '',
+    vrchatUrl: '',
+    quality: 'good',
+    createdAt: '2024-01-15',
+    internalAddDate: '2024-02-10',
+  },
+  {
+    worldId: 'wrld_quiet_study',
+    name: 'Quiet Study',
+    authorName: 'Scholar',
+    capacity: 10,
+    platforms: ['android', 'ios'],
+    tags: ['chill', 'study'],
+    imageUrl: '',
+    vrchatUrl: '',
+    quality: 'bad',
+    createdAt: '2024-02-01',
+    internalAddDate: '2024-02-20',
+  },
+  {
+    worldId: 'wrld_mobile_only',
+    name: 'Mobile Hangout',
+    authorName: 'Tester',
+    capacity: 30,
+    platforms: ['android'],
+    tags: ['social'],
+    imageUrl: '',
+    vrchatUrl: '',
+    quality: null,
+    createdAt: '2024-02-15',
+    internalAddDate: '2024-02-25',
+  },
+];
+
+export const tagsResponse: TagsResponse = {
+  tags: [
+    { tag: 'chill', count: 2 },
+    { tag: 'dance', count: 1 },
+    { tag: 'social', count: 3 },
+    { tag: 'study', count: 1 },
+  ],
+};
+
+export const metaResponse: MetaResponse = {
+  qualityGood: 2,
+  qualityBad: 1,
+  platformDesktop: 2,
+  platformAndroid: 3,
+  platformiOS: 1,
+};
+
+export function paginate(items: World[], limit: number, offset: number): PaginatedWorlds {
+  return {
+    total: items.length,
+    limit,
+    offset,
+    worlds: items.slice(offset, offset + limit),
+  };
+}

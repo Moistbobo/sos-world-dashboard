@@ -2,11 +2,15 @@ import { useMemo } from 'react';
 import { Activity, Globe, Tags, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useHealth, useTags, useWorlds } from '../../hooks/useApi';
+import { useTags, useWorlds } from '../../hooks/useApi';
+import { useHealth } from '../../hooks/useHealth';
+import { useRatingsForWorldIds } from '../../hooks/useSentiment';
 import { StatCard } from '../../components/stat-card';
 import { WorldCard } from '../../components/world-card';
 import { getEmojiForTag } from '../../utils/tagEmoji';
 import { getWorldAddDate } from '../../utils/worldAddDate';
+
+const SENTIMENT_ENABLED = import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 'true';
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -16,7 +20,11 @@ export function DashboardPage() {
   const navigate = useNavigate();
 
   const topTags = tagsData?.tags.slice(0, 10) || [];
-  const latestWorlds = worldsData?.worlds || [];
+  const latestWorlds = useMemo(() => worldsData?.worlds ?? [], [worldsData]);
+  const latestWorldIds = useMemo(() => latestWorlds.map((w) => w.worldId), [latestWorlds]);
+  const { data: ratingSummaries } = useRatingsForWorldIds(
+    SENTIMENT_ENABLED ? latestWorldIds : [],
+  );
 
   const latestWorldId = latestWorlds[0]?.worldId;
   const latestAddDate = latestWorldId ? getWorldAddDate(latestWorlds[0]) : undefined;
@@ -82,6 +90,7 @@ export function DashboardPage() {
                       onTagClick={(tag) => navigate(`/worlds?tag=${encodeURIComponent(tag)}`)}
                       onPlatformClick={(platform) => navigate(`/worlds?platform=${encodeURIComponent(platform)}`)}
                       onAuthorClick={(author) => navigate(`/worlds?search=${encodeURIComponent(author)}`)}
+                      ratingSummary={ratingSummaries ? ratingSummaries.get(w.worldId) ?? null : undefined}
                     />
                   ))}
             </div>
