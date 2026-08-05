@@ -190,7 +190,7 @@ describe('WorldsPage', () => {
   it('constrains the list container to the available width so rows cannot overflow', () => {
     window.localStorage.setItem('sos-worlds-view-mode', 'list');
     renderPage(<WorldsPage />);
-    const listContainer = document.querySelector('.space-y-3.w-full.min-w-0');
+    const listContainer = document.querySelector('.relative.w-full.min-w-0');
     expect(listContainer).not.toBeNull();
     const rows = listContainer?.querySelectorAll('button.card') ?? [];
     expect(rows.length).toBeGreaterThan(0);

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
 import { BeatLoader } from 'react-spinners';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
 import { useWorldsFilters } from '../../hooks/useWorldsFilters';
 import { useRatingsForWorldIds } from '../../hooks/useSentiment';
@@ -11,6 +12,21 @@ import { WorldCard } from '../../components/world-card';
 import { WorldListRow } from '../../components/world-list-row';
 
 const SENTIMENT_ENABLED = import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 'true';
+
+const GRID_GAP = 16;
+const LIST_GAP = 12;
+const GRID_ROW_ESTIMATE = 420;
+const GRID_ROW_ESTIMATE_DESKTOP = 380;
+const LIST_ROW_ESTIMATE = 88;
+
+function getColumnCount(windowWidth: number) {
+  return windowWidth >= 1280 ? 4 : windowWidth >= 640 ? 2 : 1;
+}
+
+function getGridRowHeight(columnCount: number) {
+  // Desktop cards fit two rows of content; the mobile card layout is taller.
+  return columnCount === 4 ? GRID_ROW_ESTIMATE_DESKTOP : GRID_ROW_ESTIMATE;
+}
 
 export function WorldsPage() {
   const { t } = useTranslation();
@@ -59,6 +75,15 @@ export function WorldsPage() {
 
   const [showBackToTop, setShowBackToTop] = useState(false);
 
+  const [windowWidth, setWindowWidth] = useState(() =>
+    typeof window === 'undefined' ? 0 : window.innerWidth
+  );
+  useEffect(() => {
+    const onResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
   // Back-to-top visibility
   useEffect(() => {
     const onScroll = () => {
@@ -74,6 +99,8 @@ export function WorldsPage() {
   };
 
   const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const [scrollMargin, setScrollMargin] = useState(0);
 
   useEffect(() => {
     if (isPagination || !sentinelRef.current) return;
@@ -91,6 +118,66 @@ export function WorldsPage() {
     observer.observe(sentinelRef.current);
     return () => observer.disconnect();
   }, [isPagination, infiniteQuery]);
+
+  // Measure the page chrome above the grid/list (header, filters, search bar,
+  // results row, view toggle) so virtual items align with the real scroll
+  // offset. A layout pass on `worlds`/`viewMode`/`scrollMode` keeps the cached
+  // value fresh; it is stable between passes so the state update is skipped.
+  const gridRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const gridSizeRef = useRef(0);
+  const listSizeRef = useRef(0);
+  useEffect(() => {
+    if (isPending || worlds.length === 0) return;
+    const node = viewMode === 'grid' ? gridRef.current : listRef.current;
+    if (!node) return;
+    const prev = viewMode === 'grid' ? gridSizeRef.current : listSizeRef.current;
+    const next = Math.max(node.offsetTop, prev);
+    if (viewMode === 'grid') {
+      gridSizeRef.current = next;
+    } else {
+      listSizeRef.current = next;
+    }
+    const nextMargin = Math.max(gridSizeRef.current, listSizeRef.current);
+    if (nextMargin !== scrollMargin) {
+      setScrollMargin(nextMargin);
+    }
+  }, [worlds, isPending, viewMode, scrollMode, scrollMargin]);
+
+  const columnCount = getColumnCount(windowWidth);
+  const gridVirtualizer = useWindowVirtualizer({
+    count: Math.ceil(worlds.length / columnCount),
+    getScrollElement: () => window,
+    estimateSize: () => getGridRowHeight(columnCount),
+    measureElement: (el) => (el as HTMLElement).offsetHeight || getGridRowHeight(columnCount),
+    // This page owns scroll position (filters/mode changes must not touch the
+    // window scroll), so the virtualizer only reads the scroll offset and
+    // never writes it. scrollToIndex/scrollToEnd are unused here.
+    scrollToFn: () => undefined,
+    overscan: 6,
+    scrollMargin,
+    gap: GRID_GAP,
+  });
+  const listVirtualizer = useWindowVirtualizer({
+    count: worlds.length,
+    getScrollElement: () => window,
+    estimateSize: () => LIST_ROW_ESTIMATE,
+    measureElement: (el) => (el as HTMLElement).offsetHeight || LIST_ROW_ESTIMATE,
+    scrollToFn: () => undefined,
+    overscan: 8,
+    scrollMargin,
+    gap: LIST_GAP,
+  });
+
+  const gridRows = useMemo(
+    () =>
+      gridVirtualizer.getVirtualItems().map((row) => ({
+        row,
+        items: worlds.slice(row.index * columnCount, row.index * columnCount + columnCount),
+      })),
+    [gridVirtualizer, worlds, columnCount]
+  );
+  const listRows = listVirtualizer.getVirtualItems();
 
   return (
     <div className="space-y-4">
@@ -196,31 +283,58 @@ export function WorldsPage() {
       )}
 
       {!isPending && !isError && worlds.length > 0 && viewMode === 'grid' && (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {worlds.map((w) => (
-            <WorldCard
-              key={w.worldId}
-              world={w}
-              onSelect={onSelect}
-              onTagClick={onTagClick}
-              onPlatformClick={onPlatformClick}
-              onAuthorClick={handleAuthorClick}
-              ratingSummary={ratingSummaries ? ratingSummaries.get(w.worldId) ?? null : undefined}
-            />
+        <div
+          ref={gridRef}
+          style={{ height: gridVirtualizer.getTotalSize() }}
+          className="relative"
+        >
+          {gridRows.map(({ row, items }) => (
+            <div
+              key={row.key}
+              data-index={row.index}
+              ref={gridVirtualizer.measureElement}
+              className="absolute left-0 right-0 top-0"
+              style={{ transform: `translateY(${row.start}px)` }}
+            >
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                {items.map((w) => (
+                  <WorldCard
+                    key={w.worldId}
+                    world={w}
+                    onSelect={onSelect}
+                    onTagClick={onTagClick}
+                    onPlatformClick={onPlatformClick}
+                    onAuthorClick={handleAuthorClick}
+                    ratingSummary={ratingSummaries ? ratingSummaries.get(w.worldId) ?? null : undefined}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       )}
 
       {!isPending && !isError && worlds.length > 0 && viewMode === 'list' && (
-        <div className="space-y-3 w-full min-w-0">
-          {worlds.map((w) => (
-            <WorldListRow
-              key={w.worldId}
-              world={w}
-              onSelect={onSelect}
-              onAuthorClick={handleAuthorClick}
-              ratingSummary={ratingSummaries ? ratingSummaries.get(w.worldId) ?? null : undefined}
-            />
+        <div
+          ref={listRef}
+          style={{ height: listVirtualizer.getTotalSize() }}
+          className="relative w-full min-w-0"
+        >
+          {listRows.map((row) => (
+            <div
+              key={row.key}
+              data-index={row.index}
+              ref={listVirtualizer.measureElement}
+              className="absolute left-0 right-0 top-0"
+              style={{ transform: `translateY(${row.start}px)` }}
+            >
+              <WorldListRow
+                world={worlds[row.index]}
+                onSelect={onSelect}
+                onAuthorClick={handleAuthorClick}
+                ratingSummary={ratingSummaries ? ratingSummaries.get(worlds[row.index].worldId) ?? null : undefined}
+              />
+            </div>
           ))}
         </div>
       )}
