@@ -169,14 +169,10 @@ export function WorldsPage() {
     gap: LIST_GAP,
   });
 
-  const gridRows = useMemo(
-    () =>
-      gridVirtualizer.getVirtualItems().map((row) => ({
-        row,
-        items: worlds.slice(row.index * columnCount, row.index * columnCount + columnCount),
-      })),
-    [gridVirtualizer, worlds, columnCount]
-  );
+  const gridRows = gridVirtualizer.getVirtualItems().map((row) => ({
+    row,
+    items: worlds.slice(row.index * columnCount, row.index * columnCount + columnCount),
+  }));
   const listRows = listVirtualizer.getVirtualItems();
 
   return (
