@@ -86,11 +86,19 @@ export function WorldsPage() {
 
   // Back-to-top visibility
   useEffect(() => {
+    let frame: number | null = null;
     const onScroll = () => {
+      if (frame !== null) return;
       setShowBackToTop(window.scrollY > window.innerHeight);
+      frame = requestAnimationFrame(() => {
+        frame = null;
+      });
     };
     window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (frame !== null) cancelAnimationFrame(frame);
+    };
   }, []);
 
   const handleToggleMode = () => {
