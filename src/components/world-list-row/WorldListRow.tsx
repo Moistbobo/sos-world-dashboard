@@ -23,7 +23,7 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
     >
       <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-800">
         {world.imageUrl ? (
-          <img src={world.imageUrl} alt="" className="h-full w-full object-cover" />
+          <img src={world.imageUrl} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-slate-400 dark:text-slate-600">
             <List className="h-6 w-6" />
