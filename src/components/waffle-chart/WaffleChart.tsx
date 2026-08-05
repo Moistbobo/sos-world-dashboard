@@ -134,10 +134,8 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
             >
-              {/* Emoji badge — always visible once animated */}
-              {allAnimated && (
-                <span className="pointer-events-none text-sm leading-none">{emoji}</span>
-              )}
+              {/* Emoji badge — rendered unconditionally so it scales in with the parent cell */}
+              <span className="pointer-events-none text-sm leading-none">{emoji}</span>
             </div>
           );
         })}
