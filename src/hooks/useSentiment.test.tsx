@@ -5,6 +5,7 @@ import {
   useRatings,
   useInfiniteComments,
   useRatingsForWorldIds,
+  chunkRatingsWorldIds,
   useSubmitRating,
   useUpdateRating,
   useDeleteRating,
@@ -54,6 +55,36 @@ describe('useRatings', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(sentimentApi.fetchRatings).toHaveBeenCalledWith('wrld_123');
     expect(result.current.data).toMatchObject({ worldId: 'wrld_123', good: 5, bad: 1, userRating: null });
+  });
+});
+
+describe('chunkRatingsWorldIds', () => {
+  it('chunks ids in 20s in input order', () => {
+    const ids = Array.from({ length: 45 }, (_, i) => `w_${String(i).padStart(2, '0')}`);
+    const chunks = chunkRatingsWorldIds(ids);
+    expect(chunks.map((c) => c.ids.length)).toEqual([20, 20, 5]);
+    expect(chunks[0].ids[0]).toBe('w_00');
+    expect(chunks[0].ids[19]).toBe('w_19');
+    expect(chunks[1].ids[0]).toBe('w_20');
+  });
+
+  it('keeps chunk boundaries and keys stable as ids stream in', () => {
+    const firstPage = Array.from({ length: 20 }, (_, i) => `w_${String(i).padStart(2, '0')}`);
+    const secondPage = Array.from({ length: 20 }, (_, i) => `w_${String(i + 20).padStart(2, '0')}`);
+    const firstChunks = chunkRatingsWorldIds(firstPage);
+    const bothChunks = chunkRatingsWorldIds([...firstPage, ...secondPage]);
+    expect(bothChunks[0]).toEqual(firstChunks[0]);
+    expect(bothChunks[1].ids).toEqual(secondPage);
+  });
+
+  it('sorts ids within each chunk', () => {
+    const [chunk] = chunkRatingsWorldIds(['wrld_b', 'wrld_a', 'wrld_c']);
+    expect(chunk.ids).toEqual(['wrld_a', 'wrld_b', 'wrld_c']);
+    expect(chunk.key).toBe('wrld_a|wrld_b|wrld_c');
+  });
+
+  it('returns an empty array for empty input', () => {
+    expect(chunkRatingsWorldIds([])).toEqual([]);
   });
 });
 
