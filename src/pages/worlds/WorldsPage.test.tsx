@@ -147,6 +147,26 @@ describe('WorldsPage', () => {
     expect(screen.getByText(/of 1/i)).toBeInTheDocument();
   });
 
+  it('throttles back-to-top visibility updates to at most one per animation frame', async () => {
+    renderPage(<WorldsPage />);
+
+    Object.defineProperty(window, 'scrollY', {
+      value: window.innerHeight + 1,
+      writable: true,
+      configurable: true,
+    });
+    fireEvent.scroll(window);
+    expect(screen.getByLabelText(/back to top/i)).toBeInTheDocument();
+
+    window.scrollY = 0;
+    fireEvent.scroll(window);
+    expect(screen.getByLabelText(/back to top/i)).toBeInTheDocument();
+
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    fireEvent.scroll(window);
+    expect(screen.queryByLabelText(/back to top/i)).not.toBeInTheDocument();
+  });
+
   it('shows back-to-top button when scrolled past viewport height', () => {
     renderPage(<WorldsPage />);
     expect(screen.queryByLabelText(/back to top/i)).not.toBeInTheDocument();
