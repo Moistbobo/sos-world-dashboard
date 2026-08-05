@@ -290,7 +290,7 @@ export function WorldsPage() {
               data-index={row.index}
               ref={gridVirtualizer.measureElement}
               className="absolute left-0 right-0 top-0"
-              style={{ transform: `translateY(${row.start}px)` }}
+              style={{ transform: `translateY(${row.start - scrollMargin}px)` }}
             >
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {items.map((w) => (
@@ -322,7 +322,7 @@ export function WorldsPage() {
               data-index={row.index}
               ref={listVirtualizer.measureElement}
               className="absolute left-0 right-0 top-0"
-              style={{ transform: `translateY(${row.start}px)` }}
+              style={{ transform: `translateY(${row.start - scrollMargin}px)` }}
             >
               <WorldListRow
                 world={worlds[row.index]}
