@@ -43,6 +43,7 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
             alt={world.name}
             className="h-full w-full object-cover"
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-slate-400 dark:text-slate-600">
