@@ -211,6 +211,8 @@
     "listMemoPlaceholder": "このリストのメモ（任意）...",
     "memoTooLong": "メモは512文字以内にしてください。",
     "memoCount": "{{count}} / 512",
+    "memoViewMore": "続きを表示",
+    "memoViewLess": "折りたたむ",
     "saveToList": "リストに保存",
     "createNewListInline": "新規リストを作成",
     "noListsYet": "まだリストを作成していません。",

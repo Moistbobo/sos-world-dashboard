@@ -32,6 +32,80 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 }
 
 describe('ListDetailPage', () => {
+  it('renders a full short memo without a toggle', () => {
+    window.localStorage.setItem(
+      'sos-world-lists',
+      JSON.stringify({
+        version: 1,
+        lists: [
+          {
+            id: 'l1',
+            name: 'Favorites',
+            icon: null,
+            color: '#4f46e5',
+            memo: 'Short memo',
+            worldIds: [],
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+          },
+        ],
+      }),
+    );
+
+    render(
+      <Wrapper>
+        <Routes>
+          <Route path="/" element={<ListDetailPage listId="l1" />} />
+        </Routes>
+      </Wrapper>,
+    );
+
+    expect(screen.getByText('Short memo')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /view more/i })).not.toBeInTheDocument();
+  });
+
+  it('truncates a long memo and reveals the full text via the toggle', async () => {
+    const longMemo = 'x'.repeat(200);
+    window.localStorage.setItem(
+      'sos-world-lists',
+      JSON.stringify({
+        version: 1,
+        lists: [
+          {
+            id: 'l1',
+            name: 'Favorites',
+            icon: null,
+            color: '#4f46e5',
+            memo: longMemo,
+            worldIds: [],
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+          },
+        ],
+      }),
+    );
+
+    const user = userEvent.setup();
+    render(
+      <Wrapper>
+        <Routes>
+          <Route path="/" element={<ListDetailPage listId="l1" />} />
+        </Routes>
+      </Wrapper>,
+    );
+
+    const preview = screen.getByText(/^x{128}…$/);
+    expect(preview).toBeInTheDocument();
+    expect(screen.queryByText(longMemo)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /view more/i }));
+    expect(screen.getByText(longMemo)).toBeInTheDocument();
+    expect(screen.queryByText(/^x{128}…$/)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /view less/i }));
+    expect(screen.queryByText(longMemo)).not.toBeInTheDocument();
+  });
+
   it('shows empty state for a list with no worlds', async () => {
     window.localStorage.setItem(
       'sos-world-lists',

@@ -15,6 +15,12 @@ describe('ListFormDialog', () => {
     expect(screen.queryByRole('textbox', { name: /icon/i })).not.toBeInTheDocument();
   });
 
+  it('gives the memo textarea the same input styling as the title field', () => {
+    render(<ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={vi.fn()} />);
+    expect(screen.getByRole('textbox', { name: /memo/i })).toHaveClass('input');
+    expect(screen.getByRole('textbox', { name: /name/i })).toHaveClass('input');
+  });
+
   it('submits a new list', async () => {
     const onSubmit = vi.fn();
     const user = userEvent.setup();

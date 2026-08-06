@@ -149,7 +149,7 @@ export function ListFormDialog({
                 placeholder={t('lists.listMemoPlaceholder')}
                 maxLength={MAX_LIST_MEMO_LENGTH + 1}
                 rows={3}
-                className="w-full resize-none overflow-y-auto rounded-lg border border-slate-300 bg-white p-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+                className="input w-full resize-none overflow-y-auto"
               />
               <span
                 className={`mt-1 block text-xs ${

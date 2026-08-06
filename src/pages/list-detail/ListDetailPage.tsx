@@ -13,6 +13,7 @@ import { WorldCard } from '../../components/world-card/WorldCard';
 import { ConfirmDialog } from '../../components/confirm-dialog';
 
 const WORLDS_PER_PAGE = 28;
+const MEMO_PREVIEW_LENGTH = 128;
 const SENTIMENT_ENABLED = import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 'true';
 
 export function ListDetailPage({
@@ -31,6 +32,7 @@ export function ListDetailPage({
   const [formOpen, setFormOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingRemoveWorldId, setPendingRemoveWorldId] = useState<string | null>(null);
+  const [memoExpanded, setMemoExpanded] = useState(false);
 
   const paginatedIds = useMemo(() => {
     if (!list) return [];
@@ -123,9 +125,24 @@ export function ListDetailPage({
               {list.name}
             </h1>
             {list.memo && (
-              <p className="mt-1 max-w-xl whitespace-pre-wrap text-sm text-slate-600 dark:text-slate-300">
-                {list.memo}
-              </p>
+              <div className="mt-1 max-w-xl">
+                <p className="whitespace-pre-wrap text-sm text-slate-600 dark:text-slate-300">
+                  {memoExpanded || list.memo.length <= MEMO_PREVIEW_LENGTH
+                    ? list.memo
+                    : `${list.memo.slice(0, MEMO_PREVIEW_LENGTH)}…`}
+                </p>
+                {list.memo.length > MEMO_PREVIEW_LENGTH && (
+                  <button
+                    type="button"
+                    onClick={() => setMemoExpanded((expanded) => !expanded)}
+                    className="btn-ghost mt-1 px-2 py-0.5 text-xs"
+                  >
+                    {memoExpanded
+                      ? t('lists.memoViewLess')
+                      : t('lists.memoViewMore')}
+                  </button>
+                )}
+              </div>
             )}
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {t('lists.worldCount', { count: list.worldIds.length })}
