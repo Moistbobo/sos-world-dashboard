@@ -113,20 +113,20 @@ export function ListDetailPage({
       </button>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <div
-            className="flex h-10 w-10 items-center justify-center rounded-lg"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
             style={{ backgroundColor: `${list.color}20` }}
           >
             <ListIcon icon={list.icon} color={list.color} className="h-5 w-5" />
           </div>
-          <div>
+          <div className="min-w-0">
             <h1 className="text-xl font-bold text-slate-900 dark:text-white">
               {list.name}
             </h1>
             {list.memo && (
               <div className="mt-1 max-w-xl">
-                <p className="whitespace-pre-wrap text-sm text-slate-600 dark:text-slate-300">
+                <p className="whitespace-pre-wrap break-words text-sm text-slate-600 dark:text-slate-300">
                   {memoExpanded || list.memo.length <= MEMO_PREVIEW_LENGTH
                     ? list.memo
                     : `${list.memo.slice(0, MEMO_PREVIEW_LENGTH)}…`}
@@ -149,7 +149,7 @@ export function ListDetailPage({
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex shrink-0 gap-2">
           <button
             onClick={() => exportList(list)}
             className="btn-secondary gap-1.5 text-xs"

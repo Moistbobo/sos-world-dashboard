@@ -96,6 +96,7 @@ describe('ListDetailPage', () => {
 
     const preview = screen.getByText(/^x{128}…$/);
     expect(preview).toBeInTheDocument();
+    expect(preview).toHaveClass('break-words');
     expect(screen.queryByText(longMemo)).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /view more/i }));
