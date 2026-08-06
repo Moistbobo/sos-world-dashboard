@@ -147,6 +147,26 @@ describe('WorldsPage', () => {
     expect(screen.getByText(/of 1/i)).toBeInTheDocument();
   });
 
+  it('throttles back-to-top visibility updates to at most one per animation frame', async () => {
+    renderPage(<WorldsPage />);
+
+    Object.defineProperty(window, 'scrollY', {
+      value: window.innerHeight + 1,
+      writable: true,
+      configurable: true,
+    });
+    fireEvent.scroll(window);
+    expect(screen.getByLabelText(/back to top/i)).toBeInTheDocument();
+
+    window.scrollY = 0;
+    fireEvent.scroll(window);
+    expect(screen.getByLabelText(/back to top/i)).toBeInTheDocument();
+
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    fireEvent.scroll(window);
+    expect(screen.queryByLabelText(/back to top/i)).not.toBeInTheDocument();
+  });
+
   it('shows back-to-top button when scrolled past viewport height', () => {
     renderPage(<WorldsPage />);
     expect(screen.queryByLabelText(/back to top/i)).not.toBeInTheDocument();
@@ -190,7 +210,7 @@ describe('WorldsPage', () => {
   it('constrains the list container to the available width so rows cannot overflow', () => {
     window.localStorage.setItem('sos-worlds-view-mode', 'list');
     renderPage(<WorldsPage />);
-    const listContainer = document.querySelector('.space-y-3.w-full.min-w-0');
+    const listContainer = document.querySelector('.relative.w-full.min-w-0');
     expect(listContainer).not.toBeNull();
     const rows = listContainer?.querySelectorAll('button.card') ?? [];
     expect(rows.length).toBeGreaterThan(0);
