@@ -1,4 +1,4 @@
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueries, useQueryClient } from '@tanstack/react-query';
 import type { InfiniteData } from '@tanstack/react-query';
 import {
   fetchComments,
@@ -10,7 +10,13 @@ import {
   deleteRating,
 } from '../api/sentiment';
 import type { FetchCommentsResult } from '../api/sentiment';
-import { useApiInfiniteQuery, useApiMutation, useApiQuery } from './useApiToasts';
+import {
+  isFinalFailure,
+  useApiInfiniteQuery,
+  useApiMutation,
+  useApiQuery,
+  useFinalErrorToast,
+} from './useApiToasts';
 import { useCurrentUserId } from './useCurrentUser';
 import { generateUsername } from '../utils/username';
 import type { Comment, RatingSummary } from '../types';
@@ -23,14 +29,69 @@ export function useRatings(worldId: string | undefined) {
   });
 }
 
-export function useRatingsForWorldIds(worldIds: readonly string[]) {
-  const sortedKey = Array.from(new Set(worldIds)).sort().join('|');
-  return useApiQuery<Map<string, RatingSummary>>({
-    queryKey: ['ratings-batch', sortedKey],
-    queryFn: () => fetchRatingsForWorldIds(worldIds),
-    enabled: worldIds.length > 0,
-    staleTime: 60_000,
+export const RATINGS_BATCH_SIZE = 20;
+
+export interface RatingsChunk {
+  ids: string[];
+  key: string;
+}
+
+export function chunkRatingsWorldIds(worldIds: readonly string[]): RatingsChunk[] {
+  const uniqueIds = Array.from(new Set(worldIds));
+  const chunks: RatingsChunk[] = [];
+  for (let i = 0; i < uniqueIds.length; i += RATINGS_BATCH_SIZE) {
+    const ids = uniqueIds.slice(i, i + RATINGS_BATCH_SIZE);
+    const sorted = Array.from(ids).sort();
+    chunks.push({ ids: sorted, key: sorted.join('|') });
+  }
+  return chunks;
+}
+
+export interface RatingsBatchResult {
+  data: Map<string, RatingSummary> | undefined;
+  isPending: boolean;
+  isError: boolean;
+  isSuccess: boolean;
+  isFetching: boolean;
+}
+
+export function useRatingsForWorldIds(worldIds: readonly string[]): RatingsBatchResult {
+  const chunks = chunkRatingsWorldIds(worldIds);
+
+  const queries = useQueries({
+    queries: chunks.map(({ ids, key }) => ({
+      queryKey: ['ratings-chunk', key],
+      queryFn: () => fetchRatingsForWorldIds(ids),
+      staleTime: 60_000,
+    })),
   });
+
+  const isPending = queries.some((query) => query.isPending);
+  const isError = queries.some((query) => query.isError);
+  const isFetching = queries.some((query) => query.isFetching);
+
+  const data =
+    chunks.length === 0
+      ? undefined
+      : chunks.reduce<Map<string, RatingSummary>>((merged, _chunk, index) => {
+          const chunkData = queries[index]?.data;
+          if (chunkData) {
+            for (const [worldId, summary] of chunkData) {
+              merged.set(worldId, summary);
+            }
+          }
+          return merged;
+        }, new Map());
+
+  const isSuccess = chunks.length > 0 && !isPending && !isError;
+
+  const error = queries.find((query) => query.isError)?.error ?? null;
+  const hasFinalFailure = queries.some(
+    (query) => query.isError && isFinalFailure(query.isError, query.failureCount, undefined),
+  );
+  useFinalErrorToast(error, true, hasFinalFailure, 'Request failed');
+
+  return { data, isPending, isError, isSuccess, isFetching };
 }
 
 const COMMENTS_PAGE_SIZE = 20;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { getEmojiForTag } from '../../utils/tagEmoji';
 
 interface WaffleItem {
@@ -19,46 +19,52 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
     pct: number;
   } | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
-  const [readySet, setReadySet] = useState<Set<number>>(new Set());
-
-  const total = data.reduce((sum, d) => sum + d.value, 0);
-  if (total === 0) return null;
+  const [allAnimated, setAllAnimated] = useState(false);
+  const animatedCount = useRef(0);
 
   // Build 100 cells using largest-remainder rounding so the waffle is always full
   // while staying as close as possible to each item's true share.
-  const rawShares = data.map((item) => ({
-    name: item.name,
-    floor: Math.floor((item.value / total) * 100),
-    remainder: ((item.value / total) * 100) - Math.floor((item.value / total) * 100),
-  }));
-  const baseCells = rawShares.reduce((sum, s) => sum + s.floor, 0);
-  const cellsToDistribute = 100 - baseCells;
+  const cells = useMemo(() => {
+    const total = data.reduce((sum, d) => sum + d.value, 0);
+    if (total === 0) return [];
+    const rawShares = data.map((item) => ({
+      name: item.name,
+      floor: Math.floor((item.value / total) * 100),
+      remainder: ((item.value / total) * 100) - Math.floor((item.value / total) * 100),
+    }));
+    const baseCells = rawShares.reduce((sum, s) => sum + s.floor, 0);
+    const cellsToDistribute = 100 - baseCells;
 
-  const sortedByRemainder = rawShares
-    .map((s, index) => ({ ...s, index }))
-    .sort((a, b) => b.remainder - a.remainder);
-  const extraCells = new Map<string, number>();
-  for (let i = 0; i < cellsToDistribute; i++) {
-    const item = sortedByRemainder[i % sortedByRemainder.length];
-    extraCells.set(item.name, (extraCells.get(item.name) ?? 0) + 1);
-  }
-
-  const cells: { name: string; color: string }[] = [];
-  data.forEach((item) => {
-    const count = rawShares.find((s) => s.name === item.name)!.floor + (extraCells.get(item.name) ?? 0);
-    const color = getColor?.(item.name) ?? '#6366f1';
-    for (let j = 0; j < count; j++) {
-      cells.push({ name: item.name, color });
+    const sortedByRemainder = rawShares
+      .map((s, index) => ({ ...s, index }))
+      .sort((a, b) => b.remainder - a.remainder);
+    const extraCells = new Map<string, number>();
+    for (let i = 0; i < cellsToDistribute; i++) {
+      const item = sortedByRemainder[i % sortedByRemainder.length];
+      extraCells.set(item.name, (extraCells.get(item.name) ?? 0) + 1);
     }
-  });
 
-  const markReady = (idx: number) => {
-    setReadySet((prev) => {
-      if (prev.has(idx)) return prev;
-      const next = new Set(prev);
-      next.add(idx);
-      return next;
+    const result: { name: string; color: string }[] = [];
+    data.forEach((item) => {
+      const count = rawShares.find((s) => s.name === item.name)!.floor + (extraCells.get(item.name) ?? 0);
+      const color = getColor?.(item.name) ?? '#6366f1';
+      for (let j = 0; j < count; j++) {
+        result.push({ name: item.name, color });
+      }
     });
+    return result;
+  }, [data, getColor]);
+
+  const total = useMemo(() => data.reduce((sum, d) => sum + d.value, 0), [data]);
+  if (total === 0) return null;
+
+  // `animationend` bubbles up from every cell; commit the animation-complete
+  // state once instead of firing up to 100 ready-state updates.
+  const handleAnimationEnd = () => {
+    animatedCount.current += 1;
+    if (animatedCount.current >= cells.length) {
+      setAllAnimated(true);
+    }
   };
 
   const handleMouseEnter = (
@@ -96,13 +102,12 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
       </style>
 
       {/* Grid of 100 cells */}
-      <div className="grid grid-cols-10 gap-1">
+      <div className="grid grid-cols-10 gap-1" onAnimationEnd={handleAnimationEnd}>
         {cells.map((cell, idx) => {
           const isMatch =
             focusedName !== null && cell.name === focusedName;
           const isDimmed =
             focusedName !== null && !isMatch;
-          const ready = readySet.has(idx);
           const emoji = getEmojiForTag(cell.name);
 
           return (
@@ -111,17 +116,16 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
               className="flex aspect-square cursor-pointer items-center justify-center rounded-sm transition"
               style={{
                 backgroundColor: cell.color,
-                opacity: ready ? (isDimmed ? 0.5 : 1) : 0,
-                transform: ready
+                opacity: allAnimated ? (isDimmed ? 0.5 : 1) : 0,
+                transform: allAnimated
                   ? isMatch
                     ? 'scale(1.1)'
                     : 'scale(1)'
                   : 'scale(0)',
-                animation: ready
+                animation: allAnimated
                   ? undefined
                   : `waffleScaleIn 300ms cubic-bezier(0.34, 1.56, 0.64, 1) ${(9 - Math.floor(idx / 10)) * 35 + (idx % 10) * 3}ms forwards`,
               }}
-              onAnimationEnd={() => markReady(idx)}
               onClick={() => onSelectTag?.(cell.name)}
               onMouseEnter={(e) => {
                 const item = data.find((d) => d.name === cell.name);
@@ -130,10 +134,8 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
             >
-              {/* Emoji badge — always visible once animated */}
-              {ready && (
-                <span className="pointer-events-none text-sm leading-none">{emoji}</span>
-              )}
+              {/* Emoji badge — rendered unconditionally so it scales in with the parent cell */}
+              <span className="pointer-events-none text-sm leading-none">{emoji}</span>
             </div>
           );
         })}

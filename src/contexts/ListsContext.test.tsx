@@ -11,6 +11,7 @@ function TestHelper() {
   const {
     lists,
     createList,
+    updateList,
     addWorldToList,
     isWorldInAnyList,
     exportList,
@@ -19,7 +20,21 @@ function TestHelper() {
   return (
     <div>
       <span data-testid="count">{lists.length}</span>
+      <span data-testid="memo">{lists[0]?.memo ?? 'none'}</span>
       <button onClick={() => createList({ name: 'Favorites' })}>Create</button>
+      <button onClick={() => createList({ name: 'WithMemo', memo: '  hi  ' })}>
+        CreateWithMemo
+      </button>
+      <button
+        onClick={() =>
+          updateList(lists[0]?.id ?? '', { memo: '  my notes  ' })
+        }
+      >
+        SetMemo
+      </button>
+      <button onClick={() => updateList(lists[0]?.id ?? '', { memo: null })}>
+        ClearMemo
+      </button>
       <button onClick={() => addWorldToList(lists[0]?.id, 'wrld_1')}>
         Add
       </button>
@@ -83,6 +98,51 @@ describe('ListsContext', () => {
     expect(window.localStorage.getItem('sos-world-lists')).toContain(
       'Favorites',
     );
+  });
+
+  it('stores a trimmed memo when creating', () => {
+    render(
+      <ListsProvider>
+        <TestHelper />
+      </ListsProvider>,
+    );
+    fireEvent.click(screen.getByText('CreateWithMemo'));
+    expect(screen.getByTestId('memo').textContent).toBe('hi');
+    const stored = JSON.parse(
+      window.localStorage.getItem('sos-world-lists')!,
+    );
+    expect(stored.lists[0].memo).toBe('hi');
+  });
+
+  it('sets and trims a memo on update', () => {
+    render(
+      <ListsProvider>
+        <TestHelper />
+      </ListsProvider>,
+    );
+    fireEvent.click(screen.getByText('Create'));
+    fireEvent.click(screen.getByText('SetMemo'));
+    expect(screen.getByTestId('memo').textContent).toBe('my notes');
+    const stored = JSON.parse(
+      window.localStorage.getItem('sos-world-lists')!,
+    );
+    expect(stored.lists[0].memo).toBe('my notes');
+  });
+
+  it('clears a memo on update', () => {
+    render(
+      <ListsProvider>
+        <TestHelper />
+      </ListsProvider>,
+    );
+    fireEvent.click(screen.getByText('Create'));
+    fireEvent.click(screen.getByText('SetMemo'));
+    fireEvent.click(screen.getByText('ClearMemo'));
+    expect(screen.getByTestId('memo').textContent).toBe('none');
+    const stored = JSON.parse(
+      window.localStorage.getItem('sos-world-lists')!,
+    );
+    expect(stored.lists[0].memo).toBeNull();
   });
 
   it('adds a world to a list', () => {

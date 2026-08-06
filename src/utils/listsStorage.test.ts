@@ -80,4 +80,15 @@ describe('createList', () => {
     expect(list.worldIds).toEqual([]);
     expect(list.id).toBe('00000000-0000-0000-0000-000000000001');
   });
+
+  it('stores a trimmed memo', () => {
+    const list = createList({ name: 'Date spots', memo: '  cozy worlds  ' });
+    expect(list.memo).toBe('cozy worlds');
+  });
+
+  it('stores null when memo is absent or blank', () => {
+    expect(createList({ name: 'A' }).memo).toBeNull();
+    expect(createList({ name: 'B', memo: '' }).memo).toBeNull();
+    expect(createList({ name: 'C', memo: '   ' }).memo).toBeNull();
+  });
 });
