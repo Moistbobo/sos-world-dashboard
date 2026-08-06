@@ -55,6 +55,29 @@ describe('slugifyListName', () => {
   });
 });
 
+describe('memo round trips', () => {
+  it('preserves memos through an export/import round trip', () => {
+    const withMemo = { ...sampleList, memo: 'line one\nline two' };
+    const json = serializeLists([withMemo]);
+    const result = parseLists(json);
+    expect(result.error).toBeNull();
+    expect(result.exportData?.lists[0].memo).toBe('line one\nline two');
+  });
+
+  it('trims memo on import and stores null for blank', () => {
+    const json = JSON.stringify({
+      version: 1,
+      lists: [
+        { ...sampleList, id: 'l2', memo: '  padded  ' },
+        { ...sampleList, id: 'l3', memo: '   ' },
+      ],
+    });
+    const result = parseLists(json);
+    expect(result.exportData?.lists[0].memo).toBe('padded');
+    expect(result.exportData?.lists[1].memo).toBeNull();
+  });
+});
+
 describe('parseLists', () => {
   it('accepts a valid snapshot', () => {
     const json = JSON.stringify({ version: 1, lists: [sampleList] });
