@@ -136,7 +136,7 @@ export function ListsPage() {
             <div
               key={list.id}
               onClick={() => navigate(`/lists/${list.id}`)}
-              className="card flex cursor-pointer items-center gap-3 p-4 transition hover:border-slate-400 dark:hover:border-slate-600"
+              className="card flex min-w-0 cursor-pointer items-center gap-3 p-4 transition hover:border-slate-400 dark:hover:border-slate-600"
             >
               <div
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
@@ -152,6 +152,11 @@ export function ListsPage() {
                 <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
                   {list.name}
                 </p>
+                {list.memo && (
+                  <p className="mt-0.5 line-clamp-2 whitespace-pre-wrap break-words text-xs text-slate-500 dark:text-slate-400">
+                    {list.memo}
+                  </p>
+                )}
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   {t('lists.worldCount', { count: list.worldIds.length })} ·{' '}
                   {t('lists.updated', {

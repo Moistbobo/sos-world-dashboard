@@ -123,6 +123,7 @@ function validateWorldList(value: unknown): WorldList | null {
       typeof obj.color === 'string' && obj.color.trim()
         ? obj.color.trim()
         : '#4f46e5',
+    memo: typeof obj.memo === 'string' ? obj.memo.trim() || null : null,
     worldIds: obj.worldIds.filter(
       (id): id is string => typeof id === 'string',
     ),

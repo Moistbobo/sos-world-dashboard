@@ -104,6 +104,10 @@ export function ListsProvider({ children }: { children: ReactNode }) {
               ? list.icon
               : input.icon?.trim() || null,
           color: input.color?.trim() ?? list.color,
+          memo:
+            input.memo === undefined
+              ? list.memo ?? null
+              : input.memo?.trim() || null,
           updatedAt: nowIso(),
         };
         return updated;

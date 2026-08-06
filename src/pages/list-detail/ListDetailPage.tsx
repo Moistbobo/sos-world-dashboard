@@ -13,6 +13,7 @@ import { WorldCard } from '../../components/world-card/WorldCard';
 import { ConfirmDialog } from '../../components/confirm-dialog';
 
 const WORLDS_PER_PAGE = 28;
+const MEMO_PREVIEW_LENGTH = 128;
 const SENTIMENT_ENABLED = import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 'true';
 
 export function ListDetailPage({
@@ -31,6 +32,7 @@ export function ListDetailPage({
   const [formOpen, setFormOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingRemoveWorldId, setPendingRemoveWorldId] = useState<string | null>(null);
+  const [memoExpanded, setMemoExpanded] = useState(false);
 
   const paginatedIds = useMemo(() => {
     if (!list) return [];
@@ -111,23 +113,43 @@ export function ListDetailPage({
       </button>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <div
-            className="flex h-10 w-10 items-center justify-center rounded-lg"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
             style={{ backgroundColor: `${list.color}20` }}
           >
             <ListIcon icon={list.icon} color={list.color} className="h-5 w-5" />
           </div>
-          <div>
+          <div className="min-w-0">
             <h1 className="text-xl font-bold text-slate-900 dark:text-white">
               {list.name}
             </h1>
+            {list.memo && (
+              <div className="mt-1 max-w-xl">
+                <p className="whitespace-pre-wrap break-words text-sm text-slate-600 dark:text-slate-300">
+                  {memoExpanded || list.memo.length <= MEMO_PREVIEW_LENGTH
+                    ? list.memo
+                    : `${list.memo.slice(0, MEMO_PREVIEW_LENGTH)}…`}
+                </p>
+                {list.memo.length > MEMO_PREVIEW_LENGTH && (
+                  <button
+                    type="button"
+                    onClick={() => setMemoExpanded((expanded) => !expanded)}
+                    className="btn-ghost mt-1 px-2 py-0.5 text-xs"
+                  >
+                    {memoExpanded
+                      ? t('lists.memoViewLess')
+                      : t('lists.memoViewMore')}
+                  </button>
+                )}
+              </div>
+            )}
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {t('lists.worldCount', { count: list.worldIds.length })}
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex shrink-0 gap-2">
           <button
             onClick={() => exportList(list)}
             className="btn-secondary gap-1.5 text-xs"
