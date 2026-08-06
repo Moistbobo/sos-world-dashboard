@@ -122,6 +122,11 @@ export function ListDetailPage({
             <h1 className="text-xl font-bold text-slate-900 dark:text-white">
               {list.name}
             </h1>
+            {list.memo && (
+              <p className="mt-1 max-w-xl whitespace-pre-wrap text-sm text-slate-600 dark:text-slate-300">
+                {list.memo}
+              </p>
+            )}
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {t('lists.worldCount', { count: list.worldIds.length })}
             </p>

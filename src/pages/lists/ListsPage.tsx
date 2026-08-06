@@ -152,6 +152,11 @@ export function ListsPage() {
                 <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
                   {list.name}
                 </p>
+                {list.memo && (
+                  <p className="mt-0.5 line-clamp-2 whitespace-pre-wrap text-xs text-slate-500 dark:text-slate-400">
+                    {list.memo}
+                  </p>
+                )}
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   {t('lists.worldCount', { count: list.worldIds.length })} ·{' '}
                   {t('lists.updated', {

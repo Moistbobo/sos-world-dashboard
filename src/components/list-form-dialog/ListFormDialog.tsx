@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import type { CreateListInput, WorldList } from '../../types/lists';
+import {
+  validateListMemo,
+  MAX_LIST_MEMO_LENGTH,
+} from '../../utils/listMemoValidation';
+
+const MAX_MEMO_HEIGHT_PX = 144;
 
 interface ListFormDialogProps {
   open: boolean;
@@ -19,7 +25,15 @@ export function ListFormDialog({
   const { t } = useTranslation();
   const [name, setName] = useState(list?.name ?? '');
   const [color, setColor] = useState(list?.color ?? '#4f46e5');
+  const [memo, setMemo] = useState(list?.memo ?? '');
   const [error, setError] = useState<string | null>(null);
+  const memoRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const autoGrow = useCallback((el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, MAX_MEMO_HEIGHT_PX)}px`;
+  }, []);
 
   if (!open) return null;
 
@@ -30,10 +44,30 @@ export function ListFormDialog({
       setError(t('lists.nameRequired'));
       return;
     }
-    onSubmit({ name: trimmed, color });
+    const memoResult = validateListMemo(memo);
+    if (!memoResult.valid) {
+      setError(t('lists.memoTooLong'));
+      return;
+    }
+    onSubmit({ name: trimmed, color, memo });
     onOpenChange(false);
   };
 
+  const handleMemoChange = (value: string) => {
+    setMemo(value);
+    const memoResult = validateListMemo(value);
+    if (!memoResult.valid) {
+      setError(t('lists.memoTooLong'));
+    } else if (error === t('lists.memoTooLong')) {
+      setError(null);
+    }
+    const el = memoRef.current;
+    if (el) {
+      autoGrow(el);
+    }
+  };
+
+  const memoLength = memo.trim().length;
   const isEdit = Boolean(list);
 
   return (
@@ -96,6 +130,36 @@ export function ListFormDialog({
                   {color}
                 </span>
               </div>
+            </div>
+            <div>
+              <label
+                htmlFor="list-memo"
+                className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-300"
+              >
+                {t('lists.listMemo')}
+              </label>
+              <textarea
+                id="list-memo"
+                ref={(el) => {
+                  memoRef.current = el;
+                  autoGrow(el);
+                }}
+                value={memo}
+                onChange={(e) => handleMemoChange(e.target.value)}
+                placeholder={t('lists.listMemoPlaceholder')}
+                maxLength={MAX_LIST_MEMO_LENGTH + 1}
+                rows={3}
+                className="w-full resize-none overflow-y-auto rounded-lg border border-slate-300 bg-white p-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+              />
+              <span
+                className={`mt-1 block text-xs ${
+                  memoLength > MAX_LIST_MEMO_LENGTH
+                    ? 'text-red-500'
+                    : 'text-slate-500 dark:text-slate-400'
+                }`}
+              >
+                {t('lists.memoCount', { count: memoLength })}
+              </span>
             </div>
             {error && (
               <p className="text-xs text-red-600 dark:text-red-300">{error}</p>
