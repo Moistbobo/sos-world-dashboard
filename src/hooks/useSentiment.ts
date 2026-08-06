@@ -29,7 +29,23 @@ export function useRatings(worldId: string | undefined) {
   });
 }
 
-const RATINGS_BATCH_SIZE = 20;
+export const RATINGS_BATCH_SIZE = 20;
+
+export interface RatingsChunk {
+  ids: string[];
+  key: string;
+}
+
+export function chunkRatingsWorldIds(worldIds: readonly string[]): RatingsChunk[] {
+  const uniqueIds = Array.from(new Set(worldIds));
+  const chunks: RatingsChunk[] = [];
+  for (let i = 0; i < uniqueIds.length; i += RATINGS_BATCH_SIZE) {
+    const ids = uniqueIds.slice(i, i + RATINGS_BATCH_SIZE);
+    const sorted = Array.from(ids).sort();
+    chunks.push({ ids: sorted, key: sorted.join('|') });
+  }
+  return chunks;
+}
 
 export interface RatingsBatchResult {
   data: Map<string, RatingSummary> | undefined;
@@ -40,21 +56,14 @@ export interface RatingsBatchResult {
 }
 
 export function useRatingsForWorldIds(worldIds: readonly string[]): RatingsBatchResult {
-  const uniqueIds = Array.from(new Set(worldIds));
-  const chunks: string[][] = [];
-  for (let i = 0; i < uniqueIds.length; i += RATINGS_BATCH_SIZE) {
-    chunks.push(uniqueIds.slice(i, i + RATINGS_BATCH_SIZE));
-  }
+  const chunks = chunkRatingsWorldIds(worldIds);
 
   const queries = useQueries({
-    queries: chunks.map((chunkIds) => {
-      const chunk = Array.from(chunkIds).sort();
-      return {
-        queryKey: ['ratings-chunk', chunk.join('|')],
-        queryFn: () => fetchRatingsForWorldIds(chunk),
-        staleTime: 60_000,
-      };
-    }),
+    queries: chunks.map(({ ids, key }) => ({
+      queryKey: ['ratings-chunk', key],
+      queryFn: () => fetchRatingsForWorldIds(ids),
+      staleTime: 60_000,
+    })),
   });
 
   const isPending = queries.some((query) => query.isPending);
@@ -64,7 +73,7 @@ export function useRatingsForWorldIds(worldIds: readonly string[]): RatingsBatch
   const data =
     chunks.length === 0
       ? undefined
-      : chunks.reduce<Map<string, RatingSummary>>((merged, _chunkIds, index) => {
+      : chunks.reduce<Map<string, RatingSummary>>((merged, _chunk, index) => {
           const chunkData = queries[index]?.data;
           if (chunkData) {
             for (const [worldId, summary] of chunkData) {
