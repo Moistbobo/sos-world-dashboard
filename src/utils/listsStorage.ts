@@ -19,6 +19,7 @@ export function createList(input: CreateListInput): WorldList {
     name: input.name.trim(),
     icon: input.icon?.trim() || null,
     color: input.color?.trim() || '#4f46e5',
+    memo: input.memo?.trim() || null,
     worldIds: [],
     createdAt: now,
     updatedAt: now,
