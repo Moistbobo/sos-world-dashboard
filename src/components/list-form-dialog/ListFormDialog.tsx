@@ -14,7 +14,7 @@ interface ListFormDialogProps {
   open: boolean;
   list?: WorldList;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (input: CreateListInput) => void;
+  onSubmit: (input: CreateListInput) => boolean;
 }
 
 export function ListFormDialog({
@@ -50,7 +50,14 @@ export function ListFormDialog({
       setError(t('lists.memoTooLong'));
       return;
     }
-    onSubmit({ name: trimmed, color, memo });
+    const ok = onSubmit({ name: trimmed, color, memo });
+    if (!ok) return;
+    if (!list) {
+      setName('');
+      setColor('#4f46e5');
+      setMemo('');
+    }
+    setError(null);
     onOpenChange(false);
   };
 

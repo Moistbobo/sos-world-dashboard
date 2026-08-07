@@ -228,9 +228,10 @@ export function ListsPage() {
         onSubmit={(input) => {
           if (editingList) {
             updateList(editingList.id, input);
-          } else if (canCreateList()) {
-            createList(input);
+            return true;
           }
+          if (!canCreateList()) return false;
+          return createList(input).ok;
         }}
       />
 

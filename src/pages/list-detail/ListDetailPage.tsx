@@ -238,7 +238,10 @@ export function ListDetailPage({
         open={formOpen}
         list={list}
         onOpenChange={setFormOpen}
-        onSubmit={(input) => updateList(list.id, input)}
+        onSubmit={(input) => {
+          updateList(list.id, input);
+          return true;
+        }}
       />
     </div>
   );

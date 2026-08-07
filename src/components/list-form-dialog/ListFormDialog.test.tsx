@@ -18,6 +18,42 @@ describe('ListFormDialog', () => {
     expect(document.body).toContainElement(dialog);
   });
 
+  it('clears the form after a successful create', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    render(
+      <ListFormDialog
+        open={true}
+        onOpenChange={onOpenChange}
+        onSubmit={() => true}
+      />,
+    );
+    await user.type(screen.getByRole('textbox', { name: /name/i }), 'Favorites');
+    await user.click(screen.getByRole('button', { name: /create/i }));
+
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('');
+  });
+
+  it('keeps the form when create fails', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    render(
+      <ListFormDialog
+        open={true}
+        onOpenChange={onOpenChange}
+        onSubmit={() => false}
+      />,
+    );
+    await user.type(screen.getByRole('textbox', { name: /name/i }), 'Favorites');
+    await user.click(screen.getByRole('button', { name: /create/i }));
+
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue(
+      'Favorites',
+    );
+  });
+
   it('renders create mode with empty name field', () => {
     render(<ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={vi.fn()} />);
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('');
@@ -31,7 +67,7 @@ describe('ListFormDialog', () => {
   });
 
   it('submits a new list', async () => {
-    const onSubmit = vi.fn();
+    const onSubmit = vi.fn(() => true);
     const user = userEvent.setup();
     render(<ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={onSubmit} />);
     await user.type(screen.getByRole('textbox', { name: /name/i }), 'Favorites');
@@ -74,7 +110,7 @@ describe('ListFormDialog', () => {
   });
 
   it('submits the memo with the list', async () => {
-    const onSubmit = vi.fn();
+    const onSubmit = vi.fn(() => true);
     const user = userEvent.setup();
     render(<ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={onSubmit} />);
     await user.type(screen.getByRole('textbox', { name: /name/i }), 'Favorites');
