@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Pencil, List, Upload, Download } from 'lucide-react';
 import { toast } from 'sonner';
-import { useLists } from '../../contexts/ListsContext';
+import { useLists, MAX_LISTS } from '../../contexts/ListsContext';
+import { useListCapGuard } from '../../hooks/useListCapGuard';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ImportDialog } from '../../components/import-dialog';
 import { ConfirmDialog } from '../../components/confirm-dialog';
@@ -33,6 +34,7 @@ export function ListsPage() {
     id: string;
     name: string;
   } | null>(null);
+  const canCreateList = useListCapGuard();
 
   const handleEdit = (
     list: ReturnType<typeof useLists>['lists'][number] | undefined,
@@ -78,6 +80,10 @@ export function ListsPage() {
             filename,
           }),
         );
+      } else if (result.error === 'maxListsReached') {
+        toast.error(t('lists.maxListsReached', { count: MAX_LISTS }));
+      } else {
+        toast.error(t('lists.storageError'));
       }
     },
     [importLists, t],
@@ -89,6 +95,9 @@ export function ListsPage() {
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">
             {t('lists.title')}
+            <span className="ml-2 align-middle text-sm font-normal tabular-nums text-slate-500 dark:text-slate-400">
+              {t('lists.listCount', { count: lists.length, max: MAX_LISTS })}
+            </span>
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             {t('lists.subtitle')}
@@ -104,10 +113,12 @@ export function ListsPage() {
           </button>
           <button
             onClick={() => {
+              if (!canCreateList()) return;
               setEditingList(undefined);
               setFormOpen(true);
             }}
             className="btn-primary gap-1.5 text-xs"
+            aria-label={t('lists.newList')}
           >
             <Plus className="h-3.5 w-3.5" />
             {t('lists.newList')}
@@ -217,7 +228,7 @@ export function ListsPage() {
         onSubmit={(input) => {
           if (editingList) {
             updateList(editingList.id, input);
-          } else {
+          } else if (canCreateList()) {
             createList(input);
           }
         }}

@@ -3,9 +3,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { toast } from 'sonner';
-import { ListsProvider } from '../../contexts/ListsContext';
+import { ListsProvider, MAX_LISTS } from '../../contexts/ListsContext';
 import { ListsPage } from './ListsPage';
 import * as listsImportExport from '../../utils/listsImportExport';
+import { LISTS_STORAGE_KEY } from '../../utils/listsStorage';
 
 beforeEach(() => {
   window.localStorage.clear();
@@ -34,6 +35,22 @@ const sampleList = {
 function createJsonFile(contents: object, name = 'backup.json') {
   const blob = new Blob([JSON.stringify(contents)], { type: 'application/json' });
   return new File([blob], name, { type: 'application/json' });
+}
+
+function seedLists(count: number) {
+  const lists = Array.from({ length: count }, (_, i) => ({
+    id: `list-${i}`,
+    name: `List ${i}`,
+    icon: null,
+    color: '#4f46e5',
+    worldIds: [],
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  }));
+  window.localStorage.setItem(
+    LISTS_STORAGE_KEY,
+    JSON.stringify({ version: 1, lists }),
+  );
 }
 
 describe('ListsPage', () => {
@@ -105,5 +122,26 @@ describe('ListsPage', () => {
     render(<ListsPage />, { wrapper: Wrapper });
     await user.click(screen.getByRole('button', { name: /export list/i }));
     expect(downloadJson).toHaveBeenCalledWith('sosd-favorites-1.json', '{}');
+  });
+
+  it('shows a list counter of the current list count', async () => {
+    seedLists(3);
+    render(<ListsPage />, { wrapper: Wrapper });
+    expect(
+      screen.getByText(`${3} / ${MAX_LISTS}`),
+    ).toBeInTheDocument();
+  });
+
+  it('shows an error toast and does not open the form at the list cap', async () => {
+    const user = userEvent.setup();
+    seedLists(MAX_LISTS);
+    render(<ListsPage />, { wrapper: Wrapper });
+    await user.click(screen.getByRole('button', { name: /new list/i }));
+    expect(toast.error).toHaveBeenCalledWith(
+      expect.stringContaining(String(MAX_LISTS)),
+    );
+    expect(
+      screen.queryByRole('textbox', { name: /name/i }),
+    ).not.toBeInTheDocument();
   });
 });

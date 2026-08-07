@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { X, Plus } from 'lucide-react';
 import { useLists, MAX_WORLDS_PER_LIST } from '../../contexts/ListsContext';
+import { useListCapGuard } from '../../hooks/useListCapGuard';
 import { ListFormDialog } from '../list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
 
@@ -26,6 +27,7 @@ export function SaveToListDialog({
     createList,
   } = useLists();
   const [showCreate, setShowCreate] = useState(false);
+  const canCreateList = useListCapGuard();
 
   if (!open) return null;
 
@@ -41,8 +43,10 @@ export function SaveToListDialog({
   };
 
   const handleInlineCreate = (input: Parameters<typeof createList>[0]) => {
-    const list = createList(input);
-    addWorldToList(list.id, worldId);
+    if (!canCreateList()) return;
+    const result = createList(input);
+    if (!result.ok) return;
+    addWorldToList(result.list.id, worldId);
   };
 
   return (
@@ -102,7 +106,10 @@ export function SaveToListDialog({
           <div className="mt-4 border-t border-slate-200 pt-3 dark:border-slate-700">
             <button
               type="button"
-              onClick={() => setShowCreate(true)}
+              onClick={() => {
+                if (!canCreateList()) return;
+                setShowCreate(true);
+              }}
               className="btn-ghost w-full gap-1.5 py-1.5 text-xs"
             >
               <Plus className="h-3.5 w-3.5" />
