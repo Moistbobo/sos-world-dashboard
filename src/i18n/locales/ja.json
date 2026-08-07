@@ -251,6 +251,8 @@
     "validatingWorlds": "ワールドを API と照合しています...",
     "removedWorldsWarning": "{{count}} 件のワールドが見つからないためスキップされます。",
     "removedWorldsForList": "{{count}} 件削除",
+    "deletedWorldTitle": "DBから削除されたワールド",
+    "deletedWorldCopyAriaLabel": "ワールドID {{id}} をコピー",
     "deleteConfirmTitle": "リストを削除",
     "deleteConfirmMessage": "\"{{name}}\" を削除してもよろしいですか？ この操作は元に戻せません。",
     "couldNotImport": "リストをインポートできませんでした",

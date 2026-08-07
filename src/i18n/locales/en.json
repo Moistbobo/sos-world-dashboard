@@ -251,6 +251,8 @@
     "validatingWorlds": "Checking worlds against the API...",
     "removedWorldsWarning": "{{count}} world(s) were not found and will be skipped.",
     "removedWorldsForList": "{{count}} removed",
+    "deletedWorldTitle": "World deleted from DB",
+    "deletedWorldCopyAriaLabel": "Copy world ID {{id}}",
     "deleteConfirmTitle": "Delete list",
     "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This cannot be undone.",
     "couldNotImport": "Could not import lists",

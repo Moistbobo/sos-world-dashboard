@@ -290,4 +290,140 @@ describe('ListDetailPage', () => {
 
     expect(screen.getByText(/of 35/i)).toBeInTheDocument();
   });
+
+  it('renders a deleted-world placeholder card for IDs missing from the fetch', async () => {
+    const world: World = {
+      worldId: 'wrld_1',
+      name: 'Saved World',
+      authorName: 'Author',
+      capacity: 10,
+      platforms: ['pc'],
+      tags: [],
+      imageUrl: '',
+      vrchatUrl: '',
+      quality: 'good',
+      createdAt: '2024-01-01',
+      internalAddDate: '2024-02-01',
+    };
+    vi.spyOn(client, 'fetchWorldsByIds').mockResolvedValue([world]);
+
+    window.localStorage.setItem(
+      'sos-world-lists',
+      JSON.stringify({
+        version: 1,
+        lists: [
+          {
+            id: 'l1',
+            name: 'Favorites',
+            icon: null,
+            color: '#4f46e5',
+            worldIds: ['wrld_1', 'wrld_gone'],
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+          },
+        ],
+      }),
+    );
+
+    render(
+      <Wrapper>
+        <Routes>
+          <Route path="/" element={<ListDetailPage listId="l1" />} />
+        </Routes>
+      </Wrapper>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Saved World')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText(/world deleted from db/i)).toBeInTheDocument();
+    expect(screen.getByText('wrld_gone')).toBeInTheDocument();
+  });
+
+  it('suppresses placeholder cards when the world fetch fails', async () => {
+    vi.spyOn(client, 'fetchWorldsByIds').mockRejectedValue(
+      new Error('network down'),
+    );
+
+    window.localStorage.setItem(
+      'sos-world-lists',
+      JSON.stringify({
+        version: 1,
+        lists: [
+          {
+            id: 'l1',
+            name: 'Favorites',
+            icon: null,
+            color: '#4f46e5',
+            worldIds: ['wrld_gone'],
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+          },
+        ],
+      }),
+    );
+
+    render(
+      <Wrapper>
+        <Routes>
+          <Route path="/" element={<ListDetailPage listId="l1" />} />
+        </Routes>
+      </Wrapper>,
+    );
+
+    await waitFor(() => {
+      expect(client.fetchWorldsByIds).toHaveBeenCalled();
+    });
+
+    expect(
+      screen.queryByText(/world deleted from db/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it('removes a deleted world via the confirmation dialog', async () => {
+    vi.spyOn(client, 'fetchWorldsByIds').mockResolvedValue([]);
+
+    window.localStorage.setItem(
+      'sos-world-lists',
+      JSON.stringify({
+        version: 1,
+        lists: [
+          {
+            id: 'l1',
+            name: 'Favorites',
+            icon: null,
+            color: '#4f46e5',
+            worldIds: ['wrld_gone'],
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+          },
+        ],
+      }),
+    );
+
+    render(
+      <Wrapper>
+        <Routes>
+          <Route path="/" element={<ListDetailPage listId="l1" />} />
+        </Routes>
+      </Wrapper>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/world deleted from db/i)).toBeInTheDocument();
+    });
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /remove world from list/i }),
+    );
+    expect(screen.getByText(/remove world/i)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /remove$/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/world deleted from db/i),
+      ).not.toBeInTheDocument();
+    });
+  });
 });

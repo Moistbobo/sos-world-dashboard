@@ -10,6 +10,7 @@ import { useWorldsByIds } from '../../hooks/useWorldsByIds';
 import { useRatingsForWorldIds } from '../../hooks/useSentiment';
 import { Pagination } from '../../components/pagination';
 import { WorldCard } from '../../components/world-card/WorldCard';
+import { DeletedWorldCard } from '../../components/deleted-world-card';
 import { ConfirmDialog } from '../../components/confirm-dialog';
 
 const WORLDS_PER_PAGE = 28;
@@ -39,7 +40,7 @@ export function ListDetailPage({
     return list.worldIds.slice(offset, offset + WORLDS_PER_PAGE);
   }, [list, offset]);
 
-  const { worlds, isPending } = useWorldsByIds(paginatedIds);
+  const { worlds, isPending, isError } = useWorldsByIds(paginatedIds);
 
   const visibleWorldIds = useMemo(
     () => worlds.filter((entry) => entry.data).map((entry) => entry.worldId),
@@ -47,12 +48,6 @@ export function ListDetailPage({
   );
   const { data: ratingSummaries } = useRatingsForWorldIds(
     SENTIMENT_ENABLED ? visibleWorldIds : [],
-  );
-
-  const listIds = useMemo(() => new Set(list?.worldIds ?? []), [list]);
-  const visibleWorlds = useMemo(
-    () => worlds.filter((entry) => listIds.has(entry.worldId) && entry.data),
-    [worlds, listIds],
   );
 
   if (!list) {
@@ -190,16 +185,28 @@ export function ListDetailPage({
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              {visibleWorlds.map((entry) => (
-                <WorldCard
-                  key={entry.worldId}
-                  world={entry.data!}
-                  onSelect={(id) => navigate(`/worlds/${id}`)}
-                  onRemove={() => handleRemove(entry.worldId)}
-                  onAuthorClick={(author) => navigate(`/worlds?search=${encodeURIComponent(author)}`)}
-                  ratingSummary={ratingSummaries ? ratingSummaries.get(entry.worldId) ?? null : undefined}
-                />
-              ))}
+              {worlds.map((entry) => {
+                if (entry.data) {
+                  return (
+                    <WorldCard
+                      key={entry.worldId}
+                      world={entry.data}
+                      onSelect={(id) => navigate(`/worlds/${id}`)}
+                      onRemove={() => handleRemove(entry.worldId)}
+                      onAuthorClick={(author) => navigate(`/worlds?search=${encodeURIComponent(author)}`)}
+                      ratingSummary={ratingSummaries ? ratingSummaries.get(entry.worldId) ?? null : undefined}
+                    />
+                  );
+                }
+                if (isError) return null;
+                return (
+                  <DeletedWorldCard
+                    key={entry.worldId}
+                    worldId={entry.worldId}
+                    onRemove={() => handleRemove(entry.worldId)}
+                  />
+                );
+              })}
             </div>
           )}
 
