@@ -1,20 +1,3 @@
-const WORLD_ID = 'wrld_demo_0000-0000-0000-000000000001';
-const WORLD_NAME = 'Moonlit Rooftop Garden';
-
-const mockWorld = {
-  worldId: WORLD_ID,
-  name: WORLD_NAME,
-  authorName: 'SOSContributor',
-  capacity: 24,
-  platforms: ['standalonewindows', 'android'],
-  tags: ['chill', 'social', 'japanese', 'night'],
-  imageUrl: 'https://placehold.co/1200x600/6366f1/ffffff?text=VRChat+World',
-  vrchatUrl: `https://vrchat.com/home/world/${WORLD_ID}`,
-  quality: 'good',
-  createdAt: '2024-01-15T00:00:00.000Z',
-  internalAddDate: '2024-06-01T00:00:00.000Z',
-};
-
 const mockMeta = {
   qualityGood: 128,
   qualityBad: 12,
@@ -29,15 +12,55 @@ const mockHealth = {
   dbVersion: 1,
 };
 
+const LIST_NAMES = [
+  'Favorites',
+  'Chill & Relax',
+  'Photo Spots',
+  'Party Worlds',
+  'Japanese Worlds',
+  'Quest Compatible',
+  'To Visit',
+  'Music & Clubs',
+  'Cozy Spaces',
+  'Horror Nights',
+  'Avatar Showrooms',
+  'Puzzle Games',
+  'Art Galleries',
+  'Social Hubs',
+];
+
+const now = new Date().toISOString();
+
+const lists = LIST_NAMES.map((name, i) => ({
+  id: `list_demo_${String(i + 1).padStart(4, '0')}`,
+  name,
+  icon: null,
+  color: '#4f46e5',
+  worldIds: [],
+  createdAt: now,
+  updatedAt: now,
+}));
+
+function seedLegacyLists() {
+  localStorage.setItem(
+    'sos-world-lists',
+    JSON.stringify({ version: 1, lists }),
+  );
+}
+
 /** @type {import('../lib/screenshot.mjs').ScreenshotConfig} */
 export default {
   port: 9877,
   apiMocks: {
     '/api/health': mockHealth,
     '/api/meta': mockMeta,
-    [`/api/worlds/${WORLD_ID}`]: mockWorld,
   },
   routes: [
-    { name: 'world-detail', path: `/worlds/${WORLD_ID}`, waitForText: WORLD_NAME },
+    {
+      name: 'lists',
+      path: '/lists',
+      waitForText: 'My Lists',
+      initScript: seedLegacyLists,
+    },
   ],
 };
