@@ -196,6 +196,7 @@
     "title": "My Lists",
     "subtitle": "Create and manage your saved world collections.",
     "newList": "New list",
+    "listCount": "{{count}} / {{max}}",
     "createList": "Create list",
     "editList": "Edit list",
     "deleteList": "Delete list",

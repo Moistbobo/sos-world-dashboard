@@ -93,6 +93,9 @@ export function ListsPage() {
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">
             {t('lists.title')}
+            <span className="ml-2 align-middle text-sm font-normal tabular-nums text-slate-500 dark:text-slate-400">
+              {t('lists.listCount', { count: lists.length, max: MAX_LISTS })}
+            </span>
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             {t('lists.subtitle')}
@@ -111,7 +114,9 @@ export function ListsPage() {
               setEditingList(undefined);
               setFormOpen(true);
             }}
-            className="btn-primary gap-1.5 text-xs"
+            disabled={lists.length >= MAX_LISTS}
+            className="btn-primary gap-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label={t('lists.newList')}
           >
             <Plus className="h-3.5 w-3.5" />
             {t('lists.newList')}

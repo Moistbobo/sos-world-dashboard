@@ -196,6 +196,7 @@
     "title": "マイリスト",
     "subtitle": "保存したワールドのコレクションを作成・管理します。",
     "newList": "新規リスト",
+    "listCount": "{{count}} / {{max}}",
     "createList": "リストを作成",
     "editList": "リストを編集",
     "deleteList": "リストを削除",
