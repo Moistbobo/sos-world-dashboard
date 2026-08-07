@@ -18,6 +18,23 @@ describe('ListFormDialog', () => {
     expect(document.body).toContainElement(dialog);
   });
 
+  it('clears the form when reopened in create mode', async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(
+      <ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={vi.fn()} />,
+    );
+    await user.type(screen.getByRole('textbox', { name: /name/i }), 'Favorites');
+
+    rerender(
+      <ListFormDialog open={false} onOpenChange={vi.fn()} onSubmit={vi.fn()} />,
+    );
+    rerender(
+      <ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={vi.fn()} />,
+    );
+
+    expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('');
+  });
+
   it('renders create mode with empty name field', () => {
     render(<ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={vi.fn()} />);
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('');

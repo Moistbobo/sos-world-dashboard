@@ -30,6 +30,24 @@ export function ListFormDialog({
   const [error, setError] = useState<string | null>(null);
   const memoRef = useRef<HTMLTextAreaElement | null>(null);
 
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open && !prevOpen) {
+    setPrevOpen(true);
+    if (list) {
+      setName(list.name);
+      setColor(list.color);
+      setMemo(list.memo ?? '');
+    } else {
+      setName('');
+      setColor('#4f46e5');
+      setMemo('');
+    }
+    setError(null);
+  }
+  if (!open && prevOpen) {
+    setPrevOpen(false);
+  }
+
   const autoGrow = useCallback((el: HTMLTextAreaElement | null) => {
     if (!el) return;
     el.style.height = 'auto';
