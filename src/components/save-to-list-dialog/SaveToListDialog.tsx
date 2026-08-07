@@ -106,7 +106,10 @@ export function SaveToListDialog({
           <div className="mt-4 border-t border-slate-200 pt-3 dark:border-slate-700">
             <button
               type="button"
-              onClick={() => setShowCreate(true)}
+              onClick={() => {
+                if (!canCreateList()) return;
+                setShowCreate(true);
+              }}
               className="btn-ghost w-full gap-1.5 py-1.5 text-xs"
             >
               <Plus className="h-3.5 w-3.5" />
