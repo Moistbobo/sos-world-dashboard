@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { WorldDetailPage } from './WorldDetailPage';
 import * as useApi from '../../hooks/useApi';
 import { ListsProvider } from '../../contexts/ListsContext';
+import { resetListsDb } from '../../test/listsDb';
 import type { World } from '../../types';
 
 vi.mock('../../components/sentiment-section', () => ({
@@ -63,9 +64,11 @@ const createWorld = (overrides: Partial<World> = {}): World => ({
 describe('WorldDetailPage', () => {
   let scrollTo: ReturnType<typeof vi.spyOn>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    window.localStorage.clear();
+    await resetListsDb();
   });
 
   afterEach(() => {

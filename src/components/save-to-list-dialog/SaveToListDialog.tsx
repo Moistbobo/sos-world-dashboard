@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import { X, Plus } from 'lucide-react';
-import { useLists, MAX_WORLDS_PER_LIST } from '../../contexts/ListsContext';
-import { useListCapGuard } from '../../hooks/useListCapGuard';
+import { useLists } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
 
@@ -28,7 +26,6 @@ export function SaveToListDialog({
     createList,
   } = useLists();
   const [showCreate, setShowCreate] = useState(false);
-  const canCreateList = useListCapGuard();
 
   if (!open) return null;
 
@@ -37,16 +34,11 @@ export function SaveToListDialog({
       removeWorldFromList(listId, worldId);
       return;
     }
-    const result = addWorldToList(listId, worldId);
-    if (!result.ok && result.reason === 'max-reached') {
-      toast.error(t('lists.maxWorldsReached', { count: MAX_WORLDS_PER_LIST }));
-    }
+    addWorldToList(listId, worldId);
   };
 
   const handleInlineCreate = (input: Parameters<typeof createList>[0]) => {
-    if (!canCreateList()) return false;
     const result = createList(input);
-    if (!result.ok) return false;
     addWorldToList(result.list.id, worldId);
     return true;
   };
@@ -98,7 +90,7 @@ export function SaveToListDialog({
                     {list.name}
                   </span>
                   <span className="text-xs text-slate-400 dark:text-slate-500">
-                    {list.worldIds.length}/{MAX_WORLDS_PER_LIST}
+                    {list.worldIds.length}
                   </span>
                 </label>
               ))}
@@ -108,10 +100,7 @@ export function SaveToListDialog({
           <div className="mt-4 border-t border-slate-200 pt-3 dark:border-slate-700">
             <button
               type="button"
-              onClick={() => {
-                if (!canCreateList()) return;
-                setShowCreate(true);
-              }}
+              onClick={() => setShowCreate(true)}
               className="btn-ghost w-full gap-1.5 py-1.5 text-xs"
             >
               <Plus className="h-3.5 w-3.5" />
