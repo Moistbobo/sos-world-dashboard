@@ -44,10 +44,11 @@ export function SaveToListDialog({
   };
 
   const handleInlineCreate = (input: Parameters<typeof createList>[0]) => {
-    if (!canCreateList()) return;
+    if (!canCreateList()) return false;
     const result = createList(input);
-    if (!result.ok) return;
+    if (!result.ok) return false;
     addWorldToList(result.list.id, worldId);
+    return true;
   };
 
   return createPortal(

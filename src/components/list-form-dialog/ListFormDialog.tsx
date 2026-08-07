@@ -14,7 +14,7 @@ interface ListFormDialogProps {
   open: boolean;
   list?: WorldList;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (input: CreateListInput) => void;
+  onSubmit: (input: CreateListInput) => boolean;
 }
 
 export function ListFormDialog({
@@ -29,24 +29,6 @@ export function ListFormDialog({
   const [memo, setMemo] = useState(list?.memo ?? '');
   const [error, setError] = useState<string | null>(null);
   const memoRef = useRef<HTMLTextAreaElement | null>(null);
-
-  const [prevOpen, setPrevOpen] = useState(open);
-  if (open && !prevOpen) {
-    setPrevOpen(true);
-    if (list) {
-      setName(list.name);
-      setColor(list.color);
-      setMemo(list.memo ?? '');
-    } else {
-      setName('');
-      setColor('#4f46e5');
-      setMemo('');
-    }
-    setError(null);
-  }
-  if (!open && prevOpen) {
-    setPrevOpen(false);
-  }
 
   const autoGrow = useCallback((el: HTMLTextAreaElement | null) => {
     if (!el) return;
@@ -68,7 +50,14 @@ export function ListFormDialog({
       setError(t('lists.memoTooLong'));
       return;
     }
-    onSubmit({ name: trimmed, color, memo });
+    const ok = onSubmit({ name: trimmed, color, memo });
+    if (!ok) return;
+    if (!list) {
+      setName('');
+      setColor('#4f46e5');
+      setMemo('');
+    }
+    setError(null);
     onOpenChange(false);
   };
 
