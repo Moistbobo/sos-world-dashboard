@@ -132,9 +132,16 @@ describe('ListsPage', () => {
     ).toBeInTheDocument();
   });
 
-  it('disables the new list button at the list cap', async () => {
+  it('shows an error toast and does not open the form at the list cap', async () => {
+    const user = userEvent.setup();
     seedLists(MAX_LISTS);
     render(<ListsPage />, { wrapper: Wrapper });
-    expect(screen.getByRole('button', { name: /new list/i })).toBeDisabled();
+    await user.click(screen.getByRole('button', { name: /new list/i }));
+    expect(toast.error).toHaveBeenCalledWith(
+      expect.stringContaining(String(MAX_LISTS)),
+    );
+    expect(
+      screen.queryByRole('textbox', { name: /name/i }),
+    ).not.toBeInTheDocument();
   });
 });

@@ -111,11 +111,14 @@ export function ListsPage() {
           </button>
           <button
             onClick={() => {
+              if (lists.length >= MAX_LISTS) {
+                toast.error(t('lists.maxListsReached', { count: MAX_LISTS }));
+                return;
+              }
               setEditingList(undefined);
               setFormOpen(true);
             }}
-            disabled={lists.length >= MAX_LISTS}
-            className="btn-primary gap-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+            className="btn-primary gap-1.5 text-xs"
             aria-label={t('lists.newList')}
           >
             <Plus className="h-3.5 w-3.5" />
