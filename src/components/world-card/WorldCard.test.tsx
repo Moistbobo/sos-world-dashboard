@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WorldCard } from '../world-card';
 import { ListsProvider } from '../../contexts/ListsContext';
+import { resetListsDb } from '../../test/listsDb';
 
 const mockWorld = {
   worldId: 'wrld_test',
@@ -23,6 +24,11 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 }
 
 describe('WorldCard', () => {
+  beforeEach(async () => {
+    window.localStorage.clear();
+    await resetListsDb();
+  });
+
   it('renders world name and author', () => {
     render(<WorldCard world={mockWorld} />, { wrapper: Wrapper });
     expect(screen.getByText('Test World')).toBeInTheDocument();

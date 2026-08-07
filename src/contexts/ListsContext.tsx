@@ -9,28 +9,28 @@ import {
   type ReactNode,
 } from 'react';
 import type { CreateListInput, WorldList } from '../types/lists';
-import {
-  createList as makeList,
-  loadLists,
-  saveLists,
-} from '../utils/listsStorage';
+import { createList as makeList } from '../utils/listsStorage';
 import {
   downloadJson,
   makeExportFilename,
   mergeListsById,
   serializeLists,
 } from '../utils/listsImportExport';
+import { loadAllLists, persistLists } from '../utils/listsDb';
 
 export type AddWorldResult =
   | { ok: true }
-  | { ok: false; reason: 'missing' | 'not-found' | 'max-reached' | 'already-added' };
+  | { ok: false; reason: 'missing' | 'not-found' | 'already-added' };
 
-export type ImportResult = { ok: true } | { ok: false; error: string };
+export type CreateListResult = { ok: true; list: WorldList };
+
+export type ImportResult = { ok: true };
 
 interface ListsContextValue {
   lists: WorldList[];
   error: string | null;
-  createList(input: CreateListInput): WorldList;
+  isHydrated: boolean;
+  createList(input: CreateListInput): CreateListResult;
   updateList(id: string, input: Partial<CreateListInput>): WorldList | undefined;
   deleteList(id: string): boolean;
   addWorldToList(listId: string | undefined, worldId: string): AddWorldResult;
@@ -56,37 +56,50 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
-export const MAX_WORLDS_PER_LIST = 250;
-
 export function ListsProvider({ children }: { children: ReactNode }) {
-  const [lists, setLists] = useState<WorldList[]>(() => loadLists().lists);
-  const [error, setError] = useState<string | null>(() => loadLists().error);
-  const listsRef = useRef(lists);
+  const [lists, setLists] = useState<WorldList[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+  const listsRef = useRef<WorldList[]>([]);
+  const hydratedRef = useRef(false);
 
   useEffect(() => {
     listsRef.current = lists;
   }, [lists]);
 
-  const commit = useCallback(
-    (nextLists: WorldList[]) => {
-      listsRef.current = nextLists;
-      const { error: saveError } = saveLists(nextLists);
-      if (saveError) {
-        setError(saveError);
-      } else if (error) {
-        setError(null);
+  useEffect(() => {
+    let cancelled = false;
+    loadAllLists().then((result) => {
+      if (cancelled) return;
+      hydratedRef.current = true;
+      listsRef.current = result.lists;
+      setLists(result.lists);
+      setError(result.error);
+      setIsHydrated(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const commit = useCallback((nextLists: WorldList[]) => {
+    if (!hydratedRef.current) return;
+    const prev = listsRef.current;
+    listsRef.current = nextLists;
+    setLists(nextLists);
+    setError(null);
+    persistLists(prev, nextLists).then((result) => {
+      if (result.error) {
+        setError(result.error);
       }
-      setLists(nextLists);
-      return saveError;
-    },
-    [error],
-  );
+    });
+  }, []);
 
   const createList = useCallback(
-    (input: CreateListInput) => {
+    (input: CreateListInput): CreateListResult => {
       const list = makeList(input);
       commit([...listsRef.current, list]);
-      return list;
+      return { ok: true, list };
     },
     [commit],
   );
@@ -135,9 +148,6 @@ export function ListsProvider({ children }: { children: ReactNode }) {
       if (!listId || !worldId.trim()) return { ok: false, reason: 'missing' };
       const list = listsRef.current.find((l) => l.id === listId);
       if (!list) return { ok: false, reason: 'not-found' };
-      if (list.worldIds.length >= MAX_WORLDS_PER_LIST) {
-        return { ok: false, reason: 'max-reached' };
-      }
       if (list.worldIds.includes(worldId)) return { ok: false, reason: 'already-added' };
       const next = listsRef.current.map((l) =>
         l.id === listId
@@ -206,10 +216,7 @@ export function ListsProvider({ children }: { children: ReactNode }) {
   const importLists = useCallback(
     (incoming: WorldList[]): ImportResult => {
       const next = mergeListsById(listsRef.current, incoming);
-      const saveError = commit(next);
-      if (saveError) {
-        return { ok: false, error: saveError };
-      }
+      commit(next);
       return { ok: true };
     },
     [commit],
@@ -219,6 +226,7 @@ export function ListsProvider({ children }: { children: ReactNode }) {
     () => ({
       lists,
       error,
+      isHydrated,
       createList,
       updateList,
       deleteList,
@@ -234,6 +242,7 @@ export function ListsProvider({ children }: { children: ReactNode }) {
     [
       lists,
       error,
+      isHydrated,
       createList,
       updateList,
       deleteList,
