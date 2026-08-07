@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Pencil, List, Upload, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLists, MAX_LISTS } from '../../contexts/ListsContext';
+import { useListCapGuard } from '../../hooks/useListCapGuard';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ImportDialog } from '../../components/import-dialog';
 import { ConfirmDialog } from '../../components/confirm-dialog';
@@ -33,6 +34,7 @@ export function ListsPage() {
     id: string;
     name: string;
   } | null>(null);
+  const canCreateList = useListCapGuard();
 
   const handleEdit = (
     list: ReturnType<typeof useLists>['lists'][number] | undefined,
@@ -111,10 +113,7 @@ export function ListsPage() {
           </button>
           <button
             onClick={() => {
-              if (lists.length >= MAX_LISTS) {
-                toast.error(t('lists.maxListsReached', { count: MAX_LISTS }));
-                return;
-              }
+              if (!canCreateList()) return;
               setEditingList(undefined);
               setFormOpen(true);
             }}
@@ -229,11 +228,8 @@ export function ListsPage() {
         onSubmit={(input) => {
           if (editingList) {
             updateList(editingList.id, input);
-          } else {
-            const result = createList(input);
-            if (!result.ok) {
-              toast.error(t('lists.maxListsReached', { count: MAX_LISTS }));
-            }
+          } else if (canCreateList()) {
+            createList(input);
           }
         }}
       />
