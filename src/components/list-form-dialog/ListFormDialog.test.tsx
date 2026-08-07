@@ -9,6 +9,15 @@ beforeEach(() => {
 });
 
 describe('ListFormDialog', () => {
+  it('renders the overlay as a descendant of document.body', () => {
+    const { container } = render(
+      <ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={vi.fn()} />,
+    );
+    const dialog = screen.getByRole('dialog');
+    expect(container).not.toContainElement(dialog);
+    expect(document.body).toContainElement(dialog);
+  });
+
   it('renders create mode with empty name field', () => {
     render(<ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={vi.fn()} />);
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('');

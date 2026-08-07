@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { X, Plus } from 'lucide-react';
@@ -49,7 +50,7 @@ export function SaveToListDialog({
     addWorldToList(result.list.id, worldId);
   };
 
-  return (
+  return createPortal(
     <>
       <div
         className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95"
@@ -133,6 +134,7 @@ export function SaveToListDialog({
         onOpenChange={setShowCreate}
         onSubmit={handleInlineCreate}
       />
-    </>
+    </>,
+    document.body,
   );
 }
