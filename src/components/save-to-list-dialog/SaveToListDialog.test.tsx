@@ -36,6 +36,28 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 }
 
 describe('SaveToListDialog', () => {
+  it('renders the overlay as a descendant of document.body', () => {
+    const { container } = render(
+      <SaveToListDialog worldId="wrld_1" open={true} onOpenChange={vi.fn()} />,
+      { wrapper: Wrapper },
+    );
+    const dialog = screen.getByRole('dialog');
+    expect(container).not.toContainElement(dialog);
+    expect(document.body).toContainElement(dialog);
+  });
+
+  it('renders the nested create-list dialog as a descendant of document.body', async () => {
+    const user = userEvent.setup();
+    render(
+      <SaveToListDialog worldId="wrld_1" open={true} onOpenChange={vi.fn()} />,
+      { wrapper: Wrapper },
+    );
+    await user.click(screen.getByRole('button', { name: /create new list/i }));
+    const dialogs = screen.getAllByRole('dialog');
+    expect(dialogs).toHaveLength(2);
+    expect(document.body).toContainElement(dialogs[1]);
+  });
+
   it('shows empty state when no lists exist', () => {
     render(
       <SaveToListDialog worldId="wrld_1" open={true} onOpenChange={vi.fn()} />,
