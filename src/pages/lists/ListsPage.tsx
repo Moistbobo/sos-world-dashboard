@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Pencil, List, Upload, Download } from 'lucide-react';
 import { toast } from 'sonner';
-import { useLists, MAX_LISTS } from '../../contexts/ListsContext';
-import { useListCapGuard } from '../../hooks/useListCapGuard';
+import { useLists } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ImportDialog } from '../../components/import-dialog';
 import { ConfirmDialog } from '../../components/confirm-dialog';
@@ -17,6 +16,7 @@ export function ListsPage() {
   const {
     lists,
     error,
+    isHydrated,
     createList,
     updateList,
     deleteList,
@@ -34,7 +34,6 @@ export function ListsPage() {
     id: string;
     name: string;
   } | null>(null);
-  const canCreateList = useListCapGuard();
 
   const handleEdit = (
     list: ReturnType<typeof useLists>['lists'][number] | undefined,
@@ -80,10 +79,6 @@ export function ListsPage() {
             filename,
           }),
         );
-      } else if (result.error === 'maxListsReached') {
-        toast.error(t('lists.maxListsReached', { count: MAX_LISTS }));
-      } else {
-        toast.error(t('lists.storageError'));
       }
     },
     [importLists, t],
@@ -95,8 +90,11 @@ export function ListsPage() {
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">
             {t('lists.title')}
-            <span className="ml-2 align-middle text-sm font-normal tabular-nums text-slate-500 dark:text-slate-400">
-              {t('lists.listCount', { count: lists.length, max: MAX_LISTS })}
+            <span
+              data-testid="list-count"
+              className="ml-2 align-middle text-sm font-normal tabular-nums text-slate-500 dark:text-slate-400"
+            >
+              {t('lists.listCount', { count: lists.length })}
             </span>
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -113,7 +111,6 @@ export function ListsPage() {
           </button>
           <button
             onClick={() => {
-              if (!canCreateList()) return;
               setEditingList(undefined);
               setFormOpen(true);
             }}
@@ -126,24 +123,38 @@ export function ListsPage() {
         </div>
       </div>
 
-      {error && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300">
-          {t('lists.storageErrorMessage', { message: error })}
-          <button onClick={clearError} className="ml-2 underline">
-            {t('common.dismiss')}
-          </button>
-        </div>
-      )}
-
-      {lists.length === 0 ? (
-        <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
-          <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
-          <p>{t('lists.emptyTitle')}</p>
-          <p>{t('lists.emptySubtitle')}</p>
+      {!isHydrated ? (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-busy="true">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="card flex items-center gap-3 p-4">
+              <div className="h-10 w-10 shrink-0 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-700" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-2/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+                <div className="h-3 w-1/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {lists.map((list) => (
+        <>
+          {error && (
+            <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300">
+              {t('lists.storageErrorMessage', { message: error })}
+              <button onClick={clearError} className="ml-2 underline">
+                {t('common.dismiss')}
+              </button>
+            </div>
+          )}
+
+          {lists.length === 0 ? (
+            <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
+              <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
+              <p>{t('lists.emptyTitle')}</p>
+              <p>{t('lists.emptySubtitle')}</p>
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {lists.map((list) => (
             <div
               key={list.id}
               onClick={() => navigate(`/lists/${list.id}`)}
@@ -205,6 +216,8 @@ export function ListsPage() {
           ))}
         </div>
       )}
+        </>
+      )}
 
       <ConfirmDialog
         open={confirmOpen}
@@ -230,7 +243,6 @@ export function ListsPage() {
             updateList(editingList.id, input);
             return true;
           }
-          if (!canCreateList()) return false;
           return createList(input).ok;
         }}
       />

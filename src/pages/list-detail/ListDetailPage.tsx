@@ -26,7 +26,7 @@ export function ListDetailPage({
   const navigate = useNavigate();
   const { listId: paramListId } = useParams<{ listId: string }>();
   const listId = listIdProp ?? paramListId;
-  const { getList, updateList, deleteList, removeWorldFromList, exportList } = useLists();
+  const { getList, updateList, deleteList, removeWorldFromList, exportList, isHydrated } = useLists();
   const { skipRemoveWorldConfirmation, setSkipRemoveWorldConfirmation } = useListsPreferences();
   const list = listId ? getList(listId) : undefined;
   const [offset, setOffset] = useState(0);
@@ -49,6 +49,17 @@ export function ListDetailPage({
   const { data: ratingSummaries } = useRatingsForWorldIds(
     SENTIMENT_ENABLED ? visibleWorldIds : [],
   );
+
+  if (!isHydrated) {
+    return (
+      <div className="space-y-4">
+        <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+        <div className="card p-8">
+          <div className="mx-auto h-8 w-8 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+        </div>
+      </div>
+    );
+  }
 
   if (!list) {
     return (

@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { WorldsPage } from './WorldsPage';
 import { WorldsPreferencesProvider } from '../../contexts/WorldsPreferencesContext';
 import { ListsProvider } from '../../contexts/ListsContext';
+import { resetListsDb } from '../../test/listsDb';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -94,12 +95,13 @@ vi.mock('../../hooks/useApi', () => ({
 }));
 
 describe('WorldsPage', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     infiniteHasNextPage = true;
     infiniteIsPending = false;
     paginationIsPending = false;
     queryClient.clear();
     window.localStorage.clear();
+    await resetListsDb();
     window.history.pushState({}, '', '/');
     lastUnmount = null;
   });

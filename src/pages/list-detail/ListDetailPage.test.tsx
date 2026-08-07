@@ -4,20 +4,33 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import userEvent from '@testing-library/user-event';
 import { ListsProvider } from '../../contexts/ListsContext';
+import { ListsPreferencesProvider } from '../../contexts/ListsPreferencesContext';
 import { ListDetailPage } from './ListDetailPage';
+import { resetListsDb, seedListsDb } from '../../test/listsDb';
 import * as client from '../../api/client';
 import type { World } from '../../types';
+import type { WorldList } from '../../types/lists';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 });
 
-beforeEach(() => {
+function makeList(overrides: Partial<WorldList> & Pick<WorldList, 'id' | 'name'>): WorldList {
+  return {
+    icon: null,
+    color: '#4f46e5',
+    worldIds: [],
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+    ...overrides,
+  };
+}
+
+beforeEach(async () => {
   window.localStorage.clear();
+  await resetListsDb();
   queryClient.clear();
 });
-
-import { ListsPreferencesProvider } from '../../contexts/ListsPreferencesContext';
 
 function Wrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -31,70 +44,33 @@ function Wrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
+function renderList(listId: string) {
+  return render(
+    <Wrapper>
+      <Routes>
+        <Route path="/" element={<ListDetailPage listId={listId} />} />
+      </Routes>
+    </Wrapper>,
+  );
+}
+
 describe('ListDetailPage', () => {
-  it('renders a full short memo without a toggle', () => {
-    window.localStorage.setItem(
-      'sos-world-lists',
-      JSON.stringify({
-        version: 1,
-        lists: [
-          {
-            id: 'l1',
-            name: 'Favorites',
-            icon: null,
-            color: '#4f46e5',
-            memo: 'Short memo',
-            worldIds: [],
-            createdAt: '2024-01-01T00:00:00.000Z',
-            updatedAt: '2024-01-01T00:00:00.000Z',
-          },
-        ],
-      }),
-    );
+  it('renders a full short memo without a toggle', async () => {
+    await seedListsDb([makeList({ id: 'l1', name: 'Favorites', memo: 'Short memo' })]);
+    renderList('l1');
 
-    render(
-      <Wrapper>
-        <Routes>
-          <Route path="/" element={<ListDetailPage listId="l1" />} />
-        </Routes>
-      </Wrapper>,
-    );
-
-    expect(screen.getByText('Short memo')).toBeInTheDocument();
+    await screen.findByText('Short memo');
     expect(screen.queryByRole('button', { name: /view more/i })).not.toBeInTheDocument();
   });
 
   it('truncates a long memo and reveals the full text via the toggle', async () => {
     const longMemo = 'x'.repeat(200);
-    window.localStorage.setItem(
-      'sos-world-lists',
-      JSON.stringify({
-        version: 1,
-        lists: [
-          {
-            id: 'l1',
-            name: 'Favorites',
-            icon: null,
-            color: '#4f46e5',
-            memo: longMemo,
-            worldIds: [],
-            createdAt: '2024-01-01T00:00:00.000Z',
-            updatedAt: '2024-01-01T00:00:00.000Z',
-          },
-        ],
-      }),
-    );
+    await seedListsDb([makeList({ id: 'l1', name: 'Favorites', memo: longMemo })]);
 
     const user = userEvent.setup();
-    render(
-      <Wrapper>
-        <Routes>
-          <Route path="/" element={<ListDetailPage listId="l1" />} />
-        </Routes>
-      </Wrapper>,
-    );
+    renderList('l1');
 
-    const preview = screen.getByText(/^x{128}…$/);
+    const preview = await screen.findByText(/^x{128}…$/);
     expect(preview).toBeInTheDocument();
     expect(preview).toHaveClass('break-words');
     expect(screen.queryByText(longMemo)).not.toBeInTheDocument();
@@ -108,33 +84,10 @@ describe('ListDetailPage', () => {
   });
 
   it('shows empty state for a list with no worlds', async () => {
-    window.localStorage.setItem(
-      'sos-world-lists',
-      JSON.stringify({
-        version: 1,
-        lists: [
-          {
-            id: 'l1',
-            name: 'Favorites',
-            icon: null,
-            color: '#4f46e5',
-            worldIds: [],
-            createdAt: '2024-01-01T00:00:00.000Z',
-            updatedAt: '2024-01-01T00:00:00.000Z',
-          },
-        ],
-      }),
-    );
-
-    render(
-      <Wrapper>
-        <Routes>
-          <Route path="/" element={<ListDetailPage listId="l1" />} />
-        </Routes>
-      </Wrapper>,
-    );
+    await seedListsDb([makeList({ id: 'l1', name: 'Favorites' })]);
+    renderList('l1');
     expect(
-      await screen.findByText(/no worlds in this list/i)
+      await screen.findByText(/no worlds in this list/i),
     ).toBeInTheDocument();
   });
 
@@ -154,31 +107,10 @@ describe('ListDetailPage', () => {
     };
     vi.spyOn(client, 'fetchWorldsByIds').mockResolvedValue([world]);
 
-    window.localStorage.setItem(
-      'sos-world-lists',
-      JSON.stringify({
-        version: 1,
-        lists: [
-          {
-            id: 'l1',
-            name: 'Favorites',
-            icon: null,
-            color: '#4f46e5',
-            worldIds: ['wrld_1'],
-            createdAt: '2024-01-01T00:00:00.000Z',
-            updatedAt: '2024-01-01T00:00:00.000Z',
-          },
-        ],
-      }),
-    );
-
-    render(
-      <Wrapper>
-        <Routes>
-          <Route path="/" element={<ListDetailPage listId="l1" />} />
-        </Routes>
-      </Wrapper>,
-    );
+    await seedListsDb([
+      makeList({ id: 'l1', name: 'Favorites', worldIds: ['wrld_1'] }),
+    ]);
+    renderList('l1');
 
     await waitFor(() => {
       expect(screen.getByText('Saved World')).toBeInTheDocument();
@@ -212,31 +144,10 @@ describe('ListDetailPage', () => {
     };
     vi.spyOn(client, 'fetchWorldsByIds').mockResolvedValue([world]);
 
-    window.localStorage.setItem(
-      'sos-world-lists',
-      JSON.stringify({
-        version: 1,
-        lists: [
-          {
-            id: 'l1',
-            name: 'Favorites',
-            icon: null,
-            color: '#4f46e5',
-            worldIds: ['wrld_1'],
-            createdAt: '2024-01-01T00:00:00.000Z',
-            updatedAt: '2024-01-01T00:00:00.000Z',
-          },
-        ],
-      }),
-    );
-
-    render(
-      <Wrapper>
-        <Routes>
-          <Route path="/" element={<ListDetailPage listId="l1" />} />
-        </Routes>
-      </Wrapper>,
-    );
+    await seedListsDb([
+      makeList({ id: 'l1', name: 'Favorites', worldIds: ['wrld_1'] }),
+    ]);
+    renderList('l1');
 
     await waitFor(() => {
       expect(screen.getByText('Saved World')).toBeInTheDocument();
@@ -258,31 +169,8 @@ describe('ListDetailPage', () => {
     const fetchSpy = vi.spyOn(client, 'fetchWorldsByIds').mockResolvedValue([]);
 
     const ids = Array.from({ length: 35 }, (_, i) => `wrld_${i}`);
-    window.localStorage.setItem(
-      'sos-world-lists',
-      JSON.stringify({
-        version: 1,
-        lists: [
-          {
-            id: 'l1',
-            name: 'Big List',
-            icon: null,
-            color: '#4f46e5',
-            worldIds: ids,
-            createdAt: '2024-01-01T00:00:00.000Z',
-            updatedAt: '2024-01-01T00:00:00.000Z',
-          },
-        ],
-      }),
-    );
-
-    render(
-      <Wrapper>
-        <Routes>
-          <Route path="/" element={<ListDetailPage listId="l1" />} />
-        </Routes>
-      </Wrapper>,
-    );
+    await seedListsDb([makeList({ id: 'l1', name: 'Big List', worldIds: ids })]);
+    renderList('l1');
 
     await waitFor(() => {
       expect(fetchSpy).toHaveBeenLastCalledWith(ids.slice(0, 28));
@@ -307,31 +195,10 @@ describe('ListDetailPage', () => {
     };
     vi.spyOn(client, 'fetchWorldsByIds').mockResolvedValue([world]);
 
-    window.localStorage.setItem(
-      'sos-world-lists',
-      JSON.stringify({
-        version: 1,
-        lists: [
-          {
-            id: 'l1',
-            name: 'Favorites',
-            icon: null,
-            color: '#4f46e5',
-            worldIds: ['wrld_1', 'wrld_gone'],
-            createdAt: '2024-01-01T00:00:00.000Z',
-            updatedAt: '2024-01-01T00:00:00.000Z',
-          },
-        ],
-      }),
-    );
-
-    render(
-      <Wrapper>
-        <Routes>
-          <Route path="/" element={<ListDetailPage listId="l1" />} />
-        </Routes>
-      </Wrapper>,
-    );
+    await seedListsDb([
+      makeList({ id: 'l1', name: 'Favorites', worldIds: ['wrld_1', 'wrld_gone'] }),
+    ]);
+    renderList('l1');
 
     await waitFor(() => {
       expect(screen.getByText('Saved World')).toBeInTheDocument();
@@ -346,31 +213,10 @@ describe('ListDetailPage', () => {
       new Error('network down'),
     );
 
-    window.localStorage.setItem(
-      'sos-world-lists',
-      JSON.stringify({
-        version: 1,
-        lists: [
-          {
-            id: 'l1',
-            name: 'Favorites',
-            icon: null,
-            color: '#4f46e5',
-            worldIds: ['wrld_gone'],
-            createdAt: '2024-01-01T00:00:00.000Z',
-            updatedAt: '2024-01-01T00:00:00.000Z',
-          },
-        ],
-      }),
-    );
-
-    render(
-      <Wrapper>
-        <Routes>
-          <Route path="/" element={<ListDetailPage listId="l1" />} />
-        </Routes>
-      </Wrapper>,
-    );
+    await seedListsDb([
+      makeList({ id: 'l1', name: 'Favorites', worldIds: ['wrld_gone'] }),
+    ]);
+    renderList('l1');
 
     await waitFor(() => {
       expect(client.fetchWorldsByIds).toHaveBeenCalled();
@@ -384,31 +230,10 @@ describe('ListDetailPage', () => {
   it('removes a deleted world via the confirmation dialog', async () => {
     vi.spyOn(client, 'fetchWorldsByIds').mockResolvedValue([]);
 
-    window.localStorage.setItem(
-      'sos-world-lists',
-      JSON.stringify({
-        version: 1,
-        lists: [
-          {
-            id: 'l1',
-            name: 'Favorites',
-            icon: null,
-            color: '#4f46e5',
-            worldIds: ['wrld_gone'],
-            createdAt: '2024-01-01T00:00:00.000Z',
-            updatedAt: '2024-01-01T00:00:00.000Z',
-          },
-        ],
-      }),
-    );
-
-    render(
-      <Wrapper>
-        <Routes>
-          <Route path="/" element={<ListDetailPage listId="l1" />} />
-        </Routes>
-      </Wrapper>,
-    );
+    await seedListsDb([
+      makeList({ id: 'l1', name: 'Favorites', worldIds: ['wrld_gone'] }),
+    ]);
+    renderList('l1');
 
     await waitFor(() => {
       expect(screen.getByText(/world deleted from db/i)).toBeInTheDocument();
