@@ -15,6 +15,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "screenshot:pr": "node scripts/capture-pr-screenshot.mjs",
+    "screenshot:migration-demo": "node scripts/capture-migration-demo.mjs",
     "prepare": "husky"
   },
   "dependencies": {

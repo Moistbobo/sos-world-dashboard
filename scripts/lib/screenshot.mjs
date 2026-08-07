@@ -15,7 +15,7 @@ function apiResponse(res, data) {
   res.end(JSON.stringify(data));
 }
 
-function createServer(config) {
+export function createServer(config) {
   return http.createServer(async (req, res) => {
     const url = req.url ?? '/';
 
