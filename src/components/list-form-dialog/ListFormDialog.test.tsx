@@ -9,7 +9,6 @@ beforeEach(() => {
 });
 
 describe('ListFormDialog', () => {
-<<<<<<< HEAD
   it('renders the overlay as a descendant of document.body', () => {
     const { container } = render(
       <ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={vi.fn()} />,
