@@ -1,12 +1,19 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
+import { resetListsDb } from './test/listsDb';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: false },
   },
+});
+
+beforeEach(async () => {
+  window.localStorage.clear();
+  await resetListsDb();
+  queryClient.clear();
 });
 
 const mockWorlds = [
@@ -82,12 +89,14 @@ vi.mock('./hooks/useHealth', () => ({
 }));
 
 describe('App routing', () => {
-  it('renders the lists page at /lists', () => {
+  it('renders the lists page at /lists', async () => {
     window.history.pushState({}, '', '/lists');
 
     render(<App />, { wrapper: Wrapper });
 
-    expect(screen.getByRole('heading', { name: /my lists/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: /my lists/i }),
+    ).toBeInTheDocument();
   });
 
   it('navigates to a standalone world detail page', async () => {
@@ -117,11 +126,13 @@ describe('App routing', () => {
     });
   });
 
-  it('renders the list detail page at /lists/:listId', () => {
+  it('renders the list detail page at /lists/:listId', async () => {
     window.history.pushState({}, '', '/lists/missing-list');
 
     render(<App />, { wrapper: Wrapper });
 
-    expect(screen.getByText(/list not found/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/list not found/i),
+    ).toBeInTheDocument();
   });
 });

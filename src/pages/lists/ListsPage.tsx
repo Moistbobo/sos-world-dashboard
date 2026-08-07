@@ -16,6 +16,7 @@ export function ListsPage() {
   const {
     lists,
     error,
+    isHydrated,
     createList,
     updateList,
     deleteList,
@@ -89,6 +90,12 @@ export function ListsPage() {
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">
             {t('lists.title')}
+            <span
+              data-testid="list-count"
+              className="ml-2 align-middle text-sm font-normal tabular-nums text-slate-500 dark:text-slate-400"
+            >
+              {t('lists.listCount', { count: lists.length })}
+            </span>
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             {t('lists.subtitle')}
@@ -108,6 +115,7 @@ export function ListsPage() {
               setFormOpen(true);
             }}
             className="btn-primary gap-1.5 text-xs"
+            aria-label={t('lists.newList')}
           >
             <Plus className="h-3.5 w-3.5" />
             {t('lists.newList')}
@@ -115,24 +123,38 @@ export function ListsPage() {
         </div>
       </div>
 
-      {error && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300">
-          {t('lists.storageErrorMessage', { message: error })}
-          <button onClick={clearError} className="ml-2 underline">
-            {t('common.dismiss')}
-          </button>
-        </div>
-      )}
-
-      {lists.length === 0 ? (
-        <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
-          <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
-          <p>{t('lists.emptyTitle')}</p>
-          <p>{t('lists.emptySubtitle')}</p>
+      {!isHydrated ? (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-busy="true">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="card flex items-center gap-3 p-4">
+              <div className="h-10 w-10 shrink-0 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-700" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-2/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+                <div className="h-3 w-1/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {lists.map((list) => (
+        <>
+          {error && (
+            <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300">
+              {t('lists.storageErrorMessage', { message: error })}
+              <button onClick={clearError} className="ml-2 underline">
+                {t('common.dismiss')}
+              </button>
+            </div>
+          )}
+
+          {lists.length === 0 ? (
+            <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
+              <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
+              <p>{t('lists.emptyTitle')}</p>
+              <p>{t('lists.emptySubtitle')}</p>
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {lists.map((list) => (
             <div
               key={list.id}
               onClick={() => navigate(`/lists/${list.id}`)}
@@ -194,6 +216,8 @@ export function ListsPage() {
           ))}
         </div>
       )}
+        </>
+      )}
 
       <ConfirmDialog
         open={confirmOpen}
@@ -217,9 +241,9 @@ export function ListsPage() {
         onSubmit={(input) => {
           if (editingList) {
             updateList(editingList.id, input);
-          } else {
-            createList(input);
+            return true;
           }
+          return createList(input).ok;
         }}
       />
 

@@ -15,7 +15,7 @@ function apiResponse(res, data) {
   res.end(JSON.stringify(data));
 }
 
-function createServer(config) {
+export function createServer(config) {
   return http.createServer(async (req, res) => {
     const url = req.url ?? '/';
 
@@ -114,12 +114,16 @@ async function waitForReady(page, routeName, waitForText, selectors) {
   );
 }
 
-async function captureVariant(browser, theme, route, { recordVideo, outDir, selectors }) {
+async function captureVariant(browser, theme, route, { recordVideo, outDir, selectors, initScript }) {
   const context = await browser.newContext({
     viewport: { width: 1280, height: 900 },
     recordVideo: recordVideo ? { dir: outDir, size: { width: 1280, height: 900 } } : undefined,
   });
   const page = await context.newPage();
+
+  if (initScript) {
+    await page.addInitScript(initScript);
+  }
 
   await page.goto(`http://localhost:9877${route.path}`, { waitUntil: 'networkidle' });
   await waitForReady(page, route.name, route.waitForText, selectors);
@@ -184,8 +188,8 @@ export async function runScreenshot(config) {
     const browser = await chromium.launch({ headless: true });
 
     for (const route of config.routes) {
-      const light = await captureVariant(browser, 'light', route, { recordVideo: captureVideo, outDir, selectors: config.selectors });
-      const dark = await captureVariant(browser, 'dark', route, { recordVideo: captureVideo, outDir, selectors: config.selectors });
+      const light = await captureVariant(browser, 'light', route, { recordVideo: captureVideo, outDir, selectors: config.selectors, initScript: route.initScript });
+      const dark = await captureVariant(browser, 'dark', route, { recordVideo: captureVideo, outDir, selectors: config.selectors, initScript: route.initScript });
 
       console.log(`${route.name} light screenshot:`, light.screenshotPath);
       console.log(`${route.name} dark screenshot:`, dark.screenshotPath);

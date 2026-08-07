@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import { X, Plus } from 'lucide-react';
-import { useLists, MAX_WORLDS_PER_LIST } from '../../contexts/ListsContext';
+import { useLists } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
 
@@ -34,18 +34,16 @@ export function SaveToListDialog({
       removeWorldFromList(listId, worldId);
       return;
     }
-    const result = addWorldToList(listId, worldId);
-    if (!result.ok && result.reason === 'max-reached') {
-      toast.error(t('lists.maxWorldsReached', { count: MAX_WORLDS_PER_LIST }));
-    }
+    addWorldToList(listId, worldId);
   };
 
   const handleInlineCreate = (input: Parameters<typeof createList>[0]) => {
-    const list = createList(input);
-    addWorldToList(list.id, worldId);
+    const result = createList(input);
+    addWorldToList(result.list.id, worldId);
+    return true;
   };
 
-  return (
+  return createPortal(
     <>
       <div
         className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95"
@@ -92,7 +90,7 @@ export function SaveToListDialog({
                     {list.name}
                   </span>
                   <span className="text-xs text-slate-400 dark:text-slate-500">
-                    {list.worldIds.length}/{MAX_WORLDS_PER_LIST}
+                    {list.worldIds.length}
                   </span>
                 </label>
               ))}
@@ -126,6 +124,7 @@ export function SaveToListDialog({
         onOpenChange={setShowCreate}
         onSubmit={handleInlineCreate}
       />
-    </>
+    </>,
+    document.body,
   );
 }
