@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import type { CreateListInput, WorldList } from '../../types/lists';
@@ -70,7 +71,7 @@ export function ListFormDialog({
   const memoLength = memo.trim().length;
   const isEdit = Boolean(list);
 
-  return (
+  return createPortal(
     <div className="contents">
       <div
         onClick={() => onOpenChange(false)}
@@ -179,6 +180,7 @@ export function ListFormDialog({
           </form>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
