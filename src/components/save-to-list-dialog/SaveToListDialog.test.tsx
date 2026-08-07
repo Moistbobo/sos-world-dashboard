@@ -13,7 +13,7 @@ function makeFullList(): WorldList {
     name: 'Full List',
     icon: null,
     color: '#4f46e5',
-    worldIds: Array.from({ length: MAX_WORLDS_PER_LIST }, (_, i) => `wrld_${i}`),
+    worldIds: Array(MAX_WORLDS_PER_LIST).fill('wrld_0'),
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
   };
@@ -54,7 +54,7 @@ describe('SaveToListDialog', () => {
     await user.type(screen.getByRole('textbox', { name: /name/i }), 'Favorites');
     await user.click(screen.getByRole('button', { name: /create list/i }));
 
-    expect(screen.getByText('1/250')).toBeInTheDocument();
+    expect(screen.getByText('1/5000')).toBeInTheDocument();
   });
 
   it('toggles a world in a list', async () => {
@@ -86,7 +86,7 @@ describe('SaveToListDialog', () => {
 
     expect(checkbox).not.toBeChecked();
     expect(toast.error).toHaveBeenCalledWith(
-      expect.stringContaining('250'),
+      expect.stringContaining('5000'),
     );
   });
 });

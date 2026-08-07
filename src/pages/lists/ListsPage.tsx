@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Pencil, List, Upload, Download } from 'lucide-react';
 import { toast } from 'sonner';
-import { useLists } from '../../contexts/ListsContext';
+import { useLists, MAX_LISTS } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ImportDialog } from '../../components/import-dialog';
 import { ConfirmDialog } from '../../components/confirm-dialog';
@@ -78,6 +78,10 @@ export function ListsPage() {
             filename,
           }),
         );
+      } else if (result.error === 'maxListsReached') {
+        toast.error(t('lists.maxListsReached', { count: MAX_LISTS }));
+      } else {
+        toast.error(t('lists.storageError'));
       }
     },
     [importLists, t],
@@ -218,7 +222,10 @@ export function ListsPage() {
           if (editingList) {
             updateList(editingList.id, input);
           } else {
-            createList(input);
+            const result = createList(input);
+            if (!result.ok) {
+              toast.error(t('lists.maxListsReached', { count: MAX_LISTS }));
+            }
           }
         }}
       />

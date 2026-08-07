@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { X, Plus } from 'lucide-react';
-import { useLists, MAX_WORLDS_PER_LIST } from '../../contexts/ListsContext';
+import { useLists, MAX_LISTS, MAX_WORLDS_PER_LIST } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
 
@@ -41,8 +41,12 @@ export function SaveToListDialog({
   };
 
   const handleInlineCreate = (input: Parameters<typeof createList>[0]) => {
-    const list = createList(input);
-    addWorldToList(list.id, worldId);
+    const result = createList(input);
+    if (!result.ok) {
+      toast.error(t('lists.maxListsReached', { count: MAX_LISTS }));
+      return;
+    }
+    addWorldToList(result.list.id, worldId);
   };
 
   return (

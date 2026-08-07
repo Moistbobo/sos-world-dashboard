@@ -25,12 +25,14 @@ export type AddWorldResult =
   | { ok: true }
   | { ok: false; reason: 'missing' | 'not-found' | 'max-reached' | 'already-added' };
 
+export type CreateListResult = { ok: true; list: WorldList } | { ok: false; reason: 'max-lists-reached' };
+
 export type ImportResult = { ok: true } | { ok: false; error: string };
 
 interface ListsContextValue {
   lists: WorldList[];
   error: string | null;
-  createList(input: CreateListInput): WorldList;
+  createList(input: CreateListInput): CreateListResult;
   updateList(id: string, input: Partial<CreateListInput>): WorldList | undefined;
   deleteList(id: string): boolean;
   addWorldToList(listId: string | undefined, worldId: string): AddWorldResult;
@@ -56,7 +58,8 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
-export const MAX_WORLDS_PER_LIST = 250;
+export const MAX_WORLDS_PER_LIST = 5000;
+export const MAX_LISTS = 10;
 
 export function ListsProvider({ children }: { children: ReactNode }) {
   const [lists, setLists] = useState<WorldList[]>(() => loadLists().lists);
@@ -83,10 +86,13 @@ export function ListsProvider({ children }: { children: ReactNode }) {
   );
 
   const createList = useCallback(
-    (input: CreateListInput) => {
+    (input: CreateListInput): CreateListResult => {
+      if (listsRef.current.length >= MAX_LISTS) {
+        return { ok: false, reason: 'max-lists-reached' };
+      }
       const list = makeList(input);
       commit([...listsRef.current, list]);
-      return list;
+      return { ok: true, list };
     },
     [commit],
   );
@@ -205,6 +211,11 @@ export function ListsProvider({ children }: { children: ReactNode }) {
 
   const importLists = useCallback(
     (incoming: WorldList[]): ImportResult => {
+      const existingById = new Set(listsRef.current.map((l) => l.id));
+      const newCount = incoming.filter((l) => !existingById.has(l.id)).length;
+      if (listsRef.current.length + newCount > MAX_LISTS) {
+        return { ok: false, error: 'maxListsReached' };
+      }
       const next = mergeListsById(listsRef.current, incoming);
       const saveError = commit(next);
       if (saveError) {

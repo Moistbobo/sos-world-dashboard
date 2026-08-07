@@ -1,11 +1,29 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { ListsProvider, useLists } from './ListsContext';
+import { ListsProvider, useLists, MAX_LISTS } from './ListsContext';
 import * as listsImportExport from '../utils/listsImportExport';
+import { LISTS_STORAGE_KEY } from '../utils/listsStorage';
+import type { WorldList } from '../types/lists';
 
 beforeEach(() => {
   window.localStorage.clear();
 });
+
+function seedLists(count: number) {
+  const lists: WorldList[] = Array.from({ length: count }, (_, i) => ({
+    id: `list-${i}`,
+    name: `List ${i}`,
+    icon: null,
+    color: '#ffffff',
+    worldIds: [],
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  }));
+  window.localStorage.setItem(
+    LISTS_STORAGE_KEY,
+    JSON.stringify({ version: 1, lists }),
+  );
+}
 
 function TestHelper() {
   const {
@@ -187,5 +205,30 @@ describe('ListsContext', () => {
     fireEvent.click(screen.getByText('Create'));
     fireEvent.click(screen.getByText('Import'));
     expect(screen.getByTestId('count').textContent).toBe('2');
+  });
+
+  it('blocks creating a list beyond the list cap', () => {
+    seedLists(MAX_LISTS);
+    render(
+      <ListsProvider>
+        <TestHelper />
+      </ListsProvider>,
+    );
+    fireEvent.click(screen.getByText('Create'));
+    expect(screen.getByTestId('count').textContent).toBe(String(MAX_LISTS));
+    expect(window.localStorage.getItem(LISTS_STORAGE_KEY)).not.toContain(
+      'Favorites',
+    );
+  });
+
+  it('rejects imports that exceed the list cap', () => {
+    seedLists(MAX_LISTS);
+    render(
+      <ListsProvider>
+        <TestHelper />
+      </ListsProvider>,
+    );
+    fireEvent.click(screen.getByText('Import'));
+    expect(screen.getByTestId('count').textContent).toBe(String(MAX_LISTS));
   });
 });

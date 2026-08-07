@@ -230,6 +230,7 @@
     "dontAskAgainHint": "設定からいつでも変更できます。",
     "loadWorldError": "ワールド詳細を読み込めませんでした",
     "maxWorldsReached": "リストには最大 {{count}} 件のワールドまで保存できます。追加するにはワールドを削除してください。",
+    "maxListsReached": "作成できるリストは最大 {{count}} 件です。作成するにはリストを削除してください。",
     "listNotFound": "リストが見つかりません",
     "storageError": "リストの保存に失敗しました",
     "storageErrorMessage": "リストを保存できませんでした: {{message}}",

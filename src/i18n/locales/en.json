@@ -230,6 +230,7 @@
     "dontAskAgainHint": "You can change this anytime in Settings.",
     "loadWorldError": "Could not load world details",
     "maxWorldsReached": "Lists can hold up to {{count}} worlds. Remove one before adding more.",
+    "maxListsReached": "You can create up to {{count}} lists. Delete one before creating another.",
     "listNotFound": "List not found",
     "storageError": "Failed to save your lists",
     "storageErrorMessage": "Could not save lists: {{message}}",
