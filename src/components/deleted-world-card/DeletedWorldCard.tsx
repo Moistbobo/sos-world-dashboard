@@ -36,11 +36,11 @@ export function DeletedWorldCard({ worldId, onRemove }: DeletedWorldCardProps) {
             e.stopPropagation();
             onRemove();
           }}
-          className="absolute top-2 right-2 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-red-600 shadow-sm transition hover:bg-white hover:text-red-700 dark:bg-slate-800/90 dark:text-red-400 dark:hover:text-red-300"
+          className="absolute top-2 right-2 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-red-600 shadow-sm transition hover:bg-white hover:text-red-700 dark:bg-slate-800/90 dark:text-red-400 dark:hover:text-red-300"
           aria-label={t('lists.removeWorld')}
           title={t('lists.removeWorld')}
         >
-          <X className="h-4 w-4" />
+          <X className="h-5 w-5" />
         </button>
       </div>
       <div className="flex flex-1 flex-col p-4">

@@ -91,19 +91,19 @@ export function FilterBar({
             e.stopPropagation();
             setExpanded((v) => !v);
           }}
-          className={`btn-ghost gap-1.5 text-xs ${expanded ? 'bg-slate-200 dark:bg-slate-800' : ''}`}
+          className={`btn-ghost gap-1.5 text-sm py-2 ${expanded ? 'bg-slate-200 dark:bg-slate-800' : ''}`}
         >
-          <SlidersHorizontal className="h-3.5 w-3.5" />
+          <SlidersHorizontal className="h-4 w-4" />
           {t('filter.filters')}
           {hasFilters && (
-            <span className="ml-1 rounded-full bg-indigo-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
+            <span className="ml-1 rounded-full bg-indigo-500 px-2 py-0.5 text-xs font-bold text-white">
               {activeFilterCount}
             </span>
           )}
         </button>
 
         {isCapacityActive && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-700 ring-1 ring-indigo-500/30 dark:text-indigo-300">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/20 px-3.5 py-2.5 text-sm font-medium text-indigo-700 ring-1 ring-indigo-500/30 dark:text-indigo-300">
             <span>{capacityRange.min}–{capacityRange.max} {t('filter.capacityUnit')}</span>
             <button
               onClick={(e) => {
@@ -111,15 +111,15 @@ export function FilterBar({
                 onCapacityChange({ min: MIN_CAPACITY, max: MAX_CAPACITY });
               }}
               aria-label={t('filter.removeCapacity')}
-              className="hover:text-indigo-900 dark:hover:text-white"
+              className="flex h-6 w-6 items-center justify-center rounded-full hover:text-indigo-900 dark:hover:text-white"
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </button>
           </span>
         )}
 
         {isDayRangeActive && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-700 ring-1 ring-indigo-500/30 dark:text-indigo-300">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/20 px-3.5 py-2.5 text-sm font-medium text-indigo-700 ring-1 ring-indigo-500/30 dark:text-indigo-300">
             <span>🏷️ {t('filter.lastNDays', { count: dayRange })}</span>
             <button
               onClick={(e) => {
@@ -127,28 +127,29 @@ export function FilterBar({
                 onDayRangeChange(null);
               }}
               aria-label={t('filter.removeDateTagged')}
-              className="hover:text-indigo-900 dark:hover:text-white"
+              className="flex h-6 w-6 items-center justify-center rounded-full hover:text-indigo-900 dark:hover:text-white"
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </button>
           </span>
         )}
 
-        {selectedTags.map((t) => (
+        {selectedTags.map((tag) => (
           <span
-            key={t}
-            className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-700 ring-1 ring-indigo-500/30 dark:text-indigo-300"
+            key={tag}
+            className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/20 px-3.5 py-2.5 text-sm font-medium text-indigo-700 ring-1 ring-indigo-500/30 dark:text-indigo-300"
           >
-            <span className="leading-none">{getEmojiForTag(t)}</span>
-            <span>{t}</span>
+            <span className="leading-none">{getEmojiForTag(tag)}</span>
+            <span>{tag}</span>
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onRemoveTag(t);
+                onRemoveTag(tag);
               }}
-              className="hover:text-indigo-900 dark:hover:text-white"
+              aria-label={t('filter.removeTag', { tag })}
+              className="flex h-6 w-6 items-center justify-center rounded-full hover:text-indigo-900 dark:hover:text-white"
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </button>
           </span>
         ))}
@@ -156,7 +157,7 @@ export function FilterBar({
         {selectedPlatforms.map((p) => (
           <span
             key={p}
-            className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs font-medium text-indigo-700 ring-1 ring-indigo-500/30 dark:text-indigo-300"
+            className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/20 px-3.5 py-2.5 text-sm font-medium text-indigo-700 ring-1 ring-indigo-500/30 dark:text-indigo-300"
           >
             <span>{getPlatformLabel(p)}</span>
             <button
@@ -165,9 +166,9 @@ export function FilterBar({
                 onRemovePlatform(p);
               }}
               aria-label={t('filter.removePlatform')}
-              className="hover:text-indigo-900 dark:hover:text-white"
+              className="flex h-6 w-6 items-center justify-center rounded-full hover:text-indigo-900 dark:hover:text-white"
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </button>
           </span>
         ))}
@@ -175,21 +176,25 @@ export function FilterBar({
         {selectedQuality.map((q) => (
           <span
             key={q}
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ${
+            className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2.5 text-sm font-medium ring-1 ${
               q === 'good'
                 ? 'bg-green-500/20 text-green-700 ring-green-500/30 dark:text-green-300'
                 : 'bg-red-500/20 text-red-700 ring-red-500/30 dark:text-red-300'
             }`}
           >
-            {q}
+            {q === 'good' ? t('filter.good') : t('filter.bad')}
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleQuality(q);
               }}
-              className={`hover:text-${q === 'good' ? 'green' : 'red'}-900 dark:hover:text-white`}
+              className={`flex h-6 w-6 items-center justify-center rounded-full ${
+                q === 'good'
+                  ? 'hover:text-green-900 dark:hover:text-green-200'
+                  : 'hover:text-red-900 dark:hover:text-red-200'
+              }`}
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </button>
           </span>
         ))}
@@ -200,7 +205,7 @@ export function FilterBar({
               e.stopPropagation();
               onClear();
             }}
-            className="btn-ghost text-xs py-1.5"
+            className="btn-ghost text-sm py-2"
           >
             {t('filter.clearAll')}
           </button>
@@ -211,12 +216,12 @@ export function FilterBar({
         <div className="border-t border-slate-200 p-3 dark:border-slate-700/50">
           <div className="mb-3">
             <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.tags')}</label>
-            <div className="flex flex-wrap gap-1.5 pr-1">
+            <div className="flex flex-wrap gap-2 pr-1">
               {tagFilters.map((t) => (
                 <button
                   key={t.tag}
                   onClick={() => onToggleTag(t.tag)}
-                  className={`rounded-md border px-2 py-1 text-xs transition ${
+                  className={`min-h-12 rounded-lg border px-3.5 py-2 text-sm transition ${
                     selectedTags.includes(t.tag)
                       ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'
                       : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
@@ -237,7 +242,7 @@ export function FilterBar({
                   <button
                     key={q}
                     onClick={() => onToggleQuality(q)}
-                    className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                    className={`min-h-12 rounded-lg border px-4 py-2 text-sm font-medium transition ${
                       selectedQuality.includes(q)
                         ? q === 'good'
                           ? 'border-green-500/40 bg-green-500/15 text-green-700 dark:text-green-300'
@@ -257,7 +262,7 @@ export function FilterBar({
 
           <div className="mb-3">
             <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.platforms')}</label>
-            <div className="flex flex-wrap gap-1.5 pr-1">
+            <div className="flex flex-wrap gap-2 pr-1">
               {COMMON_PLATFORM_VALUES.map((p) => {
                 const label = getPlatformLabel(p);
                 const count = platformCountMap.get(p);
@@ -266,7 +271,7 @@ export function FilterBar({
                     key={p}
                     data-testid={`platform-toggle-${p || 'unknown'}`}
                     onClick={() => onTogglePlatform(p)}
-                    className={`rounded-md border px-2 py-1 text-xs transition ${
+                    className={`min-h-12 rounded-lg border px-3.5 py-2 text-sm transition ${
                       selectedPlatforms.includes(p)
                         ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'
                         : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
@@ -294,7 +299,7 @@ export function FilterBar({
 
           <div className="mb-3">
             <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.dateTagged')}</label>
-            <div className="flex flex-wrap gap-1.5 pr-1">
+            <div className="flex flex-wrap gap-2 pr-1">
               {PRESET_DAY_RANGES.map((days) => {
                 const selected = dayRange === days;
                 return (
@@ -302,7 +307,7 @@ export function FilterBar({
                     key={days}
                     data-testid={`day-range-preset-${days}`}
                     onClick={() => onDayRangeChange(days)}
-                    className={`rounded-md border px-2 py-1 text-xs transition ${
+                    className={`min-h-12 rounded-lg border px-3.5 py-2 text-sm transition ${
                       selected
                         ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'
                         : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
@@ -315,7 +320,7 @@ export function FilterBar({
               <button
                 data-testid="day-range-preset-all"
                 onClick={() => onDayRangeChange(null)}
-                className={`rounded-md border px-2 py-1 text-xs transition ${
+                className={`min-h-12 rounded-lg border px-3.5 py-2 text-sm transition ${
                   !isDayRangeActive
                     ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'
                     : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'

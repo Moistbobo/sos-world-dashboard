@@ -69,11 +69,11 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
               e.stopPropagation();
               setSaveOpen(true);
             }}
-            className="absolute top-2 right-2 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-sm transition hover:bg-white hover:text-indigo-600 dark:bg-slate-800/90 dark:text-slate-300 dark:hover:text-indigo-300"
+            className="absolute top-2 right-2 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-sm transition hover:bg-white hover:text-indigo-600 dark:bg-slate-800/90 dark:text-slate-300 dark:hover:text-indigo-300"
             aria-label={isSaved ? t('worldCard.savedToList') : t('worldCard.saveToList')}
             title={isSaved ? t('worldCard.savedToList') : t('worldCard.saveToList')}
           >
-            <Star className={`h-4 w-4 ${isSaved ? 'fill-current text-indigo-500' : ''}`} />
+            <Star className={`h-5 w-5 ${isSaved ? 'fill-current text-indigo-500' : ''}`} />
           </button>
         )}
         {onRemove && (
@@ -83,11 +83,11 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
               e.stopPropagation();
               onRemove();
             }}
-            className="absolute top-2 right-2 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-red-600 shadow-sm transition hover:bg-white hover:text-red-700 dark:bg-slate-800/90 dark:text-red-400 dark:hover:text-red-300"
+            className="absolute top-2 right-2 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-red-600 shadow-sm transition hover:bg-white hover:text-red-700 dark:bg-slate-800/90 dark:text-red-400 dark:hover:text-red-300"
             aria-label={t('lists.removeWorld')}
             title={t('lists.removeWorld')}
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
         )}
       </div>
@@ -103,7 +103,7 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
               e.stopPropagation();
               onAuthorClick(world.authorName);
             }}
-            className="relative z-30 mt-0.5 -mx-1 self-start rounded px-1 text-xs text-slate-500 transition hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 dark:text-slate-400 dark:hover:text-indigo-400"
+            className="relative z-30 mt-0.5 -mx-1 self-start rounded px-1 py-1.5 text-xs text-slate-500 transition hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 dark:text-slate-400 dark:hover:text-indigo-400"
             aria-label={t('common.byAuthor', { author: world.authorName })}
             title={t('common.byAuthor', { author: world.authorName })}
           >
@@ -135,14 +135,14 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
                 type="button"
                 onClick={() => onPlatformClick(p)}
                 title={label}
-                className="relative z-30 rounded-md bg-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-700 transition hover:brightness-110 dark:bg-slate-700 dark:text-slate-200"
+                className="relative z-30 rounded-md bg-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:brightness-110 dark:bg-slate-700 dark:text-slate-200"
               >
                 {label}
               </button>
             ) : (
               <span
                 key={p}
-                className="rounded-md bg-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-200"
+                className="rounded-md bg-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-200"
               >
                 {label}
               </span>
