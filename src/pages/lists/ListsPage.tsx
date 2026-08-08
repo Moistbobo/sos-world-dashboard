@@ -104,7 +104,7 @@ export function ListsPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setImportOpen(true)}
-            className="btn-secondary gap-1.5 text-sm"
+            className="btn-secondary gap-1.5 text-sm py-2"
           >
             <Upload className="h-4 w-4" />
             {t('lists.importLists')}
@@ -114,7 +114,7 @@ export function ListsPage() {
               setEditingList(undefined);
               setFormOpen(true);
             }}
-            className="btn-primary gap-1.5 text-sm"
+            className="btn-primary gap-1.5 text-sm py-2"
             aria-label={t('lists.newList')}
           >
             <Plus className="h-4 w-4" />

@@ -72,12 +72,12 @@ export function ConfirmDialog({
         )}
 
         <div className="flex justify-end gap-2">
-          <button onClick={onCancel} className="btn-ghost text-sm">
+          <button onClick={onCancel} className="btn-ghost text-sm py-2">
             {cancelLabel ?? t('common.cancel')}
           </button>
           <button
             onClick={() => onConfirm(dontAskAgain)}
-            className="btn-primary text-sm"
+            className="btn-primary text-sm py-2"
           >
             {confirmLabel ?? t('common.confirm')}
           </button>

@@ -132,7 +132,7 @@ export function ListFormDialog({
                   type="color"
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
-                  className="h-9 w-9 cursor-pointer rounded border border-slate-300 bg-transparent p-0.5 dark:border-slate-700"
+                  className="h-11 w-11 cursor-pointer rounded border border-slate-300 bg-transparent p-1 dark:border-slate-700"
                 />
                 <span className="text-xs text-slate-500 dark:text-slate-400">
                   {color}
@@ -176,11 +176,11 @@ export function ListFormDialog({
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
-                className="btn-ghost text-sm"
+                className="btn-ghost text-sm py-2"
               >
                 {t('common.cancel')}
               </button>
-              <button type="submit" className="btn-primary text-sm">
+              <button type="submit" className="btn-primary text-sm py-2">
                 {isEdit ? t('common.save') : t('lists.createList')}
               </button>
             </div>

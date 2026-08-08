@@ -101,7 +101,7 @@ export function SaveToListDialog({
             <button
               type="button"
               onClick={() => setShowCreate(true)}
-              className="btn-ghost w-full gap-1.5 text-sm"
+              className="btn-ghost w-full gap-1.5 text-sm py-2"
             >
               <Plus className="h-4 w-4" />
               {t('lists.createNewListInline')}
@@ -111,7 +111,7 @@ export function SaveToListDialog({
           <div className="mt-4 flex justify-end">
             <button
               onClick={() => onOpenChange(false)}
-              className="btn-primary text-sm"
+              className="btn-primary text-sm py-2"
             >
               {t('common.done')}
             </button>

@@ -274,13 +274,13 @@ export function ImportDialog({
             <div className="flex justify-end gap-2">
               <button
                 onClick={handleClose}
-                className="btn-ghost text-sm"
+                className="btn-ghost text-sm py-2"
               >
                 {t('common.cancel')}
               </button>
               <button
                 onClick={handleImport}
-                className="btn-primary text-sm"
+                className="btn-primary text-sm py-2"
               >
                 {t('lists.importListsButton', {
                   count: preview.items.length,
@@ -301,7 +301,7 @@ export function ImportDialog({
             <div className="flex justify-end gap-2">
               <button
                 onClick={handleClose}
-                className="btn-ghost text-sm"
+                className="btn-ghost text-sm py-2"
               >
                 {t('common.close')}
               </button>
@@ -310,7 +310,7 @@ export function ImportDialog({
                   reset();
                   fileInputRef.current?.click();
                 }}
-                className="btn-primary gap-1.5 text-sm"
+                className="btn-primary gap-1.5 text-sm py-2"
               >
                 <Upload className="h-4 w-4" />
                 {t('lists.tryAnotherFile')}

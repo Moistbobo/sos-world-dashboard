@@ -148,7 +148,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute right-0 top-3 z-10 hidden h-8 w-8 translate-x-1/2 items-center justify-center rounded-full border border-slate-200 bg-white p-1 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 lg:flex"
+          className="absolute right-0 top-3 z-10 hidden h-11 w-11 translate-x-1/2 items-center justify-center rounded-full border border-slate-200 bg-white p-1 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 lg:flex"
           aria-label={collapsed ? t('layout.expandSidebar') : t('layout.collapseSidebar')}
         >
           {collapsed ? (

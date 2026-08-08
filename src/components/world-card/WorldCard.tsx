@@ -103,7 +103,7 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
               e.stopPropagation();
               onAuthorClick(world.authorName);
             }}
-            className="relative z-30 mt-0.5 -mx-1 self-start rounded px-1 py-1 text-xs text-slate-500 transition hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 dark:text-slate-400 dark:hover:text-indigo-400"
+            className="relative z-30 mt-0.5 -mx-1 self-start rounded px-1 py-1.5 text-xs text-slate-500 transition hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 dark:text-slate-400 dark:hover:text-indigo-400"
             aria-label={t('common.byAuthor', { author: world.authorName })}
             title={t('common.byAuthor', { author: world.authorName })}
           >

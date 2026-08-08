@@ -91,7 +91,7 @@ export function FilterBar({
             e.stopPropagation();
             setExpanded((v) => !v);
           }}
-          className={`btn-ghost gap-1.5 text-sm ${expanded ? 'bg-slate-200 dark:bg-slate-800' : ''}`}
+          className={`btn-ghost gap-1.5 text-sm py-2 ${expanded ? 'bg-slate-200 dark:bg-slate-800' : ''}`}
         >
           <SlidersHorizontal className="h-4 w-4" />
           {t('filter.filters')}
@@ -182,13 +182,17 @@ export function FilterBar({
                 : 'bg-red-500/20 text-red-700 ring-red-500/30 dark:text-red-300'
             }`}
           >
-            {q}
+            {q === 'good' ? t('filter.good') : t('filter.bad')}
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleQuality(q);
               }}
-              className={`flex h-6 w-6 items-center justify-center rounded-full hover:text-${q === 'good' ? 'green' : 'red'}-900 dark:hover:text-white`}
+              className={`flex h-6 w-6 items-center justify-center rounded-full ${
+                q === 'good'
+                  ? 'hover:text-green-900 dark:hover:text-green-200'
+                  : 'hover:text-red-900 dark:hover:text-red-200'
+              }`}
             >
               <X className="h-4 w-4" />
             </button>
@@ -201,7 +205,7 @@ export function FilterBar({
               e.stopPropagation();
               onClear();
             }}
-            className="btn-ghost text-sm"
+            className="btn-ghost text-sm py-2"
           >
             {t('filter.clearAll')}
           </button>
