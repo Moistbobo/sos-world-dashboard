@@ -175,15 +175,15 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
           className="relative flex w-full touch-none select-none items-center sm:w-[60%]"
           aria-label={t('filter.capacity')}
         >
-          <Slider.Track className="relative h-1.5 grow rounded-full bg-slate-200 dark:bg-slate-700">
+          <Slider.Track className="relative mx-4 h-2 grow rounded-full bg-slate-200 dark:bg-slate-700">
             <Slider.Range className="absolute h-full rounded-full bg-indigo-500" />
           </Slider.Track>
           <Slider.Thumb
-            className="block h-4 w-4 rounded-full border-2 border-white bg-indigo-500 shadow transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-900"
+            className="block h-8 w-8 rounded-full border-2 border-white bg-indigo-500 shadow transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-900"
             aria-label={t('filter.minCapacity')}
           />
           <Slider.Thumb
-            className="block h-4 w-4 rounded-full border-2 border-white bg-indigo-500 shadow transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-900"
+            className="block h-8 w-8 rounded-full border-2 border-white bg-indigo-500 shadow transition hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-900"
             aria-label={t('filter.maxCapacity')}
           />
         </Slider.Root>

@@ -46,9 +46,9 @@ export function ConfirmDialog({
           <button
             onClick={onCancel}
             aria-label={t('common.close')}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
@@ -61,7 +61,7 @@ export function ConfirmDialog({
                 type="checkbox"
                 checked={dontAskAgain}
                 onChange={(e) => setDontAskAgain(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                className="h-6 w-6 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
               />
               {dontAskAgainLabel ?? t('lists.dontAskAgain')}
             </label>
@@ -72,12 +72,12 @@ export function ConfirmDialog({
         )}
 
         <div className="flex justify-end gap-2">
-          <button onClick={onCancel} className="btn-ghost px-3 py-1.5 text-xs">
+          <button onClick={onCancel} className="btn-ghost text-sm py-2">
             {cancelLabel ?? t('common.cancel')}
           </button>
           <button
             onClick={() => onConfirm(dontAskAgain)}
-            className="btn-primary px-3 py-1.5 text-xs"
+            className="btn-primary text-sm py-2"
           >
             {confirmLabel ?? t('common.confirm')}
           </button>

@@ -28,7 +28,7 @@ export function Pagination({ offset, limit, total, onChangeOffset }: PaginationP
       <button
         disabled={!canPrev}
         onClick={() => onChangeOffset(Math.max(0, offset - limit))}
-        className="btn-secondary disabled:opacity-40 disabled:cursor-not-allowed px-3 py-1.5 text-xs"
+        className="btn-secondary disabled:opacity-40 disabled:cursor-not-allowed px-3 py-2 text-sm"
       >
         {t('pagination.prev')}
       </button>
@@ -38,7 +38,7 @@ export function Pagination({ offset, limit, total, onChangeOffset }: PaginationP
           key={p}
           onClick={() => onChangeOffset((p - 1) * limit)}
           className={`
-            min-w-[2rem] rounded-lg px-2 py-1.5 text-xs font-medium transition
+            min-w-11 rounded-lg px-3 py-2 text-sm font-medium transition
             ${p === currentPage
               ? 'bg-indigo-600 text-white'
               : 'bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'}
@@ -51,7 +51,7 @@ export function Pagination({ offset, limit, total, onChangeOffset }: PaginationP
       <button
         disabled={!canNext}
         onClick={() => onChangeOffset(offset + limit)}
-        className="btn-secondary disabled:opacity-40 disabled:cursor-not-allowed px-3 py-1.5 text-xs"
+        className="btn-secondary disabled:opacity-40 disabled:cursor-not-allowed px-3 py-2 text-sm"
       >
         {t('pagination.next')}
       </button>

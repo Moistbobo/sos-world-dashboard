@@ -58,9 +58,9 @@ export function SaveToListDialog({
             <button
               onClick={() => onOpenChange(false)}
               aria-label={t('common.close')}
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </button>
           </div>
 
@@ -79,7 +79,7 @@ export function SaveToListDialog({
                     type="checkbox"
                     checked={isWorldInList(worldId, list.id)}
                     onChange={() => toggle(list.id)}
-                    className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                    className="h-6 w-6 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
                   />
                   <ListIcon
                     icon={list.icon}
@@ -101,9 +101,9 @@ export function SaveToListDialog({
             <button
               type="button"
               onClick={() => setShowCreate(true)}
-              className="btn-ghost w-full gap-1.5 py-1.5 text-xs"
+              className="btn-ghost w-full gap-1.5 text-sm py-2"
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-4 w-4" />
               {t('lists.createNewListInline')}
             </button>
           </div>
@@ -111,7 +111,7 @@ export function SaveToListDialog({
           <div className="mt-4 flex justify-end">
             <button
               onClick={() => onOpenChange(false)}
-              className="btn-primary px-3 py-1.5 text-xs"
+              className="btn-primary text-sm py-2"
             >
               {t('common.done')}
             </button>
