@@ -27,11 +27,11 @@ export function ShareButton({ world, iconOnly = false }: ShareButtonProps) {
       <button
         type="button"
         onClick={handleShare}
-        className="btn-secondary p-2 text-xs relative z-30"
+        className="btn-secondary p-2.5 text-sm relative z-30"
         aria-label={t('share.share')}
         title={t('share.share')}
       >
-        <Share2 className="h-4 w-4" />
+        <Share2 className="h-5 w-5" />
       </button>
     );
   }

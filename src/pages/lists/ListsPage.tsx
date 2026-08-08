@@ -104,9 +104,9 @@ export function ListsPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setImportOpen(true)}
-            className="btn-secondary gap-1.5 text-xs"
+            className="btn-secondary gap-1.5 text-sm py-2"
           >
-            <Upload className="h-3.5 w-3.5" />
+            <Upload className="h-4 w-4" />
             {t('lists.importLists')}
           </button>
           <button
@@ -114,10 +114,10 @@ export function ListsPage() {
               setEditingList(undefined);
               setFormOpen(true);
             }}
-            className="btn-primary gap-1.5 text-xs"
+            className="btn-primary gap-1.5 text-sm py-2"
             aria-label={t('lists.newList')}
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-4 w-4" />
             {t('lists.newList')}
           </button>
         </div>
@@ -192,24 +192,24 @@ export function ListsPage() {
               >
                 <button
                   onClick={(e) => handleExport(e, list)}
-                  className="btn-ghost p-1.5 text-xs"
+                  className="btn-ghost p-2.5 text-sm"
                   aria-label={t('lists.exportList')}
                 >
-                  <Download className="h-3.5 w-3.5" />
+                  <Download className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => handleEdit(list)}
-                  className="btn-ghost p-1.5 text-xs"
+                  className="btn-ghost p-2.5 text-sm"
                   aria-label={t('lists.editList')}
                 >
-                  <Pencil className="h-3.5 w-3.5" />
+                  <Pencil className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => handleDelete(list.id, list.name)}
-                  className="btn-ghost p-1.5 text-xs text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                  className="btn-ghost p-2.5 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
                   aria-label={t('lists.deleteList')}
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             </div>
