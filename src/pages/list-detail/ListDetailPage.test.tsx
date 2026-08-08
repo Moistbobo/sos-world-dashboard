@@ -118,7 +118,7 @@ describe('ListDetailPage', () => {
 
     expect(screen.getByAltText('Saved World')).toHaveAttribute(
       'src',
-      'https://example.com/image.jpg',
+      'https://wsrv.nl/?url=https%3A%2F%2Fexample.com%2Fimage.jpg&w=320&output=webp',
     );
     expect(
       screen.getByRole('link', { name: /open in vrchat/i }),

@@ -5,6 +5,7 @@ import type { RatingSummary, World } from '../../types';
 import { TagBadge } from '../tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
 import { getWorldAddDate } from '../../utils/worldAddDate';
+import { worldImageUrl } from '../../utils/worldImageUrl';
 import { ShareButton } from '../share-button';
 import { useLists } from '../../contexts/ListsContext';
 import { SaveToListDialog } from '../save-to-list-dialog/SaveToListDialog';
@@ -36,15 +37,22 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
           aria-label={`${t('common.details')} - ${world.name}`}
         />
       )}
-      <div className="relative h-40 bg-slate-200 dark:bg-slate-800">
+      <div className="relative h-40 overflow-hidden bg-slate-200 dark:bg-slate-800">
         {world.imageUrl ? (
-          <img
-            src={world.imageUrl}
-            alt={world.name}
-            className="h-full w-full object-cover"
-            loading="lazy"
-            decoding="async"
-          />
+          <>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 animate-shimmer bg-[linear-gradient(100deg,transparent_20%,rgba(100,116,139,0.55)_50%,transparent_80%)] dark:bg-[linear-gradient(100deg,transparent_20%,rgba(255,255,255,0.12)_50%,transparent_80%)]"
+            />
+            <img
+              src={worldImageUrl(world.imageUrl, 320)}
+              alt={world.name}
+              className="relative h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
+              fetchPriority="low"
+            />
+          </>
         ) : (
           <div className="flex h-full w-full items-center justify-center text-slate-400 dark:text-slate-600">
             <Globe className="h-10 w-10" />

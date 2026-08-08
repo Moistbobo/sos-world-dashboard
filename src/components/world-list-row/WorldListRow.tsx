@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { RatingSummary, World } from '../../types';
 import { TagBadge } from '../tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
+import { worldImageUrl } from '../../utils/worldImageUrl';
 import { WorldRatingBar } from '../world-rating-bar';
 
 interface WorldListRowProps {
@@ -21,9 +22,22 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
       onClick={() => onSelect(world.worldId)}
       className="card flex w-full min-w-0 items-center gap-3 p-3 text-left transition hover:border-slate-400 sm:gap-4 dark:hover:border-slate-600"
     >
-      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-800">
+      <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-800">
         {world.imageUrl ? (
-          <img src={world.imageUrl} alt="" loading="eager" decoding="async" className="h-full w-full object-cover" />
+          <>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 animate-shimmer bg-[linear-gradient(100deg,transparent_20%,rgba(100,116,139,0.55)_50%,transparent_80%)] dark:bg-[linear-gradient(100deg,transparent_20%,rgba(255,255,255,0.12)_50%,transparent_80%)]"
+            />
+            <img
+              src={worldImageUrl(world.imageUrl, 128)}
+              alt=""
+              loading="eager"
+              decoding="async"
+              fetchPriority="low"
+              className="relative h-full w-full object-cover"
+            />
+          </>
         ) : (
           <div className="flex h-full w-full items-center justify-center text-slate-400 dark:text-slate-600">
             <List className="h-6 w-6" />
