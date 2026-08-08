@@ -237,4 +237,33 @@ describe('WorldCard', () => {
     );
     expect(screen.queryByTestId('world-rating-bar-card')).not.toBeInTheDocument();
   });
+
+  it('renders the image through wsrv.nl at w=320 with fetchpriority low', () => {
+    render(
+      <WorldCard
+        world={{ ...mockWorld, imageUrl: 'https://api.vrchat.cloud/image.png' }}
+        onSelect={vi.fn()}
+      />,
+      { wrapper: Wrapper },
+    );
+    const img = screen.getByRole('img', { name: 'Test World' });
+    expect(img).toHaveAttribute(
+      'src',
+      'https://wsrv.nl/?url=https%3A%2F%2Fapi.vrchat.cloud%2Fimage.png&w=320&output=webp',
+    );
+    expect(img).toHaveAttribute('fetchpriority', 'low');
+  });
+
+  it('shows a shimmer placeholder behind the card image', () => {
+    render(
+      <WorldCard
+        world={{ ...mockWorld, imageUrl: 'https://api.vrchat.cloud/image.png' }}
+        onSelect={vi.fn()}
+      />,
+      { wrapper: Wrapper },
+    );
+    const shimmer = document.querySelector('.animate-shimmer');
+    expect(shimmer).not.toBeNull();
+    expect(shimmer).toHaveAttribute('aria-hidden', 'true');
+  });
 });

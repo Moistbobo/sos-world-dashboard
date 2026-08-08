@@ -374,6 +374,51 @@ describe('WorldDetailPage', () => {
 
     const lightboxImage = within(lightbox).getByAltText(/Test World/i);
     expect(lightboxImage).toHaveClass('object-contain');
+    expect(lightboxImage).toHaveAttribute('src', 'https://example.com/image.png');
+  });
+
+  it('renders the hero image through wsrv.nl at w=1600 with fetchpriority high', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const heroImage = screen.getAllByAltText(/Test World/i)[0];
+    expect(heroImage).toHaveAttribute(
+      'src',
+      'https://wsrv.nl/?url=https%3A%2F%2Fexample.com%2Fimage.png&w=1600&output=webp',
+    );
+    expect(heroImage).toHaveAttribute('fetchpriority', 'high');
+    expect(heroImage).toHaveAttribute('decoding', 'async');
+  });
+
+  it('shows a shimmer placeholder behind the hero image', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const shimmer = document.querySelector('.animate-shimmer');
+    expect(shimmer).not.toBeNull();
+    expect(shimmer).toHaveAttribute('aria-hidden', 'true');
   });
 
   it('closes the lightbox when the backdrop or X button is clicked', async () => {
