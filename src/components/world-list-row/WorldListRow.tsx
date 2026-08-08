@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { RatingSummary, World } from '../../types';
 import { TagBadge } from '../tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
-import { worldImageUrl } from '../../utils/worldImageUrl';
+import { createWSRVUrl } from '../../utils/worldImageUrl';
 import { WorldRatingBar } from '../world-rating-bar';
 
 interface WorldListRowProps {
@@ -30,7 +30,7 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
               className="pointer-events-none absolute inset-0 animate-shimmer bg-[linear-gradient(100deg,transparent_20%,rgba(100,116,139,0.55)_50%,transparent_80%)] dark:bg-[linear-gradient(100deg,transparent_20%,rgba(255,255,255,0.12)_50%,transparent_80%)]"
             />
             <img
-              src={worldImageUrl(world.imageUrl, 128)}
+              src={createWSRVUrl(world.imageUrl, 128)}
               alt=""
               loading="eager"
               decoding="async"

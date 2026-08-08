@@ -6,7 +6,7 @@ import { useWorld } from '../../hooks/useApi';
 import { TagBadge } from '../../components/tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
 import { getWorldAddDate } from '../../utils/worldAddDate';
-import { worldImageUrl } from '../../utils/worldImageUrl';
+import { createWSRVUrl } from '../../utils/worldImageUrl';
 import { ShareButton } from '../../components/share-button';
 import { CopyWorldId } from '../../components/copy-world-id';
 import { WorldAddDate } from '../../components/world-add-date';
@@ -232,7 +232,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
                   className="pointer-events-none absolute inset-0 animate-shimmer bg-[linear-gradient(100deg,transparent_20%,rgba(100,116,139,0.55)_50%,transparent_80%)] dark:bg-[linear-gradient(100deg,transparent_20%,rgba(255,255,255,0.12)_50%,transparent_80%)]"
                 />
                 <img
-                  src={worldImageUrl(w.imageUrl, 1600)}
+                  src={createWSRVUrl(w.imageUrl, 1600)}
                   alt={w.name}
                   className="relative h-full w-full object-cover"
                   fetchPriority="high"
