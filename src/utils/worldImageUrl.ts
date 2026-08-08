@@ -7,9 +7,14 @@ const WSRV_BASE = 'https://wsrv.nl/';
  */
 export function worldImageUrl(imageUrl: string, width: number): string {
   const trimmed = imageUrl.trim();
-  if (!trimmed || !/^https?:\/\//i.test(trimmed)) {
+  if (!trimmed) {
     return imageUrl;
   }
-  const params = new URLSearchParams({ url: trimmed, w: String(width), output: 'webp' });
+  // Protocol-relative URLs are valid in the browser; the proxy needs an absolute https URL.
+  const absolute = trimmed.startsWith('//') ? `https:${trimmed}` : trimmed;
+  if (!/^https?:\/\//i.test(absolute)) {
+    return imageUrl;
+  }
+  const params = new URLSearchParams({ url: absolute, w: String(width), output: 'webp' });
   return `${WSRV_BASE}?${params.toString()}`;
 }

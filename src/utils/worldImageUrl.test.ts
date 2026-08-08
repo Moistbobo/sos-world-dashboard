@@ -14,6 +14,20 @@ describe('worldImageUrl', () => {
     expect(url).toContain('w=128');
   });
 
+  it('encodes query strings already present in the original URL', () => {
+    const url = worldImageUrl('https://example.com/image.png?token=abc&x=1', 320);
+    expect(url).toBe(
+      'https://wsrv.nl/?url=https%3A%2F%2Fexample.com%2Fimage.png%3Ftoken%3Dabc%26x%3D1&w=320&output=webp',
+    );
+  });
+
+  it('normalizes protocol-relative URLs to https through the proxy', () => {
+    const url = worldImageUrl('//api.vrchat.cloud/image.png', 320);
+    expect(url).toBe(
+      'https://wsrv.nl/?url=https%3A%2F%2Fapi.vrchat.cloud%2Fimage.png&w=320&output=webp',
+    );
+  });
+
   it('falls back to the original URL when input is empty', () => {
     expect(worldImageUrl('', 320)).toBe('');
     expect(worldImageUrl('   ', 320)).toBe('   ');
