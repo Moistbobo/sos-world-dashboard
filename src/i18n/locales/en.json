@@ -14,6 +14,7 @@
     "unreachable": "API is unreachable",
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
+    "openSidebar": "Open sidebar",
     "closeSidebar": "Close sidebar",
     "version": "Version"
   },
@@ -58,6 +59,8 @@
     "switchToInfinite": "Switch to endless scroll",
     "loadingMore": "Loading more worlds...",
     "backToTop": "Back to top",
+    "gridView": "Grid view",
+    "listView": "List view",
     "numberOfResultsLabel": "Number of results:",
     "numberOfResultsCount": "{{count}}",
     "loadingResultCount": "Loading result count"
@@ -160,6 +163,7 @@
     "capacityTo": "to",
     "capacityUnit": "players",
     "removeCapacity": "Remove capacity filter",
+    "removeTag": "Remove tag filter {{tag}}",
     "platform": "Platform",
     "platforms": "Platforms",
     "removePlatform": "Remove platform filter",

@@ -9,14 +9,14 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="btn-ghost p-2"
+      className="btn-ghost p-3"
       title={theme === 'dark' ? t('theme.lightMode') : t('theme.darkMode')}
       aria-label="Toggle theme"
     >
       {theme === 'dark' ? (
-        <Sun className="h-4 w-4" />
+        <Sun className="h-5 w-5" />
       ) : (
-        <Moon className="h-4 w-4" />
+        <Moon className="h-5 w-5" />
       )}
     </button>
   );

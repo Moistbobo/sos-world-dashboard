@@ -71,7 +71,7 @@ export function SettingsPage() {
                 type="checkbox"
                 checked={skipRemoveWorldConfirmation}
                 onChange={(e) => setSkipRemoveWorldConfirmation(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                className="h-6 w-6 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
               />
               {t('settings.skipRemoveWorldConfirmation')}
             </label>

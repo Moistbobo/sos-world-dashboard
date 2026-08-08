@@ -49,4 +49,31 @@ describe('WorldListRow', () => {
     expect(wrapper!.className).toMatch(/\bhidden\b/);
     expect(wrapper!.className).toMatch(/\bsm:block\b/);
   });
+
+  it('renders the thumbnail through wsrv.nl at w=128 with fetchpriority low', () => {
+    render(
+      <WorldListRow
+        world={{ ...mockWorld, imageUrl: 'https://api.vrchat.cloud/image.png' }}
+        onSelect={vi.fn()}
+      />,
+    );
+    const img = document.querySelector('img');
+    expect(img).toHaveAttribute(
+      'src',
+      'https://wsrv.nl/?url=https%3A%2F%2Fapi.vrchat.cloud%2Fimage.png&w=128&output=webp',
+    );
+    expect(img).toHaveAttribute('fetchpriority', 'low');
+  });
+
+  it('shows a shimmer placeholder behind the row thumbnail', () => {
+    render(
+      <WorldListRow
+        world={{ ...mockWorld, imageUrl: 'https://api.vrchat.cloud/image.png' }}
+        onSelect={vi.fn()}
+      />,
+    );
+    const shimmer = document.querySelector('.animate-shimmer');
+    expect(shimmer).not.toBeNull();
+    expect(shimmer).toHaveAttribute('aria-hidden', 'true');
+  });
 });

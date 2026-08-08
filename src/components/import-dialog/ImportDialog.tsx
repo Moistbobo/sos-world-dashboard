@@ -158,9 +158,9 @@ export function ImportDialog({
           <button
             onClick={handleClose}
             aria-label={t('common.close')}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
@@ -171,9 +171,9 @@ export function ImportDialog({
             </p>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="btn-secondary mb-4 w-full gap-1.5 py-2 text-xs"
+              className="btn-secondary mb-4 w-full gap-1.5 text-sm"
             >
-              <Upload className="h-3.5 w-3.5" />
+              <Upload className="h-4 w-4" />
               {t('lists.importFromFile')}
             </button>
             <div
@@ -274,13 +274,13 @@ export function ImportDialog({
             <div className="flex justify-end gap-2">
               <button
                 onClick={handleClose}
-                className="btn-ghost px-3 py-1.5 text-xs"
+                className="btn-ghost text-sm py-2"
               >
                 {t('common.cancel')}
               </button>
               <button
                 onClick={handleImport}
-                className="btn-primary px-3 py-1.5 text-xs"
+                className="btn-primary text-sm py-2"
               >
                 {t('lists.importListsButton', {
                   count: preview.items.length,
@@ -301,7 +301,7 @@ export function ImportDialog({
             <div className="flex justify-end gap-2">
               <button
                 onClick={handleClose}
-                className="btn-ghost px-3 py-1.5 text-xs"
+                className="btn-ghost text-sm py-2"
               >
                 {t('common.close')}
               </button>
@@ -310,9 +310,9 @@ export function ImportDialog({
                   reset();
                   fileInputRef.current?.click();
                 }}
-                className="btn-primary gap-1.5 px-3 py-1.5 text-xs"
+                className="btn-primary gap-1.5 text-sm py-2"
               >
-                <Upload className="h-3.5 w-3.5" />
+                <Upload className="h-4 w-4" />
                 {t('lists.tryAnotherFile')}
               </button>
             </div>

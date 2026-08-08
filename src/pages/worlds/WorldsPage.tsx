@@ -192,7 +192,7 @@ export function WorldsPage() {
         </div>
         <button
           onClick={handleToggleMode}
-          className="btn-secondary flex items-center gap-2 px-3 py-1.5 text-xs"
+          className="btn-secondary flex items-center gap-2 px-3 text-sm"
         >
           {scrollMode === 'infinite' ? t('worlds.switchToPagination') : t('worlds.switchToInfinite')}
         </button>
@@ -238,10 +238,11 @@ export function WorldsPage() {
             )}
           </p>
         )}
-        <div className="flex items-center gap-1 rounded-lg border border-slate-300 bg-slate-100/50 p-0.5 dark:border-slate-700 dark:bg-slate-800/50">
+        <div className="flex items-center gap-1 rounded-lg border border-slate-300 bg-slate-100/50 p-1 dark:border-slate-700 dark:bg-slate-800/50">
           <button
             onClick={() => setViewMode('grid')}
-            className={`rounded-md p-1.5 transition ${
+            aria-label={t('worlds.gridView')}
+            className={`flex h-11 w-11 items-center justify-center rounded-md transition ${
               viewMode === 'grid'
                 ? 'bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-white'
                 : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
@@ -251,7 +252,8 @@ export function WorldsPage() {
           </button>
           <button
             onClick={() => setViewMode('list')}
-            className={`rounded-md p-1.5 transition ${
+            aria-label={t('worlds.listView')}
+            className={`flex h-11 w-11 items-center justify-center rounded-md transition ${
               viewMode === 'list'
                 ? 'bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-white'
                 : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
@@ -368,7 +370,7 @@ export function WorldsPage() {
       {showBackToTop && scrollMode === 'infinite' && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-6 right-6 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-indigo-500 dark:hover:bg-indigo-600"
           aria-label={t('worlds.backToTop')}
         >
           <ArrowUp className="h-5 w-5" />
