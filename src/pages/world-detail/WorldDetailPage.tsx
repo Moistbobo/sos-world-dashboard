@@ -255,7 +255,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
               <button
                 type="button"
                 onClick={() => setLightboxOpen(false)}
-                className="absolute right-4 top-4 rounded-full bg-black/50 p-2 text-white transition hover:bg-black/70"
+                className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white transition hover:bg-black/70"
                 aria-label={t('common.close')}
               >
                 <X className="h-6 w-6" />
@@ -319,7 +319,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
                     key={p}
                     type="button"
                     onClick={() => navigate(`/worlds?platform=${encodeURIComponent(p)}`)}
-                    className="rounded-md bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 transition hover:brightness-110 dark:bg-slate-700 dark:text-slate-200"
+                    className="rounded-md bg-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:brightness-110 dark:bg-slate-700 dark:text-slate-200"
                   >
                     {getPlatformLabel(p)}
                   </button>

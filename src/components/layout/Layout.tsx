@@ -109,7 +109,11 @@ export function Layout({ children }: { children: ReactNode }) {
               {t('layout.appName')} {appVersion}
             </span>
           </div>
-          <button className="lg:hidden" onClick={() => setSidebarOpen(false)} aria-label={t('layout.closeSidebar')}>
+          <button
+            className="flex h-11 w-11 items-center justify-center rounded-lg lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+            aria-label={t('layout.closeSidebar')}
+          >
             <X className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           </button>
         </div>
@@ -122,7 +126,7 @@ export function Layout({ children }: { children: ReactNode }) {
               end
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                `group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                   collapsed ? 'lg:justify-center lg:gap-0 lg:px-2' : ''
                 } ${
                   isActive
@@ -144,7 +148,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute right-0 top-3 z-10 hidden translate-x-1/2 items-center justify-center rounded-full border border-slate-200 bg-white p-1 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 lg:flex"
+          className="absolute right-0 top-3 z-10 hidden h-8 w-8 translate-x-1/2 items-center justify-center rounded-full border border-slate-200 bg-white p-1 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 lg:flex"
           aria-label={collapsed ? t('layout.expandSidebar') : t('layout.collapseSidebar')}
         >
           {collapsed ? (
@@ -158,7 +162,11 @@ export function Layout({ children }: { children: ReactNode }) {
       {/* Main */}
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate-200 bg-white/80 px-4 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
-          <button className="lg:hidden" onClick={() => setSidebarOpen(true)}>
+          <button
+            className="flex h-11 w-11 items-center justify-center rounded-lg lg:hidden"
+            onClick={() => setSidebarOpen(true)}
+            aria-label={t('layout.openSidebar')}
+          >
             <Menu className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           </button>
           <div className="flex items-center gap-2 text-xs">

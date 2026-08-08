@@ -48,7 +48,7 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
                   onAuthorClick(world.authorName);
                 }
               }}
-              className="cursor-pointer rounded hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 dark:hover:text-indigo-400"
+              className="cursor-pointer rounded px-1 py-1 hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 dark:hover:text-indigo-400"
               aria-label={t('common.byAuthor', { author: world.authorName })}
               title={t('common.byAuthor', { author: world.authorName })}
             >

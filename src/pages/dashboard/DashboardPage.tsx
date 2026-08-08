@@ -72,7 +72,7 @@ export function DashboardPage() {
               <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('dashboard.recentWorlds')}</h2>
               <button
                 onClick={() => navigate('/worlds')}
-                className="text-xs text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                className="min-h-11 px-2 text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
               >
                 {t('dashboard.viewAll')}
               </button>
