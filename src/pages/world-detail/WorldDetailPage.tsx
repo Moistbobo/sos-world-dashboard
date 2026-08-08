@@ -6,6 +6,7 @@ import { useWorld } from '../../hooks/useApi';
 import { TagBadge } from '../../components/tag-badge';
 import { getPlatformLabel } from '../../utils/platformLabel';
 import { getWorldAddDate } from '../../utils/worldAddDate';
+import { createWSRVUrl } from '../../utils/worldImageUrl';
 import { ShareButton } from '../../components/share-button';
 import { CopyWorldId } from '../../components/copy-world-id';
 import { WorldAddDate } from '../../components/world-add-date';
@@ -218,7 +219,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
               {t('worldDetail.refreshError', { message: error?.message })}
             </div>
           )}
-          <div className="relative h-56 bg-slate-200 sm:h-72 dark:bg-slate-800">
+          <div className="relative h-56 overflow-hidden bg-slate-200 sm:h-72 dark:bg-slate-800">
             {w.imageUrl ? (
               <button
                 type="button"
@@ -226,10 +227,16 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
                 className="h-full w-full cursor-pointer"
                 aria-label={t('worldDetail.openImageLightbox', { name: w.name })}
               >
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 animate-shimmer bg-[linear-gradient(100deg,transparent_20%,rgba(100,116,139,0.55)_50%,transparent_80%)] dark:bg-[linear-gradient(100deg,transparent_20%,rgba(255,255,255,0.12)_50%,transparent_80%)]"
+                />
                 <img
-                  src={w.imageUrl}
+                  src={createWSRVUrl(w.imageUrl, 1600)}
                   alt={w.name}
-                  className="h-full w-full object-cover"
+                  className="relative h-full w-full object-cover"
+                  fetchPriority="high"
+                  decoding="async"
                 />
               </button>
             ) : (
@@ -255,7 +262,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
               <button
                 type="button"
                 onClick={() => setLightboxOpen(false)}
-                className="absolute right-4 top-4 rounded-full bg-black/50 p-2 text-white transition hover:bg-black/70"
+                className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white transition hover:bg-black/70"
                 aria-label={t('common.close')}
               >
                 <X className="h-6 w-6" />
@@ -319,7 +326,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
                     key={p}
                     type="button"
                     onClick={() => navigate(`/worlds?platform=${encodeURIComponent(p)}`)}
-                    className="rounded-md bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 transition hover:brightness-110 dark:bg-slate-700 dark:text-slate-200"
+                    className="rounded-md bg-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:brightness-110 dark:bg-slate-700 dark:text-slate-200"
                   >
                     {getPlatformLabel(p)}
                   </button>
