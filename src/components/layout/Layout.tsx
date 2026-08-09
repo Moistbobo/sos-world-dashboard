@@ -12,10 +12,12 @@ import {
   X,
   ChevronsLeft,
   ChevronsRight,
+  Shuffle,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useHealth } from '../../hooks/useHealth';
 import { useApiDownToast } from '../../hooks/useApiToasts';
+import { useFeelLucky } from '../../hooks/useFeelLucky';
 import { ThemeToggle } from '../theme-toggle';
 
 import { getAppVersion } from '../../config/version';
@@ -25,6 +27,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { isPending, isError } = useHealth();
   useApiDownToast();
+  const { loading: feelLuckyLoading, feelLucky } = useFeelLucky();
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem('sos-sidebar-collapsed') === 'true';
@@ -144,6 +147,27 @@ export function Layout({ children }: { children: ReactNode }) {
               )}
             </NavLink>
           ))}
+          <button
+            type="button"
+            onClick={() => {
+              setSidebarOpen(false);
+              void feelLucky();
+            }}
+            disabled={feelLuckyLoading}
+            aria-label={t('nav.feelLucky')}
+            title={t('nav.feelLucky')}
+            className={`group relative mt-2 flex min-h-11 items-center gap-3 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2.5 text-sm font-medium text-indigo-700 transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-indigo-500/40 dark:bg-indigo-500/10 dark:text-indigo-300 dark:hover:bg-indigo-500/20 ${
+              collapsed ? 'lg:justify-center lg:gap-0 lg:px-2' : ''
+            }`}
+          >
+            <Shuffle className={`h-4 w-4 ${collapsed ? 'lg:h-5 lg:w-5' : ''}`} />
+            <span className={`${collapsed ? 'lg:hidden' : ''}`}>{t('nav.feelLucky')}</span>
+            {collapsed && (
+              <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 dark:bg-white dark:text-slate-900">
+                {t('nav.feelLucky')}
+              </span>
+            )}
+          </button>
         </nav>
 
         <button
