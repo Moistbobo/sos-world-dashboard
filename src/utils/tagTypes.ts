@@ -23,6 +23,7 @@ const tagRegistry: Record<string, TagMeta> = {
   nature:     { emoji: '🌿',  hexColor: '#84cc16', tailwindClass: 'bg-lime-500/15 text-lime-700 dark:text-lime-400 border-lime-500/30' },
   gamerip:    { emoji: '🎬',  hexColor: '#a855f7', tailwindClass: 'bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-500/30' },
   portal:     { emoji: '🌀',  hexColor: '#06b6d4', tailwindClass: 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-400 border-cyan-500/30' },
+  liminal:    { emoji: '🌫️',  hexColor: '#94a3b8', tailwindClass: 'bg-slate-500/15 text-slate-700 dark:text-slate-300 border-slate-500/30' },
 
   // Existing app tags
   quest:      { emoji: '🥽',  hexColor: '#34d399', tailwindClass: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30' },
