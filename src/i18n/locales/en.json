@@ -4,7 +4,8 @@
     "worlds": "Worlds",
     "tags": "Tags",
     "lists": "Lists",
-    "settings": "Settings"
+    "settings": "Settings",
+    "feelLucky": "I'm feeling lucky"
   },
   "layout": {
     "appName": "SOS Dashboard",
