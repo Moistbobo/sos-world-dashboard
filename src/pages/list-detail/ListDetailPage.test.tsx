@@ -94,6 +94,26 @@ describe('ListDetailPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('uses the singular world count label for a single-world list', async () => {
+    await seedListsDb([
+      makeList({ id: 'l1', name: 'Favorites', worldIds: ['wrld_1'] }),
+    ]);
+    renderList('l1');
+    expect(await screen.findByText('1 world')).toBeInTheDocument();
+  });
+
+  it('uses the plural world count label for a multi-world list', async () => {
+    await seedListsDb([
+      makeList({
+        id: 'l1',
+        name: 'Favorites',
+        worldIds: ['wrld_1', 'wrld_2'],
+      }),
+    ]);
+    renderList('l1');
+    expect(await screen.findByText('2 worlds')).toBeInTheDocument();
+  });
+
   it('navigates to the worlds page from the empty state', async () => {
     await seedListsDb([makeList({ id: 'l1', name: 'Favorites' })]);
     render(
