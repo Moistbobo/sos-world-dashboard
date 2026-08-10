@@ -89,6 +89,24 @@ describe('ListDetailPage', () => {
     expect(
       await screen.findByText(/no worlds in this list/i),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /browse worlds/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('navigates to the worlds page from the empty state', async () => {
+    await seedListsDb([makeList({ id: 'l1', name: 'Favorites' })]);
+    render(
+      <Wrapper>
+        <Routes>
+          <Route path="/" element={<ListDetailPage listId="l1" />} />
+          <Route path="/worlds" element={<div>Worlds route</div>} />
+        </Routes>
+      </Wrapper>,
+    );
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: /browse worlds/i }));
+    expect(screen.getByText(/worlds route/i)).toBeInTheDocument();
   });
 
   it('renders a saved world using WorldCard', async () => {
