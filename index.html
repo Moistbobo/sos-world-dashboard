@@ -5,19 +5,10 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Browse and search VRChat worlds: player counts, capacity, platforms, quality ratings, tags, and community sentiment." />
+    <meta name="referrer" content="no-referrer" />
     <title>SOS World Dashboard</title>
     <style>html { background-color: #0f172a; }</style>
-    <script>
-      (function() {
-        try {
-          const saved = localStorage.getItem('sos-theme');
-          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (saved === 'dark' || (!saved && prefersDark)) {
-            document.documentElement.classList.add('dark');
-          }
-        } catch (_) {}
-      })();
-    </script>
+    <script src="/theme-init.js"></script>
   </head>
   <body>
     <div id="root"></div>
