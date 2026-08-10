@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ListsProvider } from '../../contexts/ListsContext';
+import { ListsProvider, useLists } from '../../contexts/ListsContext';
 import { SaveToListDialog } from './SaveToListDialog';
 import { resetListsDb, seedListsDb } from '../../test/listsDb';
 import type { WorldList } from '../../types/lists';
@@ -24,8 +24,18 @@ beforeEach(async () => {
   await resetListsDb();
 });
 
+function HydrationProbe() {
+  const { isHydrated } = useLists();
+  return <span data-testid="hydrated">{isHydrated ? 'yes' : 'no'}</span>;
+}
+
 function Wrapper({ children }: { children: React.ReactNode }) {
-  return <ListsProvider>{children}</ListsProvider>;
+  return (
+    <ListsProvider>
+      <HydrationProbe />
+      {children}
+    </ListsProvider>
+  );
 }
 
 async function renderDialog() {
@@ -35,6 +45,16 @@ async function renderDialog() {
   );
   await screen.findByRole('dialog', undefined, { timeout: 2000 });
   await screen.findByText(/create new list/i, undefined, { timeout: 2000 });
+  // Wait for ListsProvider to finish its async IndexedDB hydration; the
+  // dialog is rendered before hydration completes and the seeded list rows
+  // only appear after `lists` state is populated.
+  await screen.findByTestId('hydrated', undefined, { timeout: 2000 });
+  await waitFor(
+    () => {
+      expect(screen.getByTestId('hydrated').textContent).toBe('yes');
+    },
+    { timeout: 2000 },
+  );
   return result;
 }
 
