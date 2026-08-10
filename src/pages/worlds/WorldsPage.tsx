@@ -18,6 +18,11 @@ const LIST_GAP = 12;
 const GRID_ROW_ESTIMATE = 420;
 const GRID_ROW_ESTIMATE_DESKTOP = 380;
 const LIST_ROW_ESTIMATE = 88;
+// Number of virtualized rows from the end of the loaded data at which to
+// start prefetching the next page. The IntersectionObserver sentinel
+// (200px rootMargin) still runs as a safety net; this trigger fires earlier
+// so the fetch usually completes before the user reaches the end of the list.
+const PREFETCH_AHEAD_ROWS = 4;
 
 function getColumnCount(windowWidth: number) {
   return windowWidth >= 1280 ? 4 : windowWidth >= 640 ? 2 : 1;
@@ -177,11 +182,41 @@ export function WorldsPage() {
     gap: LIST_GAP,
   });
 
-  const gridRows = gridVirtualizer.getVirtualItems().map((row) => ({
+  const gridVirtualItems = gridVirtualizer.getVirtualItems();
+  const listVirtualItems = listVirtualizer.getVirtualItems();
+  const gridRows = gridVirtualItems.map((row) => ({
     row,
     items: worlds.slice(row.index * columnCount, row.index * columnCount + columnCount),
   }));
-  const listRows = listVirtualizer.getVirtualItems();
+  const listRows = listVirtualItems;
+
+  // Index of the last virtualized row currently rendered. The window
+  // virtualizer triggers a re-render whenever the range changes, so this
+  // value updates as the user scrolls and can be used as an effect dep to
+  // decide when to prefetch the next page.
+  const activeVirtualItems = viewMode === 'grid' ? gridVirtualItems : listVirtualItems;
+  const lastVirtualRowIndex =
+    activeVirtualItems.length > 0 ? activeVirtualItems[activeVirtualItems.length - 1].index : -1;
+
+  // Prefetch the next page when the virtualized range is within a few rows
+  // of the end of the loaded data, so the fetch can finish before the user
+  // reaches the bottom of the list. The sentinel IntersectionObserver
+  // above remains as a safety net; the guards below prevent duplicate
+  // fetches when both triggers fire while a page is in flight.
+  useEffect(() => {
+    if (isPagination) return;
+    if (!infiniteQuery.hasNextPage || infiniteQuery.isFetchingNextPage) return;
+    if (lastVirtualRowIndex < 0) return;
+
+    const totalRows =
+      viewMode === 'grid'
+        ? Math.max(0, Math.ceil(worlds.length / columnCount) - 1)
+        : Math.max(0, worlds.length - 1);
+
+    if (lastVirtualRowIndex >= totalRows - PREFETCH_AHEAD_ROWS) {
+      infiniteQuery.fetchNextPage();
+    }
+  }, [infiniteQuery, isPagination, viewMode, worlds.length, columnCount, lastVirtualRowIndex]);
 
   return (
     <div className="space-y-4">
