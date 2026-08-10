@@ -10,6 +10,7 @@ import {
   type ImportPreview,
 } from '../../utils/listsImportExport';
 import { ListIcon } from '../../utils/listIcon';
+import { useDialogFocus } from '../../hooks/useDialogFocus';
 
 interface ImportDialogProps {
   open: boolean;
@@ -38,6 +39,8 @@ export function ImportDialog({
   const [dragActive, setDragActive] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  useDialogFocus({ open, containerRef: dialogRef });
 
   const reset = useCallback(() => {
     setPhase('transfer');
@@ -144,6 +147,7 @@ export function ImportDialog({
       aria-modal="true"
     >
       <div
+        ref={dialogRef}
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-md rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900"
       >

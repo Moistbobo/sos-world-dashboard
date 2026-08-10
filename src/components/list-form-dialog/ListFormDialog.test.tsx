@@ -5,6 +5,7 @@ import { ListFormDialog } from './ListFormDialog';
 import { MAX_LIST_MEMO_LENGTH } from '../../utils/listMemoValidation';
 
 beforeEach(() => {
+  document.body.innerHTML = '';
   window.localStorage.clear();
 });
 
@@ -146,5 +147,65 @@ describe('ListFormDialog', () => {
     expect(screen.getByText(`${MAX_LIST_MEMO_LENGTH + 1} / 512`)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /create/i }));
     expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('moves focus into the dialog and restores it on close', () => {
+    const trigger = document.createElement('button');
+    trigger.textContent = 'trigger';
+    document.body.appendChild(trigger);
+    trigger.focus();
+
+    const { rerender } = render(
+      <ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={vi.fn()} />,
+    );
+
+    const dialog = screen.getByRole('dialog');
+    const focused = document.activeElement;
+    expect(focused).not.toBe(trigger);
+    expect(dialog.contains(focused)).toBe(true);
+
+    rerender(
+      <ListFormDialog open={false} onOpenChange={vi.fn()} onSubmit={vi.fn()} />,
+    );
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it('traps Tab focus within the dialog while open', async () => {
+    const user = userEvent.setup();
+    render(
+      <ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={vi.fn()} />,
+    );
+
+    const close = screen.getByRole('button', { name: /^close$/i });
+    const cancel = screen.getByRole('button', { name: /^cancel$/i });
+    const create = screen.getByRole('button', { name: /^create list$/i });
+    const nameInput = screen.getByRole('textbox', { name: /name/i });
+
+    // First focusable is the close (×) button; tabbing forward walks through
+    // the form fields (name, color, memo) and ends on cancel + create.
+    expect(document.activeElement).toBe(close);
+
+    await user.tab();
+    expect(document.activeElement).toBe(nameInput);
+
+    // Tab all the way forward until we reach the create button (the last
+    // focusable).
+    for (let i = 0; i < 10; i++) {
+      await user.tab();
+      if (document.activeElement === create) break;
+    }
+    expect(document.activeElement).toBe(create);
+
+    // Tab from the last element wraps back to the first.
+    await user.tab();
+    expect(document.activeElement).toBe(close);
+
+    // Shift+Tab from the first element wraps back to the last.
+    await user.tab({ shift: true });
+    expect(document.activeElement).toBe(create);
+
+    // Sanity: cancel is also reachable via forward Tab from create.
+    await user.tab({ shift: true });
+    expect(document.activeElement).toBe(cancel);
   });
 });

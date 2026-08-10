@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
+import { useDialogFocus } from '../../hooks/useDialogFocus';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -27,6 +28,8 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   const { t } = useTranslation();
   const [dontAskAgain, setDontAskAgain] = useState(false);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  useDialogFocus({ open, containerRef: dialogRef });
 
   if (!open) return null;
 
@@ -38,6 +41,7 @@ export function ConfirmDialog({
       aria-modal="true"
     >
       <div
+        ref={dialogRef}
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900"
       >

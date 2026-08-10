@@ -487,4 +487,36 @@ describe('WorldDetailPage', () => {
 
     expect(screen.queryByTestId('world-image-lightbox')).not.toBeInTheDocument();
   });
+
+  it('moves focus into the lightbox when opened and restores it on close', async () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const trigger = screen.getByRole('button', {
+      name: /open full-size image of Test World/i,
+    });
+    trigger.focus();
+    expect(document.activeElement).toBe(trigger);
+
+    await userEvent.click(trigger);
+    expect(screen.getByTestId('world-image-lightbox')).toBeInTheDocument();
+
+    const close = screen.getByRole('button', { name: /^close$/i });
+    expect(document.activeElement).toBe(close);
+
+    await userEvent.click(close);
+    expect(screen.queryByTestId('world-image-lightbox')).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(trigger);
+  });
 });

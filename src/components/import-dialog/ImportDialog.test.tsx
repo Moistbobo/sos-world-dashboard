@@ -22,6 +22,10 @@ const sampleList = {
   updatedAt: '2024-01-01T00:00:00.000Z',
 };
 
+beforeEach(() => {
+  document.body.innerHTML = '';
+});
+
 function setup() {
   const onOpenChange = vi.fn();
   const onImport = vi.fn();
@@ -108,5 +112,60 @@ describe('ImportDialog', () => {
     expect(
       await screen.findByText(/world\(s\) were not found/i),
     ).toBeInTheDocument();
+  });
+
+  it('moves focus into the dialog and restores it on close', () => {
+    const trigger = document.createElement('button');
+    trigger.textContent = 'trigger';
+    document.body.appendChild(trigger);
+    trigger.focus();
+
+    const onOpenChange = vi.fn();
+    const { rerender } = render(
+      <ImportDialog
+        open
+        existingLists={[]}
+        onOpenChange={onOpenChange}
+        onImport={vi.fn()}
+      />,
+    );
+
+    const dialog = screen.getByRole('dialog');
+    const focused = document.activeElement;
+    expect(focused).not.toBe(trigger);
+    expect(dialog.contains(focused)).toBe(true);
+
+    rerender(
+      <ImportDialog
+        open={false}
+        existingLists={[]}
+        onOpenChange={onOpenChange}
+        onImport={vi.fn()}
+      />,
+    );
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it('traps Tab focus within the dialog while open', async () => {
+    const user = userEvent.setup();
+    setup().render();
+
+    const close = screen.getByRole('button', { name: /^close$/i });
+    const importBtn = screen.getByRole('button', { name: /import from file/i });
+
+    // First focusable is the close (×) button, followed by the import-from-file
+    // button. The hidden file input is excluded from the focusable list.
+    expect(document.activeElement).toBe(close);
+
+    await user.tab();
+    expect(document.activeElement).toBe(importBtn);
+
+    // Tab from the last element wraps back to the first.
+    await user.tab();
+    expect(document.activeElement).toBe(close);
+
+    // Shift+Tab from the first element wraps back to the last.
+    await user.tab({ shift: true });
+    expect(document.activeElement).toBe(importBtn);
   });
 });
