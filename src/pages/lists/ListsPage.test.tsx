@@ -81,6 +81,13 @@ describe('ListsPage', () => {
     expect(screen.getByText(/no lists yet/i)).toBeInTheDocument();
   });
 
+  it('opens the new list dialog from the empty-state button', async () => {
+    const user = userEvent.setup();
+    await renderPage();
+    await user.click(screen.getByRole('button', { name: /create your first list/i }));
+    expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument();
+  });
+
   it('creates a list and displays it', async () => {
     const user = userEvent.setup();
     await renderPage();

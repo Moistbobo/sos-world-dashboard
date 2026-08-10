@@ -151,6 +151,16 @@ export function ListsPage() {
               <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
               <p>{t('lists.emptyTitle')}</p>
               <p>{t('lists.emptySubtitle')}</p>
+              <button
+                onClick={() => {
+                  setEditingList(undefined);
+                  setFormOpen(true);
+                }}
+                className="btn-primary gap-1.5 text-sm"
+              >
+                <Plus className="h-4 w-4" />
+                {t('lists.createFirstList')}
+              </button>
             </div>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
