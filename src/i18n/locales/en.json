@@ -84,6 +84,7 @@
     "platforms": "Platforms",
     "tags": "Tags",
     "openInVRChat": "Open in VRChat",
+    "openInVRChatUnavailable": "No VRChat link is available for this world",
     "openImageLightbox": "Open full-size image of {{name}}",
     "imageLightbox": "Image of {{name}}",
     "saveToList": "Save to list",

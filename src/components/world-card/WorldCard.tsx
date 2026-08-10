@@ -181,15 +181,26 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
         )}
 
         <div className="mt-auto pt-3 flex items-center justify-center gap-2">
-          <a
-            href={world.vrchatUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="btn-primary gap-2 text-sm relative z-30"
-          >
-            <ExternalLink className="h-4 w-4" />
-            {t('worldDetail.openInVRChat')}
-          </a>
+          {world.vrchatUrl ? (
+            <a
+              href={world.vrchatUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-primary gap-2 text-sm relative z-30"
+            >
+              <ExternalLink className="h-4 w-4" />
+              {t('worldDetail.openInVRChat')}
+            </a>
+          ) : (
+            <span
+              className="btn-primary gap-2 text-sm relative z-30 cursor-not-allowed opacity-50"
+              aria-disabled="true"
+              title={t('worldDetail.openInVRChatUnavailable')}
+            >
+              <ExternalLink className="h-4 w-4" />
+              {t('worldDetail.openInVRChat')}
+            </span>
+          )}
           <ShareButton world={world} iconOnly />
         </div>
       </div>
