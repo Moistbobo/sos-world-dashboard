@@ -45,12 +45,11 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
               className="pointer-events-none absolute inset-0 animate-shimmer bg-[linear-gradient(100deg,transparent_20%,rgba(100,116,139,0.55)_50%,transparent_80%)] dark:bg-[linear-gradient(100deg,transparent_20%,rgba(255,255,255,0.12)_50%,transparent_80%)]"
             />
             <img
-              src={createWSRVUrl(world.imageUrl, 320)}
+              src={createWSRVUrl(world.imageUrl, 280, 65)}
               alt={world.name}
               className="relative h-full w-full object-cover"
               loading="lazy"
               decoding="async"
-              fetchPriority="low"
             />
           </>
         ) : (

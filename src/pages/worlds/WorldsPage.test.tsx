@@ -53,6 +53,7 @@ const mockWorlds = [
 let infiniteHasNextPage = true;
 let infiniteIsPending = false;
 let paginationIsPending = false;
+const mockInfiniteFetchNextPage = vi.fn();
 
 vi.mock('../../hooks/useApi', () => ({
   useTags: () => ({ data: { tags: [] } }),
@@ -81,7 +82,7 @@ vi.mock('../../hooks/useApi', () => ({
     isError: false,
     error: null,
     refetch: vi.fn(),
-    fetchNextPage: vi.fn(),
+    fetchNextPage: mockInfiniteFetchNextPage,
     hasNextPage: infiniteHasNextPage,
     isFetchingNextPage: false,
   }),
@@ -471,6 +472,29 @@ describe('WorldsPage', () => {
       await waitFor(() => {
         expect(window.location.search).not.toContain('search=Tester');
       });
+    });
+  });
+
+  describe('WorldsPage infinite scroll prefetch', () => {
+    it('calls fetchNextPage when the virtualized range is at the end of the loaded data', () => {
+      mockInfiniteFetchNextPage.mockClear();
+      infiniteHasNextPage = true;
+
+      renderPage(<WorldsPage />);
+
+      // The default mock only has one world, so the virtualized range already
+      // covers the end of the loaded data. The prefetch effect should fire
+      // and request the next page.
+      expect(mockInfiniteFetchNextPage).toHaveBeenCalled();
+    });
+
+    it('does not call fetchNextPage when there is no next page', () => {
+      mockInfiniteFetchNextPage.mockClear();
+      infiniteHasNextPage = false;
+
+      renderPage(<WorldsPage />);
+
+      expect(mockInfiniteFetchNextPage).not.toHaveBeenCalled();
     });
   });
 });
