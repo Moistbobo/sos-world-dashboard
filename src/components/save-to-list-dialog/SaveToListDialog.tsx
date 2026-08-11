@@ -28,7 +28,7 @@ export function SaveToListDialog({
   } = useLists();
   const [showCreate, setShowCreate] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
-  useDialogFocus({ open, containerRef: dialogRef });
+  useDialogFocus({ open, containerRef: dialogRef, onClose: () => onOpenChange(false) });
 
   if (!open) return null;
 

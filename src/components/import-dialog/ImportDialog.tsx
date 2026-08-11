@@ -40,7 +40,6 @@ export function ImportDialog({
   const [isValidating, setIsValidating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
-  useDialogFocus({ open, containerRef: dialogRef });
 
   const reset = useCallback(() => {
     setPhase('transfer');
@@ -57,6 +56,8 @@ export function ImportDialog({
     reset();
     onOpenChange(false);
   }, [onOpenChange, reset]);
+
+  useDialogFocus({ open, containerRef: dialogRef, onClose: handleClose });
 
   const processFile = useCallback(
     async (file: File) => {

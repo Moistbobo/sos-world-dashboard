@@ -199,4 +199,51 @@ describe('useDialogFocus', () => {
     expect(document.activeElement).toBe(dialogContainer);
     expect(dialogContainer.getAttribute('tabindex')).toBe('-1');
   });
+
+  it('calls onClose when Escape is pressed while open', () => {
+    const onClose = vi.fn();
+
+    function Harness() {
+      const ref = useRef<HTMLDivElement>(null);
+      useDialogFocus({ open: true, containerRef: ref, onClose });
+      return (
+        <div ref={ref}>
+          <button>inside</button>
+        </div>
+      );
+    }
+
+    render(<Harness />);
+
+    act(() => {
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+      );
+    });
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not call onClose when the dialog is closed', () => {
+    const onClose = vi.fn();
+
+    function Harness({ open }: { open: boolean }) {
+      const ref = useRef<HTMLDivElement>(null);
+      useDialogFocus({ open, containerRef: ref, onClose });
+      return (
+        <div ref={ref}>
+          <button>inside</button>
+        </div>
+      );
+    }
+
+    const { rerender } = render(<Harness open={true} />);
+    rerender(<Harness open={false} />);
+
+    act(() => {
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+      );
+    });
+    expect(onClose).not.toHaveBeenCalled();
+  });
 });

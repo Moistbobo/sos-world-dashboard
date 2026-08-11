@@ -208,4 +208,15 @@ describe('ListFormDialog', () => {
     await user.tab({ shift: true });
     expect(document.activeElement).toBe(cancel);
   });
+
+  it('calls onOpenChange(false) when Escape is pressed while open', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    render(
+      <ListFormDialog open={true} onOpenChange={onOpenChange} onSubmit={vi.fn()} />,
+    );
+
+    await user.keyboard('{Escape}');
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
 });

@@ -31,7 +31,7 @@ export function ListFormDialog({
   const [error, setError] = useState<string | null>(null);
   const memoRef = useRef<HTMLTextAreaElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
-  useDialogFocus({ open, containerRef: dialogRef });
+  useDialogFocus({ open, containerRef: dialogRef, onClose: () => onOpenChange(false) });
 
   const autoGrow = useCallback((el: HTMLTextAreaElement | null) => {
     if (!el) return;

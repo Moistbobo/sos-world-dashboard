@@ -162,4 +162,18 @@ describe('SaveToListDialog', () => {
     await user.tab({ shift: true });
     expect(document.activeElement).toBe(done);
   });
+
+  it('calls onOpenChange(false) when Escape is pressed while open', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    render(
+      <SaveToListDialog worldId="wrld_1" open={true} onOpenChange={onOpenChange} />,
+      { wrapper: Wrapper },
+    );
+    await screen.findByRole('dialog', undefined, { timeout: 2000 });
+    await screen.findByTestId('hydrated', undefined, { timeout: 2000 });
+
+    await user.keyboard('{Escape}');
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
 });

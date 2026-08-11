@@ -29,7 +29,7 @@ export function ConfirmDialog({
   const { t } = useTranslation();
   const [dontAskAgain, setDontAskAgain] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
-  useDialogFocus({ open, containerRef: dialogRef });
+  useDialogFocus({ open, containerRef: dialogRef, onClose: onCancel });
 
   if (!open) return null;
 

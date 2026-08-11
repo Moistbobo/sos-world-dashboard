@@ -168,4 +168,11 @@ describe('ImportDialog', () => {
     await user.tab({ shift: true });
     expect(document.activeElement).toBe(importBtn);
   });
+
+  it('calls onOpenChange(false) when Escape is pressed while open', async () => {
+    const { user, onOpenChange, render } = setup();
+    render();
+    await user.keyboard('{Escape}');
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
 });

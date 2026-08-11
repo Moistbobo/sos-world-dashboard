@@ -121,4 +121,21 @@ describe('ConfirmDialog', () => {
 
     expect(document.activeElement).toBe(trigger);
   });
+
+  it('calls onCancel when Escape is pressed while open', async () => {
+    const user = userEvent.setup();
+    const onCancel = vi.fn();
+    render(
+      <ConfirmDialog
+        open
+        title="Delete list?"
+        message="Are you sure?"
+        onConfirm={vi.fn()}
+        onCancel={onCancel}
+      />,
+    );
+
+    await user.keyboard('{Escape}');
+    expect(onCancel).toHaveBeenCalledTimes(1);
+  });
 });

@@ -24,6 +24,11 @@ interface UseDialogFocusOptions {
    * close.
    */
   containerRef: React.RefObject<HTMLElement | null>;
+  /**
+   * Optional callback invoked when the user presses Escape while the dialog is
+   * open. Pass the dialog's close handler to make Escape dismiss the dialog.
+   */
+  onClose?: () => void;
 }
 
 /**
@@ -33,14 +38,17 @@ interface UseDialogFocusOptions {
  *   1. When `open` becomes true, remembers the element that currently has focus
  *      (the trigger), then moves focus into the dialog. If the container has
  *      no focusable descendants, focus is placed on the container itself.
- *   2. While the dialog is open, Tab and Shift+Tab cycle within the dialog.
+ *   2. While the dialog is open, Tab and Shift+Tab cycle within the dialog, and
+ *      pressing Escape invokes the optional `onClose` callback (so the dialog
+ *      closes itself).
  *   3. When `open` becomes false, focus is restored to the trigger that was
  *      active when the dialog opened.
- *
- * Note: Escape-to-close and accessible-name wiring are tracked separately; this
- * hook intentionally only handles focus.
  */
-export function useDialogFocus({ open, containerRef }: UseDialogFocusOptions): void {
+export function useDialogFocus({
+  open,
+  containerRef,
+  onClose,
+}: UseDialogFocusOptions): void {
   const triggerRef = useRef<HTMLElement | null>(null);
   const wasOpenRef = useRef(false);
 
@@ -84,6 +92,10 @@ export function useDialogFocus({ open, containerRef }: UseDialogFocusOptions): v
     if (!container) return;
 
     function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        onClose?.();
+        return;
+      }
       if (event.key !== 'Tab') return;
       const focusables = getFocusable(container!);
       if (focusables.length === 0) {
@@ -108,7 +120,7 @@ export function useDialogFocus({ open, containerRef }: UseDialogFocusOptions): v
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [open, containerRef]);
+  }, [open, containerRef, onClose]);
 
   // Restore focus when the dialog closes (or the hook unmounts while open).
   useEffect(() => {

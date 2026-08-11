@@ -36,7 +36,7 @@ function ImageLightbox({
   onClose,
 }: ImageLightboxProps) {
   const dialogRef = useRef<HTMLDivElement | null>(null);
-  useDialogFocus({ open, containerRef: dialogRef });
+  useDialogFocus({ open, containerRef: dialogRef, onClose });
 
   if (!open) return null;
 

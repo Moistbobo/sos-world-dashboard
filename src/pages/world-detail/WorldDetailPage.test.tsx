@@ -446,6 +446,30 @@ describe('WorldDetailPage', () => {
     expect(document.body).not.toHaveClass('overflow-hidden');
   });
 
+  it('closes the lightbox when Escape is pressed', async () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: /open full-size image of Test World/i }));
+    expect(screen.getByTestId('world-image-lightbox')).toBeInTheDocument();
+
+    await userEvent.keyboard('{Escape}');
+
+    expect(screen.queryByTestId('world-image-lightbox')).not.toBeInTheDocument();
+    expect(document.body).not.toHaveClass('overflow-hidden');
+  });
+
   it('does not open a lightbox when the world has no image', () => {
     vi.spyOn(useApi, 'useWorld').mockReturnValue({
       data: createWorld({ imageUrl: '' }),
