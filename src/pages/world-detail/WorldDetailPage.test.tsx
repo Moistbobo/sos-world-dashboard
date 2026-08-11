@@ -487,4 +487,45 @@ describe('WorldDetailPage', () => {
 
     expect(screen.queryByTestId('world-image-lightbox')).not.toBeInTheDocument();
   });
+
+  it('renders the Open in VRChat link as an anchor when vrchatUrl is present', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const link = screen.getByRole('link', { name: /open in vrchat/i });
+    expect(link).toHaveAttribute('href', 'https://vrchat.com/home/world/wrld_123');
+    expect(link).toHaveAttribute('target', '_blank');
+  });
+
+  it('does not render a clickable Open in VRChat link when vrchatUrl is empty', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld({ vrchatUrl: '' }),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(screen.queryByRole('link', { name: /open in vrchat/i })).not.toBeInTheDocument();
+    expect(
+      screen.getByTitle(/no vrchat link is available/i),
+    ).toBeInTheDocument();
+  });
 });

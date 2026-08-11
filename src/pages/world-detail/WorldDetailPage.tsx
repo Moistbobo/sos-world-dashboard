@@ -348,15 +348,26 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
             </div>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <a
-                href={w.vrchatUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-primary gap-2 text-sm"
-              >
-                <ExternalLink className="h-4 w-4" />
-                {t('worldDetail.openInVRChat')}
-              </a>
+              {w.vrchatUrl ? (
+                <a
+                  href={w.vrchatUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-primary gap-2 text-sm"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  {t('worldDetail.openInVRChat')}
+                </a>
+              ) : (
+                <span
+                  className="btn-primary gap-2 text-sm cursor-not-allowed opacity-50"
+                  aria-disabled="true"
+                  title={t('worldDetail.openInVRChatUnavailable')}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  {t('worldDetail.openInVRChat')}
+                </span>
+              )}
               <ShareButton world={w} />
               <button
                 type="button"

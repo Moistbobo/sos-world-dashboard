@@ -266,4 +266,22 @@ describe('WorldCard', () => {
     expect(shimmer).not.toBeNull();
     expect(shimmer).toHaveAttribute('aria-hidden', 'true');
   });
+
+  it('renders the Open in VRChat link as an anchor when vrchatUrl is present', () => {
+    render(<WorldCard world={mockWorld} onSelect={vi.fn()} />, { wrapper: Wrapper });
+    const link = screen.getByRole('link', { name: /open in vrchat/i });
+    expect(link).toHaveAttribute('href', 'https://vrchat.com/home/world/wrld_test');
+    expect(link).toHaveAttribute('target', '_blank');
+  });
+
+  it('does not render a clickable Open in VRChat link when vrchatUrl is empty', () => {
+    render(
+      <WorldCard world={{ ...mockWorld, vrchatUrl: '' }} onSelect={vi.fn()} />,
+      { wrapper: Wrapper },
+    );
+    expect(screen.queryByRole('link', { name: /open in vrchat/i })).not.toBeInTheDocument();
+    expect(
+      screen.getByTitle(/no vrchat link is available/i),
+    ).toBeInTheDocument();
+  });
 });
