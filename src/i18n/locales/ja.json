@@ -84,6 +84,7 @@
     "platforms": "プラットフォーム",
     "tags": "タグ",
     "openInVRChat": "VRChat で開く",
+    "openInVRChatUnavailable": "このワールドの VRChat リンクはありません",
     "openImageLightbox": "{{name}} の画像をフルサイズで開く",
     "imageLightbox": "{{name}} の画像",
     "saveToList": "リストに保存",
