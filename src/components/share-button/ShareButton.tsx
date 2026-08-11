@@ -11,8 +11,15 @@ interface ShareButtonProps {
 export function ShareButton({ world, iconOnly = false }: ShareButtonProps) {
   const { t } = useTranslation();
 
+  const hasUrl = Boolean(world.vrchatUrl);
+
   const handleShare = async (event: React.MouseEvent) => {
     event.stopPropagation();
+
+    if (!hasUrl) {
+      toast.error(t('share.unavailable'));
+      return;
+    }
 
     try {
       await navigator.clipboard.writeText(world.vrchatUrl);
@@ -27,9 +34,10 @@ export function ShareButton({ world, iconOnly = false }: ShareButtonProps) {
       <button
         type="button"
         onClick={handleShare}
-        className="btn-secondary p-2.5 text-sm relative z-30"
+        disabled={!hasUrl}
+        className="btn-secondary p-2.5 text-sm relative z-30 disabled:opacity-40 disabled:cursor-not-allowed"
         aria-label={t('share.share')}
-        title={t('share.share')}
+        title={hasUrl ? t('share.share') : t('share.unavailable')}
       >
         <Share2 className="h-5 w-5" />
       </button>
@@ -40,7 +48,9 @@ export function ShareButton({ world, iconOnly = false }: ShareButtonProps) {
     <button
       type="button"
       onClick={handleShare}
-      className="btn-secondary gap-2 text-sm"
+      disabled={!hasUrl}
+      className="btn-secondary gap-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+      title={hasUrl ? undefined : t('share.unavailable')}
     >
       <Share2 className="h-4 w-4" />
       {t('share.share')}

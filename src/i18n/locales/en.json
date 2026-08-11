@@ -189,7 +189,8 @@
   "share": {
     "share": "Share",
     "success": "VRChat world URL copied",
-    "error": "Could not copy link"
+    "error": "Could not copy link",
+    "unavailable": "No VRChat link to share"
   },
   "worldAddDate": {
     "tooltip": "Date added to this dashboard, not the world's VRChat creation date."

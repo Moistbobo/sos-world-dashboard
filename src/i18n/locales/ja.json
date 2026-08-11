@@ -189,7 +189,8 @@
   "share": {
     "share": "共有",
     "success": "VRChatワールドURLをコピーしました",
-    "error": "リンクをコピーできませんでした"
+    "error": "リンクをコピーできませんでした",
+    "unavailable": "共有するVRChatリンクがありません"
   },
   "worldAddDate": {
     "tooltip": "このダッシュボードに追加された日付です。VRChatのワールド作成日ではありません。"
