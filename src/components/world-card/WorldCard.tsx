@@ -48,9 +48,8 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
               src={createWSRVUrl(world.imageUrl, 280, 65)}
               alt={world.name}
               className="relative h-full w-full object-cover"
-              loading="eager"
+              loading="lazy"
               decoding="async"
-              fetchPriority="high"
             />
           </>
         ) : (

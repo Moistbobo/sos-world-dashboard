@@ -238,7 +238,7 @@ describe('WorldCard', () => {
     expect(screen.queryByTestId('world-rating-bar-card')).not.toBeInTheDocument();
   });
 
-  it('renders the image through wsrv.nl at w=280 with fetchpriority high', () => {
+  it('renders the image through wsrv.nl at w=280 with lazy loading', () => {
     render(
       <WorldCard
         world={{ ...mockWorld, imageUrl: 'https://api.vrchat.cloud/image.png' }}
@@ -251,7 +251,7 @@ describe('WorldCard', () => {
       'src',
       'https://wsrv.nl/?url=https%3A%2F%2Fapi.vrchat.cloud%2Fimage.png&w=280&output=webp&q=65',
     );
-    expect(img).toHaveAttribute('fetchpriority', 'high');
+    expect(img).toHaveAttribute('loading', 'lazy');
   });
 
   it('shows a shimmer placeholder behind the card image', () => {
