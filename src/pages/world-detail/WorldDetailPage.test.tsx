@@ -395,7 +395,7 @@ describe('WorldDetailPage', () => {
     const heroImage = screen.getAllByAltText(/Test World/i)[0];
     expect(heroImage).toHaveAttribute(
       'src',
-      'https://wsrv.nl/?url=https%3A%2F%2Fexample.com%2Fimage.png&w=1600&output=webp',
+      'https://wsrv.nl/?url=https%3A%2F%2Fexample.com%2Fimage.png&w=1600&output=webp&q=80',
     );
     expect(heroImage).toHaveAttribute('fetchpriority', 'high');
     expect(heroImage).toHaveAttribute('decoding', 'async');
