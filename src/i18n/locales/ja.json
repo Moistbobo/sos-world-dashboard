@@ -84,6 +84,7 @@
     "platforms": "プラットフォーム",
     "tags": "タグ",
     "openInVRChat": "VRChat で開く",
+    "openInVRChatUnavailable": "このワールドの VRChat リンクはありません",
     "openImageLightbox": "{{name}} の画像をフルサイズで開く",
     "imageLightbox": "{{name}} の画像",
     "saveToList": "リストに保存",
@@ -188,7 +189,8 @@
   "share": {
     "share": "共有",
     "success": "VRChatワールドURLをコピーしました",
-    "error": "リンクをコピーできませんでした"
+    "error": "リンクをコピーできませんでした",
+    "unavailable": "共有するVRChatリンクがありません"
   },
   "worldAddDate": {
     "tooltip": "このダッシュボードに追加された日付です。VRChatのワールド作成日ではありません。"

@@ -238,7 +238,7 @@ describe('WorldCard', () => {
     expect(screen.queryByTestId('world-rating-bar-card')).not.toBeInTheDocument();
   });
 
-  it('renders the image through wsrv.nl at w=320 with fetchpriority low', () => {
+  it('renders the image through wsrv.nl at w=280 with lazy loading', () => {
     render(
       <WorldCard
         world={{ ...mockWorld, imageUrl: 'https://api.vrchat.cloud/image.png' }}
@@ -249,9 +249,9 @@ describe('WorldCard', () => {
     const img = screen.getByRole('img', { name: 'Test World' });
     expect(img).toHaveAttribute(
       'src',
-      'https://wsrv.nl/?url=https%3A%2F%2Fapi.vrchat.cloud%2Fimage.png&w=320&output=webp',
+      'https://wsrv.nl/?url=https%3A%2F%2Fapi.vrchat.cloud%2Fimage.png&w=280&output=webp&q=65',
     );
-    expect(img).toHaveAttribute('fetchpriority', 'low');
+    expect(img).toHaveAttribute('loading', 'lazy');
   });
 
   it('shows a shimmer placeholder behind the card image', () => {
@@ -265,5 +265,23 @@ describe('WorldCard', () => {
     const shimmer = document.querySelector('.animate-shimmer');
     expect(shimmer).not.toBeNull();
     expect(shimmer).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('renders the Open in VRChat link as an anchor when vrchatUrl is present', () => {
+    render(<WorldCard world={mockWorld} onSelect={vi.fn()} />, { wrapper: Wrapper });
+    const link = screen.getByRole('link', { name: /open in vrchat/i });
+    expect(link).toHaveAttribute('href', 'https://vrchat.com/home/world/wrld_test');
+    expect(link).toHaveAttribute('target', '_blank');
+  });
+
+  it('does not render a clickable Open in VRChat link when vrchatUrl is empty', () => {
+    render(
+      <WorldCard world={{ ...mockWorld, vrchatUrl: '' }} onSelect={vi.fn()} />,
+      { wrapper: Wrapper },
+    );
+    expect(screen.queryByRole('link', { name: /open in vrchat/i })).not.toBeInTheDocument();
+    expect(
+      screen.getByTitle(/no vrchat link is available/i),
+    ).toBeInTheDocument();
   });
 });

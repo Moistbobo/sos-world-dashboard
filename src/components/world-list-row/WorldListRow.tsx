@@ -17,10 +17,20 @@ interface WorldListRowProps {
 export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuthorClick, ratingSummary }: WorldListRowProps) {
   const { t } = useTranslation();
 
+  const handleSelect = () => onSelect(world.worldId);
+
   return (
-    <button
-      onClick={() => onSelect(world.worldId)}
-      className="card flex w-full min-w-0 items-center gap-3 p-3 text-left transition hover:border-slate-400 sm:gap-4 dark:hover:border-slate-600"
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleSelect}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleSelect();
+        }
+      }}
+      className="card flex w-full min-w-0 cursor-pointer items-center gap-3 p-3 text-left transition hover:border-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 sm:gap-4 dark:hover:border-slate-600"
     >
       <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-800">
         {world.imageUrl ? (
@@ -48,33 +58,28 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
         <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{world.name}</p>
         <p className="truncate text-xs text-slate-500 dark:text-slate-400">
           {world.authorName && onAuthorClick ? (
-            <span
-              role="button"
-              tabIndex={0}
+            <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onAuthorClick(world.authorName);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onAuthorClick(world.authorName);
-                }
               }}
               className="cursor-pointer rounded px-1 py-1.5 hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 dark:hover:text-indigo-400"
               aria-label={t('common.byAuthor', { author: world.authorName })}
               title={t('common.byAuthor', { author: world.authorName })}
             >
               {t('common.byAuthor', { author: world.authorName })}
-            </span>
+            </button>
           ) : (
             t('common.byAuthor', { author: world.authorName || t('common.unknown') })
           )}{' '}
           · {world.capacity} capacity · {world.platforms.map(getPlatformLabel).join(', ')}
         </p>
       </div>
-      <div className="hidden flex-wrap gap-1 sm:flex">
+      <div
+        className="hidden flex-wrap gap-1 sm:flex"
+        onClick={(e) => e.stopPropagation()}
+      >
         {world.tags.slice(0, 3).map((t) => (
           <TagBadge key={t} tag={t} />
         ))}
@@ -97,6 +102,6 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
       <div className="shrink-0 text-xs text-slate-400 dark:text-slate-500">
         {world.quality === 'good' ? '✅' : world.quality === 'bad' ? '❌' : '—'}
       </div>
-    </button>
+    </div>
   );
 });
