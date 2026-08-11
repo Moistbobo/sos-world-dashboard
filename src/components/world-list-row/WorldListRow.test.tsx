@@ -60,7 +60,7 @@ describe('WorldListRow', () => {
     const img = document.querySelector('img');
     expect(img).toHaveAttribute(
       'src',
-      'https://wsrv.nl/?url=https%3A%2F%2Fapi.vrchat.cloud%2Fimage.png&w=128&output=webp',
+      'https://wsrv.nl/?url=https%3A%2F%2Fapi.vrchat.cloud%2Fimage.png&w=128&output=webp&q=80',
     );
     expect(img).toHaveAttribute('fetchpriority', 'low');
   });
