@@ -12,7 +12,11 @@ function getGitShortSha(): string {
 }
 
 export default defineConfig(({ mode }) => ({
-  plugins: [react()],
+  plugins: [react({
+    babel: {
+      plugins: ['babel-plugin-react-compiler'],
+    },
+  })],
   server: {
     port: 5173,
   },
