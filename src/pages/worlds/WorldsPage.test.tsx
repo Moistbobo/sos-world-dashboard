@@ -215,7 +215,7 @@ describe('WorldsPage', () => {
     renderPage(<WorldsPage />);
     const listContainer = document.querySelector('.relative.w-full.min-w-0');
     expect(listContainer).not.toBeNull();
-    const rows = listContainer?.querySelectorAll('button.card') ?? [];
+    const rows = listContainer?.querySelectorAll('[role="button"].card') ?? [];
     expect(rows.length).toBeGreaterThan(0);
     rows.forEach((row) => {
       expect(row).toHaveClass('min-w-0');

@@ -75,11 +75,20 @@ export function TagsPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((t) => {
               const pct = Math.round((t.count / maxCount) * 100);
+              const handleSelect = () => navigate(`/worlds?tag=${encodeURIComponent(t.tag)}`);
               return (
-                <button
+                <div
                   key={t.tag}
-                  onClick={() => navigate(`/worlds?tag=${encodeURIComponent(t.tag)}`)}
-                  className="card p-4 text-left transition hover:border-slate-400 dark:hover:border-slate-600"
+                  role="button"
+                  tabIndex={0}
+                  onClick={handleSelect}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleSelect();
+                    }
+                  }}
+                  className="card cursor-pointer p-4 text-left transition hover:border-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 dark:hover:border-slate-600"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -93,7 +102,7 @@ export function TagsPage() {
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>
