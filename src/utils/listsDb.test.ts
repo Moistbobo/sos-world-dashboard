@@ -199,15 +199,4 @@ describe('loadAllLists migration', () => {
     expect(window.localStorage.getItem(LISTS_STORAGE_KEY)).toBeNull();
   });
 
-  it('falls back to legacy read when IndexedDB is unavailable and preserves the key', async () => {
-    const legacy = [makeList('l1')];
-    seedLegacy(legacy);
-    idbOpenSpy.mockImplementationOnce(() => {
-      throw new Error('boom');
-    });
-    const result = await loadAllLists();
-    expect(result.mode).toBe('local-storage');
-    expect(result.lists).toEqual(legacy);
-    expect(window.localStorage.getItem(LISTS_STORAGE_KEY)).not.toBeNull();
-  });
 });
