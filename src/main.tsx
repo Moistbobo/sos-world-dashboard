@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Profiler, type ProfilerOnRenderCallback } from 'react';
 import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -14,21 +14,37 @@ import { Toaster } from './components/toaster';
 
 const queryClient = new QueryClient();
 
+const BENCHMARK_PROFILER = import.meta.env.VITE_BENCHMARK_PROFILER === 'true';
+
+const onRender: ProfilerOnRenderCallback = (id, phase, actualDuration, baseDuration, startTime, commitTime) => {
+  window.__benchmarkProfiles.push({ id, phase, actualDuration, baseDuration, startTime, commitTime });
+};
+
+const app = (
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
+      <WorldsPreferencesProvider>
+        <ListsPreferencesProvider>
+          <ListsProvider>
+            <App />
+            <Analytics />
+          </ListsProvider>
+        </ListsPreferencesProvider>
+      </WorldsPreferencesProvider>
+      <Toaster />
+    </ThemeProvider>
+    <ReactQueryDevtools initialIsOpen={false} />
+  </QueryClientProvider>
+);
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <WorldsPreferencesProvider>
-          <ListsPreferencesProvider>
-            <ListsProvider>
-              <App />
-              <Analytics />
-            </ListsProvider>
-          </ListsPreferencesProvider>
-        </WorldsPreferencesProvider>
-        <Toaster />
-      </ThemeProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    {BENCHMARK_PROFILER ? (
+      <Profiler id="app" onRender={onRender}>
+        {app}
+      </Profiler>
+    ) : (
+      app
+    )}
   </React.StrictMode>
 );

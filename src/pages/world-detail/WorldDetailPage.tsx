@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { ArrowLeft, Globe, Users, Calendar, ExternalLink, Hash, Star, X } from 'lucide-react';
@@ -12,10 +12,65 @@ import { CopyWorldId } from '../../components/copy-world-id';
 import { WorldAddDate } from '../../components/world-add-date';
 import { useLists } from '../../contexts/ListsContext';
 import { SaveToListDialog } from '../../components/save-to-list-dialog/SaveToListDialog';
+import { useDialogFocus } from '../../hooks/useDialogFocus';
 
 const SentimentSection = lazy(() =>
   import('../../components/sentiment-section').then((m) => ({ default: m.SentimentSection })),
 );
+
+interface ImageLightboxProps {
+  open: boolean;
+  imageUrl: string;
+  imageAlt: string;
+  label: string;
+  closeLabel: string;
+  onClose: () => void;
+}
+
+function ImageLightbox({
+  open,
+  imageUrl,
+  imageAlt,
+  label,
+  closeLabel,
+  onClose,
+}: ImageLightboxProps) {
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  useDialogFocus({ open, containerRef: dialogRef, onClose });
+
+  if (!open) return null;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={label}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      onClick={(e) => {
+        if (e.currentTarget === e.target) {
+          onClose();
+        }
+      }}
+      data-testid="world-image-lightbox"
+    >
+      <div ref={dialogRef} className="contents">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white transition hover:bg-black/70"
+          aria-label={closeLabel}
+        >
+          <X className="h-6 w-6" />
+        </button>
+        <img
+          src={imageUrl}
+          alt={imageAlt}
+          className="max-h-[90vh] max-w-[90vw] object-contain"
+        />
+      </div>
+    </div>
+  );
+}
 
 export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } = {}) {
   const navigate = useNavigate();
@@ -247,32 +302,14 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
           </div>
 
           {lightboxOpen && w.imageUrl && (
-            <div
-              role="dialog"
-              aria-modal="true"
-              aria-label={t('worldDetail.imageLightbox', { name: w.name })}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-              onClick={(e) => {
-                if (e.currentTarget === e.target) {
-                  setLightboxOpen(false);
-                }
-              }}
-              data-testid="world-image-lightbox"
-            >
-              <button
-                type="button"
-                onClick={() => setLightboxOpen(false)}
-                className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white transition hover:bg-black/70"
-                aria-label={t('common.close')}
-              >
-                <X className="h-6 w-6" />
-              </button>
-              <img
-                src={w.imageUrl}
-                alt={w.name}
-                className="max-h-[90vh] max-w-[90vw] object-contain"
-              />
-            </div>
+            <ImageLightbox
+              open={lightboxOpen}
+              imageUrl={w.imageUrl}
+              imageAlt={w.name}
+              label={t('worldDetail.imageLightbox', { name: w.name })}
+              closeLabel={t('common.close')}
+              onClose={() => setLightboxOpen(false)}
+            />
           )}
 
           <div className="p-5 sm:p-6">
@@ -348,15 +385,26 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
             </div>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <a
-                href={w.vrchatUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-primary gap-2 text-sm"
-              >
-                <ExternalLink className="h-4 w-4" />
-                {t('worldDetail.openInVRChat')}
-              </a>
+              {w.vrchatUrl ? (
+                <a
+                  href={w.vrchatUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-primary gap-2 text-sm"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  {t('worldDetail.openInVRChat')}
+                </a>
+              ) : (
+                <span
+                  className="btn-primary gap-2 text-sm cursor-not-allowed opacity-50"
+                  aria-disabled="true"
+                  title={t('worldDetail.openInVRChatUnavailable')}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  {t('worldDetail.openInVRChat')}
+                </span>
+              )}
               <ShareButton world={w} />
               <button
                 type="button"

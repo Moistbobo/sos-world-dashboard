@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Trash2, Pencil, List, Download } from 'lucide-react';
+import { ArrowLeft, Trash2, Pencil, List, Download, Globe } from 'lucide-react';
 import { useLists } from '../../contexts/ListsContext';
 import { useListsPreferences } from '../../hooks/useListsPreferences';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
@@ -182,6 +182,13 @@ export function ListDetailPage({
           <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
           <p>{t('lists.emptyDetailTitle')}</p>
           <p>{t('lists.emptyDetailSubtitle')}</p>
+          <button
+            onClick={() => navigate('/worlds')}
+            className="btn-primary gap-1.5 text-sm"
+          >
+            <Globe className="h-4 w-4" />
+            {t('lists.browseWorlds')}
+          </button>
         </div>
       ) : (
         <div className="space-y-3">

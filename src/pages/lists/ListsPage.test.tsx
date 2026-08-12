@@ -81,6 +81,13 @@ describe('ListsPage', () => {
     expect(screen.getByText(/no lists yet/i)).toBeInTheDocument();
   });
 
+  it('opens the new list dialog from the empty-state button', async () => {
+    const user = userEvent.setup();
+    await renderPage();
+    await user.click(screen.getByRole('button', { name: /create your first list/i }));
+    expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument();
+  });
+
   it('creates a list and displays it', async () => {
     const user = userEvent.setup();
     await renderPage();
@@ -131,7 +138,13 @@ describe('ListsPage', () => {
   it('shows a list counter of the current list count', async () => {
     await seedLists(3);
     await renderPage();
-    expect(screen.getByTestId('list-count')).toHaveTextContent('3');
+    expect(screen.getByTestId('list-count')).toHaveTextContent('(3 lists)');
+  });
+
+  it('uses the singular label when there is exactly one list', async () => {
+    await seedLists(1);
+    await renderPage();
+    expect(screen.getByTestId('list-count')).toHaveTextContent('(1 list)');
   });
 
   it('allows creating a list beyond the former cap', async () => {
@@ -142,6 +155,6 @@ describe('ListsPage', () => {
     await user.type(screen.getByRole('textbox', { name: /name/i }), 'Beyond');
     await user.click(screen.getByRole('button', { name: /create list/i }));
     expect(screen.getByText('Beyond')).toBeInTheDocument();
-    expect(screen.getByTestId('list-count')).toHaveTextContent('11');
+    expect(screen.getByTestId('list-count')).toHaveTextContent('(11 lists)');
   });
 });

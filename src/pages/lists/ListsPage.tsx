@@ -88,11 +88,11 @@ export function ListsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-            {t('lists.title')}
+          <h1 className="space-x-2 text-xl font-bold text-slate-900 dark:text-white">
+            <span>{t('lists.title')}</span>
             <span
               data-testid="list-count"
-              className="ml-2 align-middle text-sm font-normal tabular-nums text-slate-500 dark:text-slate-400"
+              className="align-middle text-sm font-normal tabular-nums text-slate-500 dark:text-slate-400"
             >
               {t('lists.listCount', { count: lists.length })}
             </span>
@@ -151,6 +151,16 @@ export function ListsPage() {
               <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
               <p>{t('lists.emptyTitle')}</p>
               <p>{t('lists.emptySubtitle')}</p>
+              <button
+                onClick={() => {
+                  setEditingList(undefined);
+                  setFormOpen(true);
+                }}
+                className="btn-primary gap-1.5 text-sm"
+              >
+                <Plus className="h-4 w-4" />
+                {t('lists.createFirstList')}
+              </button>
             </div>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

@@ -7,6 +7,7 @@ import {
   validateListMemo,
   MAX_LIST_MEMO_LENGTH,
 } from '../../utils/listMemoValidation';
+import { useDialogFocus } from '../../hooks/useDialogFocus';
 
 const MAX_MEMO_HEIGHT_PX = 144;
 
@@ -29,6 +30,8 @@ export function ListFormDialog({
   const [memo, setMemo] = useState(list?.memo ?? '');
   const [error, setError] = useState<string | null>(null);
   const memoRef = useRef<HTMLTextAreaElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  useDialogFocus({ open, containerRef: dialogRef, onClose: () => onOpenChange(false) });
 
   const autoGrow = useCallback((el: HTMLTextAreaElement | null) => {
     if (!el) return;
@@ -87,6 +90,7 @@ export function ListFormDialog({
         aria-modal="true"
       >
         <div
+          ref={dialogRef}
           onClick={(e) => e.stopPropagation()}
           className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900"
         >
