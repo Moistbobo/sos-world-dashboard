@@ -6,3 +6,4 @@ describe('generateUsername', () => {
     expect(generateUsername()).toBe('Anonymous');
   });
 });
+

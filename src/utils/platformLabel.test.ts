@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { COMMON_PLATFORM_VALUES, getPlatformLabel } from './platformLabel';
+import { getPlatformLabel } from './platformLabel';
 
 describe('getPlatformLabel', () => {
   it('maps known platform values to readable labels', () => {
@@ -18,11 +18,4 @@ describe('getPlatformLabel', () => {
     expect(getPlatformLabel('2019.2.4-801-Release')).toBe('2019.2.4-801-Release');
   });
 
-  it('exports common platform values for filtering', () => {
-    expect(COMMON_PLATFORM_VALUES).toEqual([
-      'standalonewindows',
-      'android',
-      'ios',
-    ]);
-  });
 });

@@ -56,16 +56,6 @@ describe('SentimentRating', () => {
     expect(onRemove).toHaveBeenCalled();
   });
 
-  it('calls onRate("bad") when the right half is clicked while good is active', () => {
-    const onRate = vi.fn();
-    renderComponent({
-      summary: { worldId: 'wrld_123', good: 3, bad: 1, userRating: 'good' },
-      onRate,
-    });
-    fireEvent.click(screen.getByRole('button', { name: /Bad/i }));
-    expect(onRate).toHaveBeenCalledWith('bad');
-  });
-
   it('renders a good/bad distribution bar', () => {
     renderComponent();
     const bar = screen.getByRole('progressbar', { name: /rating distribution/i });

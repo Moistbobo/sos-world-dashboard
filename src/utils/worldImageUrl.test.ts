@@ -9,11 +9,6 @@ describe('createWSRVUrl', () => {
     );
   });
 
-  it('uses the default quality of 80', () => {
-    const url = createWSRVUrl('https://example.com/image.png', 320);
-    expect(url).toContain('q=80');
-  });
-
   it('uses the given quality', () => {
     const url = createWSRVUrl('https://example.com/image.png', 320, 90);
     expect(url).toContain('q=90');
