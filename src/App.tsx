@@ -22,6 +22,7 @@ export default function App() {
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </Layout>
+      <div aria-hidden="true" className="pointer-events-none fixed left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 bg-blue-500" />
     </BrowserRouter>
   );
 }
