@@ -9,6 +9,7 @@
   },
   "layout": {
     "appName": "SOS Dashboard",
+    "skipToContent": "Skip to main content",
     "unreachable": "API is unreachable",
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
@@ -31,6 +32,7 @@
     "good": "Good",
     "bad": "Bad",
     "more": "+{{count}}",
+    "opensInNewTab": "Opens in new tab",
     "byAuthor": "by {{author}}",
     "added": "Added on",
     "tagged": "Tagged on"
@@ -50,6 +52,7 @@
     "title": "Worlds",
     "subtitle": "Browse and filter tracked VRChat worlds.",
     "searchPlaceholder": "Search name, author, ID...",
+    "searchLabel": "Search worlds",
     "loadError": "Failed to load worlds: {{message}}",
     "noWorlds": "No worlds found. Adjust your filters or",
     "tryAgain": "try again",
@@ -61,7 +64,8 @@
     "listView": "List view",
     "numberOfResultsLabel": "Number of results:",
     "numberOfResultsCount": "{{count}}",
-    "loadingResultCount": "Loading result count"
+    "loadingResultCount": "Loading result count",
+    "resultsSection": "Results"
   },
   "worldDetail": {
     "loadError": "Failed to load world: {{message}}",
@@ -129,6 +133,7 @@
     "title": "Tags",
     "subtitle": "Explore tag usage across tracked worlds.",
     "searchPlaceholder": "Search tags...",
+    "searchLabel": "Search tags",
     "loadError": "Failed to load tags: {{message}}"
   },
   "settings": {
@@ -199,6 +204,8 @@
   "lists": {
     "title": "My Lists",
     "subtitle": "Create and manage your saved world collections.",
+    "listsSection": "Your lists",
+    "worldsSection": "Worlds in this list",
     "newList": "New list",
     "listCount_one": "(1 list)",
     "listCount_other": "({{count}} lists)",

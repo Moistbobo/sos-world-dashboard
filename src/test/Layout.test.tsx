@@ -61,6 +61,22 @@ describe('Layout sidebar', () => {
     expect(screen.getByLabelText('Collapse sidebar')).toBeInTheDocument()
   })
 
+  it('renders a skip link as the first tab stop targeting main content', () => {
+    render(
+      <Layout>
+        <div>Test content</div>
+      </Layout>,
+      { wrapper: Wrapper },
+    )
+
+    const skipLink = screen.getByRole('link', { name: /skip to main content/i })
+    expect(skipLink).toHaveAttribute('href', '#main')
+    expect(skipLink).toHaveClass('sr-only')
+
+    const main = document.querySelector('main#main')
+    expect(main).not.toBeNull()
+  })
+
   it('reads collapsed state from localStorage on mount', () => {
     storage['sos-sidebar-collapsed'] = 'true'
 

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Activity, Globe, Tags, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { useTags, useWorlds } from '../../hooks/useApi';
 import { useHealth } from '../../hooks/useHealth';
 import { useRatingsForWorldIds } from '../../hooks/useSentiment';
@@ -14,6 +15,7 @@ const SENTIMENT_ENABLED = import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 't
 
 export function DashboardPage() {
   const { t } = useTranslation();
+  usePageTitle(t('dashboard.title'));
   const { data: health, isPending: healthLoading, isError: healthIsError } = useHealth();
   const { data: tagsData, isPending: tagsLoading } = useTags();
   const { data: worldsData, isPending: worldsLoading } = useWorlds({ limit: 6 });
@@ -122,7 +124,7 @@ export function DashboardPage() {
                             <span className="mr-1">{getEmojiForTag(t.tag)}</span>
                             {t.tag}
                           </span>
-                          <span className="text-slate-400 dark:text-slate-500">{t.count}</span>
+                          <span className="text-slate-500 dark:text-slate-400">{t.count}</span>
                         </div>
                         <div className="mt-1 h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-800">
                           <div

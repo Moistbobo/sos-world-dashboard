@@ -15,7 +15,7 @@ const tagRegistry: Record<string, TagMeta> = {
   adventure:  { emoji: '🗺️',  hexColor: '#f59e0b', tailwindClass: 'bg-amber-600/15 text-amber-700 dark:text-amber-500 border-amber-600/30' },
   horror:     { emoji: '👻',  hexColor: '#c084fc', tailwindClass: 'bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-500/30' },
   game:       { emoji: '🎮',  hexColor: '#fb923c', tailwindClass: 'bg-orange-500/15 text-orange-700 dark:text-orange-400 border-orange-500/30' },
-  gallery:    { emoji: '🖼️',  hexColor: '#6366f1', tailwindClass: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 border-indigo-500/30' },
+  gallery:    { emoji: '🖼️',  hexColor: '#6366f1', tailwindClass: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-500/30' },
   meme:       { emoji: '😂',  hexColor: '#facc15', tailwindClass: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-400 border-yellow-500/30' },
   puzzle:     { emoji: '🧩',  hexColor: '#14b8a6', tailwindClass: 'bg-teal-500/15 text-teal-700 dark:text-teal-400 border-teal-500/30' },
   driving:    { emoji: '🚗',  hexColor: '#ef4444', tailwindClass: 'bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/30' },

@@ -76,11 +76,23 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
     setTooltipPos({ x: e.clientX, y: e.clientY });
   };
 
+  const handleFocus = (
+    name: string,
+    value: number,
+    e: React.FocusEvent<HTMLDivElement>
+  ) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setHovered({ name, value, pct: (value / total) * 100 });
+    setTooltipPos({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+  };
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     setTooltipPos({ x: e.clientX, y: e.clientY });
   };
 
   const handleMouseLeave = () => setHovered(null);
+
+  const handleBlur = () => setHovered(null);
 
   const focusedName = hovered?.name ?? null;
 
@@ -113,7 +125,9 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
           return (
             <div
               key={idx}
-              className="flex aspect-square cursor-pointer items-center justify-center rounded-sm transition"
+              role="button"
+              tabIndex={0}
+              className="flex aspect-square cursor-pointer items-center justify-center rounded-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50"
               style={{
                 backgroundColor: cell.color,
                 opacity: allAnimated ? (isDimmed ? 0.5 : 1) : 0,
@@ -127,12 +141,23 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
                   : `waffleScaleIn 300ms cubic-bezier(0.34, 1.56, 0.64, 1) ${(9 - Math.floor(idx / 10)) * 35 + (idx % 10) * 3}ms forwards`,
               }}
               onClick={() => onSelectTag?.(cell.name)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onSelectTag?.(cell.name);
+                }
+              }}
               onMouseEnter={(e) => {
                 const item = data.find((d) => d.name === cell.name);
                 if (item) handleMouseEnter(cell.name, item.value, e);
               }}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
+              onFocus={(e) => {
+                const item = data.find((d) => d.name === cell.name);
+                if (item) handleFocus(cell.name, item.value, e);
+              }}
+              onBlur={handleBlur}
             >
               {/* Emoji badge — rendered unconditionally so it scales in with the parent cell */}
               <span className="pointer-events-none text-sm leading-none">{emoji}</span>
@@ -170,7 +195,7 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
             />
             <span className="leading-none">{getEmojiForTag(item.name)}</span>
             <span className="max-w-[120px] truncate">{item.name}</span>
-            <span className="text-slate-500 dark:text-slate-500">({item.value})</span>
+            <span className="text-slate-500 dark:text-slate-400">({item.value})</span>
           </div>
         ))}
       </div>

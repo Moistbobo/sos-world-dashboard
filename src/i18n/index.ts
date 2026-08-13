@@ -23,4 +23,8 @@ i18next.use(initReactI18next).init({
   },
 });
 
+if (typeof document !== 'undefined') {
+  document.documentElement.lang = i18next.language;
+}
+
 export default i18next;

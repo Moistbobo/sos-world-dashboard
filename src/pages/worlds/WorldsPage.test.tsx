@@ -218,6 +218,33 @@ describe('WorldsPage', () => {
     expect(screen.getByText('1')).toBeInTheDocument();
   });
 
+  it('announces the result count via a status region', () => {
+    renderPage(<WorldsPage />);
+    expect(screen.getByRole('status')).toHaveTextContent(/Number of results:/i);
+  });
+
+  it('gives the search input an accessible name', () => {
+    renderPage(<WorldsPage />);
+    expect(screen.getByRole('textbox', { name: /search worlds/i })).toBeInTheDocument();
+  });
+
+  it('exposes the active view mode via aria-pressed on the toggle buttons', () => {
+    renderPage(<WorldsPage />);
+    const gridToggle = screen.getByRole('button', { name: /grid view/i });
+    const listToggle = screen.getByRole('button', { name: /list view/i });
+    expect(gridToggle).toHaveAttribute('aria-pressed', 'true');
+    expect(listToggle).toHaveAttribute('aria-pressed', 'false');
+
+    fireEvent.click(listToggle);
+    expect(gridToggle).toHaveAttribute('aria-pressed', 'false');
+    expect(listToggle).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('sets the document title from the page name', () => {
+    renderPage(<WorldsPage />);
+    expect(document.title).toBe('Worlds');
+  });
+
   it('keeps the number of results label visible while count is loading', () => {
     infiniteIsPending = true;
     renderPage(<WorldsPage />);

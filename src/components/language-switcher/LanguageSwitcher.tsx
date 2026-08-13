@@ -10,6 +10,7 @@ export function LanguageSwitcher() {
 
   const handleChange = (code: string) => {
     i18n.changeLanguage(code);
+    document.documentElement.lang = code;
     try {
       localStorage.setItem('i18nextLng', code);
     } catch {
@@ -19,6 +20,7 @@ export function LanguageSwitcher() {
 
   return (
     <select
+      id="language"
       value={i18n.language}
       onChange={(e) => handleChange(e.target.value)}
       className="input w-full"
