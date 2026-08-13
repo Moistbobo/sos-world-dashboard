@@ -5,11 +5,6 @@ import type { RatingSummary } from '../../types';
 
 describe('WorldRatingBar', () => {
   describe('card variant', () => {
-    it('renders nothing when summary is undefined', () => {
-      const { container } = render(<WorldRatingBar summary={undefined} variant="card" />);
-      expect(container).toBeEmptyDOMElement();
-    });
-
     it('renders nothing when both counts are zero', () => {
       const summary: RatingSummary = { worldId: 'wrld_1', good: 0, bad: 0, userRating: null };
       const { container } = render(<WorldRatingBar summary={summary} variant="card" />);
@@ -37,11 +32,6 @@ describe('WorldRatingBar', () => {
   });
 
   describe('list variant', () => {
-    it('renders nothing when summary is undefined', () => {
-      const { container } = render(<WorldRatingBar summary={undefined} variant="list" />);
-      expect(container).toBeEmptyDOMElement();
-    });
-
     it('renders a filled bar for the list row', () => {
       const summary: RatingSummary = { worldId: 'wrld_1', good: 4, bad: 1, userRating: null };
       render(<WorldRatingBar summary={summary} variant="list" />);

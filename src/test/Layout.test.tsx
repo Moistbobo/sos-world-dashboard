@@ -146,4 +146,22 @@ describe('Layout sidebar', () => {
     const header = document.querySelector('header.sticky')
     expect(header).toHaveClass('z-40')
   })
+
+  it('keeps the theme toggle in the right-aligned header actions container', () => {
+    render(
+      <Layout>
+        <div>Test content</div>
+      </Layout>,
+      { wrapper: Wrapper },
+    )
+
+    const header = document.querySelector('header.sticky')
+    expect(header).toBeInTheDocument()
+
+    const actions = header?.querySelector('.ml-auto')
+    expect(actions).toBeInTheDocument()
+
+    const toggle = screen.getByLabelText('Toggle theme')
+    expect(actions).toContainElement(toggle)
+  })
 })

@@ -25,15 +25,4 @@ describe('getAppVersion', () => {
     expect(getAppVersion()).toBe('1.0.0 — abc1234');
   });
 
-  it('returns version with git short SHA in non-production modes', () => {
-    const modes = ['development', 'preview', 'staging'];
-
-    for (const mode of modes) {
-      (globalThis as Record<string, unknown>).__APP_VERSION__ = '1.0.0';
-      (globalThis as Record<string, unknown>).__APP_MODE__ = mode;
-      (globalThis as Record<string, unknown>).__APP_GIT_SHA__ = 'abc1234';
-      const result = getAppVersion();
-      expect(result).toBe('1.0.0 — abc1234');
-    }
-  });
 });

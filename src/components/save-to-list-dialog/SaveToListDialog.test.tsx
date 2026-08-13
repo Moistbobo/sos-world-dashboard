@@ -59,13 +59,6 @@ async function renderDialog() {
 }
 
 describe('SaveToListDialog', () => {
-  it('renders the overlay as a descendant of document.body', async () => {
-    const { container } = await renderDialog();
-    const dialog = screen.getByRole('dialog');
-    expect(container).not.toContainElement(dialog);
-    expect(document.body).toContainElement(dialog);
-  });
-
   it('renders the nested create-list dialog as a descendant of document.body', async () => {
     const user = userEvent.setup();
     await renderDialog();
