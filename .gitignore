@@ -58,6 +58,7 @@ brainstorm/superpowers
 .worktrees/
 .playwright-mcp/
 .opencode/queue-tickets/
+.opencode/queue-tickets-v2/
 docs/
 
 # PR evidence media (screenshots, videos, GIFs) — organized by branch
