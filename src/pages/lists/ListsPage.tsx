@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Pencil, List, Upload, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLists } from '../../contexts/ListsContext';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ImportDialog } from '../../components/import-dialog';
 import { ConfirmDialog } from '../../components/confirm-dialog';
@@ -12,6 +13,7 @@ import { ListIcon } from '../../utils/listIcon';
 
 export function ListsPage() {
   const { t } = useTranslation();
+  usePageTitle(t('lists.title'));
   const navigate = useNavigate();
   const {
     lists,
@@ -88,11 +90,11 @@ export function ListsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-            {t('lists.title')}
+          <h1 className="space-x-2 text-xl font-bold text-slate-900 dark:text-white">
+            <span>{t('lists.title')}</span>
             <span
               data-testid="list-count"
-              className="ml-2 align-middle text-sm font-normal tabular-nums text-slate-500 dark:text-slate-400"
+              className="align-middle text-sm font-normal tabular-nums text-slate-500 dark:text-slate-400"
             >
               {t('lists.listCount', { count: lists.length })}
             </span>
@@ -137,6 +139,10 @@ export function ListsPage() {
         </div>
       ) : (
         <>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
+            {t('lists.listsSection')}
+          </h2>
+
           {error && (
             <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300">
               {t('lists.storageErrorMessage', { message: error })}
@@ -151,6 +157,16 @@ export function ListsPage() {
               <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
               <p>{t('lists.emptyTitle')}</p>
               <p>{t('lists.emptySubtitle')}</p>
+              <button
+                onClick={() => {
+                  setEditingList(undefined);
+                  setFormOpen(true);
+                }}
+                className="btn-primary gap-1.5 text-sm"
+              >
+                <Plus className="h-4 w-4" />
+                {t('lists.createFirstList')}
+              </button>
             </div>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

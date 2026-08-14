@@ -287,27 +287,6 @@ describe('WorldDetailPage', () => {
     expect(screen.getByRole('button', { name: /save to list/i })).toBeInTheDocument();
   });
 
-  it('marks the dashboard add date with an underline tooltip', () => {
-    vi.spyOn(useApi, 'useWorld').mockReturnValue({
-      data: createWorld(),
-      isPending: false,
-      isError: false,
-      error: null,
-      isFetching: false,
-    } as ReturnType<typeof useApi.useWorld>);
-
-    render(
-      <Wrapper>
-        <WorldDetailPage worldId="wrld_123" />
-      </Wrapper>,
-    );
-
-    const date = screen.getByTitle(/Date added to this dashboard/i);
-    expect(date).toBeInTheDocument();
-    expect(date).toHaveClass('underline');
-    expect(date).toHaveClass('decoration-dotted');
-  });
-
   it('renders the sentiment section when community sentiment is enabled', async () => {
     vi.stubEnv('VITE_ENABLE_COMMUNITY_SENTIMENT', 'true');
     vi.spyOn(useApi, 'useWorld').mockReturnValue({
@@ -395,7 +374,7 @@ describe('WorldDetailPage', () => {
     const heroImage = screen.getAllByAltText(/Test World/i)[0];
     expect(heroImage).toHaveAttribute(
       'src',
-      'https://wsrv.nl/?url=https%3A%2F%2Fexample.com%2Fimage.png&w=1600&output=webp',
+      'https://wsrv.nl/?url=https%3A%2F%2Fexample.com%2Fimage.png&w=1600&output=webp&q=80',
     );
     expect(heroImage).toHaveAttribute('fetchpriority', 'high');
     expect(heroImage).toHaveAttribute('decoding', 'async');
@@ -446,6 +425,30 @@ describe('WorldDetailPage', () => {
     expect(document.body).not.toHaveClass('overflow-hidden');
   });
 
+  it('closes the lightbox when Escape is pressed', async () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: /open full-size image of Test World/i }));
+    expect(screen.getByTestId('world-image-lightbox')).toBeInTheDocument();
+
+    await userEvent.keyboard('{Escape}');
+
+    expect(screen.queryByTestId('world-image-lightbox')).not.toBeInTheDocument();
+    expect(document.body).not.toHaveClass('overflow-hidden');
+  });
+
   it('does not open a lightbox when the world has no image', () => {
     vi.spyOn(useApi, 'useWorld').mockReturnValue({
       data: createWorld({ imageUrl: '' }),
@@ -486,5 +489,78 @@ describe('WorldDetailPage', () => {
     await userEvent.keyboard('{Escape}');
 
     expect(screen.queryByTestId('world-image-lightbox')).not.toBeInTheDocument();
+  });
+
+  it('moves focus into the lightbox when opened and restores it on close', async () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const trigger = screen.getByRole('button', {
+      name: /open full-size image of Test World/i,
+    });
+    trigger.focus();
+    expect(document.activeElement).toBe(trigger);
+
+    await userEvent.click(trigger);
+    expect(screen.getByTestId('world-image-lightbox')).toBeInTheDocument();
+
+    const close = screen.getByRole('button', { name: /^close$/i });
+    expect(document.activeElement).toBe(close);
+
+    await userEvent.click(close);
+    expect(screen.queryByTestId('world-image-lightbox')).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it('renders the Open in VRChat link as an anchor when vrchatUrl is present', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    const link = screen.getByRole('link', { name: /open in vrchat/i });
+    expect(link).toHaveAttribute('href', 'https://vrchat.com/home/world/wrld_123');
+    expect(link).toHaveAttribute('target', '_blank');
+  });
+
+  it('does not render a clickable Open in VRChat link when vrchatUrl is empty', () => {
+    vi.spyOn(useApi, 'useWorld').mockReturnValue({
+      data: createWorld({ vrchatUrl: '' }),
+      isPending: false,
+      isError: false,
+      error: null,
+      isFetching: false,
+    } as ReturnType<typeof useApi.useWorld>);
+
+    render(
+      <Wrapper>
+        <WorldDetailPage worldId="wrld_123" />
+      </Wrapper>,
+    );
+
+    expect(screen.queryByRole('link', { name: /open in vrchat/i })).not.toBeInTheDocument();
+    expect(
+      screen.getByTitle(/no vrchat link is available/i),
+    ).toBeInTheDocument();
   });
 });

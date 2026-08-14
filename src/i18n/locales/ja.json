@@ -9,9 +9,7 @@
   },
   "layout": {
     "appName": "SOS Dashboard",
-    "apiStatus": "API ステータス:",
-    "online": "オンライン",
-    "offline": "オフライン / 未認証",
+    "skipToContent": "メインコンテンツにスキップ",
     "unreachable": "API に接続できません",
     "expandSidebar": "サイドバーを展開",
     "collapseSidebar": "サイドバーを折りたたむ",
@@ -34,6 +32,7 @@
     "good": "良い",
     "bad": "悪い",
     "more": "+{{count}}",
+    "opensInNewTab": "新しいタブで開きます",
     "byAuthor": "{{author}} 作成",
     "added": "追加日",
     "tagged": "タグ付け日"
@@ -53,6 +52,7 @@
     "title": "ワールド",
     "subtitle": "追跡中の VRChat ワールドを閲覧・絞り込みます。",
     "searchPlaceholder": "名前、作成者、ID で検索...",
+    "searchLabel": "ワールドを検索",
     "loadError": "ワールドの読み込みに失敗しました: {{message}}",
     "noWorlds": "ワールドが見つかりません。フィルタを調整するか",
     "tryAgain": "再試行",
@@ -64,7 +64,8 @@
     "listView": "リスト表示",
     "numberOfResultsLabel": "結果件数:",
     "numberOfResultsCount": "{{count}}",
-    "loadingResultCount": "件数を読み込み中"
+    "loadingResultCount": "件数を読み込み中",
+    "resultsSection": "検索結果"
   },
   "worldDetail": {
     "loadError": "ワールドの読み込みに失敗しました: {{message}}",
@@ -84,6 +85,7 @@
     "platforms": "プラットフォーム",
     "tags": "タグ",
     "openInVRChat": "VRChat で開く",
+    "openInVRChatUnavailable": "このワールドの VRChat リンクはありません",
     "openImageLightbox": "{{name}} の画像をフルサイズで開く",
     "imageLightbox": "{{name}} の画像",
     "saveToList": "リストに保存",
@@ -131,6 +133,7 @@
     "title": "タグ",
     "subtitle": "追跡中のワールド全体でのタグ使用状況を確認します。",
     "searchPlaceholder": "タグを検索...",
+    "searchLabel": "タグを検索",
     "loadError": "タグの読み込みに失敗しました: {{message}}"
   },
   "settings": {
@@ -188,7 +191,8 @@
   "share": {
     "share": "共有",
     "success": "VRChatワールドURLをコピーしました",
-    "error": "リンクをコピーできませんでした"
+    "error": "リンクをコピーできませんでした",
+    "unavailable": "共有するVRChatリンクがありません"
   },
   "worldAddDate": {
     "tooltip": "このダッシュボードに追加された日付です。VRChatのワールド作成日ではありません。"
@@ -200,8 +204,11 @@
   "lists": {
     "title": "マイリスト",
     "subtitle": "保存したワールドのコレクションを作成・管理します。",
+    "listsSection": "マイリスト",
+    "worldsSection": "このリストのワールド",
     "newList": "新規リスト",
-    "listCount": "{{count}}",
+    "listCount_one": "(1件)",
+    "listCount_other": "({{count}}件)",
     "createList": "リストを作成",
     "editList": "リストを編集",
     "deleteList": "リストを削除",
@@ -224,9 +231,12 @@
     "noListsYet": "まだリストを作成していません。",
     "emptyTitle": "リストがありません",
     "emptySubtitle": "リストを作成してワールドの保存を開始してください。",
+    "createFirstList": "最初のリストを作成",
     "emptyDetailTitle": "このリストにワールドがありません",
     "emptyDetailSubtitle": "ワールドページからワールドを追加してください。",
-    "worldCount": "{{count}}件のワールド",
+    "browseWorlds": "ワールドを見る",
+    "worldCount_one": "1件のワールド",
+    "worldCount_other": "{{count}}件のワールド",
     "updated": "更新日 {{date}}",
     "remove": "削除",
     "removeWorld": "リストからワールドを削除",

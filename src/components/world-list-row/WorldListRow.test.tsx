@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { WorldListRow } from '../world-list-row';
 import type { World, RatingSummary } from '../../types';
 
@@ -32,6 +32,62 @@ describe('WorldListRow', () => {
     expect(screen.getByText(/40 capacity/)).toBeInTheDocument();
   });
 
+  it('does not nest a button inside a button (invalid HTML)', () => {
+    const { container } = render(
+      <WorldListRow world={mockWorld} onSelect={vi.fn()} onAuthorClick={vi.fn()} ratingSummary={mockSummary} />,
+    );
+    const rowButtons = container.querySelectorAll('button');
+    rowButtons.forEach((btn) => {
+      expect(btn.querySelector('button')).toBeNull();
+    });
+  });
+
+  it('renders the author as a real button when onAuthorClick is provided', () => {
+    const { container } = render(
+      <WorldListRow world={mockWorld} onSelect={vi.fn()} onAuthorClick={vi.fn()} />,
+    );
+    // The author control is rendered as an actual <button>, not a span with role=button.
+    const authorButton = container.querySelector('button[class*="cursor-pointer"]');
+    expect(authorButton).not.toBeNull();
+    expect(authorButton!.tagName).toBe('BUTTON');
+    expect(authorButton!.getAttribute('aria-label')).toMatch(/by tester/i);
+  });
+
+  it('clicking the author does not trigger onSelect', () => {
+    const onSelect = vi.fn();
+    const onAuthorClick = vi.fn();
+    const { container } = render(
+      <WorldListRow
+        world={mockWorld}
+        onSelect={onSelect}
+        onAuthorClick={onAuthorClick}
+      />,
+    );
+    const authorButton = container.querySelector('button[class*="cursor-pointer"]') as HTMLElement;
+    expect(authorButton).not.toBeNull();
+    fireEvent.click(authorButton);
+    expect(onAuthorClick).toHaveBeenCalledWith('Tester');
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it('clicking a tag badge does not trigger onSelect', () => {
+    const onSelect = vi.fn();
+    const { container } = render(<WorldListRow world={mockWorld} onSelect={onSelect} />);
+    // TagBadge is rendered as <button title={tag}>.
+    const tagBadge = container.querySelector('button[title="chill"]') as HTMLElement;
+    expect(tagBadge).not.toBeNull();
+    fireEvent.click(tagBadge);
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it('selecting the row via Enter key triggers onSelect', () => {
+    const onSelect = vi.fn();
+    render(<WorldListRow world={mockWorld} onSelect={onSelect} />);
+    const row = screen.getByRole('button', { name: /test world/i });
+    fireEvent.keyDown(row, { key: 'Enter' });
+    expect(onSelect).toHaveBeenCalledWith('wrld_test');
+  });
+
   it('renders the rating bar when a summary is provided', () => {
     render(<WorldListRow world={mockWorld} onSelect={vi.fn()} ratingSummary={mockSummary} />);
     expect(screen.getByTestId('world-rating-bar-list')).toBeInTheDocument();
@@ -60,7 +116,7 @@ describe('WorldListRow', () => {
     const img = document.querySelector('img');
     expect(img).toHaveAttribute(
       'src',
-      'https://wsrv.nl/?url=https%3A%2F%2Fapi.vrchat.cloud%2Fimage.png&w=128&output=webp',
+      'https://wsrv.nl/?url=https%3A%2F%2Fapi.vrchat.cloud%2Fimage.png&w=128&output=webp&q=80',
     );
     expect(img).toHaveAttribute('fetchpriority', 'low');
   });

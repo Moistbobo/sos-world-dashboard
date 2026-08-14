@@ -9,9 +9,7 @@
   },
   "layout": {
     "appName": "SOS Dashboard",
-    "apiStatus": "API status:",
-    "online": "Online",
-    "offline": "Offline / Unauthorized",
+    "skipToContent": "Skip to main content",
     "unreachable": "API is unreachable",
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
@@ -34,6 +32,7 @@
     "good": "Good",
     "bad": "Bad",
     "more": "+{{count}}",
+    "opensInNewTab": "Opens in new tab",
     "byAuthor": "by {{author}}",
     "added": "Added on",
     "tagged": "Tagged on"
@@ -53,6 +52,7 @@
     "title": "Worlds",
     "subtitle": "Browse and filter tracked VRChat worlds.",
     "searchPlaceholder": "Search name, author, ID...",
+    "searchLabel": "Search worlds",
     "loadError": "Failed to load worlds: {{message}}",
     "noWorlds": "No worlds found. Adjust your filters or",
     "tryAgain": "try again",
@@ -64,7 +64,8 @@
     "listView": "List view",
     "numberOfResultsLabel": "Number of results:",
     "numberOfResultsCount": "{{count}}",
-    "loadingResultCount": "Loading result count"
+    "loadingResultCount": "Loading result count",
+    "resultsSection": "Results"
   },
   "worldDetail": {
     "loadError": "Failed to load world: {{message}}",
@@ -84,6 +85,7 @@
     "platforms": "Platforms",
     "tags": "Tags",
     "openInVRChat": "Open in VRChat",
+    "openInVRChatUnavailable": "No VRChat link is available for this world",
     "openImageLightbox": "Open full-size image of {{name}}",
     "imageLightbox": "Image of {{name}}",
     "saveToList": "Save to list",
@@ -131,6 +133,7 @@
     "title": "Tags",
     "subtitle": "Explore tag usage across tracked worlds.",
     "searchPlaceholder": "Search tags...",
+    "searchLabel": "Search tags",
     "loadError": "Failed to load tags: {{message}}"
   },
   "settings": {
@@ -188,7 +191,8 @@
   "share": {
     "share": "Share",
     "success": "VRChat world URL copied",
-    "error": "Could not copy link"
+    "error": "Could not copy link",
+    "unavailable": "No VRChat link to share"
   },
   "worldAddDate": {
     "tooltip": "Date added to this dashboard, not the world's VRChat creation date."
@@ -200,8 +204,11 @@
   "lists": {
     "title": "My Lists",
     "subtitle": "Create and manage your saved world collections.",
+    "listsSection": "Your lists",
+    "worldsSection": "Worlds in this list",
     "newList": "New list",
-    "listCount": "{{count}}",
+    "listCount_one": "(1 list)",
+    "listCount_other": "({{count}} lists)",
     "createList": "Create list",
     "editList": "Edit list",
     "deleteList": "Delete list",
@@ -224,9 +231,12 @@
     "noListsYet": "You haven't created any lists yet.",
     "emptyTitle": "No lists yet",
     "emptySubtitle": "Create a list to start saving worlds.",
+    "createFirstList": "Create your first list",
     "emptyDetailTitle": "No worlds in this list",
     "emptyDetailSubtitle": "Add worlds from the Worlds page.",
-    "worldCount": "{{count}} worlds",
+    "browseWorlds": "Browse worlds",
+    "worldCount_one": "1 world",
+    "worldCount_other": "{{count}} worlds",
     "updated": "Updated {{date}}",
     "remove": "Remove",
     "removeWorld": "Remove world from list",

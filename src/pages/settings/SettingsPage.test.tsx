@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { SettingsPage } from './SettingsPage';
 import { WorldsPreferencesProvider } from '../../contexts/WorldsPreferencesContext';
+import i18n from '../../i18n';
 
 function Wrapper({ children }: { children: React.ReactNode }) {
   return <WorldsPreferencesProvider>{children}</WorldsPreferencesProvider>;
@@ -14,6 +15,8 @@ describe('SettingsPage', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    i18n.changeLanguage('en');
+    document.documentElement.lang = 'en';
   });
 
   it('renders view mode and scroll mode settings', () => {
@@ -34,6 +37,19 @@ describe('SettingsPage', () => {
     const scrollModeSelect = screen.getByLabelText(/world scroll mode/i);
     fireEvent.change(scrollModeSelect, { target: { value: 'pagination' } });
     expect(window.localStorage.getItem('sos-worlds-scroll-mode')).toBe('pagination');
+  });
+
+  it('updates the html lang attribute when the language changes', () => {
+    render(<SettingsPage />, { wrapper: Wrapper });
+    const languageSelect = screen.getByLabelText(/language/i) as HTMLSelectElement;
+    fireEvent.change(languageSelect, { target: { value: 'ja' } });
+    expect(document.documentElement.lang).toBe('ja');
+    expect(window.localStorage.getItem('i18nextLng')).toBe('ja');
+  });
+
+  it('sets the document title from the page name', () => {
+    render(<SettingsPage />, { wrapper: Wrapper });
+    expect(document.title).toBe('Settings');
   });
 
   it('renders the app version', () => {

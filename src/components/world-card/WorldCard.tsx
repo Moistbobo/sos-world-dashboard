@@ -45,12 +45,11 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
               className="pointer-events-none absolute inset-0 animate-shimmer bg-[linear-gradient(100deg,transparent_20%,rgba(100,116,139,0.55)_50%,transparent_80%)] dark:bg-[linear-gradient(100deg,transparent_20%,rgba(255,255,255,0.12)_50%,transparent_80%)]"
             />
             <img
-              src={createWSRVUrl(world.imageUrl, 320)}
+              src={createWSRVUrl(world.imageUrl, 280, 65)}
               alt={world.name}
               className="relative h-full w-full object-cover"
               loading="lazy"
               decoding="async"
-              fetchPriority="low"
             />
           </>
         ) : (
@@ -181,15 +180,27 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
         )}
 
         <div className="mt-auto pt-3 flex items-center justify-center gap-2">
-          <a
-            href={world.vrchatUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="btn-primary gap-2 text-sm relative z-30"
-          >
-            <ExternalLink className="h-4 w-4" />
-            {t('worldDetail.openInVRChat')}
-          </a>
+          {world.vrchatUrl ? (
+            <a
+              href={world.vrchatUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-primary gap-2 text-sm relative z-30"
+            >
+              <ExternalLink className="h-4 w-4" />
+              {t('worldDetail.openInVRChat')}
+              <span className="sr-only"> {t('common.opensInNewTab')}</span>
+            </a>
+          ) : (
+            <span
+              className="btn-primary gap-2 text-sm relative z-30 cursor-not-allowed opacity-50"
+              aria-disabled="true"
+              title={t('worldDetail.openInVRChatUnavailable')}
+            >
+              <ExternalLink className="h-4 w-4" />
+              {t('worldDetail.openInVRChat')}
+            </span>
+          )}
           <ShareButton world={world} iconOnly />
         </div>
       </div>

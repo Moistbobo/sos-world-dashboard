@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Trash2, Pencil, List, Download } from 'lucide-react';
+import { ArrowLeft, Trash2, Pencil, List, Download, Globe } from 'lucide-react';
 import { useLists } from '../../contexts/ListsContext';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { useListsPreferences } from '../../hooks/useListsPreferences';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
@@ -29,6 +30,7 @@ export function ListDetailPage({
   const { getList, updateList, deleteList, removeWorldFromList, exportList, isHydrated } = useLists();
   const { skipRemoveWorldConfirmation, setSkipRemoveWorldConfirmation } = useListsPreferences();
   const list = listId ? getList(listId) : undefined;
+  usePageTitle(list?.name ? list.name : t('lists.title'));
   const [offset, setOffset] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -182,9 +184,19 @@ export function ListDetailPage({
           <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
           <p>{t('lists.emptyDetailTitle')}</p>
           <p>{t('lists.emptyDetailSubtitle')}</p>
+          <button
+            onClick={() => navigate('/worlds')}
+            className="btn-primary gap-1.5 text-sm"
+          >
+            <Globe className="h-4 w-4" />
+            {t('lists.browseWorlds')}
+          </button>
         </div>
       ) : (
         <div className="space-y-3">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
+            {t('lists.worldsSection')}
+          </h2>
           {isPending && worlds.every((w) => !w.data) ? (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               {Array.from({ length: WORLDS_PER_PAGE }).map((_, i) => (

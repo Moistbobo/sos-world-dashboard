@@ -15,7 +15,6 @@ import {
   Shuffle,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useHealth } from '../../hooks/useHealth';
 import { useApiDownToast } from '../../hooks/useApiToasts';
 import { useFeelLucky } from '../../hooks/useFeelLucky';
 import { ThemeToggle } from '../theme-toggle';
@@ -25,7 +24,6 @@ import { getAppVersion } from '../../config/version';
 export function Layout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { isPending, isError } = useHealth();
   useApiDownToast();
   const { loading: feelLuckyLoading, feelLucky } = useFeelLucky();
   const [collapsed, setCollapsed] = useState(() => {
@@ -56,6 +54,13 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:rounded-lg focus:bg-indigo-600 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
+      >
+        {t('layout.skipToContent')}
+      </a>
+
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -82,7 +87,7 @@ export function Layout({ children }: { children: ReactNode }) {
               </div>
               <span className="text-sm font-bold text-slate-900 dark:text-white">{t('layout.appName')}</span>
             </div>
-            <span className="mt-0.5 pl-9 text-[10px] text-slate-400 dark:text-slate-500">
+            <span className="mt-0.5 pl-9 text-[10px] text-slate-500 dark:text-slate-400">
               {t('layout.version')}: {appVersion}
             </span>
           </div>
@@ -193,30 +198,12 @@ export function Layout({ children }: { children: ReactNode }) {
           >
             <Menu className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           </button>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-400 dark:text-slate-500">{t('layout.apiStatus')}</span>
-            {isPending && (
-              <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-slate-400 dark:bg-slate-500" />
-            )}
-            {!isPending && !isError && (
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                <span className="text-emerald-600 dark:text-emerald-400">{t('layout.online')}</span>
-              </div>
-            )}
-            {!isPending && isError && (
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-red-500" />
-                <span className="text-red-600 dark:text-red-400">{t('layout.offline')}</span>
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
           </div>
         </header>
 
-        <main className="min-w-0 flex-1 p-4 lg:p-6">{children}</main>
+        <main id="main" className="min-w-0 flex-1 p-4 lg:p-6">{children}</main>
       </div>
     </div>
   );

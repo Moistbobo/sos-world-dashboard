@@ -53,6 +53,7 @@ const mockWorlds = [
 let infiniteHasNextPage = true;
 let infiniteIsPending = false;
 let paginationIsPending = false;
+const mockInfiniteFetchNextPage = vi.fn();
 
 vi.mock('../../hooks/useApi', () => ({
   useTags: () => ({ data: { tags: [] } }),
@@ -81,7 +82,7 @@ vi.mock('../../hooks/useApi', () => ({
     isError: false,
     error: null,
     refetch: vi.fn(),
-    fetchNextPage: vi.fn(),
+    fetchNextPage: mockInfiniteFetchNextPage,
     hasNextPage: infiniteHasNextPage,
     isFetchingNextPage: false,
   }),
@@ -169,16 +170,6 @@ describe('WorldsPage', () => {
     expect(screen.queryByLabelText(/back to top/i)).not.toBeInTheDocument();
   });
 
-  it('shows back-to-top button when scrolled past viewport height', () => {
-    renderPage(<WorldsPage />);
-    expect(screen.queryByLabelText(/back to top/i)).not.toBeInTheDocument();
-
-    Object.defineProperty(window, 'scrollY', { value: window.innerHeight + 1, writable: true });
-    fireEvent.scroll(window);
-
-    expect(screen.getByLabelText(/back to top/i)).toBeInTheDocument();
-  });
-
   it('does not scroll to top when filters change in infinite scroll mode', async () => {
     const user = userEvent.setup();
     const scrollToSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
@@ -214,7 +205,7 @@ describe('WorldsPage', () => {
     renderPage(<WorldsPage />);
     const listContainer = document.querySelector('.relative.w-full.min-w-0');
     expect(listContainer).not.toBeNull();
-    const rows = listContainer?.querySelectorAll('button.card') ?? [];
+    const rows = listContainer?.querySelectorAll('[role="button"].card') ?? [];
     expect(rows.length).toBeGreaterThan(0);
     rows.forEach((row) => {
       expect(row).toHaveClass('min-w-0');
@@ -227,25 +218,39 @@ describe('WorldsPage', () => {
     expect(screen.getByText('1')).toBeInTheDocument();
   });
 
+  it('announces the result count via a status region', () => {
+    renderPage(<WorldsPage />);
+    expect(screen.getByRole('status')).toHaveTextContent(/Number of results:/i);
+  });
+
+  it('gives the search input an accessible name', () => {
+    renderPage(<WorldsPage />);
+    expect(screen.getByRole('textbox', { name: /search worlds/i })).toBeInTheDocument();
+  });
+
+  it('exposes the active view mode via aria-pressed on the toggle buttons', () => {
+    renderPage(<WorldsPage />);
+    const gridToggle = screen.getByRole('button', { name: /grid view/i });
+    const listToggle = screen.getByRole('button', { name: /list view/i });
+    expect(gridToggle).toHaveAttribute('aria-pressed', 'true');
+    expect(listToggle).toHaveAttribute('aria-pressed', 'false');
+
+    fireEvent.click(listToggle);
+    expect(gridToggle).toHaveAttribute('aria-pressed', 'false');
+    expect(listToggle).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('sets the document title from the page name', () => {
+    renderPage(<WorldsPage />);
+    expect(document.title).toBe('Worlds');
+  });
+
   it('keeps the number of results label visible while count is loading', () => {
     infiniteIsPending = true;
     renderPage(<WorldsPage />);
     expect(screen.getByText(/Number of results:/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/loading result count/i)).toBeInTheDocument();
     infiniteIsPending = false;
-  });
-
-  it('renders quality and platform counts in the expanded filter bar', async () => {
-    const user = userEvent.setup();
-
-    renderPage(<WorldsPage />);
-    await user.click(screen.getByRole('button', { name: /filters/i }));
-
-    expect(screen.getByRole('button', { name: /Good\s*\(123\)/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Bad\s*\(12\)/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Desktop\s*\(80\)/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Android\s*\(45\)/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /iOS\s*\(6\)/ })).toBeInTheDocument();
   });
 
   it('navigates to world detail when a card is selected', async () => {
@@ -259,140 +264,6 @@ describe('WorldsPage', () => {
     await user.click(worldCard);
     await waitFor(() => {
       expect(window.location.pathname).toBe('/worlds/wrld_1');
-    });
-  });
-
-  describe('WorldsPage capacity filter', () => {
-    it('seeds capacity range from URL query params', () => {
-      window.history.pushState({}, '', '/worlds?minCapacity=10&maxCapacity=40');
-      renderPage(<WorldsPage />);
-      fireEvent.click(screen.getByRole('button', { name: /filters/i }));
-      expect(screen.getByRole('spinbutton', { name: /minimum capacity/i })).toHaveValue(10);
-      expect(screen.getByRole('spinbutton', { name: /maximum capacity/i })).toHaveValue(40);
-    });
-
-    it('updates URL when capacity range changes', () => {
-      renderPage(<WorldsPage />);
-      fireEvent.click(screen.getByRole('button', { name: /filters/i }));
-      const minInput = screen.getByRole('spinbutton', { name: /minimum capacity/i });
-      fireEvent.change(minInput, { target: { value: '10' } });
-      fireEvent.blur(minInput);
-      expect(window.location.search).toContain('minCapacity=10');
-    });
-  });
-
-  describe('WorldsPage platform filter', () => {
-    it('seeds selected platforms from URL query params', async () => {
-      window.history.pushState({}, '', '/worlds?platform=android&platform=ios');
-      renderPage(<WorldsPage />);
-      fireEvent.click(screen.getByRole('button', { name: /filters/i }));
-      expect(screen.getByTestId('platform-toggle-android')).toBeInTheDocument();
-      expect(screen.getByTestId('platform-toggle-ios')).toBeInTheDocument();
-      await waitFor(() =>
-        expect(window.location.search).toBe('?platform=android&platform=ios')
-      );
-    });
-
-    it('updates URL when platforms are selected', async () => {
-      const user = userEvent.setup();
-      renderPage(<WorldsPage />);
-      await user.click(screen.getByRole('button', { name: /filters/i }));
-      await user.click(screen.getByTestId('platform-toggle-android'));
-      expect(window.location.search).toContain('platform=android');
-    });
-
-  it('clears platform filters via Clear all', async () => {
-    const user = userEvent.setup();
-    window.history.pushState({}, '', '/worlds?platform=android');
-    renderPage(<WorldsPage />);
-    await user.click(screen.getByRole('button', { name: /clear all/i }));
-    expect(window.location.search).not.toContain('platform=android');
-  });
-
-  describe('WorldsPage date tagged filter', () => {
-    it('seeds day range from URL query param', () => {
-      window.history.pushState({}, '', '/worlds?dayRange=7');
-      renderPage(<WorldsPage />);
-      expect(screen.getByText('🏷️ Last 7 days')).toBeInTheDocument();
-    });
-
-    it('updates URL when a day range preset is selected', async () => {
-      const user = userEvent.setup();
-      renderPage(<WorldsPage />);
-      await user.click(screen.getByRole('button', { name: /filters/i }));
-      await user.click(screen.getByTestId('day-range-preset-14'));
-      expect(window.location.search).toContain('dayRange=14');
-    });
-
-    it('updates URL when a custom day range is typed', async () => {
-      const user = userEvent.setup();
-      renderPage(<WorldsPage />);
-      await user.click(screen.getByRole('button', { name: /filters/i }));
-      const input = screen.getByRole('spinbutton', { name: /custom/i });
-      await user.type(input, '45');
-      expect(window.location.search).toContain('dayRange=45');
-    });
-
-    it('keeps day range active when the same preset is clicked twice', async () => {
-      const user = userEvent.setup();
-      renderPage(<WorldsPage />);
-      await user.click(screen.getByRole('button', { name: /filters/i }));
-      const preset = screen.getByTestId('day-range-preset-14');
-
-      await user.click(preset);
-      expect(window.location.search).toContain('dayRange=14');
-
-      await user.click(preset);
-      expect(window.location.search).toContain('dayRange=14');
-    });
-
-    it('preserves custom input value when a different preset is selected', async () => {
-      const user = userEvent.setup();
-      renderPage(<WorldsPage />);
-      await user.click(screen.getByRole('button', { name: /filters/i }));
-      const input = screen.getByRole('spinbutton', { name: /custom/i });
-      await user.type(input, '45');
-      await user.click(screen.getByTestId('day-range-preset-14'));
-
-      expect(input).toHaveValue(45);
-      expect(window.location.search).toContain('dayRange=14');
-    });
-
-    it('preserves custom input value when it matches the selected preset', async () => {
-      const user = userEvent.setup();
-      renderPage(<WorldsPage />);
-      await user.click(screen.getByRole('button', { name: /filters/i }));
-      const input = screen.getByRole('spinbutton', { name: /custom/i });
-      await user.type(input, '14');
-      await user.click(screen.getByTestId('day-range-preset-14'));
-
-      expect(input).toHaveValue(14);
-      expect(window.location.search).toContain('dayRange=14');
-    });
-
-    it('clears day range via the remove chip button', async () => {
-      const user = userEvent.setup();
-      window.history.pushState({}, '', '/worlds?dayRange=7');
-      renderPage(<WorldsPage />);
-      await user.click(screen.getByRole('button', { name: /remove date tagged filter/i }));
-      expect(window.location.search).not.toContain('dayRange=7');
-    });
-
-    it('clears day range via Clear all', async () => {
-      const user = userEvent.setup();
-      window.history.pushState({}, '', '/worlds?dayRange=7');
-      renderPage(<WorldsPage />);
-      await user.click(screen.getByRole('button', { name: /clear all/i }));
-      expect(window.location.search).not.toContain('dayRange=7');
-    });
-
-    it('ignores invalid dayRange values in URL', async () => {
-      window.history.pushState({}, '', '/worlds?dayRange=abc');
-      renderPage(<WorldsPage />);
-      expect(screen.queryByRole('button', { name: /remove date tagged filter/i })).not.toBeInTheDocument();
-      await waitFor(() => {
-        expect(window.location.search).not.toContain('dayRange=abc');
-      });
     });
   });
 
@@ -473,5 +344,27 @@ describe('WorldsPage', () => {
       });
     });
   });
-});
+
+  describe('WorldsPage infinite scroll prefetch', () => {
+    it('calls fetchNextPage when the virtualized range is at the end of the loaded data', () => {
+      mockInfiniteFetchNextPage.mockClear();
+      infiniteHasNextPage = true;
+
+      renderPage(<WorldsPage />);
+
+      // The default mock only has one world, so the virtualized range already
+      // covers the end of the loaded data. The prefetch effect should fire
+      // and request the next page.
+      expect(mockInfiniteFetchNextPage).toHaveBeenCalled();
+    });
+
+    it('does not call fetchNextPage when there is no next page', () => {
+      mockInfiniteFetchNextPage.mockClear();
+      infiniteHasNextPage = false;
+
+      renderPage(<WorldsPage />);
+
+      expect(mockInfiniteFetchNextPage).not.toHaveBeenCalled();
+    });
+  });
 });

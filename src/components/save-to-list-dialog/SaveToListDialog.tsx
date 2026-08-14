@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { X, Plus } from 'lucide-react';
 import { useLists } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
+import { useDialogFocus } from '../../hooks/useDialogFocus';
 
 interface SaveToListDialogProps {
   worldId: string;
@@ -26,6 +27,8 @@ export function SaveToListDialog({
     createList,
   } = useLists();
   const [showCreate, setShowCreate] = useState(false);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  useDialogFocus({ open, containerRef: dialogRef, onClose: () => onOpenChange(false) });
 
   if (!open) return null;
 
@@ -50,7 +53,10 @@ export function SaveToListDialog({
         role="dialog"
         aria-modal="true"
       >
-        <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900">
+        <div
+          ref={dialogRef}
+          className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900"
+        >
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-base font-semibold text-slate-900 dark:text-white">
               {t('lists.saveToList')}

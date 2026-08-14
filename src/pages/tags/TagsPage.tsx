@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { useTags } from '../../hooks/useApi';
 import { TagBadge } from '../../components/tag-badge';
 import { WaffleChart } from '../../components/waffle-chart';
@@ -9,6 +10,7 @@ import { getTagColorHex } from '../../utils/tagColor';
 
 export function TagsPage() {
   const { t } = useTranslation();
+  usePageTitle(t('tags.title'));
   const navigate = useNavigate();
   const { data, isPending, isError, error } = useTags({ suppressErrorToast: true });
   const [search, setSearch] = useState('');
@@ -41,13 +43,17 @@ export function TagsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('tags.searchPlaceholder')}
+            aria-label={t('tags.searchLabel')}
             className="input w-full pl-9"
           />
         </div>
       </div>
 
       {isError && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300">
+        <div
+          role="status"
+          className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300"
+        >
           {t('tags.loadError', { message: error?.message })}
         </div>
       )}
@@ -75,11 +81,20 @@ export function TagsPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((t) => {
               const pct = Math.round((t.count / maxCount) * 100);
+              const handleSelect = () => navigate(`/worlds?tag=${encodeURIComponent(t.tag)}`);
               return (
-                <button
+                <div
                   key={t.tag}
-                  onClick={() => navigate(`/worlds?tag=${encodeURIComponent(t.tag)}`)}
-                  className="card p-4 text-left transition hover:border-slate-400 dark:hover:border-slate-600"
+                  role="button"
+                  tabIndex={0}
+                  onClick={handleSelect}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleSelect();
+                    }
+                  }}
+                  className="card cursor-pointer p-4 text-left transition hover:border-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 dark:hover:border-slate-600"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -93,7 +108,7 @@ export function TagsPage() {
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>

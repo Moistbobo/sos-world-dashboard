@@ -66,7 +66,7 @@ Copy `.env.example` to `.env.local`. Vite exposes only `VITE_*` env vars to the 
 - ESLint flat config in `eslint.config.js` uses `typescript-eslint`, `react-hooks`, and `react-refresh`.
 - React Refresh rule allows constant exports (`allowConstantExport: true`), so `export const foo = ...` is fine in component files.
 - Strict TypeScript: `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch` are enabled.
-- Tailwind dark mode is `class`-based. Initial theme is set in `index.html` via inline script reading `localStorage.sos-theme`, falling back to `prefers-color-scheme: dark`.
+- Tailwind dark mode is `class`-based. Initial theme is set in `index.html` via external script `public/theme-init.js` reading `localStorage.sos-theme`, falling back to `prefers-color-scheme: dark`. The script is external so the CSP can block inline scripts — keep it that way.
 
 ## Feature Flags
 
@@ -81,6 +81,12 @@ Copy `.env.example` to `.env.local`. Vite exposes only `VITE_*` env vars to the 
 - Deploy target is Vercel. `vercel.json` uses the SPA rewrite.
 - `scripts/apply-rulesets.sh` applies GitHub rulesets via `gh` CLI; requires repo admin access.
 - `.github/rulesets/main.json` enforces squash-only merges on the default branch; `.github/rulesets/release-branches.json` enforces merge-commit only on `testnet` and `production`.
+
+## Content Security Policy
+
+- `vercel.json` serves a strict CSP on every route. Inline scripts and `eval()` are blocked; the dark-mode theme script must stay an external file in `public/` (see Style & Conventions).
+- Any new external origin (API, Supabase project, image CDN, widget, analytics) must be added to the `connect-src` / `script-src` / `img-src` / `frame-src` allowlists in `vercel.json`, or it will be silently blocked in production with only console warnings. Check devtools for `Refused to connect` violations after deploying.
+- New third-party JS widgets that inject scripts or iframes (like Turnstile) need their origin in `script-src` and `frame-src`.
 
 ## PR Evidence & Risk Assessment
 

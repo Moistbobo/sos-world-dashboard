@@ -5,6 +5,7 @@ import { BeatLoader } from 'react-spinners';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
 import { useWorldsFilters } from '../../hooks/useWorldsFilters';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { useRatingsForWorldIds } from '../../hooks/useSentiment';
 import { FilterBar } from '../../components/filter-bar';
 import { Pagination } from '../../components/pagination';
@@ -18,6 +19,11 @@ const LIST_GAP = 12;
 const GRID_ROW_ESTIMATE = 420;
 const GRID_ROW_ESTIMATE_DESKTOP = 380;
 const LIST_ROW_ESTIMATE = 88;
+// Number of virtualized rows from the end of the loaded data at which to
+// start prefetching the next page. The IntersectionObserver sentinel
+// (200px rootMargin) still runs as a safety net; this trigger fires earlier
+// so the fetch usually completes before the user reaches the end of the list.
+const PREFETCH_AHEAD_ROWS = 4;
 
 function getColumnCount(windowWidth: number) {
   return windowWidth >= 1280 ? 4 : windowWidth >= 640 ? 2 : 1;
@@ -30,6 +36,7 @@ function getGridRowHeight(columnCount: number) {
 
 export function WorldsPage() {
   const { t } = useTranslation();
+  usePageTitle(t('worlds.title'));
   const { viewMode, setViewMode, scrollMode, setScrollMode } = useWorldsPreferences();
 
   const {
@@ -177,11 +184,41 @@ export function WorldsPage() {
     gap: LIST_GAP,
   });
 
-  const gridRows = gridVirtualizer.getVirtualItems().map((row) => ({
+  const gridVirtualItems = gridVirtualizer.getVirtualItems();
+  const listVirtualItems = listVirtualizer.getVirtualItems();
+  const gridRows = gridVirtualItems.map((row) => ({
     row,
     items: worlds.slice(row.index * columnCount, row.index * columnCount + columnCount),
   }));
-  const listRows = listVirtualizer.getVirtualItems();
+  const listRows = listVirtualItems;
+
+  // Index of the last virtualized row currently rendered. The window
+  // virtualizer triggers a re-render whenever the range changes, so this
+  // value updates as the user scrolls and can be used as an effect dep to
+  // decide when to prefetch the next page.
+  const activeVirtualItems = viewMode === 'grid' ? gridVirtualItems : listVirtualItems;
+  const lastVirtualRowIndex =
+    activeVirtualItems.length > 0 ? activeVirtualItems[activeVirtualItems.length - 1].index : -1;
+
+  // Prefetch the next page when the virtualized range is within a few rows
+  // of the end of the loaded data, so the fetch can finish before the user
+  // reaches the bottom of the list. The sentinel IntersectionObserver
+  // above remains as a safety net; the guards below prevent duplicate
+  // fetches when both triggers fire while a page is in flight.
+  useEffect(() => {
+    if (isPagination) return;
+    if (!infiniteQuery.hasNextPage || infiniteQuery.isFetchingNextPage) return;
+    if (lastVirtualRowIndex < 0) return;
+
+    const totalRows =
+      viewMode === 'grid'
+        ? Math.max(0, Math.ceil(worlds.length / columnCount) - 1)
+        : Math.max(0, worlds.length - 1);
+
+    if (lastVirtualRowIndex >= totalRows - PREFETCH_AHEAD_ROWS) {
+      infiniteQuery.fetchNextPage();
+    }
+  }, [infiniteQuery, isPagination, viewMode, worlds.length, columnCount, lastVirtualRowIndex]);
 
   return (
     <div className="space-y-4">
@@ -217,6 +254,8 @@ export function WorldsPage() {
         onDayRangeChange={handleDayRangeChange}
       />
 
+      <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('worlds.resultsSection')}</h2>
+
       <div className="flex items-center justify-between gap-3">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
@@ -225,11 +264,12 @@ export function WorldsPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder={t('worlds.searchPlaceholder')}
+            aria-label={t('worlds.searchLabel')}
             className="input w-full pl-9"
           />
         </div>
         {!isError && (
-          <p className="hidden items-center gap-2 text-sm text-slate-600 dark:text-slate-400 sm:flex">
+          <p role="status" className="hidden items-center gap-2 text-sm text-slate-600 dark:text-slate-400 sm:flex">
             <span>{t('worlds.numberOfResultsLabel')}</span>
             {isPending ? (
               <BeatLoader size={6} color="currentColor" aria-label={t('worlds.loadingResultCount')} />
@@ -242,6 +282,7 @@ export function WorldsPage() {
           <button
             onClick={() => setViewMode('grid')}
             aria-label={t('worlds.gridView')}
+            aria-pressed={viewMode === 'grid'}
             className={`flex h-11 w-11 items-center justify-center rounded-md transition ${
               viewMode === 'grid'
                 ? 'bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-white'
@@ -253,6 +294,7 @@ export function WorldsPage() {
           <button
             onClick={() => setViewMode('list')}
             aria-label={t('worlds.listView')}
+            aria-pressed={viewMode === 'list'}
             className={`flex h-11 w-11 items-center justify-center rounded-md transition ${
               viewMode === 'list'
                 ? 'bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-white'
@@ -265,7 +307,10 @@ export function WorldsPage() {
       </div>
 
       {isError && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300">
+        <div
+          role="status"
+          className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300"
+        >
           {t('worlds.loadError', { message: error?.message })}
         </div>
       )}
@@ -279,7 +324,10 @@ export function WorldsPage() {
       )}
 
       {!isPending && !isError && worlds.length === 0 && (
-        <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
+        <div
+          role="status"
+          className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400"
+        >
           {t('worlds.noWorlds')}{' '}
           <button onClick={() => refetch()} className="text-indigo-600 underline dark:text-indigo-400">
             {t('worlds.tryAgain')}
@@ -348,7 +396,9 @@ export function WorldsPage() {
       {scrollMode === 'infinite' && !isError && (
         <div ref={sentinelRef} className="flex justify-center py-4">
           {infiniteQuery.isFetchingNextPage && (
-            <span className="text-sm text-slate-500 dark:text-slate-400">{t('worlds.loadingMore')}</span>
+            <span aria-live="polite" className="text-sm text-slate-500 dark:text-slate-400">
+              {t('worlds.loadingMore')}
+            </span>
           )}
         </div>
       )}

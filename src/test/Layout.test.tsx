@@ -61,6 +61,22 @@ describe('Layout sidebar', () => {
     expect(screen.getByLabelText('Collapse sidebar')).toBeInTheDocument()
   })
 
+  it('renders a skip link as the first tab stop targeting main content', () => {
+    render(
+      <Layout>
+        <div>Test content</div>
+      </Layout>,
+      { wrapper: Wrapper },
+    )
+
+    const skipLink = screen.getByRole('link', { name: /skip to main content/i })
+    expect(skipLink).toHaveAttribute('href', '#main')
+    expect(skipLink).toHaveClass('sr-only')
+
+    const main = document.querySelector('main#main')
+    expect(main).not.toBeNull()
+  })
+
   it('reads collapsed state from localStorage on mount', () => {
     storage['sos-sidebar-collapsed'] = 'true'
 
@@ -145,5 +161,23 @@ describe('Layout sidebar', () => {
 
     const header = document.querySelector('header.sticky')
     expect(header).toHaveClass('z-40')
+  })
+
+  it('keeps the theme toggle in the right-aligned header actions container', () => {
+    render(
+      <Layout>
+        <div>Test content</div>
+      </Layout>,
+      { wrapper: Wrapper },
+    )
+
+    const header = document.querySelector('header.sticky')
+    expect(header).toBeInTheDocument()
+
+    const actions = header?.querySelector('.ml-auto')
+    expect(actions).toBeInTheDocument()
+
+    const toggle = screen.getByLabelText('Toggle theme')
+    expect(actions).toContainElement(toggle)
   })
 })
