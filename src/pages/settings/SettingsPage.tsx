@@ -1,12 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import { Languages, LayoutGrid, MousePointerClick, BellOff } from 'lucide-react';
 import { LanguageSwitcher } from '../../components/language-switcher';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
 import { useListsPreferences } from '../../hooks/useListsPreferences';
 import { getAppVersion } from '../../config/version';
 
 export function SettingsPage() {
   const { t } = useTranslation();
+  usePageTitle(t('settings.title'));
   const { viewMode, setViewMode, scrollMode, setScrollMode } = useWorldsPreferences();
   const { skipRemoveWorldConfirmation, setSkipRemoveWorldConfirmation } = useListsPreferences();
 
@@ -21,7 +23,10 @@ export function SettingsPage() {
 
       <div className="card p-5 space-y-5">
         <div>
-          <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-200">
+          <label
+            htmlFor="language"
+            className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-200"
+          >
             <Languages className="h-4 w-4 text-slate-500 dark:text-slate-400" />
             {t('settings.language')}
           </label>

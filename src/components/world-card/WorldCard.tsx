@@ -189,6 +189,7 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
             >
               <ExternalLink className="h-4 w-4" />
               {t('worldDetail.openInVRChat')}
+              <span className="sr-only"> {t('common.opensInNewTab')}</span>
             </a>
           ) : (
             <span

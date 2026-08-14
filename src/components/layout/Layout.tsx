@@ -54,6 +54,13 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:rounded-lg focus:bg-indigo-600 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
+      >
+        {t('layout.skipToContent')}
+      </a>
+
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -80,7 +87,7 @@ export function Layout({ children }: { children: ReactNode }) {
               </div>
               <span className="text-sm font-bold text-slate-900 dark:text-white">{t('layout.appName')}</span>
             </div>
-            <span className="mt-0.5 pl-9 text-[10px] text-slate-400 dark:text-slate-500">
+            <span className="mt-0.5 pl-9 text-[10px] text-slate-500 dark:text-slate-400">
               {t('layout.version')}: {appVersion}
             </span>
           </div>
@@ -196,7 +203,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="min-w-0 flex-1 p-4 lg:p-6">{children}</main>
+        <main id="main" className="min-w-0 flex-1 p-4 lg:p-6">{children}</main>
       </div>
     </div>
   );

@@ -9,6 +9,7 @@
   },
   "layout": {
     "appName": "SOS Dashboard",
+    "skipToContent": "メインコンテンツにスキップ",
     "unreachable": "API に接続できません",
     "expandSidebar": "サイドバーを展開",
     "collapseSidebar": "サイドバーを折りたたむ",
@@ -31,6 +32,7 @@
     "good": "良い",
     "bad": "悪い",
     "more": "+{{count}}",
+    "opensInNewTab": "新しいタブで開きます",
     "byAuthor": "{{author}} 作成",
     "added": "追加日",
     "tagged": "タグ付け日"
@@ -50,6 +52,7 @@
     "title": "ワールド",
     "subtitle": "追跡中の VRChat ワールドを閲覧・絞り込みます。",
     "searchPlaceholder": "名前、作成者、ID で検索...",
+    "searchLabel": "ワールドを検索",
     "loadError": "ワールドの読み込みに失敗しました: {{message}}",
     "noWorlds": "ワールドが見つかりません。フィルタを調整するか",
     "tryAgain": "再試行",
@@ -61,7 +64,8 @@
     "listView": "リスト表示",
     "numberOfResultsLabel": "結果件数:",
     "numberOfResultsCount": "{{count}}",
-    "loadingResultCount": "件数を読み込み中"
+    "loadingResultCount": "件数を読み込み中",
+    "resultsSection": "検索結果"
   },
   "worldDetail": {
     "loadError": "ワールドの読み込みに失敗しました: {{message}}",
@@ -129,6 +133,7 @@
     "title": "タグ",
     "subtitle": "追跡中のワールド全体でのタグ使用状況を確認します。",
     "searchPlaceholder": "タグを検索...",
+    "searchLabel": "タグを検索",
     "loadError": "タグの読み込みに失敗しました: {{message}}"
   },
   "settings": {
@@ -199,6 +204,8 @@
   "lists": {
     "title": "マイリスト",
     "subtitle": "保存したワールドのコレクションを作成・管理します。",
+    "listsSection": "マイリスト",
+    "worldsSection": "このリストのワールド",
     "newList": "新規リスト",
     "listCount_one": "(1件)",
     "listCount_other": "({{count}}件)",

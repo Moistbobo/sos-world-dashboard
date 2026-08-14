@@ -11,6 +11,7 @@ import { ShareButton } from '../../components/share-button';
 import { CopyWorldId } from '../../components/copy-world-id';
 import { WorldAddDate } from '../../components/world-add-date';
 import { useLists } from '../../contexts/ListsContext';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { SaveToListDialog } from '../../components/save-to-list-dialog/SaveToListDialog';
 import { useDialogFocus } from '../../hooks/useDialogFocus';
 
@@ -84,6 +85,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
   const { data, isPending, isError, error, isFetching } = useWorld(worldId, {
     suppressErrorToast: true,
   });
+  usePageTitle(data?.name ?? t('nav.worlds'));
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
@@ -394,6 +396,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
                 >
                   <ExternalLink className="h-4 w-4" />
                   {t('worldDetail.openInVRChat')}
+                  <span className="sr-only"> {t('common.opensInNewTab')}</span>
                 </a>
               ) : (
                 <span
