@@ -18,29 +18,32 @@ export function SettingsPage() {
   const queryClient = useQueryClient();
   const { data: me, isError: meError, isPending: mePending } = useMe();
   const [token, setToken] = useState(getStoredApiToken);
+  const [savedToken, setSavedToken] = useState(getStoredApiToken);
   const [showToken, setShowToken] = useState(false);
 
   function handleTokenChange(e: ChangeEvent<HTMLInputElement>) {
-    const next = e.target.value.trim();
-    const previous = getStoredApiToken();
+    setToken(e.target.value);
+  }
+
+  function handleApply() {
+    const next = token.trim();
     setToken(next);
+    setSavedToken(next);
     if (next) {
       setStoredApiToken(next);
     } else {
       clearStoredApiToken();
     }
-    if (previous !== next) {
-      queryClient.removeQueries({ queryKey: ['me'] });
-      queryClient.invalidateQueries({ queryKey: ['me'] });
-    }
+    queryClient.removeQueries({ queryKey: ['me'] });
+    queryClient.invalidateQueries({ queryKey: ['me'] });
   }
 
   let statusText: string;
-  if (token && me) {
+  if (savedToken && me) {
     statusText = t('settings.apiTokenConnected', { name: me.name, role: me.role });
-  } else if (token && meError) {
+  } else if (savedToken && meError) {
     statusText = t('settings.apiTokenInvalid');
-  } else if (token && mePending) {
+  } else if (savedToken && mePending) {
     statusText = t('settings.apiTokenCustom');
   } else {
     statusText = t('settings.apiTokenDefault');
@@ -73,21 +76,32 @@ export function SettingsPage() {
             <KeyRound className="h-4 w-4 text-slate-500 dark:text-slate-400" />
             {t('settings.apiToken')}
           </label>
-          <div className="relative">
-            <input
-              id="api-token"
-              type={showToken ? 'text' : 'password'}
-              value={token}
-              onChange={handleTokenChange}
-              className="input w-full pr-10"
-            />
-            <button
-              type="button"
-              onClick={() => setShowToken((v) => !v)}
-              aria-label={showToken ? t('settings.apiTokenHide') : t('settings.apiTokenShow')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 transition hover:text-slate-600 dark:hover:text-slate-300"
-            >
-              {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <input
+                id="api-token"
+                type={showToken ? 'text' : 'password'}
+                value={token}
+                onChange={handleTokenChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleApply();
+                  }
+                }}
+                className="input w-full pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowToken((v) => !v)}
+                aria-label={showToken ? t('settings.apiTokenHide') : t('settings.apiTokenShow')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 transition hover:text-slate-600 dark:hover:text-slate-300"
+              >
+                {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+            <button type="button" onClick={handleApply} className="btn-primary shrink-0 px-4 py-2 text-sm">
+              {t('settings.apiTokenApply')}
             </button>
           </div>
           <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.apiTokenHint')}</p>

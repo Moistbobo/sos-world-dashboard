@@ -92,19 +92,45 @@ describe('SettingsPage', () => {
     expect(screen.getByText('Using the default (build-time) token.')).toBeInTheDocument();
   });
 
-  it('persists a typed token to localStorage', () => {
+  it('does not persist a typed token or touch the me query until Apply is clicked', () => {
+    const removeSpy = vi.spyOn(queryClient, 'removeQueries');
     render(<SettingsPage />, { wrapper: Wrapper });
     const input = screen.getByLabelText(/api token/i);
     fireEvent.change(input, { target: { value: '  abc123  ' } });
+    expect(window.localStorage.getItem('sos-api-token')).toBeNull();
+    expect(removeSpy).not.toHaveBeenCalled();
+  });
+
+  it('persists the trimmed token to localStorage when Apply is clicked', () => {
+    render(<SettingsPage />, { wrapper: Wrapper });
+    const input = screen.getByLabelText(/api token/i);
+    fireEvent.change(input, { target: { value: '  abc123  ' } });
+    fireEvent.click(screen.getByRole('button', { name: /apply/i }));
     expect(window.localStorage.getItem('sos-api-token')).toBe('abc123');
   });
 
-  it('removes the stored token when the input is cleared', () => {
+  it('removes the stored token when the cleared input is applied', () => {
     window.localStorage.setItem('sos-api-token', 'abc123');
     render(<SettingsPage />, { wrapper: Wrapper });
     const input = screen.getByLabelText(/api token/i);
     fireEvent.change(input, { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: /apply/i }));
     expect(window.localStorage.getItem('sos-api-token')).toBeNull();
+  });
+
+  it('applies the typed token when Enter is pressed in the input', () => {
+    render(<SettingsPage />, { wrapper: Wrapper });
+    const input = screen.getByLabelText(/api token/i);
+    fireEvent.change(input, { target: { value: 'abc123' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(window.localStorage.getItem('sos-api-token')).toBe('abc123');
+  });
+
+  it('shows "Invalid token." when the stored token was rejected by the API', () => {
+    window.localStorage.setItem('sos-api-token', 'abc123');
+    meError = true;
+    render(<SettingsPage />, { wrapper: Wrapper });
+    expect(screen.getByText('Invalid token.')).toBeInTheDocument();
   });
 
   it('shows the custom-token status when a token is stored and useMe is pending', () => {
@@ -131,12 +157,13 @@ describe('SettingsPage', () => {
     expect(input).toHaveAttribute('type', 'password');
   });
 
-  it('clears the cached me query when the token changes, so stale identity cannot persist', () => {
+  it('clears the cached me query when Apply is clicked, so stale identity cannot persist', () => {
     meData = { name: 'bot', role: 'curator', permissions: ['worlds:write'] };
     const removeSpy = vi.spyOn(queryClient, 'removeQueries');
     render(<SettingsPage />, { wrapper: Wrapper });
     const input = screen.getByLabelText(/api token/i);
     fireEvent.change(input, { target: { value: 'garbage-token' } });
+    fireEvent.click(screen.getByRole('button', { name: /apply/i }));
     expect(removeSpy).toHaveBeenCalledWith({ queryKey: ['me'] });
     expect(window.localStorage.getItem('sos-api-token')).toBe('garbage-token');
   });
