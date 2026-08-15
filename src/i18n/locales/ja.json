@@ -168,6 +168,7 @@
     "quality": "品質",
     "good": "✅ 良い",
     "bad": "❌ 悪い",
+    "highPriority": "優先度の高いもののみ",
     "tags": "タグ",
     "clearAll": "すべて解除",
     "capacity": "定員",
@@ -187,18 +188,6 @@
     "custom": "カスタム",
     "days": "日",
     "removeDateTagged": "タグ付け日フィルタを解除"
-  },
-  "highPriority": {
-    "title": "優先度の高いワールド",
-    "subtitle": "チェック対象として優先度の高いワールドです。",
-    "searchPlaceholder": "優先度の高いワールドを検索…",
-    "searchLabel": "優先度の高いワールドを検索",
-    "resultsCount_one": "{{count}} 件のワールド",
-    "resultsCount_other": "{{count}} 件のワールド",
-    "empty": "優先度の高いワールドはまだありません。",
-    "loadError": "優先度の高いワールドの読み込みに失敗しました: {{message}}",
-    "forbidden": "キュレーター権限が必要です",
-    "forbiddenHint": "このリストを表示するには、設定でキュレーターのAPIトークンを入力してください。"
   },
   "pagination": {
     "prev": "前へ",
@@ -227,10 +216,6 @@
     "subtitle": "保存したワールドのコレクションを作成・管理します。",
     "listsSection": "マイリスト",
     "worldsSection": "このリストのワールド",
-    "highPriorityName": "優先度高",
-    "highPrioritySubtitle": "キュレーターによって優先チェック対象にマークされたワールドです。",
-    "highPriorityWorldCount_one": "1件のワールド",
-    "highPriorityWorldCount_other": "{{count}}件のワールド",
     "newList": "新規リスト",
     "listCount_one": "(1件)",
     "listCount_other": "({{count}}件)",

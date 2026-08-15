@@ -21,6 +21,9 @@ const defaultProps = {
   onRemovePlatform: vi.fn(),
   dayRange: null as number | null,
   onDayRangeChange: vi.fn(),
+  showHighPriority: false,
+  highPriority: false,
+  onToggleHighPriority: vi.fn(),
 };
 
 function renderFilterBar(props: Partial<typeof defaultProps> = {}) {
@@ -270,6 +273,41 @@ describe('FilterBar', () => {
 
     const badge = screen.getByText('1');
     expect(badge).toBeInTheDocument();
+  });
+});
+
+describe('FilterBar high priority chip', () => {
+  it('is not rendered when showHighPriority is false', () => {
+    renderFilterBar();
+    expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
+  });
+
+  it('is rendered when showHighPriority is true', () => {
+    renderFilterBar({ showHighPriority: true });
+    expect(screen.getByRole('button', { name: /high priority/i })).toBeInTheDocument();
+  });
+
+  it('reflects the active filter state via aria-pressed', () => {
+    renderFilterBar({ showHighPriority: true, highPriority: true });
+    expect(screen.getByRole('button', { name: /high priority/i })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
+
+  it('calls onToggleHighPriority when clicked', async () => {
+    const user = userEvent.setup();
+    const onToggleHighPriority = vi.fn();
+    renderFilterBar({ showHighPriority: true, onToggleHighPriority });
+
+    await user.click(screen.getByRole('button', { name: /high priority/i }));
+
+    expect(onToggleHighPriority).toHaveBeenCalledTimes(1);
+  });
+
+  it('counts toward the filter count badge when active', () => {
+    renderFilterBar({ showHighPriority: true, highPriority: true });
+    expect(screen.getByText('1')).toBeInTheDocument();
   });
 });
 

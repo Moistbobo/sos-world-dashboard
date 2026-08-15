@@ -1,13 +1,10 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Pencil, List, Upload, Download, Star } from 'lucide-react';
+import { Plus, Trash2, Pencil, List, Upload, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLists } from '../../contexts/ListsContext';
 import { usePageTitle } from '../../hooks/usePageTitle';
-import { useMe } from '../../hooks/useApi';
-import { useApiQuery } from '../../hooks/useApiToasts';
-import { fetchWorlds } from '../../api/client';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ImportDialog } from '../../components/import-dialog';
 import { ConfirmDialog } from '../../components/confirm-dialog';
@@ -18,13 +15,6 @@ export function ListsPage() {
   const { t } = useTranslation();
   usePageTitle(t('lists.title'));
   const navigate = useNavigate();
-  const { data: me } = useMe();
-  const canManage = me?.permissions.includes('worlds:write') ?? false;
-  const { data: highPriorityCount } = useApiQuery({
-    queryKey: ['high-priority-count'],
-    queryFn: () => fetchWorlds({ highPriority: true, limit: 1 }),
-    enabled: canManage,
-  });
   const {
     lists,
     error,
@@ -159,30 +149,6 @@ export function ListsPage() {
               <button onClick={clearError} className="ml-2 underline">
                 {t('common.dismiss')}
               </button>
-            </div>
-          )}
-
-          {canManage && (
-            <div
-              onClick={() => navigate('/lists/high-priority')}
-              className="card flex min-w-0 cursor-pointer items-center gap-3 border-amber-500/40 bg-amber-500/10 p-4 transition hover:border-amber-500/60 hover:bg-amber-500/15 dark:border-amber-500/30 dark:hover:border-amber-500/50"
-            >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/20">
-                <Star className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
-                  {t('lists.highPriorityName')}
-                </p>
-                <p className="mt-0.5 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">
-                  {t('lists.highPrioritySubtitle')}
-                </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {highPriorityCount
-                    ? t('lists.highPriorityWorldCount', { count: highPriorityCount.total })
-                    : '…'}
-                </p>
-              </div>
             </div>
           )}
 
