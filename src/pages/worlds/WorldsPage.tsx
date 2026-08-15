@@ -4,7 +4,6 @@ import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
 import { BeatLoader } from 'react-spinners';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
-import { useMe } from '../../hooks/useApi';
 import { useWorldsFilters } from '../../hooks/useWorldsFilters';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useRatingsForWorldIds } from '../../hooks/useSentiment';
@@ -40,9 +39,6 @@ export function WorldsPage() {
   usePageTitle(t('worlds.title'));
   const { viewMode, setViewMode, scrollMode, setScrollMode } = useWorldsPreferences();
 
-  const { data: me } = useMe();
-  const canManageHighPriority = me?.permissions.includes('worlds:write') ?? false;
-
   const {
     limit,
     offset,
@@ -59,8 +55,6 @@ export function WorldsPage() {
     handleCapacityChange,
     dayRange,
     handleDayRangeChange,
-    highPriority,
-    handleToggleHighPriority,
     searchInput,
     setSearchInput,
     handleAuthorClick,
@@ -258,9 +252,6 @@ export function WorldsPage() {
         onRemovePlatform={handleRemovePlatform}
         dayRange={dayRange}
         onDayRangeChange={handleDayRangeChange}
-        showHighPriority={canManageHighPriority}
-        highPriority={highPriority}
-        onToggleHighPriority={handleToggleHighPriority}
       />
 
       <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('worlds.resultsSection')}</h2>

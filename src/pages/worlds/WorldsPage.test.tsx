@@ -53,7 +53,6 @@ function createMockWorld(overrides: Partial<World> = {}): World {
 }
 
 let mockWorlds: World[] = [createMockWorld()];
-let mePermissions: string[] = [];
 
 let infiniteHasNextPage = true;
 let infiniteIsPending = false;
@@ -61,13 +60,6 @@ let paginationIsPending = false;
 const mockInfiniteFetchNextPage = vi.fn();
 
 vi.mock('../../hooks/useApi', () => ({
-  useMe: () => ({
-    data: {
-      name: 'Test User',
-      role: mePermissions.includes('worlds:write') ? 'curator' : 'viewer',
-      permissions: mePermissions,
-    },
-  }),
   useTags: () => ({ data: { tags: [] } }),
   useMeta: () => ({
     data: {
@@ -113,7 +105,6 @@ describe('WorldsPage', () => {
     infiniteIsPending = false;
     paginationIsPending = false;
     mockWorlds = [createMockWorld()];
-    mePermissions = [];
     queryClient.clear();
     window.localStorage.clear();
     await resetListsDb();
@@ -383,17 +374,6 @@ describe('WorldsPage', () => {
   });
 
   describe('WorldsPage high priority', () => {
-    it('renders the high priority filter chip for tokens with worlds:write', () => {
-      mePermissions = ['worlds:read', 'worlds:write'];
-      renderPage(<WorldsPage />);
-      expect(screen.getByRole('button', { name: /high priority/i })).toBeInTheDocument();
-    });
-
-    it('hides the high priority filter chip for tokens without worlds:write', () => {
-      renderPage(<WorldsPage />);
-      expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
-    });
-
     it('renders the high priority badge on a high-priority world', () => {
       mockWorlds = [createMockWorld({ highPriority: true })];
       renderPage(<WorldsPage />);

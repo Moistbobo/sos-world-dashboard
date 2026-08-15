@@ -1,13 +1,44 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ListsProvider } from '../../contexts/ListsContext';
 import { ListsPage } from './ListsPage';
 import * as listsImportExport from '../../utils/listsImportExport';
 import { resetListsDb, seedListsDb } from '../../test/listsDb';
 import type { WorldList } from '../../types/lists';
+
+const { useMeMock, useApiQueryMock } = vi.hoisted(() => ({
+  useMeMock: vi.fn(),
+  useApiQueryMock: vi.fn(),
+}));
+
+vi.mock('../../hooks/useApi', () => ({
+  useMe: () => useMeMock(),
+}));
+
+vi.mock('../../hooks/useApiToasts', () => ({
+  useApiQuery: (options: unknown) => useApiQueryMock(options),
+}));
+
+let mePermissions: string[] = [];
+let highPriorityCount: number | undefined;
+
+useMeMock.mockImplementation(() => ({
+  data: {
+    name: 'Test User',
+    role: mePermissions.includes('worlds:write') ? 'curator' : 'viewer',
+    permissions: mePermissions,
+  },
+}));
+
+useApiQueryMock.mockImplementation(() => ({
+  data:
+    highPriorityCount === undefined
+      ? undefined
+      : { worlds: [], total: highPriorityCount, limit: 1, offset: 0 },
+}));
 
 function makeList(id: string, name: string, overrides: Partial<WorldList> = {}): WorldList {
   return {
@@ -29,6 +60,10 @@ beforeEach(async () => {
   await resetListsDb();
   vi.mocked(toast.success).mockClear();
   vi.spyOn(listsImportExport, 'validateWorldIds').mockImplementation(async (ids) => ids);
+  mePermissions = [];
+  highPriorityCount = undefined;
+  useMeMock.mockClear();
+  useApiQueryMock.mockClear();
 });
 
 function Wrapper({ children }: { children: React.ReactNode }) {
@@ -156,5 +191,46 @@ describe('ListsPage', () => {
     await user.click(screen.getByRole('button', { name: /create list/i }));
     expect(screen.getByText('Beyond')).toBeInTheDocument();
     expect(screen.getByTestId('list-count')).toHaveTextContent('(11 lists)');
+  });
+});
+
+describe('ListsPage high priority card', () => {
+  it('hides the card and disables the count query for viewers', async () => {
+    await renderPage();
+    expect(screen.queryByText('High Priority')).not.toBeInTheDocument();
+    expect(
+      (useApiQueryMock.mock.calls[0]?.[0] as { enabled?: boolean }).enabled,
+    ).toBe(false);
+  });
+
+  it('shows the card with the world count for curators', async () => {
+    mePermissions = ['worlds:read', 'worlds:write'];
+    highPriorityCount = 7;
+    await renderPage();
+    expect(screen.getByText('High Priority')).toBeInTheDocument();
+    expect(screen.getByText('7 worlds')).toBeInTheDocument();
+  });
+
+  it('navigates to the high priority page when clicked', async () => {
+    const user = userEvent.setup();
+    mePermissions = ['worlds:read', 'worlds:write'];
+    highPriorityCount = 3;
+
+    render(
+      <MemoryRouter initialEntries={['/lists']}>
+        <ListsProvider>
+          <Routes>
+            <Route path="/lists" element={<ListsPage />} />
+            <Route path="/lists/high-priority" element={<div>HP PAGE</div>} />
+          </Routes>
+        </ListsProvider>
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      expect(document.querySelector('[aria-busy="true"]')).toBeNull();
+    });
+    await user.click(screen.getByText('High Priority'));
+    expect(await screen.findByText('HP PAGE')).toBeInTheDocument();
   });
 });

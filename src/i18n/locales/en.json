@@ -168,7 +168,6 @@
     "quality": "Quality",
     "good": "✅ Good",
     "bad": "❌ Bad",
-    "highPriority": "High Priority",
     "tags": "Tags",
     "clearAll": "Clear all",
     "capacity": "Player capacity",
@@ -188,6 +187,18 @@
     "custom": "Custom",
     "days": "days",
     "removeDateTagged": "Remove date tagged filter"
+  },
+  "highPriority": {
+    "title": "High Priority",
+    "subtitle": "Worlds marked as high priority for checks.",
+    "searchPlaceholder": "Search high priority worlds…",
+    "searchLabel": "Search high priority worlds",
+    "resultsCount_one": "{{count}} world",
+    "resultsCount_other": "{{count}} worlds",
+    "empty": "No high priority worlds yet.",
+    "loadError": "Failed to load high priority worlds: {{message}}",
+    "forbidden": "Curator access required",
+    "forbiddenHint": "Enter a curator API token in Settings to view this list."
   },
   "pagination": {
     "prev": "Prev",
@@ -216,6 +227,10 @@
     "subtitle": "Create and manage your saved world collections.",
     "listsSection": "Your lists",
     "worldsSection": "Worlds in this list",
+    "highPriorityName": "High Priority",
+    "highPrioritySubtitle": "Worlds marked for priority checks by curators.",
+    "highPriorityWorldCount_one": "1 world",
+    "highPriorityWorldCount_other": "{{count}} worlds",
     "newList": "New list",
     "listCount_one": "(1 list)",
     "listCount_other": "({{count}} lists)",
