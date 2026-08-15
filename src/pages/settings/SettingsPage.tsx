@@ -25,17 +25,21 @@ export function SettingsPage() {
     setToken(e.target.value);
   }
 
-  function handleApply() {
-    const next = token.trim();
-    setToken(next);
-    setSavedToken(next);
-    if (next) {
-      setStoredApiToken(next);
+  function applyToken(next: string) {
+    const trimmed = next.trim();
+    setToken(trimmed);
+    setSavedToken(trimmed);
+    if (trimmed) {
+      setStoredApiToken(trimmed);
     } else {
       clearStoredApiToken();
     }
     queryClient.removeQueries({ queryKey: ['me'] });
     queryClient.invalidateQueries({ queryKey: ['me'] });
+  }
+
+  function handleApply() {
+    applyToken(token);
   }
 
   let statusText: string;
@@ -160,7 +164,7 @@ export function SettingsPage() {
             </button>
             <button
               type="button"
-              onClick={() => setToken('')}
+              onClick={() => applyToken('')}
               className="btn-ghost shrink-0 px-4 py-2 text-sm"
             >
               {t('settings.apiTokenClear')}

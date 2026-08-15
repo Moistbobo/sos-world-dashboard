@@ -54,6 +54,7 @@ function createMockWorld(overrides: Partial<World> = {}): World {
 
 let mockWorlds: World[] = [createMockWorld()];
 let mePermissions: string[] = [];
+let meError = false;
 
 let infiniteHasNextPage = true;
 let infiniteIsPending = false;
@@ -67,6 +68,7 @@ vi.mock('../../hooks/useApi', () => ({
       role: mePermissions.includes('worlds:write') ? 'curator' : 'viewer',
       permissions: mePermissions,
     },
+    isError: meError,
   }),
   useTags: () => ({ data: { tags: [] } }),
   useMeta: () => ({
@@ -114,6 +116,7 @@ describe('WorldsPage', () => {
     paginationIsPending = false;
     mockWorlds = [createMockWorld()];
     mePermissions = [];
+    meError = false;
     queryClient.clear();
     window.localStorage.clear();
     await resetListsDb();
@@ -396,6 +399,17 @@ describe('WorldsPage', () => {
 
     it('hides the high priority filter toggle for tokens without worlds:write', async () => {
       const user = userEvent.setup();
+      renderPage(<WorldsPage />);
+
+      await user.click(screen.getByRole('button', { name: /filters/i }));
+
+      expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
+    });
+
+    it('hides the high priority filter toggle when the identity fetch errored', async () => {
+      const user = userEvent.setup();
+      mePermissions = ['worlds:read', 'worlds:write'];
+      meError = true;
       renderPage(<WorldsPage />);
 
       await user.click(screen.getByRole('button', { name: /filters/i }));

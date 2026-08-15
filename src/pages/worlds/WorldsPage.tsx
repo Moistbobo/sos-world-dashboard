@@ -40,8 +40,9 @@ export function WorldsPage() {
   usePageTitle(t('worlds.title'));
   const { viewMode, setViewMode, scrollMode, setScrollMode } = useWorldsPreferences();
 
-  const { data: me } = useMe();
-  const canManageHighPriority = me?.permissions.includes('worlds:write') ?? false;
+  const { data: me, isError: meError } = useMe();
+  const canManageHighPriority =
+    !meError && (me?.permissions.includes('worlds:write') ?? false);
 
   const {
     limit,

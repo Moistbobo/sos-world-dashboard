@@ -115,14 +115,16 @@ describe('SettingsPage', () => {
     expect(window.localStorage.getItem('sos-api-token')).toBe('abc123');
   });
 
-  it('clears the input value without persisting when Clear is clicked', () => {
+  it('clears the input and applies the cleared state when Clear is clicked', () => {
     window.localStorage.setItem('sos-api-token', 'abc123');
+    const removeSpy = vi.spyOn(queryClient, 'removeQueries');
     render(<SettingsPage />, { wrapper: Wrapper });
     const input = screen.getByLabelText(/api token/i);
     fireEvent.change(input, { target: { value: 'def456' } });
     fireEvent.click(screen.getByRole('button', { name: /clear/i }));
     expect((input as HTMLInputElement).value).toBe('');
-    expect(window.localStorage.getItem('sos-api-token')).toBe('abc123');
+    expect(window.localStorage.getItem('sos-api-token')).toBeNull();
+    expect(removeSpy).toHaveBeenCalledWith({ queryKey: ['me'] });
   });
 
   it('removes the stored token when the cleared input is applied', () => {
