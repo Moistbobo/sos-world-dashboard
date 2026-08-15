@@ -52,6 +52,12 @@ describe('SettingsPage', () => {
     expect(screen.getByLabelText(/world scroll mode/i)).toBeInTheDocument();
   });
 
+  it('renders the API token input inside an Advanced section', () => {
+    render(<SettingsPage />, { wrapper: Wrapper });
+    expect(screen.getByRole('heading', { name: /advanced/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/api token/i)).toBeInTheDocument();
+  });
+
   it('persists view mode changes to localStorage', () => {
     render(<SettingsPage />, { wrapper: Wrapper });
     const viewModeSelect = screen.getByLabelText(/world view mode/i);

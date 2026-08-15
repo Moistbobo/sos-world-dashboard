@@ -140,6 +140,7 @@
   "settings": {
     "title": "設定",
     "subtitle": "アプリケーションの設定を変更します。",
+    "advanced": "詳細設定",
     "language": "言語",
     "languageHint": "表示言語を選択してください。",
     "apiToken": "APIトークン",

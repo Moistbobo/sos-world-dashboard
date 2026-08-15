@@ -72,50 +72,6 @@ export function SettingsPage() {
         </div>
 
         <div>
-          <label htmlFor="api-token" className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-200">
-            <KeyRound className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-            {t('settings.apiToken')}
-          </label>
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <input
-                id="api-token"
-                type={showToken ? 'text' : 'password'}
-                value={token}
-                onChange={handleTokenChange}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleApply();
-                  }
-                }}
-                className="input w-full pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowToken((v) => !v)}
-                aria-label={showToken ? t('settings.apiTokenHide') : t('settings.apiTokenShow')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 transition hover:text-slate-600 dark:hover:text-slate-300"
-              >
-                {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-            <button type="button" onClick={handleApply} className="btn-primary shrink-0 px-4 py-2 text-sm">
-              {t('settings.apiTokenApply')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setToken('')}
-              className="btn-ghost shrink-0 px-4 py-2 text-sm"
-            >
-              {t('settings.apiTokenClear')}
-            </button>
-          </div>
-          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.apiTokenHint')}</p>
-          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{statusText}</p>
-        </div>
-
-        <div>
           <label htmlFor="view-mode" className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-200">
             <LayoutGrid className="h-4 w-4 text-slate-500 dark:text-slate-400" />
             {t('settings.viewMode')}
@@ -163,6 +119,55 @@ export function SettingsPage() {
             </label>
             <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.skipRemoveWorldConfirmationHint')}</p>
           </div>
+        </div>
+      </div>
+
+      <h2 className="mt-6 text-sm font-semibold text-slate-900 dark:text-white">
+        {t('settings.advanced')}
+      </h2>
+      <div className="card mt-2 p-5">
+        <div>
+          <label htmlFor="api-token" className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-200">
+            <KeyRound className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+            {t('settings.apiToken')}
+          </label>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <input
+                id="api-token"
+                type={showToken ? 'text' : 'password'}
+                value={token}
+                onChange={handleTokenChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleApply();
+                  }
+                }}
+                className="input w-full pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowToken((v) => !v)}
+                aria-label={showToken ? t('settings.apiTokenHide') : t('settings.apiTokenShow')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 transition hover:text-slate-600 dark:hover:text-slate-300"
+              >
+                {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+            <button type="button" onClick={handleApply} className="btn-primary shrink-0 px-4 py-2 text-sm">
+              {t('settings.apiTokenApply')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setToken('')}
+              className="btn-ghost shrink-0 px-4 py-2 text-sm"
+            >
+              {t('settings.apiTokenClear')}
+            </button>
+          </div>
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.apiTokenHint')}</p>
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{statusText}</p>
         </div>
       </div>
 
