@@ -11,8 +11,10 @@ function filterWorlds(query: URLSearchParams): World[] {
   const tags = parseList(query.get('tag'));
   const qualities = parseList(query.get('quality')) as ('good' | 'bad')[];
   const platforms = parseList(query.get('platform'));
-  const minCapacity = Number(query.get('minCapacity'));
-  const maxCapacity = Number(query.get('maxCapacity'));
+  const rawMinCapacity = query.get('minCapacity');
+  const rawMaxCapacity = query.get('maxCapacity');
+  const minCapacity = rawMinCapacity === null ? NaN : Number(rawMinCapacity);
+  const maxCapacity = rawMaxCapacity === null ? NaN : Number(rawMaxCapacity);
   const dayRange = Number(query.get('dayRange'));
   const highPriorityOnly = query.get('highPriority') === 'true';
 
