@@ -109,6 +109,16 @@ describe('SettingsPage', () => {
     expect(window.localStorage.getItem('sos-api-token')).toBe('abc123');
   });
 
+  it('clears the input value without persisting when Clear is clicked', () => {
+    window.localStorage.setItem('sos-api-token', 'abc123');
+    render(<SettingsPage />, { wrapper: Wrapper });
+    const input = screen.getByLabelText(/api token/i);
+    fireEvent.change(input, { target: { value: 'def456' } });
+    fireEvent.click(screen.getByRole('button', { name: /clear/i }));
+    expect((input as HTMLInputElement).value).toBe('');
+    expect(window.localStorage.getItem('sos-api-token')).toBe('abc123');
+  });
+
   it('removes the stored token when the cleared input is applied', () => {
     window.localStorage.setItem('sos-api-token', 'abc123');
     render(<SettingsPage />, { wrapper: Wrapper });

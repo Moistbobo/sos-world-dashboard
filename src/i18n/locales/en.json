@@ -151,6 +151,7 @@
     "apiTokenShow": "Show token",
     "apiTokenHide": "Hide token",
     "apiTokenApply": "Apply",
+    "apiTokenClear": "Clear",
     "viewMode": "World view mode",
     "viewModeHint": "Choose how worlds are displayed on the Worlds page.",
     "viewModeGrid": "Grid",

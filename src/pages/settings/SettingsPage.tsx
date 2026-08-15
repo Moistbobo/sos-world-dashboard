@@ -103,6 +103,13 @@ export function SettingsPage() {
             <button type="button" onClick={handleApply} className="btn-primary shrink-0 px-4 py-2 text-sm">
               {t('settings.apiTokenApply')}
             </button>
+            <button
+              type="button"
+              onClick={() => setToken('')}
+              className="btn-ghost shrink-0 px-4 py-2 text-sm"
+            >
+              {t('settings.apiTokenClear')}
+            </button>
           </div>
           <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.apiTokenHint')}</p>
           <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{statusText}</p>

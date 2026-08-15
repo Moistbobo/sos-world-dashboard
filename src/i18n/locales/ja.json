@@ -151,6 +151,7 @@
     "apiTokenShow": "トークンを表示",
     "apiTokenHide": "トークンを隠す",
     "apiTokenApply": "適用",
+    "apiTokenClear": "クリア",
     "viewMode": "ワールド表示形式",
     "viewModeHint": "ワールドページでの表示形式を選択してください。",
     "viewModeGrid": "グリッド",
