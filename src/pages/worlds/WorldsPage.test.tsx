@@ -7,6 +7,7 @@ import { WorldsPage } from './WorldsPage';
 import { WorldsPreferencesProvider } from '../../contexts/WorldsPreferencesContext';
 import { ListsProvider } from '../../contexts/ListsContext';
 import { resetListsDb } from '../../test/listsDb';
+import type { World } from '../../types';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,8 +35,8 @@ function Wrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-const mockWorlds = [
-  {
+function createMockWorld(overrides: Partial<World> = {}): World {
+  return {
     worldId: 'wrld_1',
     name: 'Test World',
     authorName: 'Tester',
@@ -44,11 +45,15 @@ const mockWorlds = [
     tags: ['chill'],
     imageUrl: '',
     vrchatUrl: '',
-    quality: 'good' as const,
+    quality: 'good',
     createdAt: '2024-01-01',
     internalAddDate: '2024-02-01',
-  },
-];
+    ...overrides,
+  };
+}
+
+let mockWorlds: World[] = [createMockWorld()];
+let mePermissions: string[] = [];
 
 let infiniteHasNextPage = true;
 let infiniteIsPending = false;
@@ -56,6 +61,13 @@ let paginationIsPending = false;
 const mockInfiniteFetchNextPage = vi.fn();
 
 vi.mock('../../hooks/useApi', () => ({
+  useMe: () => ({
+    data: {
+      name: 'Test User',
+      role: mePermissions.includes('worlds:write') ? 'curator' : 'viewer',
+      permissions: mePermissions,
+    },
+  }),
   useTags: () => ({ data: { tags: [] } }),
   useMeta: () => ({
     data: {
@@ -100,6 +112,8 @@ describe('WorldsPage', () => {
     infiniteHasNextPage = true;
     infiniteIsPending = false;
     paginationIsPending = false;
+    mockWorlds = [createMockWorld()];
+    mePermissions = [];
     queryClient.clear();
     window.localStorage.clear();
     await resetListsDb();
@@ -365,6 +379,25 @@ describe('WorldsPage', () => {
       renderPage(<WorldsPage />);
 
       expect(mockInfiniteFetchNextPage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('WorldsPage high priority', () => {
+    it('renders the high priority filter chip for tokens with worlds:write', () => {
+      mePermissions = ['worlds:read', 'worlds:write'];
+      renderPage(<WorldsPage />);
+      expect(screen.getByRole('button', { name: /high priority/i })).toBeInTheDocument();
+    });
+
+    it('hides the high priority filter chip for tokens without worlds:write', () => {
+      renderPage(<WorldsPage />);
+      expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
+    });
+
+    it('renders the high priority badge on a high-priority world', () => {
+      mockWorlds = [createMockWorld({ highPriority: true })];
+      renderPage(<WorldsPage />);
+      expect(screen.getByText('High Priority')).toBeInTheDocument();
     });
   });
 });

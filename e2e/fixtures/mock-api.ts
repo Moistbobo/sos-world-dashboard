@@ -1,5 +1,5 @@
 import type { Page, Route } from '@playwright/test';
-import { metaResponse, paginate, tagsResponse, worlds } from './worlds-fixtures';
+import { meResponse, metaResponse, paginate, tagsResponse, worlds } from './worlds-fixtures';
 import type { World } from '../src/types';
 
 function parseList(value: string | null): string[] {
@@ -14,8 +14,10 @@ function filterWorlds(query: URLSearchParams): World[] {
   const minCapacity = Number(query.get('minCapacity'));
   const maxCapacity = Number(query.get('maxCapacity'));
   const dayRange = Number(query.get('dayRange'));
+  const highPriorityOnly = query.get('highPriority') === 'true';
 
   return worlds.filter((w) => {
+    if (highPriorityOnly && w.highPriority !== true) return false;
     if (search) {
       const haystack = `${w.name} ${w.authorName}`.toLowerCase();
       if (!haystack.includes(search)) return false;
@@ -60,7 +62,7 @@ function json(route: Route, body: unknown, status = 200) {
  * not intercept Vite's `src/api/...` module URLs in dev mode.
  */
 export async function mockApi(page: Page) {
-  await page.route(/\/api\/(tags|meta|worlds(?:\/[^/]+)?|health)(?:[?#].*)?$/, async (route) => {
+  await page.route(/\/api\/(tags|meta|me|worlds(?:\/[^/]+)?|health)(?:[?#].*)?$/, async (route) => {
     const url = new URL(route.request().url());
     const path = url.pathname;
     const query = url.searchParams;
@@ -70,6 +72,9 @@ export async function mockApi(page: Page) {
     }
     if (path === '/api/meta') {
       return json(route, metaResponse);
+    }
+    if (path === '/api/me') {
+      return json(route, meResponse);
     }
     if (path === '/api/worlds' || path.startsWith('/api/worlds?')) {
       const limit = Number(query.get('limit') ?? 20);

@@ -29,6 +29,9 @@ interface FilterBarProps {
   onRemovePlatform: (platform: string) => void;
   dayRange: number | null;
   onDayRangeChange: (dayRange: number | null) => void;
+  showHighPriority?: boolean;
+  highPriority: boolean;
+  onToggleHighPriority: () => void;
 }
 
 export function FilterBar({
@@ -48,6 +51,9 @@ export function FilterBar({
   onRemovePlatform,
   dayRange,
   onDayRangeChange,
+  showHighPriority,
+  highPriority,
+  onToggleHighPriority,
 }: FilterBarProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
@@ -69,14 +75,16 @@ export function FilterBar({
     selectedQuality.length > 0 ||
     isCapacityActive ||
     selectedPlatforms.length > 0 ||
-    isDayRangeActive;
+    isDayRangeActive ||
+    highPriority;
 
   const activeFilterCount =
     selectedTags.length +
     selectedQuality.length +
     (isCapacityActive ? 1 : 0) +
     selectedPlatforms.length +
-    (isDayRangeActive ? 1 : 0);
+    (isDayRangeActive ? 1 : 0) +
+    (highPriority ? 1 : 0);
 
   return (
     <div className="card mb-4">
@@ -198,6 +206,24 @@ export function FilterBar({
             </button>
           </span>
         ))}
+
+        {showHighPriority && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleHighPriority();
+            }}
+            aria-pressed={highPriority}
+            className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2.5 text-sm font-medium ring-1 transition ${
+              highPriority
+                ? 'bg-amber-500/20 text-amber-700 ring-amber-500/30 dark:text-amber-300'
+                : 'bg-slate-100/50 text-slate-600 ring-slate-300 hover:bg-slate-200/60 dark:bg-slate-800/50 dark:text-slate-400 dark:ring-slate-700 dark:hover:bg-slate-800'
+            }`}
+          >
+            {t('filter.highPriority')}
+          </button>
+        )}
 
         {hasFilters && (
           <button

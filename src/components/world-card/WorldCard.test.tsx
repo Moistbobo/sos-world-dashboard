@@ -284,4 +284,19 @@ describe('WorldCard', () => {
       screen.getByTitle(/no vrchat link is available/i),
     ).toBeInTheDocument();
   });
+
+  it('renders the high priority badge when the world is high priority', () => {
+    render(<WorldCard world={{ ...mockWorld, highPriority: true }} />, { wrapper: Wrapper });
+    expect(screen.getByText('High Priority')).toBeInTheDocument();
+  });
+
+  it('does not render the high priority badge when the field is undefined', () => {
+    render(<WorldCard world={mockWorld} />, { wrapper: Wrapper });
+    expect(screen.queryByText('High Priority')).not.toBeInTheDocument();
+  });
+
+  it('does not render the high priority badge when the field is false', () => {
+    render(<WorldCard world={{ ...mockWorld, highPriority: false }} />, { wrapper: Wrapper });
+    expect(screen.queryByText('High Priority')).not.toBeInTheDocument();
+  });
 });
