@@ -10,12 +10,13 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('../../lib/supabase', () => ({
-  supabase: {
-    auth: {
-      getSession: mocks.getSession,
-      onAuthStateChange: mocks.onAuthStateChange,
-    },
-  },
+  getSupabase: () =>
+    Promise.resolve({
+      auth: {
+        getSession: mocks.getSession,
+        onAuthStateChange: mocks.onAuthStateChange,
+      },
+    }),
 }));
 
 describe('SentimentCommentList', () => {

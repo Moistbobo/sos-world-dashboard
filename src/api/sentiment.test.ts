@@ -26,14 +26,15 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('../lib/supabase', () => ({
-  supabase: {
-    auth: {
-      signInAnonymously: mocks.signInAnonymously,
-      getSession: mocks.getSession,
-    },
-    from: mocks.from,
-    rpc: mocks.rpc,
-  },
+  getSupabase: () =>
+    Promise.resolve({
+      auth: {
+        signInAnonymously: mocks.signInAnonymously,
+        getSession: mocks.getSession,
+      },
+      from: mocks.from,
+      rpc: mocks.rpc,
+    }),
 }));
 
 beforeEach(() => {

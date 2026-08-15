@@ -1,7 +1,6 @@
 import React, { Profiler, type ProfilerOnRenderCallback } from 'react';
 import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import './i18n';
 import './index.css';
 import App from './App';
@@ -11,6 +10,7 @@ import { ListsPreferencesProvider } from './contexts/ListsPreferencesContext';
 import { ListsProvider } from './contexts/ListsContext';
 import { Analytics } from '@vercel/analytics/react';
 import { Toaster } from './components/toaster';
+import { QueryDevtools } from './components/query-devtools';
 
 const queryClient = new QueryClient();
 
@@ -33,7 +33,7 @@ const app = (
       </WorldsPreferencesProvider>
       <Toaster />
     </ThemeProvider>
-    <ReactQueryDevtools initialIsOpen={false} />
+    {import.meta.env.DEV ? <QueryDevtools /> : null}
   </QueryClientProvider>
 );
 

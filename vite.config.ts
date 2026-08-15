@@ -11,6 +11,26 @@ function getGitShortSha(): string {
   }
 }
 
+function preloadRouteChunk(chunkPrefix: string) {
+  return {
+    name: `preload-${chunkPrefix}`,
+    apply: 'build' as const,
+    transformIndexHtml: {
+      order: 'post' as const,
+      handler(html: string, ctx: { bundle?: Record<string, unknown> }) {
+        const file = Object.keys(ctx.bundle ?? {}).find(
+          (name) => name.startsWith(`assets/${chunkPrefix}-`) && name.endsWith('.js'),
+        );
+        if (!file) return html;
+        return html.replace(
+          '<script type="module"',
+          `<link rel="modulepreload" crossorigin href="/${file}">\n    <script type="module"`,
+        );
+      },
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
   const compilerEnabled = env.VITE_REACT_COMPILER !== 'false'
@@ -21,7 +41,21 @@ export default defineConfig(({ mode }) => {
       babel: {
         plugins: compilerEnabled ? ['babel-plugin-react-compiler'] : [],
       },
-    })],
+    }), preloadRouteChunk('worlds')],
+    build: {
+      rolldownOptions: {
+        output: {
+          codeSplitting: {
+            groups: [
+              {
+                name: 'shared-ui',
+                test: /src\/components\/(save-to-list-dialog|tag-badge|list-icon)\/|node_modules\/lucide-react/,
+              },
+            ],
+          },
+        },
+      },
+    },
     resolve: {
       alias: benchmarkProfiler
         ? { 'react-dom/client': 'react-dom/profiling' }

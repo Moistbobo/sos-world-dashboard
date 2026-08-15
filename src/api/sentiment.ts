@@ -1,8 +1,15 @@
-import { supabase } from '../lib/supabase';
+import { getSupabase } from '../lib/supabase';
 import { generateUsername } from '../utils/username';
 import type { Comment, RatingSummary } from '../types';
 
+async function requireSupabase() {
+  const client = await getSupabase();
+  if (!client) throw new Error('Community sentiment is not configured');
+  return client;
+}
+
 async function ensureAnonymousUser(captchaToken?: string) {
+  const supabase = await requireSupabase();
   const { data: sessionData } = await supabase.auth.getSession();
   const existing = sessionData.session?.user;
   if (existing?.is_anonymous) {
@@ -17,11 +24,13 @@ async function ensureAnonymousUser(captchaToken?: string) {
 }
 
 export async function hasAnonymousSession(): Promise<boolean> {
+  const supabase = await requireSupabase();
   const { data: sessionData } = await supabase.auth.getSession();
   return sessionData.session?.user?.is_anonymous === true;
 }
 
 export async function fetchRatings(worldId: string): Promise<RatingSummary> {
+  const supabase = await requireSupabase();
   const { data, error } = await supabase
     .from('ratings_summary')
     .select('*')
@@ -41,6 +50,7 @@ export async function fetchRatings(worldId: string): Promise<RatingSummary> {
 export async function fetchRatingsForWorldIds(
   worldIds: readonly string[],
 ): Promise<Map<string, RatingSummary>> {
+  const supabase = await requireSupabase();
   const result = new Map<string, RatingSummary>();
   const uniqueIds = Array.from(new Set(worldIds));
   if (uniqueIds.length === 0) return result;
@@ -78,6 +88,7 @@ export async function fetchComments(
   worldId: string,
   params: FetchCommentsParams = {},
 ): Promise<FetchCommentsResult> {
+  const supabase = await requireSupabase();
   const limit = params.limit ?? 20;
   const offset = params.offset ?? 0;
 
@@ -108,6 +119,7 @@ export async function submitRating(
   value: 'good' | 'bad',
   captchaToken?: string,
 ): Promise<void> {
+  const supabase = await requireSupabase();
   const user = await ensureAnonymousUser(captchaToken);
   const { error } = await supabase.from('ratings').insert({
     world_id: worldId,
@@ -122,6 +134,7 @@ export async function updateRating(
   value: 'good' | 'bad',
   captchaToken?: string,
 ): Promise<void> {
+  const supabase = await requireSupabase();
   const user = await ensureAnonymousUser(captchaToken);
   const { error } = await supabase
     .from('ratings')
@@ -132,6 +145,7 @@ export async function updateRating(
 }
 
 export async function deleteRating(worldId: string, captchaToken?: string): Promise<void> {
+  const supabase = await requireSupabase();
   const user = await ensureAnonymousUser(captchaToken);
   const { error } = await supabase
     .from('ratings')
@@ -146,6 +160,7 @@ export async function submitComment(
   content: string,
   captchaToken?: string,
 ): Promise<Comment> {
+  const supabase = await requireSupabase();
   const user = await ensureAnonymousUser(captchaToken);
   const username = generateUsername();
   const { data, error } = await supabase
