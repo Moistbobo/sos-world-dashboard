@@ -30,6 +30,7 @@ export function SettingsPage() {
       clearStoredApiToken();
     }
     if (previous !== next) {
+      queryClient.removeQueries({ queryKey: ['me'] });
       queryClient.invalidateQueries({ queryKey: ['me'] });
     }
   }

@@ -130,4 +130,14 @@ describe('SettingsPage', () => {
     fireEvent.click(screen.getByLabelText('Hide token'));
     expect(input).toHaveAttribute('type', 'password');
   });
+
+  it('clears the cached me query when the token changes, so stale identity cannot persist', () => {
+    meData = { name: 'bot', role: 'curator', permissions: ['worlds:write'] };
+    const removeSpy = vi.spyOn(queryClient, 'removeQueries');
+    render(<SettingsPage />, { wrapper: Wrapper });
+    const input = screen.getByLabelText(/api token/i);
+    fireEvent.change(input, { target: { value: 'garbage-token' } });
+    expect(removeSpy).toHaveBeenCalledWith({ queryKey: ['me'] });
+    expect(window.localStorage.getItem('sos-api-token')).toBe('garbage-token');
+  });
 });
