@@ -285,3 +285,30 @@ describe('WorldCard', () => {
     ).toBeInTheDocument();
   });
 });
+
+describe('WorldCard curator badges', () => {
+  it('shows quality and high priority badges when showCuratorBadges is true (default)', () => {
+    render(
+      <WorldCard
+        world={{ ...mockWorld, highPriority: true }}
+        onSelect={vi.fn()}
+      />,
+      { wrapper: Wrapper },
+    );
+    expect(screen.getByText('Good')).toBeInTheDocument();
+    expect(screen.getByText('High Priority')).toBeInTheDocument();
+  });
+
+  it('hides quality and high priority badges when showCuratorBadges is false', () => {
+    render(
+      <WorldCard
+        world={{ ...mockWorld, highPriority: true }}
+        onSelect={vi.fn()}
+        showCuratorBadges={false}
+      />,
+      { wrapper: Wrapper },
+    );
+    expect(screen.queryByText('Good')).not.toBeInTheDocument();
+    expect(screen.queryByText('High Priority')).not.toBeInTheDocument();
+  });
+});

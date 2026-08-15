@@ -191,6 +191,7 @@ describe('WorldsPage', () => {
     const user = userEvent.setup();
     const scrollToSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
     mePermissions = ['worlds:read', 'worlds:write'];
+    window.localStorage.setItem('sos-api-token', 'curator-token');
 
     renderPage(<WorldsPage />);
     await user.click(screen.getByRole('button', { name: /filters/i }));
@@ -387,9 +388,10 @@ describe('WorldsPage', () => {
   });
 
   describe('WorldsPage high priority', () => {
-    it('renders the high priority filter toggle for tokens with worlds:write', async () => {
+    it('renders the high priority filter toggle for an entered token with worlds:write', async () => {
       const user = userEvent.setup();
       mePermissions = ['worlds:read', 'worlds:write'];
+      window.localStorage.setItem('sos-api-token', 'curator-token');
       renderPage(<WorldsPage />);
 
       await user.click(screen.getByRole('button', { name: /filters/i }));
@@ -399,6 +401,17 @@ describe('WorldsPage', () => {
 
     it('hides the high priority filter toggle for tokens without worlds:write', async () => {
       const user = userEvent.setup();
+      window.localStorage.setItem('sos-api-token', 'viewer-token');
+      renderPage(<WorldsPage />);
+
+      await user.click(screen.getByRole('button', { name: /filters/i }));
+
+      expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
+    });
+
+    it('hides the high priority filter toggle when no token was entered, even with curator identity', async () => {
+      const user = userEvent.setup();
+      mePermissions = ['worlds:read', 'worlds:write'];
       renderPage(<WorldsPage />);
 
       await user.click(screen.getByRole('button', { name: /filters/i }));
@@ -410,11 +423,27 @@ describe('WorldsPage', () => {
       const user = userEvent.setup();
       mePermissions = ['worlds:read', 'worlds:write'];
       meError = true;
+      window.localStorage.setItem('sos-api-token', 'curator-token');
       renderPage(<WorldsPage />);
 
       await user.click(screen.getByRole('button', { name: /filters/i }));
 
       expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
+    });
+
+    it('renders the high priority badge for curators with an entered token', async () => {
+      mePermissions = ['worlds:read', 'worlds:write'];
+      window.localStorage.setItem('sos-api-token', 'curator-token');
+      mockWorlds = [{ ...mockWorlds[0], highPriority: true }];
+      renderPage(<WorldsPage />);
+      expect(await screen.findByText('High Priority')).toBeInTheDocument();
+    });
+
+    it('does not render the high priority badge for viewers', async () => {
+      window.localStorage.setItem('sos-api-token', 'viewer-token');
+      mockWorlds = [{ ...mockWorlds[0], highPriority: true }];
+      renderPage(<WorldsPage />);
+      expect(screen.queryByText('High Priority')).not.toBeInTheDocument();
     });
   });
 });

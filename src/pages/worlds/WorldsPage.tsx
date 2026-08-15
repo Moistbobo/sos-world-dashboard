@@ -5,6 +5,7 @@ import { BeatLoader } from 'react-spinners';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
 import { useMe } from '../../hooks/useApi';
+import { getStoredApiToken } from '../../utils/tokenStorage';
 import { useWorldsFilters } from '../../hooks/useWorldsFilters';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useRatingsForWorldIds } from '../../hooks/useSentiment';
@@ -41,8 +42,9 @@ export function WorldsPage() {
   const { viewMode, setViewMode, scrollMode, setScrollMode } = useWorldsPreferences();
 
   const { data: me, isError: meError } = useMe();
-  const canManageHighPriority =
-    !meError && (me?.permissions.includes('worlds:write') ?? false);
+  const hasEnteredToken = Boolean(getStoredApiToken());
+  const canManageCurator =
+    hasEnteredToken && !meError && (me?.permissions.includes('worlds:write') ?? false);
 
   const {
     limit,
@@ -259,7 +261,7 @@ export function WorldsPage() {
         onRemovePlatform={handleRemovePlatform}
         dayRange={dayRange}
         onDayRangeChange={handleDayRangeChange}
-        showCurator={canManageHighPriority}
+        showCurator={canManageCurator}
         highPriority={highPriority}
         onToggleHighPriority={handleToggleHighPriority}
       />
@@ -369,6 +371,7 @@ export function WorldsPage() {
                     onTagClick={onTagClick}
                     onPlatformClick={onPlatformClick}
                     onAuthorClick={handleAuthorClick}
+                    showCuratorBadges={canManageCurator}
                     ratingSummary={ratingSummaries ? ratingSummaries.get(w.worldId) ?? null : undefined}
                   />
                 ))}
@@ -396,6 +399,7 @@ export function WorldsPage() {
                 world={worlds[row.index]}
                 onSelect={onSelect}
                 onAuthorClick={handleAuthorClick}
+                showCuratorBadges={canManageCurator}
                 ratingSummary={ratingSummaries ? ratingSummaries.get(worlds[row.index].worldId) ?? null : undefined}
               />
             </div>

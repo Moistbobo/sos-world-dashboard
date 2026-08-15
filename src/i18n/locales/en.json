@@ -31,6 +31,7 @@
     "unknown": "Unknown",
     "good": "Good",
     "bad": "Bad",
+    "highPriority": "High Priority",
     "more": "+{{count}}",
     "opensInNewTab": "Opens in new tab",
     "byAuthor": "by {{author}}",

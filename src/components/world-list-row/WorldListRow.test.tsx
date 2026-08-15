@@ -133,3 +133,28 @@ describe('WorldListRow', () => {
     expect(shimmer).toHaveAttribute('aria-hidden', 'true');
   });
 });
+
+describe('WorldListRow curator badges', () => {
+  it('shows the high priority badge when showCuratorBadges is true (default)', () => {
+    render(<WorldListRow world={{ ...mockWorld, highPriority: true }} onSelect={vi.fn()} />);
+    expect(screen.getByText('High Priority')).toBeInTheDocument();
+  });
+
+  it('hides the high priority badge when showCuratorBadges is false', () => {
+    render(
+      <WorldListRow
+        world={{ ...mockWorld, highPriority: true }}
+        onSelect={vi.fn()}
+        showCuratorBadges={false}
+      />,
+    );
+    expect(screen.queryByText('High Priority')).not.toBeInTheDocument();
+  });
+
+  it('hides the quality indicator when showCuratorBadges is false', () => {
+    const { container } = render(
+      <WorldListRow world={mockWorld} onSelect={vi.fn()} showCuratorBadges={false} />,
+    );
+    expect(container.textContent).not.toContain('✅');
+  });
+});

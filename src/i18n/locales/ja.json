@@ -31,6 +31,7 @@
     "unknown": "不明",
     "good": "良い",
     "bad": "悪い",
+    "highPriority": "優先度高",
     "more": "+{{count}}",
     "opensInNewTab": "新しいタブで開きます",
     "byAuthor": "{{author}} 作成",
