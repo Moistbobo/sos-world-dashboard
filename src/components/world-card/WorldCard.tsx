@@ -68,11 +68,6 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
               {t('common.bad')}
             </span>
           )}
-          {world.highPriority === true && (
-            <span className="rounded-md bg-amber-500/80 px-2 py-0.5 text-[10px] font-bold uppercase text-white backdrop-blur-sm">
-              {t('common.highPriority')}
-            </span>
-          )}
         </div>
         {!onRemove && (
           <button

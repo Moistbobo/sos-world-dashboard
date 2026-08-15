@@ -31,7 +31,6 @@
     "unknown": "不明",
     "good": "良い",
     "bad": "悪い",
-    "highPriority": "優先度高",
     "more": "+{{count}}",
     "opensInNewTab": "新しいタブで開きます",
     "byAuthor": "{{author}} 作成",
@@ -168,7 +167,7 @@
   },
   "filter": {
     "filters": "フィルタ",
-    "quality": "品質",
+    "curator": "キュレーター",
     "good": "✅ 良い",
     "bad": "❌ 悪い",
     "highPriority": "優先度の高いもののみ",

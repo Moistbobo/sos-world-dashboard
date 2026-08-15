@@ -21,7 +21,7 @@ const defaultProps = {
   onRemovePlatform: vi.fn(),
   dayRange: null as number | null,
   onDayRangeChange: vi.fn(),
-  showHighPriority: false,
+  showCurator: false,
   highPriority: false,
   onToggleHighPriority: vi.fn(),
 };
@@ -276,19 +276,33 @@ describe('FilterBar', () => {
   });
 });
 
-describe('FilterBar high priority chip', () => {
-  it('is not rendered when showHighPriority is false', () => {
+describe('FilterBar curator section', () => {
+  it('is not rendered when showCurator is false', async () => {
+    const user = userEvent.setup();
     renderFilterBar();
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+
+    expect(screen.queryByText('Curator')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
   });
 
-  it('is rendered when showHighPriority is true', () => {
-    renderFilterBar({ showHighPriority: true });
+  it('renders the curator row with the high priority toggle when showCurator is true', async () => {
+    const user = userEvent.setup();
+    renderFilterBar({ showCurator: true });
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+
+    expect(screen.getByText('Curator')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /high priority/i })).toBeInTheDocument();
   });
 
-  it('reflects the active filter state via aria-pressed', () => {
-    renderFilterBar({ showHighPriority: true, highPriority: true });
+  it('reflects the active filter state via aria-pressed', async () => {
+    const user = userEvent.setup();
+    renderFilterBar({ showCurator: true, highPriority: true });
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+
     expect(screen.getByRole('button', { name: /high priority/i })).toHaveAttribute(
       'aria-pressed',
       'true',
@@ -298,16 +312,28 @@ describe('FilterBar high priority chip', () => {
   it('calls onToggleHighPriority when clicked', async () => {
     const user = userEvent.setup();
     const onToggleHighPriority = vi.fn();
-    renderFilterBar({ showHighPriority: true, onToggleHighPriority });
+    renderFilterBar({ showCurator: true, onToggleHighPriority });
 
+    await user.click(screen.getByRole('button', { name: /filters/i }));
     await user.click(screen.getByRole('button', { name: /high priority/i }));
 
     expect(onToggleHighPriority).toHaveBeenCalledTimes(1);
   });
 
   it('counts toward the filter count badge when active', () => {
-    renderFilterBar({ showHighPriority: true, highPriority: true });
+    renderFilterBar({ showCurator: true, highPriority: true });
     expect(screen.getByText('1')).toBeInTheDocument();
+  });
+
+  it('toggles quality buttons when the curator row is visible', async () => {
+    const user = userEvent.setup();
+    const onToggleQuality = vi.fn();
+    renderFilterBar({ showCurator: true, onToggleQuality });
+
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+    await user.click(screen.getByRole('button', { name: /Good/ }));
+
+    expect(onToggleQuality).toHaveBeenCalledWith('good');
   });
 });
 
@@ -315,6 +341,7 @@ describe('FilterBar counts', () => {
   it('renders quality counts in expanded quality buttons', async () => {
     const user = userEvent.setup();
     renderFilterBar({
+      showCurator: true,
       qualityCounts: [
         { quality: 'good', count: 123 },
         { quality: 'bad', count: 12 },
@@ -346,11 +373,18 @@ describe('FilterBar counts', () => {
 
   it('does not show counts on selected quality chips in collapsed bar', () => {
     renderFilterBar({
+      showCurator: true,
       selectedQuality: ['good'],
       qualityCounts: [{ quality: 'good', count: 123 }],
     });
 
     expect(screen.queryByText(/Good \(123\)/)).not.toBeInTheDocument();
+  });
+
+  it('does not show selected quality chips in collapsed bar when showCurator is false', () => {
+    renderFilterBar({ selectedQuality: ['good'] });
+
+    expect(screen.queryByRole('button', { name: /good/i })).not.toBeInTheDocument();
   });
 
   it('does not show counts on selected platform chips in collapsed bar', () => {

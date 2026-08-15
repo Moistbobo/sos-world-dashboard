@@ -55,14 +55,7 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
         )}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5">
-          <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{world.name}</p>
-          {world.highPriority === true && (
-            <span className="shrink-0 rounded-md bg-amber-500/80 px-2 py-0.5 text-[10px] font-bold uppercase text-white backdrop-blur-sm">
-              {t('common.highPriority')}
-            </span>
-          )}
-        </div>
+        <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{world.name}</p>
         <p className="truncate text-xs text-slate-500 dark:text-slate-400">
           {world.authorName && onAuthorClick ? (
             <button

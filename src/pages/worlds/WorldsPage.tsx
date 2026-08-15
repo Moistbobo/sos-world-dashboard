@@ -258,7 +258,7 @@ export function WorldsPage() {
         onRemovePlatform={handleRemovePlatform}
         dayRange={dayRange}
         onDayRangeChange={handleDayRangeChange}
-        showHighPriority={canManageHighPriority}
+        showCurator={canManageHighPriority}
         highPriority={highPriority}
         onToggleHighPriority={handleToggleHighPriority}
       />

@@ -187,6 +187,7 @@ describe('WorldsPage', () => {
   it('does not scroll to top when filters change in infinite scroll mode', async () => {
     const user = userEvent.setup();
     const scrollToSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    mePermissions = ['worlds:read', 'worlds:write'];
 
     renderPage(<WorldsPage />);
     await user.click(screen.getByRole('button', { name: /filters/i }));
@@ -383,21 +384,23 @@ describe('WorldsPage', () => {
   });
 
   describe('WorldsPage high priority', () => {
-    it('renders the high priority filter chip for tokens with worlds:write', () => {
+    it('renders the high priority filter toggle for tokens with worlds:write', async () => {
+      const user = userEvent.setup();
       mePermissions = ['worlds:read', 'worlds:write'];
       renderPage(<WorldsPage />);
+
+      await user.click(screen.getByRole('button', { name: /filters/i }));
+
       expect(screen.getByRole('button', { name: /high priority/i })).toBeInTheDocument();
     });
 
-    it('hides the high priority filter chip for tokens without worlds:write', () => {
+    it('hides the high priority filter toggle for tokens without worlds:write', async () => {
+      const user = userEvent.setup();
       renderPage(<WorldsPage />);
-      expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
-    });
 
-    it('renders the high priority badge on a high-priority world', () => {
-      mockWorlds = [createMockWorld({ highPriority: true })];
-      renderPage(<WorldsPage />);
-      expect(screen.getByText('High Priority')).toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: /filters/i }));
+
+      expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
     });
   });
 });
