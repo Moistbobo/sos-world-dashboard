@@ -1,3 +1,4 @@
+import { getStoredApiToken } from '../utils/tokenStorage';
 import type {
   HealthResponse,
   MeResponse,
@@ -16,6 +17,8 @@ function getBaseUrl(): string {
 }
 
 function getToken(): string {
+  const stored = getStoredApiToken();
+  if (stored) return stored;
   const token = import.meta.env.VITE_API_BEARER_TOKEN;
   return typeof token === 'string' ? token : '';
 }

@@ -5,6 +5,7 @@ globalThis.fetch = vi.fn();
 
 beforeEach(() => {
   vi.clearAllMocks();
+  window.localStorage.clear();
 });
 
 afterEach(() => {
@@ -111,6 +112,37 @@ describe('fetchMe', () => {
 
     const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
     expect(init.headers).toMatchObject({ Authorization: 'Bearer test-token' });
+  });
+
+  it('prefers the stored API token over VITE_API_BEARER_TOKEN', async () => {
+    vi.stubEnv('VITE_API_BEARER_TOKEN', 'env-token');
+    window.localStorage.setItem('sos-api-token', 'stored-token');
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ name: 'Curator', role: 'curator', permissions: [] }),
+        { status: 200 }
+      )
+    );
+
+    await fetchMe();
+
+    const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+    expect(init.headers).toMatchObject({ Authorization: 'Bearer stored-token' });
+  });
+
+  it('falls back to VITE_API_BEARER_TOKEN when no token is stored', async () => {
+    vi.stubEnv('VITE_API_BEARER_TOKEN', 'env-token');
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ name: 'Curator', role: 'curator', permissions: [] }),
+        { status: 200 }
+      )
+    );
+
+    await fetchMe();
+
+    const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+    expect(init.headers).toMatchObject({ Authorization: 'Bearer env-token' });
   });
 });
 

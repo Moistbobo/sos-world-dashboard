@@ -1,9 +1,13 @@
+import { useState, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Languages, LayoutGrid, MousePointerClick, BellOff } from 'lucide-react';
+import { BellOff, Eye, EyeOff, KeyRound, Languages, LayoutGrid, MousePointerClick } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { LanguageSwitcher } from '../../components/language-switcher';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
 import { useListsPreferences } from '../../hooks/useListsPreferences';
+import { useMe } from '../../hooks/useApi';
+import { clearStoredApiToken, getStoredApiToken, setStoredApiToken } from '../../utils/tokenStorage';
 import { getAppVersion } from '../../config/version';
 
 export function SettingsPage() {
@@ -11,6 +15,35 @@ export function SettingsPage() {
   usePageTitle(t('settings.title'));
   const { viewMode, setViewMode, scrollMode, setScrollMode } = useWorldsPreferences();
   const { skipRemoveWorldConfirmation, setSkipRemoveWorldConfirmation } = useListsPreferences();
+  const queryClient = useQueryClient();
+  const { data: me, isError: meError, isPending: mePending } = useMe();
+  const [token, setToken] = useState(getStoredApiToken);
+  const [showToken, setShowToken] = useState(false);
+
+  function handleTokenChange(e: ChangeEvent<HTMLInputElement>) {
+    const next = e.target.value.trim();
+    const previous = getStoredApiToken();
+    setToken(next);
+    if (next) {
+      setStoredApiToken(next);
+    } else {
+      clearStoredApiToken();
+    }
+    if (previous !== next) {
+      queryClient.invalidateQueries({ queryKey: ['me'] });
+    }
+  }
+
+  let statusText: string;
+  if (token && me) {
+    statusText = t('settings.apiTokenConnected', { name: me.name, role: me.role });
+  } else if (token && meError) {
+    statusText = t('settings.apiTokenInvalid');
+  } else if (token && mePending) {
+    statusText = t('settings.apiTokenCustom');
+  } else {
+    statusText = t('settings.apiTokenDefault');
+  }
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -32,6 +65,32 @@ export function SettingsPage() {
           </label>
           <LanguageSwitcher />
           <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.languageHint')}</p>
+        </div>
+
+        <div>
+          <label htmlFor="api-token" className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-200">
+            <KeyRound className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+            {t('settings.apiToken')}
+          </label>
+          <div className="relative">
+            <input
+              id="api-token"
+              type={showToken ? 'text' : 'password'}
+              value={token}
+              onChange={handleTokenChange}
+              className="input w-full pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowToken((v) => !v)}
+              aria-label={showToken ? t('settings.apiTokenHide') : t('settings.apiTokenShow')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 transition hover:text-slate-600 dark:hover:text-slate-300"
+            >
+              {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t('settings.apiTokenHint')}</p>
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{statusText}</p>
         </div>
 
         <div>
