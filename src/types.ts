@@ -41,6 +41,7 @@ export interface MetaResponse {
   platformDesktop: number;
   platformAndroid: number;
   platformiOS: number;
+  highPriorityCount?: number;
 }
 
 export interface HealthResponse {

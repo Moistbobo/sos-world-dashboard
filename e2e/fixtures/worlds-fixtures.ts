@@ -69,9 +69,10 @@ export const tagsResponse: TagsResponse = {
 export const metaResponse: MetaResponse = {
   qualityGood: 2,
   qualityBad: 1,
-  platformDesktop: 2,
-  platformAndroid: 3,
+  platformDesktop: 3,
+  platformAndroid: 2,
   platformiOS: 1,
+  highPriorityCount: 2,
 };
 
 export const meResponse: MeResponse = {

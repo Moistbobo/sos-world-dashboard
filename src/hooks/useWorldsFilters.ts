@@ -312,6 +312,7 @@ export function useWorldsFilters(
     handleClear,
     availableTags: tagsData?.tags || [],
     qualityCounts,
+    highPriorityCount: metaData?.highPriorityCount,
     platformCounts,
     worlds,
     isPending,

@@ -70,6 +70,7 @@ export function WorldsPage() {
     handleClear,
     availableTags,
     qualityCounts,
+    highPriorityCount,
     platformCounts,
     worlds,
     isPending,
@@ -253,6 +254,7 @@ export function WorldsPage() {
         onClear={handleClear}
         availableTags={availableTags}
         qualityCounts={qualityCounts}
+        highPriorityCount={highPriorityCount}
         platformCounts={platformCounts}
         capacityRange={capacityRange}
         onCapacityChange={handleCapacityChange}

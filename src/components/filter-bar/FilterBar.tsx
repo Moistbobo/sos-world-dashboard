@@ -32,6 +32,7 @@ interface FilterBarProps {
   showCurator?: boolean;
   highPriority: boolean;
   onToggleHighPriority: () => void;
+  highPriorityCount?: number;
 }
 
 export function FilterBar({
@@ -54,6 +55,7 @@ export function FilterBar({
   showCurator,
   highPriority,
   onToggleHighPriority,
+  highPriorityCount,
 }: FilterBarProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
@@ -379,6 +381,12 @@ export function FilterBar({
                   }`}
                 >
                   {t('filter.highPriority')}
+                  {highPriorityCount !== undefined && (
+                    <span className="text-slate-400 dark:text-slate-500">
+                      {' '}
+                      ({highPriorityCount})
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
