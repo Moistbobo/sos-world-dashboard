@@ -18,7 +18,7 @@ export function WorldCurationActions({ world }: WorldCurationActionsProps) {
   };
 
   return (
-    <div className="mt-3 flex flex-wrap gap-1">
+    <div className="mt-3 flex flex-wrap gap-1.5">
       {state.kind !== 'quality-tagged' && (
         <>
           <button
@@ -28,7 +28,7 @@ export function WorldCurationActions({ world }: WorldCurationActionsProps) {
               e.stopPropagation();
               fire({ type: 'set-quality', quality: 'good' });
             }}
-            className="relative z-30 rounded-md bg-green-700 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="relative z-30 rounded-lg bg-green-700 px-3.5 py-2 text-sm font-medium text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('curator.markGood')}
           </button>
@@ -39,7 +39,7 @@ export function WorldCurationActions({ world }: WorldCurationActionsProps) {
               e.stopPropagation();
               fire({ type: 'set-quality', quality: 'bad' });
             }}
-            className="relative z-30 rounded-md bg-red-600 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="relative z-30 rounded-lg bg-red-600 px-3.5 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('curator.markBad')}
           </button>
@@ -53,7 +53,7 @@ export function WorldCurationActions({ world }: WorldCurationActionsProps) {
             e.stopPropagation();
             fire({ type: 'set-high-priority' });
           }}
-            className="relative z-30 rounded-md bg-amber-700 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-amber-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="relative z-30 rounded-lg bg-amber-700 px-3.5 py-2 text-sm font-medium text-white transition hover:bg-amber-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {t('curator.markHighPriority')}
         </button>
@@ -66,7 +66,7 @@ export function WorldCurationActions({ world }: WorldCurationActionsProps) {
             e.stopPropagation();
             fire({ type: 'clear-quality' });
           }}
-          className="relative z-30 rounded-md bg-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-700 dark:text-slate-200"
+          className="relative z-30 rounded-lg bg-slate-200 px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-700 dark:text-slate-200"
         >
           {t('curator.clearQuality')}
         </button>
