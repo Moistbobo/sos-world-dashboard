@@ -4,7 +4,10 @@ import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
 import { BeatLoader } from 'react-spinners';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
+import { useMe } from '../../hooks/useApi';
+import { getStoredApiToken } from '../../utils/tokenStorage';
 import { useWorldsFilters } from '../../hooks/useWorldsFilters';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { useRatingsForWorldIds } from '../../hooks/useSentiment';
 import { FilterBar } from '../../components/filter-bar';
 import { Pagination } from '../../components/pagination';
@@ -35,7 +38,13 @@ function getGridRowHeight(columnCount: number) {
 
 export function WorldsPage() {
   const { t } = useTranslation();
+  usePageTitle(t('worlds.title'));
   const { viewMode, setViewMode, scrollMode, setScrollMode } = useWorldsPreferences();
+
+  const { data: me, isError: meError } = useMe();
+  const hasEnteredToken = Boolean(getStoredApiToken());
+  const canManageCurator =
+    hasEnteredToken && !meError && (me?.permissions.includes('worlds:write') ?? false);
 
   const {
     limit,
@@ -53,12 +62,15 @@ export function WorldsPage() {
     handleCapacityChange,
     dayRange,
     handleDayRangeChange,
+    highPriority,
+    handleToggleHighPriority,
     searchInput,
     setSearchInput,
     handleAuthorClick,
     handleClear,
     availableTags,
     qualityCounts,
+    highPriorityCount,
     platformCounts,
     worlds,
     isPending,
@@ -242,6 +254,7 @@ export function WorldsPage() {
         onClear={handleClear}
         availableTags={availableTags}
         qualityCounts={qualityCounts}
+        highPriorityCount={highPriorityCount}
         platformCounts={platformCounts}
         capacityRange={capacityRange}
         onCapacityChange={handleCapacityChange}
@@ -250,7 +263,12 @@ export function WorldsPage() {
         onRemovePlatform={handleRemovePlatform}
         dayRange={dayRange}
         onDayRangeChange={handleDayRangeChange}
+        showCurator={canManageCurator}
+        highPriority={highPriority}
+        onToggleHighPriority={handleToggleHighPriority}
       />
+
+      <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('worlds.resultsSection')}</h2>
 
       <div className="flex items-center justify-between gap-3">
         <div className="relative flex-1 max-w-sm">
@@ -260,11 +278,12 @@ export function WorldsPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder={t('worlds.searchPlaceholder')}
+            aria-label={t('worlds.searchLabel')}
             className="input w-full pl-9"
           />
         </div>
         {!isError && (
-          <p className="hidden items-center gap-2 text-sm text-slate-600 dark:text-slate-400 sm:flex">
+          <p role="status" className="hidden items-center gap-2 text-sm text-slate-600 dark:text-slate-400 sm:flex">
             <span>{t('worlds.numberOfResultsLabel')}</span>
             {isPending ? (
               <BeatLoader size={6} color="currentColor" aria-label={t('worlds.loadingResultCount')} />
@@ -277,6 +296,7 @@ export function WorldsPage() {
           <button
             onClick={() => setViewMode('grid')}
             aria-label={t('worlds.gridView')}
+            aria-pressed={viewMode === 'grid'}
             className={`flex h-11 w-11 items-center justify-center rounded-md transition ${
               viewMode === 'grid'
                 ? 'bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-white'
@@ -288,6 +308,7 @@ export function WorldsPage() {
           <button
             onClick={() => setViewMode('list')}
             aria-label={t('worlds.listView')}
+            aria-pressed={viewMode === 'list'}
             className={`flex h-11 w-11 items-center justify-center rounded-md transition ${
               viewMode === 'list'
                 ? 'bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-white'
@@ -300,7 +321,10 @@ export function WorldsPage() {
       </div>
 
       {isError && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300">
+        <div
+          role="status"
+          className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300"
+        >
           {t('worlds.loadError', { message: error?.message })}
         </div>
       )}
@@ -314,7 +338,10 @@ export function WorldsPage() {
       )}
 
       {!isPending && !isError && worlds.length === 0 && (
-        <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
+        <div
+          role="status"
+          className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400"
+        >
           {t('worlds.noWorlds')}{' '}
           <button onClick={() => refetch()} className="text-indigo-600 underline dark:text-indigo-400">
             {t('worlds.tryAgain')}
@@ -346,6 +373,8 @@ export function WorldsPage() {
                     onTagClick={onTagClick}
                     onPlatformClick={onPlatformClick}
                     onAuthorClick={handleAuthorClick}
+                    showCuratorBadges={canManageCurator}
+                    canCurate={canManageCurator}
                     ratingSummary={ratingSummaries ? ratingSummaries.get(w.worldId) ?? null : undefined}
                   />
                 ))}
@@ -373,6 +402,7 @@ export function WorldsPage() {
                 world={worlds[row.index]}
                 onSelect={onSelect}
                 onAuthorClick={handleAuthorClick}
+                showCuratorBadges={canManageCurator}
                 ratingSummary={ratingSummaries ? ratingSummaries.get(worlds[row.index].worldId) ?? null : undefined}
               />
             </div>
@@ -383,7 +413,9 @@ export function WorldsPage() {
       {scrollMode === 'infinite' && !isError && (
         <div ref={sentinelRef} className="flex justify-center py-4">
           {infiniteQuery.isFetchingNextPage && (
-            <span className="text-sm text-slate-500 dark:text-slate-400">{t('worlds.loadingMore')}</span>
+            <span aria-live="polite" className="text-sm text-slate-500 dark:text-slate-400">
+              {t('worlds.loadingMore')}
+            </span>
           )}
         </div>
       )}

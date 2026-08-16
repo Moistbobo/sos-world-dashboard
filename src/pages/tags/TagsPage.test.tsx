@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, fireEvent, within } from '@testing-library/react';
+import { render, fireEvent, within, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { TagsPage } from './TagsPage';
@@ -58,6 +58,11 @@ describe('TagsPage', () => {
     allButtons.forEach((btn) => {
       expect(btn.querySelector('button')).toBeNull();
     });
+  });
+
+  it('gives the search input an accessible name', () => {
+    render(<TagsPage />, { wrapper: Wrapper });
+    expect(screen.getByRole('textbox', { name: /search tags/i })).toBeInTheDocument();
   });
 
   it('selecting a tag card via the keyboard triggers navigation', () => {

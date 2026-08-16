@@ -12,9 +12,10 @@ interface WorldListRowProps {
   onSelect: (worldId: string) => void;
   onAuthorClick?: (authorName: string) => void;
   ratingSummary?: RatingSummary | null | undefined;
+  showCuratorBadges?: boolean;
 }
 
-export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuthorClick, ratingSummary }: WorldListRowProps) {
+export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuthorClick, ratingSummary, showCuratorBadges = true }: WorldListRowProps) {
   const { t } = useTranslation();
 
   const handleSelect = () => onSelect(world.worldId);
@@ -55,7 +56,14 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
         )}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{world.name}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{world.name}</p>
+          {showCuratorBadges && world.highPriority === true && (
+            <span className="shrink-0 rounded-md bg-amber-500/80 px-2 py-0.5 text-[10px] font-bold uppercase text-white backdrop-blur-sm">
+              {t('common.highPriority')}
+            </span>
+          )}
+        </div>
         <p className="truncate text-xs text-slate-500 dark:text-slate-400">
           {world.authorName && onAuthorClick ? (
             <button
@@ -100,7 +108,13 @@ export const WorldListRow = memo(function WorldListRow({ world, onSelect, onAuth
         </div>
       )}
       <div className="shrink-0 text-xs text-slate-400 dark:text-slate-500">
-        {world.quality === 'good' ? '✅' : world.quality === 'bad' ? '❌' : '—'}
+        {showCuratorBadges
+          ? world.quality === 'good'
+            ? '✅'
+            : world.quality === 'bad'
+              ? '❌'
+              : '—'
+          : '—'}
       </div>
     </div>
   );

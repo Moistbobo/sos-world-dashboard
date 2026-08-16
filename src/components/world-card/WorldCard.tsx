@@ -10,6 +10,7 @@ import { ShareButton } from '../share-button';
 import { useLists } from '../../contexts/ListsContext';
 import { SaveToListDialog } from '../save-to-list-dialog/SaveToListDialog';
 import { WorldRatingBar } from '../world-rating-bar';
+import { WorldCurationActions } from '../world-curation-actions';
 
 interface WorldCardProps {
   world: World;
@@ -19,9 +20,11 @@ interface WorldCardProps {
   onRemove?: () => void;
   onAuthorClick?: (authorName: string) => void;
   ratingSummary?: RatingSummary | null | undefined;
+  showCuratorBadges?: boolean;
+  canCurate?: boolean;
 }
 
-export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemove, onAuthorClick, ratingSummary }: WorldCardProps) {
+export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemove, onAuthorClick, ratingSummary, showCuratorBadges = true, canCurate = false }: WorldCardProps) {
   const { t } = useTranslation();
   const { isWorldInAnyList } = useLists();
   const [saveOpen, setSaveOpen] = useState(false);
@@ -58,14 +61,19 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
           </div>
         )}
         <div className="absolute top-2 left-2 z-10 flex gap-1">
-          {world.quality === 'good' && (
+          {showCuratorBadges && world.quality === 'good' && (
             <span className="rounded-md bg-green-500/80 px-2 py-0.5 text-[10px] font-bold uppercase text-white backdrop-blur-sm">
               {t('common.good')}
             </span>
           )}
-          {world.quality === 'bad' && (
+          {showCuratorBadges && world.quality === 'bad' && (
             <span className="rounded-md bg-red-500/80 px-2 py-0.5 text-[10px] font-bold uppercase text-white backdrop-blur-sm">
               {t('common.bad')}
+            </span>
+          )}
+          {showCuratorBadges && world.highPriority === true && (
+            <span className="rounded-md bg-amber-500/80 px-2 py-0.5 text-[10px] font-bold uppercase text-white backdrop-blur-sm">
+              {t('common.highPriority')}
             </span>
           )}
         </div>
@@ -168,6 +176,8 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
           )}
         </div>
 
+        {canCurate && <WorldCurationActions world={world} />}
+
         {ratingSummary !== undefined && (
           <WorldRatingBar
             summary={
@@ -189,6 +199,7 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
             >
               <ExternalLink className="h-4 w-4" />
               {t('worldDetail.openInVRChat')}
+              <span className="sr-only"> {t('common.opensInNewTab')}</span>
             </a>
           ) : (
             <span

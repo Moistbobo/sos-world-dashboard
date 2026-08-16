@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useMeta, useTags, useWorld } from './useApi';
+import { toast } from 'sonner';
+import { useMe, useMeta, useTags, useWorld } from './useApi';
 import * as client from '../api/client';
 import type { World } from '../types';
 
@@ -163,5 +164,39 @@ describe('useTags', () => {
 
     renderHook(() => useTags(), { wrapper: Wrapper });
     await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
+  });
+});
+
+describe('useMe', () => {
+  beforeEach(() => {
+    queryClient.clear();
+    vi.clearAllMocks();
+  });
+
+  it('returns the current user with role and permissions', async () => {
+    vi.spyOn(client, 'fetchMe').mockResolvedValue({
+      name: 'Curator',
+      role: 'curator',
+      permissions: ['worlds:read', 'worlds:write'],
+    });
+
+    const { result } = renderHook(() => useMe(), { wrapper: Wrapper });
+
+    await waitFor(() => expect(result.current.isPending).toBe(false));
+    expect(result.current.data).toEqual({
+      name: 'Curator',
+      role: 'curator',
+      permissions: ['worlds:read', 'worlds:write'],
+    });
+    expect(client.fetchMe).toHaveBeenCalledTimes(1);
+  });
+
+  it('suppresses the error toast by default when the request fails', async () => {
+    vi.spyOn(client, 'fetchMe').mockRejectedValue(new Error('unauthorized'));
+
+    const { result } = renderHook(() => useMe(), { wrapper: Wrapper });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(toast.error).not.toHaveBeenCalled();
   });
 });

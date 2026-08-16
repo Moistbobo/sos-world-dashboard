@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Pencil, List, Upload, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLists } from '../../contexts/ListsContext';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { ListFormDialog } from '../../components/list-form-dialog/ListFormDialog';
 import { ImportDialog } from '../../components/import-dialog';
 import { ConfirmDialog } from '../../components/confirm-dialog';
@@ -12,6 +13,7 @@ import { ListIcon } from '../../utils/listIcon';
 
 export function ListsPage() {
   const { t } = useTranslation();
+  usePageTitle(t('lists.title'));
   const navigate = useNavigate();
   const {
     lists,
@@ -137,6 +139,10 @@ export function ListsPage() {
         </div>
       ) : (
         <>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
+            {t('lists.listsSection')}
+          </h2>
+
           {error && (
             <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300">
               {t('lists.storageErrorMessage', { message: error })}
