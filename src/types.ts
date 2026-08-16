@@ -8,8 +8,15 @@ export interface World {
   imageUrl: string;
   vrchatUrl: string;
   quality: 'good' | 'bad' | null;
+  highPriority?: boolean;
   createdAt: string;
   internalAddDate?: string;
+}
+
+export interface MeResponse {
+  name: string;
+  role: string;
+  permissions: string[];
 }
 
 export interface PaginatedWorlds {
@@ -34,6 +41,7 @@ export interface MetaResponse {
   platformDesktop: number;
   platformAndroid: number;
   platformiOS: number;
+  highPriorityCount?: number;
 }
 
 export interface HealthResponse {

@@ -1,10 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fetchMeta, fetchWorlds } from './client';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { fetchMe, fetchMeta, fetchWorlds } from './client';
 
 globalThis.fetch = vi.fn();
 
 beforeEach(() => {
   vi.clearAllMocks();
+  window.localStorage.clear();
+});
+
+afterEach(() => {
+  vi.unstubAllEnvs();
 });
 
 describe('fetchWorlds', () => {
@@ -53,6 +58,91 @@ describe('fetchWorlds', () => {
     await fetchWorlds({ limit: 10 });
     const url = vi.mocked(fetch).mock.calls[0][0] as string;
     expect(url).not.toContain('dayRange');
+  });
+
+  it('includes highPriority=true when enabled', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ worlds: [], total: 0, limit: 20, offset: 0 }), { status: 200 })
+    );
+    await fetchWorlds({ highPriority: true });
+    const url = vi.mocked(fetch).mock.calls[0][0] as string;
+    expect(url).toContain('highPriority=true');
+  });
+
+  it('omits highPriority when not provided', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ worlds: [], total: 0, limit: 20, offset: 0 }), { status: 200 })
+    );
+    await fetchWorlds({ limit: 10 });
+    const url = vi.mocked(fetch).mock.calls[0][0] as string;
+    expect(url).not.toContain('highPriority');
+  });
+});
+
+describe('fetchMe', () => {
+  it('fetches /api/me and returns the response body', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ name: 'Curator', role: 'curator', permissions: ['worlds:write'] }),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchMe();
+
+    const url = vi.mocked(fetch).mock.calls[0][0] as string;
+    expect(url).toContain('/api/me');
+    expect(result).toEqual({
+      name: 'Curator',
+      role: 'curator',
+      permissions: ['worlds:write'],
+    });
+  });
+
+  it('sends the bearer token when VITE_API_BEARER_TOKEN is set', async () => {
+    vi.stubEnv('VITE_API_BEARER_TOKEN', 'test-token');
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ name: 'Curator', role: 'curator', permissions: [] }),
+        { status: 200 }
+      )
+    );
+
+    await fetchMe();
+
+    const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+    expect(init.headers).toMatchObject({ Authorization: 'Bearer test-token' });
+  });
+
+  it('prefers the stored API token over VITE_API_BEARER_TOKEN', async () => {
+    vi.stubEnv('VITE_API_BEARER_TOKEN', 'env-token');
+    window.localStorage.setItem('sos-api-token', 'stored-token');
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ name: 'Curator', role: 'curator', permissions: [] }),
+        { status: 200 }
+      )
+    );
+
+    await fetchMe();
+
+    const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+    expect(init.headers).toMatchObject({ Authorization: 'Bearer stored-token' });
+  });
+
+  it('falls back to VITE_API_BEARER_TOKEN when no token is stored', async () => {
+    vi.stubEnv('VITE_API_BEARER_TOKEN', 'env-token');
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ name: 'Curator', role: 'curator', permissions: [] }),
+        { status: 200 }
+      )
+    );
+
+    await fetchMe();
+
+    const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+    expect(init.headers).toMatchObject({ Authorization: 'Bearer env-token' });
   });
 });
 

@@ -29,6 +29,10 @@ interface FilterBarProps {
   onRemovePlatform: (platform: string) => void;
   dayRange: number | null;
   onDayRangeChange: (dayRange: number | null) => void;
+  showCurator?: boolean;
+  highPriority: boolean;
+  onToggleHighPriority: () => void;
+  highPriorityCount?: number;
 }
 
 export function FilterBar({
@@ -48,6 +52,10 @@ export function FilterBar({
   onRemovePlatform,
   dayRange,
   onDayRangeChange,
+  showCurator,
+  highPriority,
+  onToggleHighPriority,
+  highPriorityCount,
 }: FilterBarProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
@@ -69,14 +77,16 @@ export function FilterBar({
     selectedQuality.length > 0 ||
     isCapacityActive ||
     selectedPlatforms.length > 0 ||
-    isDayRangeActive;
+    isDayRangeActive ||
+    highPriority;
 
   const activeFilterCount =
     selectedTags.length +
     selectedQuality.length +
     (isCapacityActive ? 1 : 0) +
     selectedPlatforms.length +
-    (isDayRangeActive ? 1 : 0);
+    (isDayRangeActive ? 1 : 0) +
+    (highPriority ? 1 : 0);
 
   return (
     <div className="card mb-4">
@@ -173,31 +183,32 @@ export function FilterBar({
           </span>
         ))}
 
-        {selectedQuality.map((q) => (
-          <span
-            key={q}
-            className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2.5 text-sm font-medium ring-1 ${
-              q === 'good'
-                ? 'bg-green-500/20 text-green-700 ring-green-500/30 dark:text-green-300'
-                : 'bg-red-500/20 text-red-700 ring-red-500/30 dark:text-red-300'
-            }`}
-          >
-            {q === 'good' ? t('filter.good') : t('filter.bad')}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleQuality(q);
-              }}
-              className={`flex h-6 w-6 items-center justify-center rounded-full ${
+        {showCurator &&
+          selectedQuality.map((q) => (
+            <span
+              key={q}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2.5 text-sm font-medium ring-1 ${
                 q === 'good'
-                  ? 'hover:text-green-900 dark:hover:text-green-200'
-                  : 'hover:text-red-900 dark:hover:text-red-200'
+                  ? 'bg-green-500/20 text-green-700 ring-green-500/30 dark:text-green-300'
+                  : 'bg-red-500/20 text-red-700 ring-red-500/30 dark:text-red-300'
               }`}
             >
-              <X className="h-4 w-4" />
-            </button>
-          </span>
-        ))}
+              {q === 'good' ? t('filter.good') : t('filter.bad')}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleQuality(q);
+                }}
+                className={`flex h-6 w-6 items-center justify-center rounded-full ${
+                  q === 'good'
+                    ? 'hover:text-green-900 dark:hover:text-green-200'
+                    : 'hover:text-red-900 dark:hover:text-red-200'
+                }`}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </span>
+          ))}
 
         {hasFilters && (
           <button
@@ -230,33 +241,6 @@ export function FilterBar({
                   {getEmojiForTag(t.tag)} {t.tag} <span className="text-slate-400 dark:text-slate-500">({t.count})</span>
                 </button>
               ))}
-            </div>
-          </div>
-
-          <div className="mb-3">
-            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.quality')}</label>
-            <div className="flex gap-2">
-              {(['good', 'bad'] as const).map((q) => {
-                const count = qualityCountMap.get(q);
-                return (
-                  <button
-                    key={q}
-                    onClick={() => onToggleQuality(q)}
-                    className={`min-h-12 rounded-lg border px-4 py-2 text-sm font-medium transition ${
-                      selectedQuality.includes(q)
-                        ? q === 'good'
-                          ? 'border-green-500/40 bg-green-500/15 text-green-700 dark:text-green-300'
-                          : 'border-red-500/40 bg-red-500/15 text-red-700 dark:text-red-300'
-                        : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
-                    }`}
-                  >
-                    {q === 'good' ? t('filter.good') : t('filter.bad')}
-                    {count !== undefined && (
-                      <span className="text-slate-400 dark:text-slate-500"> ({count})</span>
-                    )}
-                  </button>
-                );
-              })}
             </div>
           </div>
 
@@ -360,6 +344,53 @@ export function FilterBar({
               <span className="text-xs text-slate-500 dark:text-slate-400">{t('filter.days')}</span>
             </div>
           </div>
+
+          {showCurator && (
+            <div className="mb-3">
+              <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">{t('filter.curator')}</label>
+              <div className="flex flex-wrap gap-2">
+                {(['good', 'bad'] as const).map((q) => {
+                  const count = qualityCountMap.get(q);
+                  return (
+                    <button
+                      key={q}
+                      onClick={() => onToggleQuality(q)}
+                      className={`min-h-12 rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                        selectedQuality.includes(q)
+                          ? q === 'good'
+                            ? 'border-green-500/40 bg-green-500/15 text-green-700 dark:text-green-300'
+                            : 'border-red-500/40 bg-red-500/15 text-red-700 dark:text-red-300'
+                          : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
+                      }`}
+                    >
+                      {q === 'good' ? t('filter.good') : t('filter.bad')}
+                      {count !== undefined && (
+                        <span className="text-slate-400 dark:text-slate-500"> ({count})</span>
+                      )}
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={onToggleHighPriority}
+                  aria-pressed={highPriority}
+                  className={`min-h-12 rounded-lg border px-3.5 py-2 text-sm font-medium transition ${
+                    highPriority
+                      ? 'border-amber-500/40 bg-amber-500/15 text-amber-700 dark:text-amber-300'
+                      : 'border-slate-300 bg-slate-100/50 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-slate-600'
+                  }`}
+                >
+                  {t('filter.highPriority')}
+                  {highPriorityCount !== undefined && (
+                    <span className="text-slate-400 dark:text-slate-500">
+                      {' '}
+                      ({highPriorityCount})
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

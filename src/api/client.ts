@@ -1,4 +1,12 @@
-import type { HealthResponse, MetaResponse, PaginatedWorlds, TagsResponse, World } from '../types';
+import { getStoredApiToken } from '../utils/tokenStorage';
+import type {
+  HealthResponse,
+  MeResponse,
+  MetaResponse,
+  PaginatedWorlds,
+  TagsResponse,
+  World,
+} from '../types';
 
 function getBaseUrl(): string {
   const url = import.meta.env.VITE_API_BASE_URL;
@@ -9,6 +17,8 @@ function getBaseUrl(): string {
 }
 
 function getToken(): string {
+  const stored = getStoredApiToken();
+  if (stored) return stored;
   const token = import.meta.env.VITE_API_BEARER_TOKEN;
   return typeof token === 'string' ? token : '';
 }
@@ -49,6 +59,7 @@ export async function fetchWorlds(params?: {
   offset?: number;
   tag?: string[];
   quality?: ('good' | 'bad')[];
+  highPriority?: boolean;
   search?: string;
   minCapacity?: number;
   maxCapacity?: number;
@@ -62,6 +73,7 @@ export async function fetchWorlds(params?: {
   if (params?.search?.trim()) qs.set('search', params.search.trim());
   if (params?.minCapacity !== undefined) qs.set('minCapacity', String(params.minCapacity));
   if (params?.maxCapacity !== undefined) qs.set('maxCapacity', String(params.maxCapacity));
+  if (params?.highPriority) qs.set('highPriority', 'true');
   if (params?.tag?.length) {
     for (const t of params.tag) qs.append('tag', t);
   }
@@ -92,6 +104,10 @@ export async function fetchWorldsByIds(worldIds: string[]): Promise<World[]> {
 
 export async function fetchWorld(worldId: string): Promise<World> {
   return request(`/api/worlds/${encodeURIComponent(worldId)}`);
+}
+
+export async function fetchMe(): Promise<MeResponse> {
+  return request('/api/me');
 }
 
 export async function fetchTags(): Promise<TagsResponse> {

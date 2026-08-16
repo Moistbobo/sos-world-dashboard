@@ -32,6 +32,9 @@ export function useWorldsFilters(
     const quality = searchParams.get('quality');
     return quality === 'good' || quality === 'bad' ? [quality] : [];
   });
+  const [highPriority, setHighPriority] = useState<boolean>(
+    () => searchParams.get('highPriority') === 'true',
+  );
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(() =>
     searchParams.getAll('platform')
   );
@@ -82,6 +85,7 @@ export function useWorldsFilters(
       offset,
       tag: selectedTags,
       quality: selectedQuality,
+      highPriority,
       platform: selectedPlatforms,
       search: searchQuery,
       minCapacity: capacityRange.min,
@@ -97,6 +101,7 @@ export function useWorldsFilters(
       limit,
       tag: selectedTags,
       quality: selectedQuality,
+      highPriority,
       platform: selectedPlatforms,
       search: searchQuery,
       minCapacity: capacityRange.min,
@@ -119,12 +124,13 @@ export function useWorldsFilters(
       next.append('platform', p);
     }
     if (dayRange !== null) next.set('dayRange', String(dayRange));
+    if (highPriority) next.set('highPriority', 'true');
     if (searchQuery) next.set('search', searchQuery);
     const nextSearch = next.toString();
     if (nextSearch === lastSearchRef.current) return;
     lastSearchRef.current = nextSearch;
     setSearchParams(next, { replace: true });
-  }, [selectedTags, selectedQuality, capacityRange, selectedPlatforms, dayRange, searchQuery, setSearchParams]);
+  }, [selectedTags, selectedQuality, highPriority, capacityRange, selectedPlatforms, dayRange, searchQuery, setSearchParams]);
 
   // Debounce search input
   useEffect(() => {
@@ -155,6 +161,11 @@ export function useWorldsFilters(
     resetToFirstPage();
   };
 
+  const handleToggleHighPriority = () => {
+    setHighPriority((prev) => !prev);
+    resetToFirstPage();
+  };
+
   const handleTogglePlatform = (platform: string) => {
     setSelectedPlatforms((prev) =>
       prev.includes(platform) ? prev.filter((p) => p !== platform) : [...prev, platform]
@@ -180,6 +191,7 @@ export function useWorldsFilters(
   const handleClear = () => {
     setSelectedTags([]);
     setSelectedQuality([]);
+    setHighPriority(false);
     setSelectedPlatforms([]);
     setCapacityRange({ min: MIN_CAPACITY, max: MAX_CAPACITY });
     setDayRange(null);
@@ -284,6 +296,8 @@ export function useWorldsFilters(
     handleRemoveTag,
     selectedQuality,
     handleToggleQuality,
+    highPriority,
+    handleToggleHighPriority,
     selectedPlatforms,
     handleTogglePlatform,
     handleRemovePlatform,
@@ -298,6 +312,7 @@ export function useWorldsFilters(
     handleClear,
     availableTags: tagsData?.tags || [],
     qualityCounts,
+    highPriorityCount: metaData?.highPriorityCount,
     platformCounts,
     worlds,
     isPending,

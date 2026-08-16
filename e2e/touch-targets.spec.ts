@@ -19,6 +19,8 @@ test.describe('VR touch targets', () => {
   });
 
   test('filter chips (Tags, Quality, Platform, Date tagged) are >=48px tall', async ({ page }) => {
+    // Quality chips are curator-only, so visit with an entered curator token.
+    await visitWorlds(page, { scrollMode: 'pagination', viewMode: 'grid', curator: true });
     await expandFilters(page);
 
     const tagChip = page.getByRole('button', { name: /chill\s+\(\d+\)/ });

@@ -21,6 +21,10 @@ const defaultProps = {
   onRemovePlatform: vi.fn(),
   dayRange: null as number | null,
   onDayRangeChange: vi.fn(),
+  showCurator: false,
+  highPriority: false,
+  onToggleHighPriority: vi.fn(),
+  highPriorityCount: undefined as number | undefined,
 };
 
 function renderFilterBar(props: Partial<typeof defaultProps> = {}) {
@@ -273,10 +277,111 @@ describe('FilterBar', () => {
   });
 });
 
+describe('FilterBar curator section', () => {
+  const expandFilters = async (user: ReturnType<typeof userEvent.setup>) => {
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+  };
+
+  it('is not rendered when showCurator is false', async () => {
+    const user = userEvent.setup();
+    renderFilterBar();
+
+    await expandFilters(user);
+
+    expect(screen.queryByText('Curator')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
+  });
+
+  it('renders quality buttons and the high priority toggle for curators', async () => {
+    const user = userEvent.setup();
+    renderFilterBar({ showCurator: true });
+
+    await expandFilters(user);
+
+    expect(screen.getByText('Curator')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /good/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /bad/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /high priority/i })).toBeInTheDocument();
+  });
+
+  it('shows the high priority world count when provided', async () => {
+    const user = userEvent.setup();
+    renderFilterBar({ showCurator: true, highPriorityCount: 7 });
+
+    await expandFilters(user);
+
+    expect(
+      screen.getByRole('button', { name: /high priority\s*\(7\)/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('omits the high priority count when undefined', async () => {
+    const user = userEvent.setup();
+    renderFilterBar({ showCurator: true });
+
+    await expandFilters(user);
+
+    const toggle = screen.getByRole('button', { name: /high priority/i });
+    expect(toggle.textContent).not.toMatch(/\(\d+\)/);
+  });
+
+  it('reflects the active filter state via aria-pressed', async () => {
+    const user = userEvent.setup();
+    renderFilterBar({ showCurator: true, highPriority: true });
+
+    await expandFilters(user);
+
+    expect(screen.getByRole('button', { name: /high priority/i })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
+
+  it('calls onToggleHighPriority when clicked', async () => {
+    const user = userEvent.setup();
+    const onToggleHighPriority = vi.fn();
+    renderFilterBar({ showCurator: true, onToggleHighPriority });
+
+    await expandFilters(user);
+    await user.click(screen.getByRole('button', { name: /high priority/i }));
+
+    expect(onToggleHighPriority).toHaveBeenCalledTimes(1);
+  });
+
+  it('counts toward the filter count badge when active', () => {
+    renderFilterBar({ showCurator: true, highPriority: true });
+    expect(screen.getByText('1')).toBeInTheDocument();
+  });
+
+  it('toggles quality via the Good button', async () => {
+    const user = userEvent.setup();
+    const onToggleQuality = vi.fn();
+    renderFilterBar({ showCurator: true, onToggleQuality });
+
+    await expandFilters(user);
+    await user.click(screen.getByRole('button', { name: /Good/ }));
+
+    expect(onToggleQuality).toHaveBeenCalledWith('good');
+  });
+
+  it('shows active quality chips in the header for curators', () => {
+    renderFilterBar({ showCurator: true, selectedQuality: ['good'] });
+
+    expect(screen.getByText('✅ Good')).toBeInTheDocument();
+  });
+
+  it('hides active quality chips in the header for viewers', () => {
+    renderFilterBar({ selectedQuality: ['good'] });
+
+    expect(screen.queryByText('✅ Good')).not.toBeInTheDocument();
+  });
+});
+
 describe('FilterBar counts', () => {
   it('renders quality counts in expanded quality buttons', async () => {
     const user = userEvent.setup();
     renderFilterBar({
+      showCurator: true,
       qualityCounts: [
         { quality: 'good', count: 123 },
         { quality: 'bad', count: 12 },
@@ -308,11 +413,18 @@ describe('FilterBar counts', () => {
 
   it('does not show counts on selected quality chips in collapsed bar', () => {
     renderFilterBar({
+      showCurator: true,
       selectedQuality: ['good'],
       qualityCounts: [{ quality: 'good', count: 123 }],
     });
 
     expect(screen.queryByText(/Good \(123\)/)).not.toBeInTheDocument();
+  });
+
+  it('does not show selected quality chips in collapsed bar when showCurator is false', () => {
+    renderFilterBar({ selectedQuality: ['good'] });
+
+    expect(screen.queryByRole('button', { name: /good/i })).not.toBeInTheDocument();
   });
 
   it('does not show counts on selected platform chips in collapsed bar', () => {

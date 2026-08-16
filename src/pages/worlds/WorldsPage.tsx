@@ -4,6 +4,8 @@ import { ArrowUp, LayoutGrid, List, Search } from 'lucide-react';
 import { BeatLoader } from 'react-spinners';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useWorldsPreferences } from '../../hooks/useWorldsPreferences';
+import { useMe } from '../../hooks/useApi';
+import { getStoredApiToken } from '../../utils/tokenStorage';
 import { useWorldsFilters } from '../../hooks/useWorldsFilters';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useRatingsForWorldIds } from '../../hooks/useSentiment';
@@ -39,6 +41,11 @@ export function WorldsPage() {
   usePageTitle(t('worlds.title'));
   const { viewMode, setViewMode, scrollMode, setScrollMode } = useWorldsPreferences();
 
+  const { data: me, isError: meError } = useMe();
+  const hasEnteredToken = Boolean(getStoredApiToken());
+  const canManageCurator =
+    hasEnteredToken && !meError && (me?.permissions.includes('worlds:write') ?? false);
+
   const {
     limit,
     offset,
@@ -55,12 +62,15 @@ export function WorldsPage() {
     handleCapacityChange,
     dayRange,
     handleDayRangeChange,
+    highPriority,
+    handleToggleHighPriority,
     searchInput,
     setSearchInput,
     handleAuthorClick,
     handleClear,
     availableTags,
     qualityCounts,
+    highPriorityCount,
     platformCounts,
     worlds,
     isPending,
@@ -244,6 +254,7 @@ export function WorldsPage() {
         onClear={handleClear}
         availableTags={availableTags}
         qualityCounts={qualityCounts}
+        highPriorityCount={highPriorityCount}
         platformCounts={platformCounts}
         capacityRange={capacityRange}
         onCapacityChange={handleCapacityChange}
@@ -252,6 +263,9 @@ export function WorldsPage() {
         onRemovePlatform={handleRemovePlatform}
         dayRange={dayRange}
         onDayRangeChange={handleDayRangeChange}
+        showCurator={canManageCurator}
+        highPriority={highPriority}
+        onToggleHighPriority={handleToggleHighPriority}
       />
 
       <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('worlds.resultsSection')}</h2>
@@ -359,6 +373,7 @@ export function WorldsPage() {
                     onTagClick={onTagClick}
                     onPlatformClick={onPlatformClick}
                     onAuthorClick={handleAuthorClick}
+                    showCuratorBadges={canManageCurator}
                     ratingSummary={ratingSummaries ? ratingSummaries.get(w.worldId) ?? null : undefined}
                   />
                 ))}
@@ -386,6 +401,7 @@ export function WorldsPage() {
                 world={worlds[row.index]}
                 onSelect={onSelect}
                 onAuthorClick={handleAuthorClick}
+                showCuratorBadges={canManageCurator}
                 ratingSummary={ratingSummaries ? ratingSummaries.get(worlds[row.index].worldId) ?? null : undefined}
               />
             </div>
