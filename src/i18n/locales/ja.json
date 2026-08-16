@@ -178,6 +178,7 @@
     "good": "✅ 良い",
     "bad": "❌ 悪い",
     "highPriority": "優先度の高いもののみ",
+    "removeHighPriority": "優先度高フィルタを解除",
     "tags": "タグ",
     "clearAll": "すべて解除",
     "capacity": "定員",

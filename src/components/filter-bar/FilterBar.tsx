@@ -210,6 +210,25 @@ export function FilterBar({
             </span>
           ))}
 
+        {showCurator && highPriority && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3.5 py-2.5 text-sm font-medium text-amber-700 ring-1 ring-amber-500/30 dark:text-amber-300">
+            <span>{t('filter.highPriority')}</span>
+            {highPriorityCount !== undefined && (
+              <span className="opacity-70">({highPriorityCount})</span>
+            )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleHighPriority();
+              }}
+              aria-label={t('filter.removeHighPriority')}
+              className="flex h-6 w-6 items-center justify-center rounded-full hover:text-amber-900 dark:hover:text-amber-100"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </span>
+        )}
+
         {hasFilters && (
           <button
             onClick={(e) => {

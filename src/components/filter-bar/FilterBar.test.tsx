@@ -289,7 +289,7 @@ describe('FilterBar curator section', () => {
     await expandFilters(user);
 
     expect(screen.queryByText('Curator')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^high priority/i })).not.toBeInTheDocument();
   });
 
   it('renders quality buttons and the high priority toggle for curators', async () => {
@@ -301,7 +301,7 @@ describe('FilterBar curator section', () => {
     expect(screen.getByText('Curator')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /good/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /bad/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /high priority/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^high priority/i })).toBeInTheDocument();
   });
 
   it('shows the high priority world count when provided', async () => {
@@ -321,7 +321,7 @@ describe('FilterBar curator section', () => {
 
     await expandFilters(user);
 
-    const toggle = screen.getByRole('button', { name: /high priority/i });
+    const toggle = screen.getByRole('button', { name: /^high priority/i });
     expect(toggle.textContent).not.toMatch(/\(\d+\)/);
   });
 
@@ -331,7 +331,7 @@ describe('FilterBar curator section', () => {
 
     await expandFilters(user);
 
-    expect(screen.getByRole('button', { name: /high priority/i })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /^high priority/i })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -343,7 +343,7 @@ describe('FilterBar curator section', () => {
     renderFilterBar({ showCurator: true, onToggleHighPriority });
 
     await expandFilters(user);
-    await user.click(screen.getByRole('button', { name: /high priority/i }));
+    await user.click(screen.getByRole('button', { name: /^high priority/i }));
 
     expect(onToggleHighPriority).toHaveBeenCalledTimes(1);
   });
@@ -374,6 +374,43 @@ describe('FilterBar curator section', () => {
     renderFilterBar({ selectedQuality: ['good'] });
 
     expect(screen.queryByText('✅ Good')).not.toBeInTheDocument();
+  });
+
+  it('renders a high priority chip in the collapsed bar for curators when the filter is active', () => {
+    renderFilterBar({ showCurator: true, highPriority: true });
+
+    expect(screen.getByRole('button', { name: /remove high priority/i })).toBeInTheDocument();
+    expect(screen.getByText('High Priority')).toBeInTheDocument();
+  });
+
+  it('does not render the high priority chip in the collapsed bar when the filter is inactive', () => {
+    renderFilterBar({ showCurator: true });
+
+    expect(screen.queryByText('High Priority')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /remove high priority/i })).not.toBeInTheDocument();
+  });
+
+  it('hides the high priority chip in the collapsed bar for viewers', () => {
+    renderFilterBar({ highPriority: true });
+
+    expect(screen.queryByText('High Priority')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /remove high priority/i })).not.toBeInTheDocument();
+  });
+
+  it('shows the count on the high priority chip when provided', () => {
+    renderFilterBar({ showCurator: true, highPriority: true, highPriorityCount: 7 });
+
+    expect(screen.getByText('High Priority')).toBeInTheDocument();
+    expect(screen.getByText('(7)')).toBeInTheDocument();
+  });
+
+  it('removes high priority via the chip X button', async () => {
+    const user = userEvent.setup();
+    const onToggleHighPriority = vi.fn();
+    renderFilterBar({ showCurator: true, highPriority: true, onToggleHighPriority });
+
+    await user.click(screen.getByRole('button', { name: /remove high priority/i }));
+    expect(onToggleHighPriority).toHaveBeenCalledTimes(1);
   });
 });
 

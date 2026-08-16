@@ -404,7 +404,7 @@ describe('WorldsPage', () => {
       await openFilters();
 
       expect(screen.getByText('Curator')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /high priority/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^high priority/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Good/ })).toBeInTheDocument();
     });
 
@@ -414,7 +414,7 @@ describe('WorldsPage', () => {
       await openFilters();
 
       expect(screen.queryByText('Curator')).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /^high priority/i })).not.toBeInTheDocument();
     });
 
     it('hides curator filter controls when no token was entered, even with curator identity', async () => {
@@ -423,7 +423,7 @@ describe('WorldsPage', () => {
       await openFilters();
 
       expect(screen.queryByText('Curator')).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /^high priority/i })).not.toBeInTheDocument();
     });
 
     it('hides curator filter controls when the identity fetch errored', async () => {
@@ -434,7 +434,7 @@ describe('WorldsPage', () => {
       await openFilters();
 
       expect(screen.queryByText('Curator')).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /^high priority/i })).not.toBeInTheDocument();
     });
 
     it('shows the high priority badge on world cards for curators', async () => {
@@ -444,7 +444,9 @@ describe('WorldsPage', () => {
 
       renderPage(<WorldsPage />);
 
-      expect(await screen.findByText('High Priority')).toBeInTheDocument();
+      expect(
+        await screen.findByText('High Priority', { selector: '[class*="bg-amber-500/80"]' }),
+      ).toBeInTheDocument();
     });
 
     it('hides the high priority badge for viewers', async () => {

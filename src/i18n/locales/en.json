@@ -178,6 +178,7 @@
     "good": "✅ Good",
     "bad": "❌ Bad",
     "highPriority": "High Priority",
+    "removeHighPriority": "Remove high priority filter",
     "tags": "Tags",
     "clearAll": "Clear all",
     "capacity": "Player capacity",
