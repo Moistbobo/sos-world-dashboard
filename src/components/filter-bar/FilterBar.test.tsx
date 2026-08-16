@@ -24,6 +24,7 @@ const defaultProps = {
   showCurator: false,
   highPriority: false,
   onToggleHighPriority: vi.fn(),
+  highPriorityCount: undefined as number | undefined,
 };
 
 function renderFilterBar(props: Partial<typeof defaultProps> = {}) {
@@ -277,31 +278,58 @@ describe('FilterBar', () => {
 });
 
 describe('FilterBar curator section', () => {
+  const expandFilters = async (user: ReturnType<typeof userEvent.setup>) => {
+    await user.click(screen.getByRole('button', { name: /filters/i }));
+  };
+
   it('is not rendered when showCurator is false', async () => {
     const user = userEvent.setup();
     renderFilterBar();
 
-    await user.click(screen.getByRole('button', { name: /filters/i }));
+    await expandFilters(user);
 
     expect(screen.queryByText('Curator')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
   });
 
-  it('renders the curator row with the high priority toggle when showCurator is true', async () => {
+  it('renders quality buttons and the high priority toggle for curators', async () => {
     const user = userEvent.setup();
     renderFilterBar({ showCurator: true });
 
-    await user.click(screen.getByRole('button', { name: /filters/i }));
+    await expandFilters(user);
 
     expect(screen.getByText('Curator')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /good/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /bad/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /high priority/i })).toBeInTheDocument();
+  });
+
+  it('shows the high priority world count when provided', async () => {
+    const user = userEvent.setup();
+    renderFilterBar({ showCurator: true, highPriorityCount: 7 });
+
+    await expandFilters(user);
+
+    expect(
+      screen.getByRole('button', { name: /high priority\s*\(7\)/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('omits the high priority count when undefined', async () => {
+    const user = userEvent.setup();
+    renderFilterBar({ showCurator: true });
+
+    await expandFilters(user);
+
+    const toggle = screen.getByRole('button', { name: /high priority/i });
+    expect(toggle.textContent).not.toMatch(/\(\d+\)/);
   });
 
   it('reflects the active filter state via aria-pressed', async () => {
     const user = userEvent.setup();
     renderFilterBar({ showCurator: true, highPriority: true });
 
-    await user.click(screen.getByRole('button', { name: /filters/i }));
+    await expandFilters(user);
 
     expect(screen.getByRole('button', { name: /high priority/i })).toHaveAttribute(
       'aria-pressed',
@@ -314,7 +342,7 @@ describe('FilterBar curator section', () => {
     const onToggleHighPriority = vi.fn();
     renderFilterBar({ showCurator: true, onToggleHighPriority });
 
-    await user.click(screen.getByRole('button', { name: /filters/i }));
+    await expandFilters(user);
     await user.click(screen.getByRole('button', { name: /high priority/i }));
 
     expect(onToggleHighPriority).toHaveBeenCalledTimes(1);
@@ -325,15 +353,27 @@ describe('FilterBar curator section', () => {
     expect(screen.getByText('1')).toBeInTheDocument();
   });
 
-  it('toggles quality buttons when the curator row is visible', async () => {
+  it('toggles quality via the Good button', async () => {
     const user = userEvent.setup();
     const onToggleQuality = vi.fn();
     renderFilterBar({ showCurator: true, onToggleQuality });
 
-    await user.click(screen.getByRole('button', { name: /filters/i }));
+    await expandFilters(user);
     await user.click(screen.getByRole('button', { name: /Good/ }));
 
     expect(onToggleQuality).toHaveBeenCalledWith('good');
+  });
+
+  it('shows active quality chips in the header for curators', () => {
+    renderFilterBar({ showCurator: true, selectedQuality: ['good'] });
+
+    expect(screen.getByText('✅ Good')).toBeInTheDocument();
+  });
+
+  it('hides active quality chips in the header for viewers', () => {
+    renderFilterBar({ selectedQuality: ['good'] });
+
+    expect(screen.queryByText('✅ Good')).not.toBeInTheDocument();
   });
 });
 

@@ -387,62 +387,72 @@ describe('WorldsPage', () => {
     });
   });
 
-  describe('WorldsPage high priority', () => {
-    it('renders the high priority filter toggle for an entered token with worlds:write', async () => {
+  describe('WorldsPage curator features', () => {
+    const setEnteredToken = (token = 'curator-token') =>
+      window.localStorage.setItem('sos-api-token', token);
+
+    const openFilters = async () => {
       const user = userEvent.setup();
-      mePermissions = ['worlds:read', 'worlds:write'];
-      window.localStorage.setItem('sos-api-token', 'curator-token');
       renderPage(<WorldsPage />);
-
       await user.click(screen.getByRole('button', { name: /filters/i }));
+    };
 
+    it('shows curator filter controls for an entered token with worlds:write', async () => {
+      mePermissions = ['worlds:read', 'worlds:write'];
+      setEnteredToken();
+
+      await openFilters();
+
+      expect(screen.getByText('Curator')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /high priority/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Good/ })).toBeInTheDocument();
     });
 
-    it('hides the high priority filter toggle for tokens without worlds:write', async () => {
-      const user = userEvent.setup();
-      window.localStorage.setItem('sos-api-token', 'viewer-token');
-      renderPage(<WorldsPage />);
+    it('hides curator filter controls when the entered token lacks worlds:write', async () => {
+      setEnteredToken('viewer-token');
 
-      await user.click(screen.getByRole('button', { name: /filters/i }));
+      await openFilters();
 
+      expect(screen.queryByText('Curator')).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
     });
 
-    it('hides the high priority filter toggle when no token was entered, even with curator identity', async () => {
-      const user = userEvent.setup();
+    it('hides curator filter controls when no token was entered, even with curator identity', async () => {
       mePermissions = ['worlds:read', 'worlds:write'];
-      renderPage(<WorldsPage />);
 
-      await user.click(screen.getByRole('button', { name: /filters/i }));
+      await openFilters();
 
+      expect(screen.queryByText('Curator')).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
     });
 
-    it('hides the high priority filter toggle when the identity fetch errored', async () => {
-      const user = userEvent.setup();
+    it('hides curator filter controls when the identity fetch errored', async () => {
       mePermissions = ['worlds:read', 'worlds:write'];
       meError = true;
-      window.localStorage.setItem('sos-api-token', 'curator-token');
-      renderPage(<WorldsPage />);
+      setEnteredToken();
 
-      await user.click(screen.getByRole('button', { name: /filters/i }));
+      await openFilters();
 
+      expect(screen.queryByText('Curator')).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: /high priority/i })).not.toBeInTheDocument();
     });
 
-    it('renders the high priority badge for curators with an entered token', async () => {
+    it('shows the high priority badge on world cards for curators', async () => {
       mePermissions = ['worlds:read', 'worlds:write'];
-      window.localStorage.setItem('sos-api-token', 'curator-token');
+      setEnteredToken();
       mockWorlds = [{ ...mockWorlds[0], highPriority: true }];
+
       renderPage(<WorldsPage />);
+
       expect(await screen.findByText('High Priority')).toBeInTheDocument();
     });
 
-    it('does not render the high priority badge for viewers', async () => {
-      window.localStorage.setItem('sos-api-token', 'viewer-token');
+    it('hides the high priority badge for viewers', async () => {
+      setEnteredToken('viewer-token');
       mockWorlds = [{ ...mockWorlds[0], highPriority: true }];
+
       renderPage(<WorldsPage />);
+
       expect(screen.queryByText('High Priority')).not.toBeInTheDocument();
     });
   });
