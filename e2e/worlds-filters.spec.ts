@@ -75,7 +75,7 @@ test.describe('Worlds page filters and search', () => {
       await expandFilters(page);
 
       const req = waitForWorldsRequest(page, (url) => url.searchParams.get('highPriority') === 'true');
-      await page.getByRole('button', { name: /high priority\s*\(2\)/i }).click();
+      await page.getByRole('button', { name: /high priority\s*\(3\)/i }).click();
       const url = await req;
 
       expect(url.searchParams.get('highPriority')).toBe('true');
