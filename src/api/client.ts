@@ -117,3 +117,34 @@ export async function fetchTags(): Promise<TagsResponse> {
 export async function fetchMeta(): Promise<MetaResponse> {
   return request('/api/meta');
 }
+
+export async function setWorldQuality(
+  worldId: string,
+  guildId: string | undefined,
+  quality: 'good' | 'bad' | null,
+): Promise<{ updated: boolean }> {
+  return request(`/api/worlds/${encodeURIComponent(worldId)}/quality`, {
+    method: 'PUT',
+    body: JSON.stringify({ guildId, quality }),
+  });
+}
+
+export async function setWorldHighPriority(
+  worldId: string,
+  guildId: string | undefined,
+): Promise<{ added: boolean }> {
+  return request(`/api/worlds/${encodeURIComponent(worldId)}/high-priority`, {
+    method: 'PUT',
+    body: JSON.stringify({ guildId }),
+  });
+}
+
+export async function clearWorldHighPriority(
+  worldId: string,
+  guildId: string | undefined,
+): Promise<{ removed: boolean }> {
+  return request(`/api/worlds/${encodeURIComponent(worldId)}/high-priority`, {
+    method: 'DELETE',
+    body: JSON.stringify({ guildId }),
+  });
+}

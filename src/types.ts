@@ -9,6 +9,7 @@ export interface World {
   vrchatUrl: string;
   quality: 'good' | 'bad' | null;
   highPriority?: boolean;
+  guildId?: string;
   createdAt: string;
   internalAddDate?: string;
 }
