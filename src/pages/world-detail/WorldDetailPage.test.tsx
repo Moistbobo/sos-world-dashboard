@@ -353,7 +353,10 @@ describe('WorldDetailPage', () => {
 
     const lightboxImage = within(lightbox).getByAltText(/Test World/i);
     expect(lightboxImage).toHaveClass('object-contain');
-    expect(lightboxImage).toHaveAttribute('src', 'https://example.com/image.png');
+    expect(lightboxImage).toHaveAttribute(
+      'src',
+      'https://wsrv.nl/?url=https%3A%2F%2Fexample.com%2Fimage.png&w=1600&output=webp&q=80',
+    );
   });
 
   it('renders the hero image through wsrv.nl at w=1600 with fetchpriority high', () => {

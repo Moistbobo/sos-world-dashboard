@@ -1,10 +1,22 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fetchMeta, fetchWorlds } from './client';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {
+  clearWorldHighPriority,
+  fetchMe,
+  fetchMeta,
+  fetchWorlds,
+  setWorldHighPriority,
+  setWorldQuality,
+} from './client';
 
 globalThis.fetch = vi.fn();
 
 beforeEach(() => {
   vi.clearAllMocks();
+  window.localStorage.clear();
+});
+
+afterEach(() => {
+  vi.unstubAllEnvs();
 });
 
 describe('fetchWorlds', () => {
@@ -54,6 +66,91 @@ describe('fetchWorlds', () => {
     const url = vi.mocked(fetch).mock.calls[0][0] as string;
     expect(url).not.toContain('dayRange');
   });
+
+  it('includes highPriority=true when enabled', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ worlds: [], total: 0, limit: 20, offset: 0 }), { status: 200 })
+    );
+    await fetchWorlds({ highPriority: true });
+    const url = vi.mocked(fetch).mock.calls[0][0] as string;
+    expect(url).toContain('highPriority=true');
+  });
+
+  it('omits highPriority when not provided', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ worlds: [], total: 0, limit: 20, offset: 0 }), { status: 200 })
+    );
+    await fetchWorlds({ limit: 10 });
+    const url = vi.mocked(fetch).mock.calls[0][0] as string;
+    expect(url).not.toContain('highPriority');
+  });
+});
+
+describe('fetchMe', () => {
+  it('fetches /api/me and returns the response body', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ name: 'Curator', role: 'curator', permissions: ['worlds:write'] }),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchMe();
+
+    const url = vi.mocked(fetch).mock.calls[0][0] as string;
+    expect(url).toContain('/api/me');
+    expect(result).toEqual({
+      name: 'Curator',
+      role: 'curator',
+      permissions: ['worlds:write'],
+    });
+  });
+
+  it('sends the bearer token when VITE_API_BEARER_TOKEN is set', async () => {
+    vi.stubEnv('VITE_API_BEARER_TOKEN', 'test-token');
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ name: 'Curator', role: 'curator', permissions: [] }),
+        { status: 200 }
+      )
+    );
+
+    await fetchMe();
+
+    const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+    expect(init.headers).toMatchObject({ Authorization: 'Bearer test-token' });
+  });
+
+  it('prefers the stored API token over VITE_API_BEARER_TOKEN', async () => {
+    vi.stubEnv('VITE_API_BEARER_TOKEN', 'env-token');
+    window.localStorage.setItem('sos-api-token', 'stored-token');
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ name: 'Curator', role: 'curator', permissions: [] }),
+        { status: 200 }
+      )
+    );
+
+    await fetchMe();
+
+    const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+    expect(init.headers).toMatchObject({ Authorization: 'Bearer stored-token' });
+  });
+
+  it('falls back to VITE_API_BEARER_TOKEN when no token is stored', async () => {
+    vi.stubEnv('VITE_API_BEARER_TOKEN', 'env-token');
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ name: 'Curator', role: 'curator', permissions: [] }),
+        { status: 200 }
+      )
+    );
+
+    await fetchMe();
+
+    const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+    expect(init.headers).toMatchObject({ Authorization: 'Bearer env-token' });
+  });
 });
 
 describe('fetchMeta', () => {
@@ -83,5 +180,64 @@ describe('fetchMeta', () => {
       platformAndroid: 45,
       platformiOS: 6,
     });
+  });
+});
+
+describe('setWorldQuality', () => {
+  it('PUTs the quality to /api/worlds/:id/quality with guildId and quality in the body', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ updated: true }), { status: 200 })
+    );
+
+    const result = await setWorldQuality('wrld_123', 'guild_1', 'good');
+
+    const [url, init] = vi.mocked(fetch).mock.calls[0] as [string, RequestInit];
+    expect(url).toContain('/api/worlds/wrld_123/quality');
+    expect(init.method).toBe('PUT');
+    expect(JSON.parse(init.body as string)).toEqual({ guildId: 'guild_1', quality: 'good' });
+    expect(result).toEqual({ updated: true });
+  });
+
+  it('sends quality null to clear the tag', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ updated: true }), { status: 200 })
+    );
+
+    await setWorldQuality('wrld_123', 'guild_1', null);
+
+    const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+    expect(JSON.parse(init.body as string)).toEqual({ guildId: 'guild_1', quality: null });
+  });
+});
+
+describe('setWorldHighPriority', () => {
+  it('PUTs the world id to /api/worlds/:id/high-priority with guildId in the body', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ added: true }), { status: 200 })
+    );
+
+    const result = await setWorldHighPriority('wrld_123', 'guild_1');
+
+    const [url, init] = vi.mocked(fetch).mock.calls[0] as [string, RequestInit];
+    expect(url).toContain('/api/worlds/wrld_123/high-priority');
+    expect(init.method).toBe('PUT');
+    expect(JSON.parse(init.body as string)).toEqual({ guildId: 'guild_1' });
+    expect(result).toEqual({ added: true });
+  });
+});
+
+describe('clearWorldHighPriority', () => {
+  it('DELETEs /api/worlds/:id/high-priority with guildId in the body', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ removed: true }), { status: 200 })
+    );
+
+    const result = await clearWorldHighPriority('wrld_123', 'guild_1');
+
+    const [url, init] = vi.mocked(fetch).mock.calls[0] as [string, RequestInit];
+    expect(url).toContain('/api/worlds/wrld_123/high-priority');
+    expect(init.method).toBe('DELETE');
+    expect(JSON.parse(init.body as string)).toEqual({ guildId: 'guild_1' });
+    expect(result).toEqual({ removed: true });
   });
 });

@@ -7,6 +7,7 @@ import { WorldsPage } from './WorldsPage';
 import { WorldsPreferencesProvider } from '../../contexts/WorldsPreferencesContext';
 import { ListsProvider } from '../../contexts/ListsContext';
 import { resetListsDb } from '../../test/listsDb';
+import type { World } from '../../types';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,8 +35,8 @@ function Wrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-const mockWorlds = [
-  {
+function createMockWorld(overrides: Partial<World> = {}): World {
+  return {
     worldId: 'wrld_1',
     name: 'Test World',
     authorName: 'Tester',
@@ -44,11 +45,16 @@ const mockWorlds = [
     tags: ['chill'],
     imageUrl: '',
     vrchatUrl: '',
-    quality: 'good' as const,
+    quality: 'good',
     createdAt: '2024-01-01',
     internalAddDate: '2024-02-01',
-  },
-];
+    ...overrides,
+  };
+}
+
+let mockWorlds: World[] = [createMockWorld()];
+let mePermissions: string[] = [];
+let meError = false;
 
 let infiniteHasNextPage = true;
 let infiniteIsPending = false;
@@ -56,6 +62,14 @@ let paginationIsPending = false;
 const mockInfiniteFetchNextPage = vi.fn();
 
 vi.mock('../../hooks/useApi', () => ({
+  useMe: () => ({
+    data: {
+      name: 'Test User',
+      role: mePermissions.includes('worlds:write') ? 'curator' : 'viewer',
+      permissions: mePermissions,
+    },
+    isError: meError,
+  }),
   useTags: () => ({ data: { tags: [] } }),
   useMeta: () => ({
     data: {
@@ -100,6 +114,9 @@ describe('WorldsPage', () => {
     infiniteHasNextPage = true;
     infiniteIsPending = false;
     paginationIsPending = false;
+    mockWorlds = [createMockWorld()];
+    mePermissions = [];
+    meError = false;
     queryClient.clear();
     window.localStorage.clear();
     await resetListsDb();
@@ -173,6 +190,8 @@ describe('WorldsPage', () => {
   it('does not scroll to top when filters change in infinite scroll mode', async () => {
     const user = userEvent.setup();
     const scrollToSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    mePermissions = ['worlds:read', 'worlds:write'];
+    window.localStorage.setItem('sos-api-token', 'curator-token');
 
     renderPage(<WorldsPage />);
     await user.click(screen.getByRole('button', { name: /filters/i }));
@@ -365,6 +384,78 @@ describe('WorldsPage', () => {
       renderPage(<WorldsPage />);
 
       expect(mockInfiniteFetchNextPage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('WorldsPage curator features', () => {
+    const setEnteredToken = (token = 'curator-token') =>
+      window.localStorage.setItem('sos-api-token', token);
+
+    const openFilters = async () => {
+      const user = userEvent.setup();
+      renderPage(<WorldsPage />);
+      await user.click(screen.getByRole('button', { name: /filters/i }));
+    };
+
+    it('shows curator filter controls for an entered token with worlds:write', async () => {
+      mePermissions = ['worlds:read', 'worlds:write'];
+      setEnteredToken();
+
+      await openFilters();
+
+      expect(screen.getByText('Curator')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^high priority/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Good/ })).toBeInTheDocument();
+    });
+
+    it('hides curator filter controls when the entered token lacks worlds:write', async () => {
+      setEnteredToken('viewer-token');
+
+      await openFilters();
+
+      expect(screen.queryByText('Curator')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /^high priority/i })).not.toBeInTheDocument();
+    });
+
+    it('hides curator filter controls when no token was entered, even with curator identity', async () => {
+      mePermissions = ['worlds:read', 'worlds:write'];
+
+      await openFilters();
+
+      expect(screen.queryByText('Curator')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /^high priority/i })).not.toBeInTheDocument();
+    });
+
+    it('hides curator filter controls when the identity fetch errored', async () => {
+      mePermissions = ['worlds:read', 'worlds:write'];
+      meError = true;
+      setEnteredToken();
+
+      await openFilters();
+
+      expect(screen.queryByText('Curator')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /^high priority/i })).not.toBeInTheDocument();
+    });
+
+    it('shows the high priority badge on world cards for curators', async () => {
+      mePermissions = ['worlds:read', 'worlds:write'];
+      setEnteredToken();
+      mockWorlds = [{ ...mockWorlds[0], highPriority: true }];
+
+      renderPage(<WorldsPage />);
+
+      expect(
+        await screen.findByText('High Priority', { selector: '[class*="bg-amber-500/80"]' }),
+      ).toBeInTheDocument();
+    });
+
+    it('hides the high priority badge for viewers', async () => {
+      setEnteredToken('viewer-token');
+      mockWorlds = [{ ...mockWorlds[0], highPriority: true }];
+
+      renderPage(<WorldsPage />);
+
+      expect(screen.queryByText('High Priority')).not.toBeInTheDocument();
     });
   });
 });

@@ -1,4 +1,4 @@
-import type { MetaResponse, PaginatedWorlds, TagsResponse, World } from '../src/types';
+import type { MeResponse, MetaResponse, PaginatedWorlds, TagsResponse, World } from '../src/types';
 
 export const worlds: World[] = [
   {
@@ -11,6 +11,7 @@ export const worlds: World[] = [
     imageUrl: '',
     vrchatUrl: '',
     quality: 'good',
+    highPriority: true,
     createdAt: '2024-01-01',
     internalAddDate: new Date(Date.now() - 86_400_000).toISOString().slice(0, 10),
   },
@@ -24,6 +25,7 @@ export const worlds: World[] = [
     imageUrl: '',
     vrchatUrl: '',
     quality: 'good',
+    highPriority: true,
     createdAt: '2024-01-15',
     internalAddDate: '2024-02-10',
   },
@@ -53,6 +55,20 @@ export const worlds: World[] = [
     createdAt: '2024-02-15',
     internalAddDate: '2024-02-25',
   },
+  {
+    worldId: 'wrld_priority_watch',
+    name: 'Priority Watch',
+    authorName: 'Curator',
+    capacity: 15,
+    platforms: ['standalonewindows', 'android'],
+    tags: ['watchlist'],
+    imageUrl: '',
+    vrchatUrl: '',
+    quality: null,
+    highPriority: true,
+    createdAt: '2024-03-01',
+    internalAddDate: '2024-03-05',
+  },
 ];
 
 export const tagsResponse: TagsResponse = {
@@ -67,9 +83,16 @@ export const tagsResponse: TagsResponse = {
 export const metaResponse: MetaResponse = {
   qualityGood: 2,
   qualityBad: 1,
-  platformDesktop: 2,
-  platformAndroid: 3,
+  platformDesktop: 3,
+  platformAndroid: 2,
   platformiOS: 1,
+  highPriorityCount: 3,
+};
+
+export const meResponse: MeResponse = {
+  name: 'E2E Curator',
+  role: 'curator',
+  permissions: ['worlds:read', 'worlds:write'],
 };
 
 export function paginate(items: World[], limit: number, offset: number): PaginatedWorlds {

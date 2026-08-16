@@ -1,7 +1,16 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { fetchMeta, fetchTags, fetchWorld, fetchWorlds } from '../api/client';
+import { fetchMe, fetchMeta, fetchTags, fetchWorld, fetchWorlds } from '../api/client';
 import type { PaginatedWorlds } from '../types';
 import { useApiInfiniteQuery, useApiQuery } from './useApiToasts';
+
+export function useMe(options?: { suppressErrorToast?: boolean }) {
+  return useApiQuery({
+    queryKey: ['me'],
+    queryFn: fetchMe,
+    staleTime: 60_000,
+    suppressErrorToast: options?.suppressErrorToast ?? true,
+  });
+}
 
 export function useTags(options?: { suppressErrorToast?: boolean }) {
   return useApiQuery({
@@ -27,6 +36,7 @@ export function useWorlds(
     offset?: number;
     tag?: string[];
     quality?: ('good' | 'bad')[];
+    highPriority?: boolean;
     search?: string;
     minCapacity?: number;
     maxCapacity?: number;
@@ -49,6 +59,7 @@ export function useInfiniteWorlds(
     limit?: number;
     tag?: string[];
     quality?: ('good' | 'bad')[];
+    highPriority?: boolean;
     search?: string;
     minCapacity?: number;
     maxCapacity?: number;
