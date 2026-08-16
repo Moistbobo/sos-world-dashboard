@@ -38,6 +38,12 @@
     "added": "追加日",
     "tagged": "タグ付け日"
   },
+  "curator": {
+    "markGood": "良いにする",
+    "markBad": "悪いにする",
+    "markHighPriority": "優先度高にする",
+    "clearQuality": "品質をクリア"
+  },
   "dashboard": {
     "title": "ダッシュボード",
     "subtitle": "VRChat ワールドタガーデータの概要。",

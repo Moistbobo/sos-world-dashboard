@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WorldCard } from '../world-card';
 import { ListsProvider } from '../../contexts/ListsContext';
 import { resetListsDb } from '../../test/listsDb';
@@ -310,5 +311,37 @@ describe('WorldCard curator badges', () => {
     );
     expect(screen.queryByText('Good')).not.toBeInTheDocument();
     expect(screen.queryByText('High Priority')).not.toBeInTheDocument();
+  });
+});
+
+describe('WorldCard curator quick actions', () => {
+  function CuratorWrapper({ children }: { children: React.ReactNode }) {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    return (
+      <QueryClientProvider client={client}>
+        <ListsProvider>{children}</ListsProvider>
+      </QueryClientProvider>
+    );
+  }
+
+  it('renders quick actions for an untagged world when canCurate is true', () => {
+    render(
+      <WorldCard world={{ ...mockWorld, quality: null }} onSelect={vi.fn()} canCurate />,
+      { wrapper: CuratorWrapper },
+    );
+    expect(screen.getByRole('button', { name: 'Mark Good' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Mark Bad' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Mark High Priority' })).toBeInTheDocument();
+  });
+
+  it('hides quick actions when canCurate is false (default)', () => {
+    render(<WorldCard world={{ ...mockWorld, quality: null }} onSelect={vi.fn()} />, {
+      wrapper: CuratorWrapper,
+    });
+    expect(
+      screen.queryByRole('button', {
+        name: /mark good|mark bad|mark high priority|clear quality/i,
+      }),
+    ).not.toBeInTheDocument();
   });
 });

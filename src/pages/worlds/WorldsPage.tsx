@@ -374,6 +374,7 @@ export function WorldsPage() {
                     onPlatformClick={onPlatformClick}
                     onAuthorClick={handleAuthorClick}
                     showCuratorBadges={canManageCurator}
+                    canCurate={canManageCurator}
                     ratingSummary={ratingSummaries ? ratingSummaries.get(w.worldId) ?? null : undefined}
                   />
                 ))}
