@@ -47,6 +47,8 @@ test.describe('Worlds page filters and search', () => {
 
   test.describe('Quality filter', () => {
     test('applies a quality filter and updates the URL', async ({ page }) => {
+      // Quality chips are curator-only, so visit with an entered curator token.
+      await visitWorlds(page, { scrollMode: 'pagination', viewMode: 'grid', curator: true });
       await expandFilters(page);
 
       const req = waitForWorldsRequest(page, (url) => url.searchParams.get('quality') === 'good');
@@ -64,6 +66,32 @@ test.describe('Worlds page filters and search', () => {
       await page.goto('/worlds?quality=bad');
       await expect(page.getByRole('heading', { name: 'Quiet Study' })).toBeVisible();
       await expect(page.getByRole('heading', { name: 'Chill Lounge' })).toHaveCount(0);
+    });
+  });
+
+  test.describe('High priority filter', () => {
+    test('applies the high-priority toggle and updates the URL', async ({ page }) => {
+      await visitWorlds(page, { scrollMode: 'pagination', viewMode: 'grid', curator: true });
+      await expandFilters(page);
+
+      const req = waitForWorldsRequest(page, (url) => url.searchParams.get('highPriority') === 'true');
+      await page.getByRole('button', { name: /high priority\s*\(2\)/i }).click();
+      const url = await req;
+
+      expect(url.searchParams.get('highPriority')).toBe('true');
+      await expect(page).toHaveURL(/highPriority=true/);
+      await expect(page.getByRole('heading', { name: 'Chill Lounge' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Dance Party' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Quiet Study' })).toHaveCount(0);
+      await expect(page.getByRole('heading', { name: 'Mobile Hangout' })).toHaveCount(0);
+    });
+
+    test('viewers see no curator section and no high-priority toggle', async ({ page }) => {
+      await visitWorlds(page, { scrollMode: 'pagination', viewMode: 'grid' });
+      await expandFilters(page);
+
+      await expect(page.getByRole('button', { name: /high priority/i })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: /good/i })).toHaveCount(0);
     });
   });
 
