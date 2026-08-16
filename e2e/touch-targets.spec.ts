@@ -24,7 +24,7 @@ test.describe('VR touch targets', () => {
     await expandFilters(page);
 
     const tagChip = page.getByRole('button', { name: /chill\s+\(\d+\)/ });
-    const qualityChip = page.getByRole('button', { name: /good/i });
+    const qualityChip = page.getByRole('button', { name: /good\s*\(\d+\)/i });
     const platformChip = page.getByTestId('platform-toggle-ios');
     const dateChip = page.getByTestId('day-range-preset-7');
 

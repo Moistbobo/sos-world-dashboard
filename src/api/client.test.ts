@@ -1,5 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { fetchMe, fetchMeta, fetchWorlds } from './client';
+import {
+  clearWorldHighPriority,
+  fetchMe,
+  fetchMeta,
+  fetchWorlds,
+  setWorldHighPriority,
+  setWorldQuality,
+} from './client';
 
 globalThis.fetch = vi.fn();
 
@@ -173,5 +180,64 @@ describe('fetchMeta', () => {
       platformAndroid: 45,
       platformiOS: 6,
     });
+  });
+});
+
+describe('setWorldQuality', () => {
+  it('PUTs the quality to /api/worlds/:id/quality with guildId and quality in the body', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ updated: true }), { status: 200 })
+    );
+
+    const result = await setWorldQuality('wrld_123', 'guild_1', 'good');
+
+    const [url, init] = vi.mocked(fetch).mock.calls[0] as [string, RequestInit];
+    expect(url).toContain('/api/worlds/wrld_123/quality');
+    expect(init.method).toBe('PUT');
+    expect(JSON.parse(init.body as string)).toEqual({ guildId: 'guild_1', quality: 'good' });
+    expect(result).toEqual({ updated: true });
+  });
+
+  it('sends quality null to clear the tag', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ updated: true }), { status: 200 })
+    );
+
+    await setWorldQuality('wrld_123', 'guild_1', null);
+
+    const init = vi.mocked(fetch).mock.calls[0][1] as RequestInit;
+    expect(JSON.parse(init.body as string)).toEqual({ guildId: 'guild_1', quality: null });
+  });
+});
+
+describe('setWorldHighPriority', () => {
+  it('PUTs the world id to /api/worlds/:id/high-priority with guildId in the body', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ added: true }), { status: 200 })
+    );
+
+    const result = await setWorldHighPriority('wrld_123', 'guild_1');
+
+    const [url, init] = vi.mocked(fetch).mock.calls[0] as [string, RequestInit];
+    expect(url).toContain('/api/worlds/wrld_123/high-priority');
+    expect(init.method).toBe('PUT');
+    expect(JSON.parse(init.body as string)).toEqual({ guildId: 'guild_1' });
+    expect(result).toEqual({ added: true });
+  });
+});
+
+describe('clearWorldHighPriority', () => {
+  it('DELETEs /api/worlds/:id/high-priority with guildId in the body', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ removed: true }), { status: 200 })
+    );
+
+    const result = await clearWorldHighPriority('wrld_123', 'guild_1');
+
+    const [url, init] = vi.mocked(fetch).mock.calls[0] as [string, RequestInit];
+    expect(url).toContain('/api/worlds/wrld_123/high-priority');
+    expect(init.method).toBe('DELETE');
+    expect(JSON.parse(init.body as string)).toEqual({ guildId: 'guild_1' });
+    expect(result).toEqual({ removed: true });
   });
 });

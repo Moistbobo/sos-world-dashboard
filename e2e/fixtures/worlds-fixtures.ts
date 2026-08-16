@@ -55,6 +55,20 @@ export const worlds: World[] = [
     createdAt: '2024-02-15',
     internalAddDate: '2024-02-25',
   },
+  {
+    worldId: 'wrld_priority_watch',
+    name: 'Priority Watch',
+    authorName: 'Curator',
+    capacity: 15,
+    platforms: ['standalonewindows', 'android'],
+    tags: ['watchlist'],
+    imageUrl: '',
+    vrchatUrl: '',
+    quality: null,
+    highPriority: true,
+    createdAt: '2024-03-01',
+    internalAddDate: '2024-03-05',
+  },
 ];
 
 export const tagsResponse: TagsResponse = {
@@ -72,7 +86,7 @@ export const metaResponse: MetaResponse = {
   platformDesktop: 3,
   platformAndroid: 2,
   platformiOS: 1,
-  highPriorityCount: 2,
+  highPriorityCount: 3,
 };
 
 export const meResponse: MeResponse = {

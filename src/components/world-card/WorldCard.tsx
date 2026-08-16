@@ -10,6 +10,7 @@ import { ShareButton } from '../share-button';
 import { useLists } from '../../contexts/ListsContext';
 import { SaveToListDialog } from '../save-to-list-dialog/SaveToListDialog';
 import { WorldRatingBar } from '../world-rating-bar';
+import { WorldCurationActions } from '../world-curation-actions';
 
 interface WorldCardProps {
   world: World;
@@ -20,9 +21,10 @@ interface WorldCardProps {
   onAuthorClick?: (authorName: string) => void;
   ratingSummary?: RatingSummary | null | undefined;
   showCuratorBadges?: boolean;
+  canCurate?: boolean;
 }
 
-export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemove, onAuthorClick, ratingSummary, showCuratorBadges = true }: WorldCardProps) {
+export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatformClick, onSelect, onRemove, onAuthorClick, ratingSummary, showCuratorBadges = true, canCurate = false }: WorldCardProps) {
   const { t } = useTranslation();
   const { isWorldInAnyList } = useLists();
   const [saveOpen, setSaveOpen] = useState(false);
@@ -173,6 +175,8 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
             </span>
           )}
         </div>
+
+        {canCurate && <WorldCurationActions world={world} />}
 
         {ratingSummary !== undefined && (
           <WorldRatingBar

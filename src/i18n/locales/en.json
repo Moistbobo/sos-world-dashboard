@@ -38,6 +38,12 @@
     "added": "Added on",
     "tagged": "Tagged on"
   },
+  "curator": {
+    "markGood": "Mark Good",
+    "markBad": "Mark Bad",
+    "markHighPriority": "Mark High Priority",
+    "clearQuality": "Clear Quality"
+  },
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Overview of your VRChat world tagger data.",
@@ -172,6 +178,7 @@
     "good": "✅ Good",
     "bad": "❌ Bad",
     "highPriority": "High Priority",
+    "removeHighPriority": "Remove high priority filter",
     "tags": "Tags",
     "clearAll": "Clear all",
     "capacity": "Player capacity",

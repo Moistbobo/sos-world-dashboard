@@ -75,7 +75,7 @@ test.describe('Worlds page filters and search', () => {
       await expandFilters(page);
 
       const req = waitForWorldsRequest(page, (url) => url.searchParams.get('highPriority') === 'true');
-      await page.getByRole('button', { name: /high priority\s*\(2\)/i }).click();
+      await page.getByRole('button', { name: /high priority\s*\(3\)/i }).click();
       const url = await req;
 
       expect(url.searchParams.get('highPriority')).toBe('true');
@@ -92,6 +92,27 @@ test.describe('Worlds page filters and search', () => {
 
       await expect(page.getByRole('button', { name: /high priority/i })).toHaveCount(0);
       await expect(page.getByRole('button', { name: /good/i })).toHaveCount(0);
+    });
+
+    test('shows the high-priority chip in the collapsed bar only while the filter is active', async ({ page }) => {
+      await visitWorlds(page, { scrollMode: 'pagination', viewMode: 'grid', curator: true });
+
+      await expect(page.getByRole('button', { name: /remove high priority/i })).toHaveCount(0);
+
+      await expandFilters(page);
+      const onReq = waitForWorldsRequest(page, (url) => url.searchParams.get('highPriority') === 'true');
+      await page.getByRole('button', { name: /^high priority\s*\(3\)/i }).click();
+      await onReq;
+
+      await page.getByTestId('filter-bar-header').click();
+      await expect(page.getByRole('button', { name: /remove high priority/i })).toBeVisible();
+
+      const offReq = waitForWorldsRequest(page, (url) => url.searchParams.get('highPriority') === null);
+      await page.getByRole('button', { name: /remove high priority/i }).click();
+      await offReq;
+
+      await expect(page).not.toHaveURL(/highPriority=true/);
+      await expect(page.getByRole('button', { name: /remove high priority/i })).toHaveCount(0);
     });
   });
 
