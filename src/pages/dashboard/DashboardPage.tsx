@@ -51,7 +51,7 @@ export function DashboardPage() {
         />
         <StatCard
           label={t('dashboard.uniqueTags')}
-          value={tagsLoading ? '...' : topTags.length}
+          value={tagsLoading ? '...' : tagsData?.tags.length ?? 0}
           icon={<Tags className="h-5 w-5" />}
         />
         <StatCard

@@ -306,7 +306,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
           {lightboxOpen && w.imageUrl && (
             <ImageLightbox
               open={lightboxOpen}
-              imageUrl={w.imageUrl}
+              imageUrl={createWSRVUrl(w.imageUrl, 1600)}
               imageAlt={w.name}
               label={t('worldDetail.imageLightbox', { name: w.name })}
               closeLabel={t('common.close')}
