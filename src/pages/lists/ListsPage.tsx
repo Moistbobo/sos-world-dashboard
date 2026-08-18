@@ -10,6 +10,9 @@ import { ImportDialog } from '../../components/import-dialog';
 import { ConfirmDialog } from '../../components/confirm-dialog';
 import type { WorldList } from '../../types/lists';
 import { ListIcon } from '../../utils/listIcon';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
+import { shared } from '../../styles/shared';
 
 export function ListsPage() {
   const { t } = useTranslation();
@@ -88,27 +91,27 @@ export function ListsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className={stylex.props(styles.cxc8ak4).className}>
         <div>
-          <h1 className="space-x-2 text-xl font-bold text-slate-900 dark:text-white">
+          <h1 className={stylex.props(styles.c1lp0kv9).className}>
             <span>{t('lists.title')}</span>
             <span
               data-testid="list-count"
-              className="align-middle text-sm font-normal tabular-nums text-slate-500 dark:text-slate-400"
+              className={stylex.props(styles.c18lz1d0).className}
             >
               {t('lists.listCount', { count: lists.length })}
             </span>
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className={stylex.props(styles.c1xmut6z).className}>
             {t('lists.subtitle')}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className={stylex.props(styles.c2ca09w).className}>
           <button
             onClick={() => setImportOpen(true)}
-            className="btn-secondary gap-1.5 text-sm py-2"
+            className={stylex.props(shared.btnSecondary, styles.cdlocnk).className}
           >
-            <Upload className="h-4 w-4" />
+            <Upload className={stylex.props(styles.c1ky5l8t).className} />
             {t('lists.importLists')}
           </button>
           <button
@@ -116,45 +119,45 @@ export function ListsPage() {
               setEditingList(undefined);
               setFormOpen(true);
             }}
-            className="btn-primary gap-1.5 text-sm py-2"
+            className={stylex.props(shared.btnPrimary, styles.c19xw58i).className}
             aria-label={t('lists.newList')}
           >
-            <Plus className="h-4 w-4" />
+            <Plus className={stylex.props(styles.c1ky5l8t).className} />
             {t('lists.newList')}
           </button>
         </div>
       </div>
 
       {!isHydrated ? (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-busy="true">
+        <div className={stylex.props(styles.cl3wdzx).className} aria-busy="true">
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="card flex items-center gap-3 p-4">
-              <div className="h-10 w-10 shrink-0 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-700" />
-              <div className="flex-1 space-y-2">
-                <div className="h-4 w-2/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
-                <div className="h-3 w-1/3 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+            <div key={i} className={stylex.props(shared.card, styles.c1j7sf2k).className}>
+              <div className={stylex.props(styles.c1e6iu76).className} />
+              <div className={stylex.props(styles.c1pa4dxw).className}>
+                <div className={stylex.props(styles.c1fbwq8c).className} />
+                <div className={stylex.props(styles.c1dbpxn2).className} />
               </div>
             </div>
           ))}
         </div>
       ) : (
         <>
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
+          <h2 className={stylex.props(styles.c1gy9eiv).className}>
             {t('lists.listsSection')}
           </h2>
 
           {error && (
-            <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300">
+            <div className={stylex.props(styles.c14gva1v).className}>
               {t('lists.storageErrorMessage', { message: error })}
-              <button onClick={clearError} className="ml-2 underline">
+              <button onClick={clearError} className={stylex.props(styles.c1127rjk).className}>
                 {t('common.dismiss')}
               </button>
             </div>
           )}
 
           {lists.length === 0 ? (
-            <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
-              <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
+            <div className={stylex.props(shared.card, styles.cgj8p3f).className}>
+              <List className={stylex.props(styles.c16zf3zb).className} />
               <p>{t('lists.emptyTitle')}</p>
               <p>{t('lists.emptySubtitle')}</p>
               <button
@@ -162,40 +165,40 @@ export function ListsPage() {
                   setEditingList(undefined);
                   setFormOpen(true);
                 }}
-                className="btn-primary gap-1.5 text-sm"
+                className={stylex.props(shared.btnPrimary, styles.c15tho).className}
               >
-                <Plus className="h-4 w-4" />
+                <Plus className={stylex.props(styles.c1ky5l8t).className} />
                 {t('lists.createFirstList')}
               </button>
             </div>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className={stylex.props(styles.cl3wdzx).className}>
               {lists.map((list) => (
             <div
               key={list.id}
               onClick={() => navigate(`/lists/${list.id}`)}
-              className="card flex min-w-0 cursor-pointer items-center gap-3 p-4 transition hover:border-slate-400 dark:hover:border-slate-600"
+              className={stylex.props(shared.card, styles.cyiv8jm).className}
             >
               <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+                className={stylex.props(styles.cctc87d).className}
                 style={{ backgroundColor: `${list.color}20` }}
               >
                 <ListIcon
                   icon={list.icon}
                   color={list.color}
-                  className="h-5 w-5"
+                  className={stylex.props(styles.c1kypdu7).className}
                 />
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+              <div className={stylex.props(styles.c1r022bi).className}>
+                <p className={stylex.props(styles.c1j7zf41).className}>
                   {list.name}
                 </p>
                 {list.memo && (
-                  <p className="mt-0.5 line-clamp-2 whitespace-pre-wrap break-words text-xs text-slate-500 dark:text-slate-400">
+                  <p className={stylex.props(styles.c1maj4j9).className}>
                     {list.memo}
                   </p>
                 )}
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className={stylex.props(styles.c6b0xl6).className}>
                   {t('lists.worldCount', { count: list.worldIds.length })} ·{' '}
                   {t('lists.updated', {
                     date: new Date(list.updatedAt).toLocaleDateString(),
@@ -203,29 +206,29 @@ export function ListsPage() {
                 </p>
               </div>
               <div
-                className="flex shrink-0 gap-1"
+                className={stylex.props(styles.c1pzc2fh).className}
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
                   onClick={(e) => handleExport(e, list)}
-                  className="btn-ghost p-2.5 text-sm"
+                  className={stylex.props(shared.btnGhost, styles.cqo2b3o).className}
                   aria-label={t('lists.exportList')}
                 >
-                  <Download className="h-4 w-4" />
+                  <Download className={stylex.props(styles.c1ky5l8t).className} />
                 </button>
                 <button
                   onClick={() => handleEdit(list)}
-                  className="btn-ghost p-2.5 text-sm"
+                  className={stylex.props(shared.btnGhost, styles.cqo2b3o).className}
                   aria-label={t('lists.editList')}
                 >
-                  <Pencil className="h-4 w-4" />
+                  <Pencil className={stylex.props(styles.c1ky5l8t).className} />
                 </button>
                 <button
                   onClick={() => handleDelete(list.id, list.name)}
-                  className="btn-ghost p-2.5 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                  className={stylex.props(shared.btnGhost, styles.c1m6dywn).className}
                   aria-label={t('lists.deleteList')}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className={stylex.props(styles.c1ky5l8t).className} />
                 </button>
               </div>
             </div>
@@ -272,3 +275,206 @@ export function ListsPage() {
     </div>
   );
 }
+
+const styles = stylex.create({
+  cxc8ak4: {
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "space-between",
+  },
+  c1lp0kv9: {
+    "fontSize": "1.25rem",
+    "lineHeight": "1.75rem",
+    "fontWeight": 700,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  c18lz1d0: {
+    "verticalAlign": "middle",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "fontWeight": 400,
+    "fontVariantNumeric": "tabular-nums",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c1xmut6z: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c2ca09w: {
+    "display": "flex",
+    "alignItems": "center",
+    "gap": "0.5rem",
+  },
+  cdlocnk: {
+    "gap": "0.375rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+  c1ky5l8t: {
+    "height": "1rem",
+    "width": "1rem",
+  },
+  c19xw58i: {
+    "gap": "0.375rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+  cl3wdzx: {
+    "display": "grid",
+    "gap": "0.75rem",
+    "@media (min-width: 640px)": {
+      "gridTemplateColumns": "repeat(2, minmax(0, 1fr))",
+    },
+    "@media (min-width: 1280px)": {
+      "gridTemplateColumns": "repeat(3, minmax(0, 1fr))",
+    },
+  },
+  c1j7sf2k: {
+    "display": "flex",
+    "alignItems": "center",
+    "gap": "0.75rem",
+    "padding": "1rem",
+  },
+  c1e6iu76: {
+    "height": "2.5rem",
+    "width": "2.5rem",
+    "animation": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+    "borderRadius": "0.5rem",
+    "backgroundColor": colors["--sos-bg-slate-200-slate-700"],
+  },
+  c1pa4dxw: {
+    "flex": 1,
+  },
+  c1fbwq8c: {
+    "height": "1rem",
+    "width": "66.6667%",
+    "animation": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+    "borderRadius": "0.25rem",
+    "backgroundColor": colors["--sos-bg-slate-200-slate-700"],
+  },
+  c1dbpxn2: {
+    "height": "0.75rem",
+    "width": "33.3333%",
+    "animation": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+    "borderRadius": "0.25rem",
+    "backgroundColor": colors["--sos-bg-slate-200-slate-700"],
+  },
+  c1gy9eiv: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "fontWeight": 600,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  c14gva1v: {
+    "borderRadius": "0.5rem",
+    "borderWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": "#ef444433",
+    "backgroundColor": "#ef44441a",
+    "padding": "0.75rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-red-700-red-300"],
+  },
+  c1127rjk: {
+    "marginLeft": "0.5rem",
+    "textDecorationLine": "underline",
+  },
+  cgj8p3f: {
+    "padding": "2rem",
+    "textAlign": "center",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c16zf3zb: {
+    "marginLeft": "auto",
+    "marginRight": "auto",
+    "marginBottom": "0.5rem",
+    "height": "2rem",
+    "width": "2rem",
+    "color": colors["--sos-text-slate-300-slate-600"],
+  },
+  c15tho: {
+    "gap": "0.375rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+  },
+  cyiv8jm: {
+    "display": "flex",
+    "minWidth": "0",
+    "cursor": "pointer",
+    "alignItems": "center",
+    "gap": "0.75rem",
+    "padding": "1rem",
+    "transitionProperty": "color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter, backdrop-filter",
+    ":hover": {
+      "borderColor": colors["--sos-border-slate-400-slate-600"],
+    },
+  },
+  cctc87d: {
+    "display": "flex",
+    "height": "2.5rem",
+    "width": "2.5rem",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "borderRadius": "0.5rem",
+  },
+  c1kypdu7: {
+    "height": "1.25rem",
+    "width": "1.25rem",
+  },
+  c1r022bi: {
+    "minWidth": "0",
+    "flex": 1,
+  },
+  c1j7zf41: {
+    "overflow": "hidden",
+    "textOverflow": "ellipsis",
+    "whiteSpace": "nowrap",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "fontWeight": 600,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  c1maj4j9: {
+    "marginTop": "0.125rem",
+    "display": "-webkit-box",
+    "WebkitLineClamp": 2,
+    "WebkitBoxOrient": "vertical",
+    "overflow": "hidden",
+    "whiteSpace": "pre-wrap",
+    "overflowWrap": "break-word",
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c6b0xl6: {
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c1pzc2fh: {
+    "display": "flex",
+    "gap": "0.25rem",
+  },
+  cqo2b3o: {
+    "padding": "0.625rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+  },
+  c1m6dywn: {
+    "padding": "0.625rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-red-600-red-400"],
+    ":hover": {
+      "backgroundColor": colors["--sos-bg-red-50-red-950_30"],
+    },
+  },
+});

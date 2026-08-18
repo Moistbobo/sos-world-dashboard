@@ -13,6 +13,9 @@ import { FilterBar } from '../../components/filter-bar';
 import { Pagination } from '../../components/pagination';
 import { WorldCard } from '../../components/world-card';
 import { WorldListRow } from '../../components/world-list-row';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
+import { shared } from '../../styles/shared';
 
 const SENTIMENT_ENABLED = import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 'true';
 
@@ -232,14 +235,14 @@ export function WorldsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className={stylex.props(styles.czrugxf).className}>
         <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t('worlds.title')}</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">{t('worlds.subtitle')}</p>
+          <h1 className={stylex.props(styles.c1ygyk63).className}>{t('worlds.title')}</h1>
+          <p className={stylex.props(styles.c1xmut6z).className}>{t('worlds.subtitle')}</p>
         </div>
         <button
           onClick={handleToggleMode}
-          className="btn-secondary flex items-center gap-2 px-3 text-sm"
+          className={stylex.props(shared.btnSecondary, styles.cbczsox).className}
         >
           {scrollMode === 'infinite' ? t('worlds.switchToPagination') : t('worlds.switchToInfinite')}
         </button>
@@ -268,22 +271,22 @@ export function WorldsPage() {
         onToggleHighPriority={handleToggleHighPriority}
       />
 
-      <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('worlds.resultsSection')}</h2>
+      <h2 className={stylex.props(styles.c1gy9eiv).className}>{t('worlds.resultsSection')}</h2>
 
-      <div className="flex items-center justify-between gap-3">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+      <div className={stylex.props(styles.c1g4q79s).className}>
+        <div className={stylex.props(styles.clk02tk).className}>
+          <Search className={stylex.props(styles.c1uln0k6).className} />
           <input
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder={t('worlds.searchPlaceholder')}
             aria-label={t('worlds.searchLabel')}
-            className="input w-full pl-9"
+            className={stylex.props(shared.input, styles.cnvqn3h).className}
           />
         </div>
         {!isError && (
-          <p role="status" className="hidden items-center gap-2 text-sm text-slate-600 dark:text-slate-400 sm:flex">
+          <p role="status" className={stylex.props(styles.ccf2zaq).className}>
             <span>{t('worlds.numberOfResultsLabel')}</span>
             {isPending ? (
               <BeatLoader size={6} color="currentColor" aria-label={t('worlds.loadingResultCount')} />
@@ -292,30 +295,28 @@ export function WorldsPage() {
             )}
           </p>
         )}
-        <div className="flex items-center gap-1 rounded-lg border border-slate-300 bg-slate-100/50 p-1 dark:border-slate-700 dark:bg-slate-800/50">
+        <div className={stylex.props(styles.c1x4r5ox).className}>
           <button
             onClick={() => setViewMode('grid')}
             aria-label={t('worlds.gridView')}
             aria-pressed={viewMode === 'grid'}
-            className={`flex h-11 w-11 items-center justify-center rounded-md transition ${
-              viewMode === 'grid'
-                ? 'bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-white'
-                : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-            }`}
+            className={stylex.props(
+              styles.viewBtn,
+              viewMode === 'grid' ? styles.viewActive : styles.viewInactive,
+            ).className}
           >
-            <LayoutGrid className="h-4 w-4" />
+            <LayoutGrid className={stylex.props(styles.c1ky5l8t).className} />
           </button>
           <button
             onClick={() => setViewMode('list')}
             aria-label={t('worlds.listView')}
             aria-pressed={viewMode === 'list'}
-            className={`flex h-11 w-11 items-center justify-center rounded-md transition ${
-              viewMode === 'list'
-                ? 'bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-white'
-                : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-            }`}
+            className={stylex.props(
+              styles.viewBtn,
+              viewMode === 'list' ? styles.viewActive : styles.viewInactive,
+            ).className}
           >
-            <List className="h-4 w-4" />
+            <List className={stylex.props(styles.c1ky5l8t).className} />
           </button>
         </div>
       </div>
@@ -323,16 +324,16 @@ export function WorldsPage() {
       {isError && (
         <div
           role="status"
-          className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300"
+          className={stylex.props(styles.c1sn20ea).className}
         >
           {t('worlds.loadError', { message: error?.message })}
         </div>
       )}
 
       {isPending && (
-        <div className={viewMode === 'grid' ? 'grid gap-4 sm:grid-cols-2 xl:grid-cols-4' : 'space-y-3'}>
+        <div className={viewMode === 'grid' ? stylex.props(styles.skeletonGrid).className : 'space-y-3'}>
           {Array.from({ length: limit }).map((_, i) => (
-            <div key={i} className="card animate-pulse bg-slate-200 dark:bg-slate-800 h-64" />
+            <div key={i} className={stylex.props(shared.card, styles.cn0q47e).className} />
           ))}
         </div>
       )}
@@ -340,10 +341,10 @@ export function WorldsPage() {
       {!isPending && !isError && worlds.length === 0 && (
         <div
           role="status"
-          className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400"
+          className={stylex.props(shared.card, styles.cgj8p3f).className}
         >
           {t('worlds.noWorlds')}{' '}
-          <button onClick={() => refetch()} className="text-indigo-600 underline dark:text-indigo-400">
+          <button onClick={() => refetch()} className={stylex.props(styles.co0qexa).className}>
             {t('worlds.tryAgain')}
           </button>
           .
@@ -354,17 +355,17 @@ export function WorldsPage() {
         <div
           ref={gridRef}
           style={{ height: gridVirtualizer.getTotalSize() }}
-          className="relative"
+          className={stylex.props(styles.c1pv0ki4).className}
         >
           {gridRows.map(({ row, items }) => (
             <div
               key={row.key}
               data-index={row.index}
               ref={gridVirtualizer.measureElement}
-              className="absolute left-0 right-0 top-0"
+              className={stylex.props(styles.ccwef6y).className}
               style={{ transform: `translateY(${row.start - scrollMargin}px)` }}
             >
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <div className={stylex.props(styles.cqwr8yn).className}>
                 {items.map((w) => (
                   <WorldCard
                     key={w.worldId}
@@ -388,14 +389,14 @@ export function WorldsPage() {
         <div
           ref={listRef}
           style={{ height: listVirtualizer.getTotalSize() }}
-          className="relative w-full min-w-0"
+          className={stylex.props(styles.ckr1ik8).className}
         >
           {listRows.map((row) => (
             <div
               key={row.key}
               data-index={row.index}
               ref={listVirtualizer.measureElement}
-              className="absolute left-0 right-0 top-0"
+              className={stylex.props(styles.ccwef6y).className}
               style={{ transform: `translateY(${row.start - scrollMargin}px)` }}
             >
               <WorldListRow
@@ -411,9 +412,9 @@ export function WorldsPage() {
       )}
 
       {scrollMode === 'infinite' && !isError && (
-        <div ref={sentinelRef} className="flex justify-center py-4">
+        <div ref={sentinelRef} className={stylex.props(styles.cs6jd9z).className}>
           {infiniteQuery.isFetchingNextPage && (
-            <span aria-live="polite" className="text-sm text-slate-500 dark:text-slate-400">
+            <span aria-live="polite" className={stylex.props(styles.c1xmut6z).className}>
               {t('worlds.loadingMore')}
             </span>
           )}
@@ -421,7 +422,7 @@ export function WorldsPage() {
       )}
 
       {scrollMode === 'pagination' && total > 0 && (
-        <div className="flex justify-center pt-2">
+        <div className={stylex.props(styles.cs6j9kg).className}>
           <Pagination
             offset={offset}
             limit={limit}
@@ -437,12 +438,216 @@ export function WorldsPage() {
       {showBackToTop && scrollMode === 'infinite' && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className={stylex.props(styles.c13vkjpx).className}
           aria-label={t('worlds.backToTop')}
         >
-          <ArrowUp className="h-5 w-5" />
+          <ArrowUp className={stylex.props(styles.c1kypdu7).className} />
         </button>
       )}
     </div>
   );
 }
+
+const styles = stylex.create({
+  czrugxf: {
+    "display": "flex",
+    "flexDirection": "column",
+    "gap": "1rem",
+    "@media (min-width: 640px)": {
+      "flexDirection": "row",
+      "alignItems": "center",
+      "justifyContent": "space-between",
+    },
+  },
+  c1ygyk63: {
+    "fontSize": "1.25rem",
+    "lineHeight": "1.75rem",
+    "fontWeight": 700,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  c1xmut6z: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  cbczsox: {
+    "display": "flex",
+    "alignItems": "center",
+    "gap": "0.5rem",
+    "paddingLeft": "0.75rem",
+    "paddingRight": "0.75rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+  },
+  c1gy9eiv: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "fontWeight": 600,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  c1g4q79s: {
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "space-between",
+    "gap": "0.75rem",
+  },
+  clk02tk: {
+    "position": "relative",
+    "flex": 1,
+  },
+  c1uln0k6: {
+    "position": "absolute",
+    "left": "0.625rem",
+    "top": "50%",
+    "height": "1rem",
+    "width": "1rem",
+    "transform": "translateY(-50%)",
+    "color": colors["--sos-text-slate-400-slate-500"],
+  },
+  cnvqn3h: {
+    "width": "100%",
+    "paddingLeft": "2.25rem",
+  },
+  ccf2zaq: {
+    "display": "flex",
+    "alignItems": "center",
+    "gap": "0.5rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-600-slate-400"],
+  },
+  c1x4r5ox: {
+    "display": "flex",
+    "alignItems": "center",
+    "gap": "0.25rem",
+    "borderRadius": "0.5rem",
+    "borderWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": colors["--sos-border-slate-300-slate-700"],
+    "backgroundColor": colors["--sos-bg-slate-100_50-slate-800_50"],
+    "padding": "0.25rem",
+  },
+  c1ky5l8t: {
+    "height": "1rem",
+    "width": "1rem",
+  },
+  c1sn20ea: {
+    "borderRadius": "0.5rem",
+    "borderWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": "#ef444433",
+    "backgroundColor": "#ef44441a",
+    "padding": "1rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-red-700-red-300"],
+  },
+  cn0q47e: {
+    "animation": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+    "backgroundColor": colors["--sos-bg-slate-200-slate-800"],
+    "height": "16rem",
+  },
+  cgj8p3f: {
+    "padding": "2rem",
+    "textAlign": "center",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  co0qexa: {
+    "color": colors["--sos-text-indigo-600-indigo-400"],
+    "textDecorationLine": "underline",
+  },
+  c1pv0ki4: {
+    "position": "relative",
+  },
+  ccwef6y: {
+    "position": "absolute",
+    "left": "0",
+    "right": "0",
+    "top": "0",
+  },
+  cqwr8yn: {
+    "display": "grid",
+    "gap": "1rem",
+    "@media (min-width: 640px)": {
+      "gridTemplateColumns": "repeat(2, minmax(0, 1fr))",
+    },
+    "@media (min-width: 1280px)": {
+      "gridTemplateColumns": "repeat(4, minmax(0, 1fr))",
+    },
+  },
+  ckr1ik8: {
+    "position": "relative",
+    "width": "100%",
+    "minWidth": "0",
+  },
+  cs6jd9z: {
+    "display": "flex",
+    "justifyContent": "center",
+    "paddingTop": "1rem",
+    "paddingBottom": "1rem",
+  },
+  cs6j9kg: {
+    "display": "flex",
+    "justifyContent": "center",
+    "paddingTop": "0.5rem",
+  },
+  c13vkjpx: {
+    "position": "fixed",
+    "bottom": "1.5rem",
+    "right": "1.5rem",
+    "zIndex": 40,
+    "display": "flex",
+    "height": "3rem",
+    "width": "3rem",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "borderRadius": "9999px",
+    "backgroundColor": colors["--sos-bg-indigo-600-indigo-500"],
+    "color": "#ffffff",
+    "boxShadow": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    "transitionProperty": "color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter, backdrop-filter",
+    ":hover": {
+      "backgroundColor": colors["--sos-bg-indigo-700-indigo-600"],
+    },
+    ":focus": {
+      "boxShadow": "0 0 0 0px #fff, 0 0 0 2px #818cf8",
+    },
+  },
+  c1kypdu7: {
+    "height": "1.25rem",
+    "width": "1.25rem",
+  },
+  viewBtn: {
+    "display": "flex",
+    "height": "2.75rem",
+    "width": "2.75rem",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "borderRadius": "0.375rem",
+    "transitionProperty": "color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter, backdrop-filter",
+    "transitionDuration": "0.15s",
+    "transitionTimingFunction": "cubic-bezier(0.4, 0, 0.2, 1)",
+  },
+  viewActive: {
+    "backgroundColor": colors["--sos-bg-slate-300-slate-700"],
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  viewInactive: {
+    "color": colors["--sos-text-slate-500-slate-400"],
+    ":hover": {
+      "color": colors["--sos-text-slate-900-white"],
+    },
+  },
+  skeletonGrid: {
+    "display": "grid",
+    "gap": "1rem",
+    "@media (min-width: 640px)": {
+      "gridTemplateColumns": "repeat(2, minmax(0, 1fr))",
+    },
+    "@media (min-width: 1280px)": {
+      "gridTemplateColumns": "repeat(4, minmax(0, 1fr))",
+    },
+  },
+});

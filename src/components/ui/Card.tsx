@@ -1,4 +1,7 @@
 import React from 'react';
+import * as stylex from '@stylexjs/stylex';
+import { shared } from '../../styles/shared';
+import { colors } from '../../styles/tokens.stylex';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -7,7 +10,7 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export function Card({ children, className = '', ...props }: CardProps) {
   return (
     <div
-      className={`rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700/50 dark:bg-slate-850 ${className}`}
+      className={`${stylex.props(shared.card).className} ${className}`}
       {...props}
     >
       {children}
@@ -17,7 +20,7 @@ export function Card({ children, className = '', ...props }: CardProps) {
 
 export function CardHeader({ children, className = '', ...props }: CardProps) {
   return (
-    <div className={`px-5 py-4 border-b border-slate-200 dark:border-slate-700/50 ${className}`} {...props}>
+    <div className={`${stylex.props(styles.header).className} ${className}`} {...props}>
       {children}
     </div>
   );
@@ -25,8 +28,26 @@ export function CardHeader({ children, className = '', ...props }: CardProps) {
 
 export function CardContent({ children, className = '', ...props }: CardProps) {
   return (
-    <div className={`px-5 py-4 ${className}`} {...props}>
+    <div className={`${stylex.props(styles.content).className} ${className}`} {...props}>
       {children}
     </div>
   );
 }
+
+const styles = stylex.create({
+  header: {
+    borderBottomColor: colors['--sos-border-slate-200-slate-700_50'],
+    borderBottomWidth: 1,
+    borderStyle: 'solid',
+    paddingBottom: '1rem',
+    paddingLeft: '1.25rem',
+    paddingRight: '1.25rem',
+    paddingTop: '1rem',
+  },
+  content: {
+    paddingBottom: '1rem',
+    paddingLeft: '1.25rem',
+    paddingRight: '1.25rem',
+    paddingTop: '1rem',
+  },
+});

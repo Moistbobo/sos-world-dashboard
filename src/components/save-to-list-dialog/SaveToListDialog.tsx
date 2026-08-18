@@ -6,6 +6,9 @@ import { useLists } from '../../contexts/ListsContext';
 import { ListFormDialog } from '../list-form-dialog/ListFormDialog';
 import { ListIcon } from '../../utils/listIcon';
 import { useDialogFocus } from '../../hooks/useDialogFocus';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
+import { shared } from '../../styles/shared';
 
 interface SaveToListDialogProps {
   worldId: string;
@@ -49,53 +52,53 @@ export function SaveToListDialog({
   return createPortal(
     <>
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95"
+        className={stylex.props(styles.c1afui6d).className}
         role="dialog"
         aria-modal="true"
       >
         <div
           ref={dialogRef}
-          className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900"
+          className={stylex.props(styles.caf9swy).className}
         >
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-base font-semibold text-slate-900 dark:text-white">
+          <div className={stylex.props(styles.cs7r2vk).className}>
+            <h3 className={stylex.props(styles.ca9yw8g).className}>
               {t('lists.saveToList')}
             </h3>
             <button
               onClick={() => onOpenChange(false)}
               aria-label={t('common.close')}
-              className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className={stylex.props(styles.cvjheld).className}
             >
-              <X className="h-5 w-5" />
+              <X className={stylex.props(styles.c1kypdu7).className} />
             </button>
           </div>
 
           {lists.length === 0 ? (
-            <div className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+            <div className={stylex.props(styles.c1ap1ebo).className}>
               <p>{t('lists.noListsYet')}</p>
             </div>
           ) : (
-            <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
+            <div className={stylex.props(styles.c1346evp).className}>
               {lists.map((list) => (
                 <label
                   key={list.id}
-                  className="flex cursor-pointer items-center gap-3 rounded-lg border border-slate-200 p-2 transition hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
+                  className={stylex.props(styles.c1tcrqea).className}
                 >
                   <input
                     type="checkbox"
                     checked={isWorldInList(worldId, list.id)}
                     onChange={() => toggle(list.id)}
-                    className="h-6 w-6 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                    className={stylex.props(styles.c11z2qc5).className}
                   />
                   <ListIcon
                     icon={list.icon}
                     color={list.color}
-                    className="h-5 w-5 shrink-0"
+                    className={stylex.props(styles.c1l49mhp).className}
                   />
-                  <span className="flex-1 text-sm text-slate-700 dark:text-slate-200">
+                  <span className={stylex.props(styles.cdhbvfy).className}>
                     {list.name}
                   </span>
-                  <span className="text-xs text-slate-400 dark:text-slate-500">
+                  <span className={stylex.props(styles.c1kr1dvu).className}>
                     {list.worldIds.length}
                   </span>
                 </label>
@@ -103,21 +106,21 @@ export function SaveToListDialog({
             </div>
           )}
 
-          <div className="mt-4 border-t border-slate-200 pt-3 dark:border-slate-700">
+          <div className={stylex.props(styles.cfo6i3c).className}>
             <button
               type="button"
               onClick={() => setShowCreate(true)}
-              className="btn-ghost w-full gap-1.5 text-sm py-2"
+              className={stylex.props(shared.btnGhost, styles.c16t09bg).className}
             >
-              <Plus className="h-4 w-4" />
+              <Plus className={stylex.props(styles.c1ky5l8t).className} />
               {t('lists.createNewListInline')}
             </button>
           </div>
 
-          <div className="mt-4 flex justify-end">
+          <div className={stylex.props(styles.c1101byh).className}>
             <button
               onClick={() => onOpenChange(false)}
-              className="btn-primary text-sm py-2"
+              className={stylex.props(shared.btnPrimary, styles.c1gbn6df).className}
             >
               {t('common.done')}
             </button>
@@ -134,3 +137,142 @@ export function SaveToListDialog({
     document.body,
   );
 }
+
+const styles = stylex.create({
+  c1afui6d: {
+    "position": "fixed",
+    "top": 0,
+    "right": 0,
+    "bottom": 0,
+    "left": 0,
+    "zIndex": 50,
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "overflow": "auto",
+    "backgroundColor": colors["--sos-bg-white_95-slate-950_95"],
+    "padding": "1rem",
+    "backdropFilter": "blur(4px)",
+    "transitionProperty": "opacity",
+    "transitionDuration": "0.2s",
+    "transitionTimingFunction": "cubic-bezier(0, 0, 0.2, 1)",
+  },
+  caf9swy: {
+    "width": "100%",
+    "borderRadius": "0.75rem",
+    "backgroundColor": colors["--sos-bg-white-slate-900"],
+    "padding": "1.25rem",
+    "boxShadow": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+  },
+  cs7r2vk: {
+    "marginBottom": "1rem",
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "space-between",
+  },
+  ca9yw8g: {
+    "fontSize": "1rem",
+    "lineHeight": "1.5rem",
+    "fontWeight": 600,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  cvjheld: {
+    "display": "flex",
+    "height": "2.75rem",
+    "width": "2.75rem",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "borderRadius": "0.5rem",
+    "color": "#94a3b8",
+    ":hover": {
+      "color": colors["--sos-text-slate-600-slate-200"],
+    },
+  },
+  c1kypdu7: {
+    "height": "1.25rem",
+    "width": "1.25rem",
+  },
+  c1ap1ebo: {
+    "paddingTop": "1.5rem",
+    "paddingBottom": "1.5rem",
+    "textAlign": "center",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c1346evp: {
+    "maxHeight": "16rem",
+    "overflow": "auto",
+    "paddingRight": "0.25rem",
+  },
+  c1tcrqea: {
+    "display": "flex",
+    "cursor": "pointer",
+    "alignItems": "center",
+    "gap": "0.75rem",
+    "borderRadius": "0.5rem",
+    "borderWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": colors["--sos-border-slate-200-slate-700"],
+    "padding": "0.5rem",
+    "transitionProperty": "color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter, backdrop-filter",
+    ":hover": {
+      "backgroundColor": colors["--sos-bg-slate-50-slate-800"],
+    },
+  },
+  c11z2qc5: {
+    "height": "1.5rem",
+    "width": "1.5rem",
+    "borderRadius": "0.25rem",
+    "borderColor": colors["--sos-border-slate-300-slate-600"],
+    "color": "#4f46e5",
+    ":focus": {
+      "boxShadow": "0 0 0 0px #fff, 0 0 0 1px #6366f1",
+    },
+  },
+  c1l49mhp: {
+    "height": "1.25rem",
+    "width": "1.25rem",
+  },
+  cdhbvfy: {
+    "flex": 1,
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-700-slate-200"],
+  },
+  c1kr1dvu: {
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-slate-400-slate-500"],
+  },
+  cfo6i3c: {
+    "marginTop": "1rem",
+    "borderTopWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": colors["--sos-border-slate-200-slate-700"],
+    "paddingTop": "0.75rem",
+  },
+  c16t09bg: {
+    "width": "100%",
+    "gap": "0.375rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+  c1ky5l8t: {
+    "height": "1rem",
+    "width": "1rem",
+  },
+  c1101byh: {
+    "marginTop": "1rem",
+    "display": "flex",
+    "justifyContent": "flex-end",
+  },
+  c1gbn6df: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+});

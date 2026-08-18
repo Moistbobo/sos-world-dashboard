@@ -62,10 +62,8 @@ describe('CopyWorldId', () => {
     render(<CopyWorldId worldId="wrld_abc123" />);
 
     const button = screen.getByTestId('copy-world-id');
-    expect(button).toHaveClass('cursor-pointer');
-    expect(button).toHaveClass('hover:text-indigo-600');
-    expect(button).toHaveClass('dark:hover:text-indigo-400');
-    expect(button).toHaveClass('transition-colors');
-    expect(button).toHaveClass('whitespace-nowrap');
+    expect(getComputedStyle(button).cursor).toBe('pointer');
+    expect(getComputedStyle(button).whiteSpace).toBe('nowrap');
+    expect(getComputedStyle(button).transitionProperty).toContain('color');
   });
 });

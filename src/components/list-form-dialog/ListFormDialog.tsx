@@ -8,6 +8,9 @@ import {
   MAX_LIST_MEMO_LENGTH,
 } from '../../utils/listMemoValidation';
 import { useDialogFocus } from '../../hooks/useDialogFocus';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
+import { shared } from '../../styles/shared';
 
 const MAX_MEMO_HEIGHT_PX = 144;
 
@@ -82,35 +85,35 @@ export function ListFormDialog({
   const isEdit = Boolean(list);
 
   return createPortal(
-    <div className="contents">
+    <div className={stylex.props(styles.c1pncdne).className}>
       <div
         onClick={() => onOpenChange(false)}
-        className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95"
+        className={stylex.props(styles.c1afui6d).className}
         role="dialog"
         aria-modal="true"
       >
         <div
           ref={dialogRef}
           onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900"
+          className={stylex.props(styles.caf9swy).className}
         >
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-base font-semibold text-slate-900 dark:text-white">
+          <div className={stylex.props(styles.cs7r2vk).className}>
+            <h3 className={stylex.props(styles.ca9yw8g).className}>
               {isEdit ? t('lists.editList') : t('lists.newList')}
             </h3>
             <button
               onClick={() => onOpenChange(false)}
               aria-label={t('common.close')}
-              className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className={stylex.props(styles.cvjheld).className}
             >
-              <X className="h-5 w-5" />
+              <X className={stylex.props(styles.c1kypdu7).className} />
             </button>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label
                 htmlFor="list-name"
-                className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-300"
+                className={stylex.props(styles.c17kobyq).className}
               >
                 {t('lists.listName')}
               </label>
@@ -119,26 +122,26 @@ export function ListFormDialog({
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="input w-full"
+                className={stylex.props(shared.input, styles.cic22wr).className}
                 placeholder={t('lists.listNamePlaceholder')}
               />
             </div>
             <div>
               <label
                 htmlFor="list-color"
-                className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-300"
+                className={stylex.props(styles.c17kobyq).className}
               >
                 {t('lists.listColor')}
               </label>
-              <div className="flex items-center gap-2">
+              <div className={stylex.props(styles.c2ca09w).className}>
                 <input
                   id="list-color"
                   type="color"
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
-                  className="h-11 w-11 cursor-pointer rounded border border-slate-300 bg-transparent p-1 dark:border-slate-700"
+                  className={stylex.props(styles.ceize5s).className}
                 />
-                <span className="text-xs text-slate-500 dark:text-slate-400">
+                <span className={stylex.props(styles.c6b0xl6).className}>
                   {color}
                 </span>
               </div>
@@ -146,7 +149,7 @@ export function ListFormDialog({
             <div>
               <label
                 htmlFor="list-memo"
-                className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-300"
+                className={stylex.props(styles.c17kobyq).className}
               >
                 {t('lists.listMemo')}
               </label>
@@ -161,30 +164,29 @@ export function ListFormDialog({
                 placeholder={t('lists.listMemoPlaceholder')}
                 maxLength={MAX_LIST_MEMO_LENGTH + 1}
                 rows={3}
-                className="input w-full resize-none overflow-y-auto"
+                className={stylex.props(shared.input, styles.c1pegsey).className}
               />
               <span
-                className={`mt-1 block text-xs ${
-                  memoLength > MAX_LIST_MEMO_LENGTH
-                    ? 'text-red-500'
-                    : 'text-slate-500 dark:text-slate-400'
-                }`}
+                className={stylex.props(
+                  styles.memoCount,
+                  memoLength > MAX_LIST_MEMO_LENGTH ? styles.memoCountOver : undefined,
+                ).className}
               >
                 {t('lists.memoCount', { count: memoLength })}
               </span>
             </div>
             {error && (
-              <p className="text-xs text-red-600 dark:text-red-300">{error}</p>
+              <p className={stylex.props(styles.ciyy9h6).className}>{error}</p>
             )}
-            <div className="flex justify-end gap-2 pt-2">
+            <div className={stylex.props(styles.c1m6tdyv).className}>
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
-                className="btn-ghost text-sm py-2"
+                className={stylex.props(shared.btnGhost, styles.c1hozn4m).className}
               >
                 {t('common.cancel')}
               </button>
-              <button type="submit" className="btn-primary text-sm py-2">
+              <button type="submit" className={stylex.props(shared.btnPrimary, styles.c1gbn6df).className}>
                 {isEdit ? t('common.save') : t('lists.createList')}
               </button>
             </div>
@@ -195,3 +197,132 @@ export function ListFormDialog({
     document.body,
   );
 }
+
+const styles = stylex.create({
+  c1pncdne: {
+    "display": "contents",
+  },
+  c1afui6d: {
+    "position": "fixed",
+    "top": 0,
+    "right": 0,
+    "bottom": 0,
+    "left": 0,
+    "zIndex": 50,
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "overflow": "auto",
+    "backgroundColor": colors["--sos-bg-white_95-slate-950_95"],
+    "padding": "1rem",
+    "backdropFilter": "blur(4px)",
+    "transitionProperty": "opacity",
+    "transitionDuration": "0.2s",
+    "transitionTimingFunction": "cubic-bezier(0, 0, 0.2, 1)",
+  },
+  caf9swy: {
+    "width": "100%",
+    "borderRadius": "0.75rem",
+    "backgroundColor": colors["--sos-bg-white-slate-900"],
+    "padding": "1.25rem",
+    "boxShadow": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+  },
+  cs7r2vk: {
+    "marginBottom": "1rem",
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "space-between",
+  },
+  ca9yw8g: {
+    "fontSize": "1rem",
+    "lineHeight": "1.5rem",
+    "fontWeight": 600,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  cvjheld: {
+    "display": "flex",
+    "height": "2.75rem",
+    "width": "2.75rem",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "borderRadius": "0.5rem",
+    "color": "#94a3b8",
+    ":hover": {
+      "color": colors["--sos-text-slate-600-slate-200"],
+    },
+  },
+  c1kypdu7: {
+    "height": "1.25rem",
+    "width": "1.25rem",
+  },
+  c17kobyq: {
+    "marginBottom": "0.25rem",
+    "display": "block",
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "fontWeight": 500,
+    "color": colors["--sos-text-slate-700-slate-300"],
+  },
+  cic22wr: {
+    "width": "100%",
+  },
+  c2ca09w: {
+    "display": "flex",
+    "alignItems": "center",
+    "gap": "0.5rem",
+  },
+  ceize5s: {
+    "height": "2.75rem",
+    "width": "2.75rem",
+    "cursor": "pointer",
+    "borderRadius": "0.25rem",
+    "borderWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": colors["--sos-border-slate-300-slate-700"],
+    "backgroundColor": "transparent",
+    "padding": "0.25rem",
+  },
+  c6b0xl6: {
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c1pegsey: {
+    "width": "100%",
+    "resize": "none",
+    "overflow": "auto",
+  },
+  ciyy9h6: {
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-red-600-red-300"],
+  },
+  c1m6tdyv: {
+    "display": "flex",
+    "justifyContent": "flex-end",
+    "gap": "0.5rem",
+    "paddingTop": "0.5rem",
+  },
+  c1hozn4m: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+  c1gbn6df: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+  memoCount: {
+    "display": "block",
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "marginTop": "0.25rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  memoCountOver: {
+    "color": "#ef4444",
+  },
+});

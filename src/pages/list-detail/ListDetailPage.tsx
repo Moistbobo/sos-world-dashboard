@@ -13,6 +13,9 @@ import { Pagination } from '../../components/pagination';
 import { WorldCard } from '../../components/world-card/WorldCard';
 import { DeletedWorldCard } from '../../components/deleted-world-card';
 import { ConfirmDialog } from '../../components/confirm-dialog';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
+import { shared } from '../../styles/shared';
 
 const WORLDS_PER_PAGE = 28;
 const MEMO_PREVIEW_LENGTH = 128;
@@ -55,9 +58,9 @@ export function ListDetailPage({
   if (!isHydrated) {
     return (
       <div className="space-y-4">
-        <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
-        <div className="card p-8">
-          <div className="mx-auto h-8 w-8 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+        <div className={stylex.props(styles.caajinm).className} />
+        <div className={stylex.props(shared.card, styles.c1yvaa6j).className}>
+          <div className={stylex.props(styles.cbpfumt).className} />
         </div>
       </div>
     );
@@ -68,11 +71,11 @@ export function ListDetailPage({
       <div className="space-y-4">
         <button
           onClick={() => navigate(-1)}
-          className="btn-ghost gap-1.5 text-sm py-2"
+          className={stylex.props(shared.btnGhost, styles.c1xphv85).className}
         >
-          <ArrowLeft className="h-4 w-4" /> {t('common.back')}
+          <ArrowLeft className={stylex.props(styles.c1ky5l8t).className} /> {t('common.back')}
         </button>
-        <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
+        <div className={stylex.props(shared.card, styles.cgj8p3f).className}>
           {t('lists.listNotFound')}
         </div>
       </div>
@@ -115,26 +118,26 @@ export function ListDetailPage({
     <div className="space-y-4">
       <button
         onClick={() => navigate(-1)}
-        className="btn-ghost gap-1.5 text-sm py-2"
+        className={stylex.props(shared.btnGhost, styles.c1xphv85).className}
       >
-        <ArrowLeft className="h-4 w-4" /> {t('common.back')}
+        <ArrowLeft className={stylex.props(styles.c1ky5l8t).className} /> {t('common.back')}
       </button>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 items-center gap-3">
+      <div className={stylex.props(styles.cjqkzf8).className}>
+        <div className={stylex.props(styles.c19m7neu).className}>
           <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+            className={stylex.props(styles.cctc87d).className}
             style={{ backgroundColor: `${list.color}20` }}
           >
-            <ListIcon icon={list.icon} color={list.color} className="h-5 w-5" />
+            <ListIcon icon={list.icon} color={list.color} className={stylex.props(styles.c1kypdu7).className} />
           </div>
-          <div className="min-w-0">
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+          <div className={stylex.props(styles.chkqlb3).className}>
+            <h1 className={stylex.props(styles.c1ygyk63).className}>
               {list.name}
             </h1>
             {list.memo && (
-              <div className="mt-1 max-w-xl">
-                <p className="whitespace-pre-wrap break-words text-sm text-slate-600 dark:text-slate-300">
+              <div className={stylex.props(styles.c15t09mw).className}>
+                <p className={stylex.props(styles.cwsf3rg).className}>
                   {memoExpanded || list.memo.length <= MEMO_PREVIEW_LENGTH
                     ? list.memo
                     : `${list.memo.slice(0, MEMO_PREVIEW_LENGTH)}…`}
@@ -143,7 +146,7 @@ export function ListDetailPage({
                   <button
                     type="button"
                     onClick={() => setMemoExpanded((expanded) => !expanded)}
-                    className="btn-ghost mt-1 text-sm py-2"
+                    className={stylex.props(shared.btnGhost, styles.c1g88gw7).className}
                   >
                     {memoExpanded
                       ? t('lists.memoViewLess')
@@ -152,62 +155,62 @@ export function ListDetailPage({
                 )}
               </div>
             )}
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className={stylex.props(styles.c6b0xl6).className}>
               {t('lists.worldCount', { count: list.worldIds.length })}
             </p>
           </div>
         </div>
-        <div className="flex shrink-0 gap-2">
+        <div className={stylex.props(styles.c1pzc2fi).className}>
           <button
             onClick={() => exportList(list)}
-            className="btn-secondary gap-1.5 text-sm py-2"
+            className={stylex.props(shared.btnSecondary, styles.cdlocnk).className}
           >
-            <Download className="h-4 w-4" /> {t('lists.exportList')}
+            <Download className={stylex.props(styles.c1ky5l8t).className} /> {t('lists.exportList')}
           </button>
           <button
             onClick={() => setFormOpen(true)}
-            className="btn-secondary gap-1.5 text-sm py-2"
+            className={stylex.props(shared.btnSecondary, styles.cdlocnk).className}
           >
-            <Pencil className="h-4 w-4" /> {t('common.edit')}
+            <Pencil className={stylex.props(styles.c1ky5l8t).className} /> {t('common.edit')}
           </button>
           <button
             onClick={handleDelete}
-            className="btn-ghost gap-1.5 text-sm py-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+            className={stylex.props(shared.btnGhost, styles.c1acelco).className}
           >
-            <Trash2 className="h-4 w-4" /> {t('common.delete')}
+            <Trash2 className={stylex.props(styles.c1ky5l8t).className} /> {t('common.delete')}
           </button>
         </div>
       </div>
 
       {list.worldIds.length === 0 ? (
-        <div className="card p-8 text-center text-sm text-slate-500 dark:text-slate-400">
-          <List className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
+        <div className={stylex.props(shared.card, styles.cgj8p3f).className}>
+          <List className={stylex.props(styles.c16zf3zb).className} />
           <p>{t('lists.emptyDetailTitle')}</p>
           <p>{t('lists.emptyDetailSubtitle')}</p>
           <button
             onClick={() => navigate('/worlds')}
-            className="btn-primary gap-1.5 text-sm"
+            className={stylex.props(shared.btnPrimary, styles.c15tho).className}
           >
-            <Globe className="h-4 w-4" />
+            <Globe className={stylex.props(styles.c1ky5l8t).className} />
             {t('lists.browseWorlds')}
           </button>
         </div>
       ) : (
         <div className="space-y-3">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
+          <h2 className={stylex.props(styles.c1gy9eiv).className}>
             {t('lists.worldsSection')}
           </h2>
           {isPending && worlds.every((w) => !w.data) ? (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className={stylex.props(styles.cqwr8yn).className}>
               {Array.from({ length: WORLDS_PER_PAGE }).map((_, i) => (
                 <div
                   key={i}
-                  className="card h-64 animate-pulse bg-slate-200 dark:bg-slate-800"
+                  className={stylex.props(shared.card, styles.c1461knq).className}
                 />
               ))}
             </div>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className={stylex.props(styles.cqwr8yn).className}>
               {worlds.map((entry) => {
                 if (entry.data) {
                   return (
@@ -234,7 +237,7 @@ export function ListDetailPage({
           )}
 
           {list.worldIds.length > WORLDS_PER_PAGE && (
-            <div className="flex justify-center pt-2">
+            <div className={stylex.props(styles.cs6j9kg).className}>
               <Pagination
                 offset={offset}
                 limit={WORLDS_PER_PAGE}
@@ -269,3 +272,163 @@ export function ListDetailPage({
     </div>
   );
 }
+
+const styles = stylex.create({
+  caajinm: {
+    "height": "1rem",
+    "width": "6rem",
+    "animation": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+    "borderRadius": "0.25rem",
+    "backgroundColor": colors["--sos-bg-slate-200-slate-700"],
+  },
+  c1yvaa6j: {
+    "padding": "2rem",
+  },
+  cbpfumt: {
+    "marginLeft": "auto",
+    "marginRight": "auto",
+    "height": "2rem",
+    "width": "2rem",
+    "animation": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+    "borderRadius": "0.25rem",
+    "backgroundColor": colors["--sos-bg-slate-200-slate-700"],
+  },
+  c1xphv85: {
+    "gap": "0.375rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+  c1ky5l8t: {
+    "height": "1rem",
+    "width": "1rem",
+  },
+  cgj8p3f: {
+    "padding": "2rem",
+    "textAlign": "center",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  cjqkzf8: {
+    "display": "flex",
+    "flexDirection": "column",
+    "gap": "0.75rem",
+    "@media (min-width: 640px)": {
+      "flexDirection": "row",
+      "alignItems": "center",
+      "justifyContent": "space-between",
+    },
+  },
+  c19m7neu: {
+    "display": "flex",
+    "minWidth": "0",
+    "alignItems": "center",
+    "gap": "0.75rem",
+  },
+  cctc87d: {
+    "display": "flex",
+    "height": "2.5rem",
+    "width": "2.5rem",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "borderRadius": "0.5rem",
+  },
+  c1kypdu7: {
+    "height": "1.25rem",
+    "width": "1.25rem",
+  },
+  chkqlb3: {
+    "minWidth": "0",
+  },
+  c1ygyk63: {
+    "fontSize": "1.25rem",
+    "lineHeight": "1.75rem",
+    "fontWeight": 700,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  c15t09mw: {
+    "marginTop": "0.25rem",
+  },
+  cwsf3rg: {
+    "whiteSpace": "pre-wrap",
+    "overflowWrap": "break-word",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-600-slate-300"],
+  },
+  c1g88gw7: {
+    "marginTop": "0.25rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+  c6b0xl6: {
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c1pzc2fi: {
+    "display": "flex",
+    "gap": "0.5rem",
+  },
+  cdlocnk: {
+    "gap": "0.375rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+  c1acelco: {
+    "gap": "0.375rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+    "color": colors["--sos-text-red-600-red-400"],
+    ":hover": {
+      "backgroundColor": colors["--sos-bg-red-50-red-950_30"],
+    },
+  },
+  c16zf3zb: {
+    "marginLeft": "auto",
+    "marginRight": "auto",
+    "marginBottom": "0.5rem",
+    "height": "2rem",
+    "width": "2rem",
+    "color": colors["--sos-text-slate-300-slate-600"],
+  },
+  c15tho: {
+    "gap": "0.375rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+  },
+  c1gy9eiv: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "fontWeight": 600,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  cqwr8yn: {
+    "display": "grid",
+    "gap": "1rem",
+    "@media (min-width: 640px)": {
+      "gridTemplateColumns": "repeat(2, minmax(0, 1fr))",
+    },
+    "@media (min-width: 1280px)": {
+      "gridTemplateColumns": "repeat(4, minmax(0, 1fr))",
+    },
+  },
+  c1461knq: {
+    "height": "16rem",
+    "animation": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+    "backgroundColor": colors["--sos-bg-slate-200-slate-800"],
+  },
+  cs6j9kg: {
+    "display": "flex",
+    "justifyContent": "center",
+    "paddingTop": "0.5rem",
+  },
+});

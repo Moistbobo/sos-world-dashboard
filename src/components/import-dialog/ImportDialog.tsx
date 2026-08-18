@@ -11,6 +11,9 @@ import {
 } from '../../utils/listsImportExport';
 import { ListIcon } from '../../utils/listIcon';
 import { useDialogFocus } from '../../hooks/useDialogFocus';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
+import { shared } from '../../styles/shared';
 
 interface ImportDialogProps {
   open: boolean;
@@ -143,17 +146,17 @@ export function ImportDialog({
   return (
     <div
       onClick={handleClose}
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95"
+      className={stylex.props(styles.c1afui6d).className}
       role="dialog"
       aria-modal="true"
     >
       <div
         ref={dialogRef}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900"
+        className={stylex.props(styles.c14gz0bj).className}
       >
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-base font-semibold text-slate-900 dark:text-white">
+        <div className={stylex.props(styles.cs7r2vk).className}>
+          <h3 className={stylex.props(styles.ca9yw8g).className}>
             {phase === 'preview'
               ? t('lists.importPreview')
               : phase === 'error'
@@ -163,22 +166,22 @@ export function ImportDialog({
           <button
             onClick={handleClose}
             aria-label={t('common.close')}
-            className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            className={stylex.props(styles.cvjheld).className}
           >
-            <X className="h-5 w-5" />
+            <X className={stylex.props(styles.c1kypdu7).className} />
           </button>
         </div>
 
         {phase === 'transfer' && (
           <>
-            <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
+            <p className={stylex.props(styles.cuks99r).className}>
               {t('lists.transferYourListsHint')}
             </p>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="btn-secondary mb-4 w-full gap-1.5 text-sm"
+              className={stylex.props(shared.btnSecondary, styles.c40lysn).className}
             >
-              <Upload className="h-4 w-4" />
+              <Upload className={stylex.props(styles.c1ky5l8t).className} />
               {t('lists.importFromFile')}
             </button>
             <div
@@ -195,12 +198,12 @@ export function ImportDialog({
             >
               {isValidating ? (
                 <>
-                  <Loader2 className="mx-auto mb-2 h-6 w-6 animate-spin" />
+                  <Loader2 className={stylex.props(styles.cflrtis).className} />
                   <p>{t('lists.validatingWorlds')}</p>
                 </>
               ) : (
                 <>
-                  <FileJson className="mx-auto mb-2 h-6 w-6" />
+                  <FileJson className={stylex.props(styles.c1b9vhei).className} />
                   <p>{t('lists.dragAndDropJson')}</p>
                 </>
               )}
@@ -210,7 +213,7 @@ export function ImportDialog({
 
         {phase === 'preview' && preview && (
           <>
-            <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
+            <p className={stylex.props(styles.c1biv05s).className}>
               {t('lists.importSummary', {
                 new: preview.newCount,
                 updated: preview.updatedCount,
@@ -221,8 +224,8 @@ export function ImportDialog({
             </p>
 
             {totalRemoved > 0 && (
-              <div className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300">
-                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              <div className={stylex.props(styles.c1g37e10).className}>
+                <AlertTriangle className={stylex.props(styles.c1521gle).className} />
                 <p>
                   {t('lists.removedWorldsWarning', {
                     count: totalRemoved,
@@ -231,27 +234,27 @@ export function ImportDialog({
               </div>
             )}
 
-            <div className="mb-4 max-h-56 space-y-2 overflow-y-auto pr-1">
+            <div className={stylex.props(styles.c19115da).className}>
               {preview.items.map((item) => (
                 <div
                   key={item.list.id}
-                  className="flex items-center gap-3 rounded-lg border border-slate-200 p-2 dark:border-slate-700"
+                  className={stylex.props(styles.c4reyg2).className}
                 >
                   <div
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                    className={stylex.props(styles.c1u2ke4p).className}
                     style={{ backgroundColor: `${item.list.color}20` }}
                   >
                     <ListIcon
                       icon={item.list.icon}
                       color={item.list.color}
-                      className="h-4 w-4"
+                      className={stylex.props(styles.c1ky5l8t).className}
                     />
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-slate-900 dark:text-white">
+                  <div className={stylex.props(styles.c1r022bi).className}>
+                    <p className={stylex.props(styles.ca35a7z).className}>
                       {item.list.name}
                     </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className={stylex.props(styles.c6b0xl6).className}>
                       {t('lists.worldCount', {
                         count: item.list.worldIds.length,
                       })}
@@ -276,16 +279,16 @@ export function ImportDialog({
                 </div>
               ))}
             </div>
-            <div className="flex justify-end gap-2">
+            <div className={stylex.props(styles.c1f6wbgy).className}>
               <button
                 onClick={handleClose}
-                className="btn-ghost text-sm py-2"
+                className={stylex.props(shared.btnGhost, styles.c1hozn4m).className}
               >
                 {t('common.cancel')}
               </button>
               <button
                 onClick={handleImport}
-                className="btn-primary text-sm py-2"
+                className={stylex.props(shared.btnPrimary, styles.c1gbn6df).className}
               >
                 {t('lists.importListsButton', {
                   count: preview.items.length,
@@ -297,16 +300,16 @@ export function ImportDialog({
 
         {phase === 'error' && (
           <>
-            <p className="mb-3 text-sm text-slate-600 dark:text-slate-300">
+            <p className={stylex.props(styles.c1w3ylu8).className}>
               {t('lists.invalidBackupDescription')}
             </p>
-            <p className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
+            <p className={stylex.props(styles.ck4pa24).className}>
               {t(errorKey || 'lists.importError.unknown')}
             </p>
-            <div className="flex justify-end gap-2">
+            <div className={stylex.props(styles.c1f6wbgy).className}>
               <button
                 onClick={handleClose}
-                className="btn-ghost text-sm py-2"
+                className={stylex.props(shared.btnGhost, styles.c1hozn4m).className}
               >
                 {t('common.close')}
               </button>
@@ -315,9 +318,9 @@ export function ImportDialog({
                   reset();
                   fileInputRef.current?.click();
                 }}
-                className="btn-primary gap-1.5 text-sm py-2"
+                className={stylex.props(shared.btnPrimary, styles.c19xw58i).className}
               >
-                <Upload className="h-4 w-4" />
+                <Upload className={stylex.props(styles.c1ky5l8t).className} />
                 {t('lists.tryAnotherFile')}
               </button>
             </div>
@@ -329,10 +332,211 @@ export function ImportDialog({
           type="file"
           accept=".json,application/json"
           onChange={handleInputChange}
-          className="hidden"
+          className={stylex.props(styles.c1ew92ne).className}
           aria-label={t('lists.importFromFile')}
         />
       </div>
     </div>
   );
 }
+
+const styles = stylex.create({
+  c1afui6d: {
+    "position": "fixed",
+    "top": 0,
+    "right": 0,
+    "bottom": 0,
+    "left": 0,
+    "zIndex": 50,
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "overflow": "auto",
+    "backgroundColor": colors["--sos-bg-white_95-slate-950_95"],
+    "padding": "1rem",
+    "backdropFilter": "blur(4px)",
+    "transitionProperty": "opacity",
+    "transitionDuration": "0.2s",
+    "transitionTimingFunction": "cubic-bezier(0, 0, 0.2, 1)",
+  },
+  c14gz0bj: {
+    "width": "100%",
+    "borderRadius": "0.75rem",
+    "backgroundColor": colors["--sos-bg-white-slate-900"],
+    "padding": "1.25rem",
+    "boxShadow": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+  },
+  cs7r2vk: {
+    "marginBottom": "1rem",
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "space-between",
+  },
+  ca9yw8g: {
+    "fontSize": "1rem",
+    "lineHeight": "1.5rem",
+    "fontWeight": 600,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  cvjheld: {
+    "display": "flex",
+    "height": "2.75rem",
+    "width": "2.75rem",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "borderRadius": "0.5rem",
+    "color": "#94a3b8",
+    ":hover": {
+      "color": colors["--sos-text-slate-600-slate-200"],
+    },
+  },
+  c1kypdu7: {
+    "height": "1.25rem",
+    "width": "1.25rem",
+  },
+  cuks99r: {
+    "marginBottom": "1rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c40lysn: {
+    "marginBottom": "1rem",
+    "width": "100%",
+    "gap": "0.375rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+  },
+  c1ky5l8t: {
+    "height": "1rem",
+    "width": "1rem",
+  },
+  cflrtis: {
+    "marginLeft": "auto",
+    "marginRight": "auto",
+    "marginBottom": "0.5rem",
+    "height": "1.5rem",
+    "width": "1.5rem",
+    "animation": "spin 1s linear infinite",
+  },
+  c1b9vhei: {
+    "marginLeft": "auto",
+    "marginRight": "auto",
+    "marginBottom": "0.5rem",
+    "height": "1.5rem",
+    "width": "1.5rem",
+  },
+  c1biv05s: {
+    "marginBottom": "0.75rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c1g37e10: {
+    "marginBottom": "0.75rem",
+    "display": "flex",
+    "alignItems": "flex-start",
+    "gap": "0.5rem",
+    "borderRadius": "0.5rem",
+    "borderWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": colors["--sos-border-amber-200-amber-900_50"],
+    "backgroundColor": colors["--sos-bg-amber-50-amber-950_30"],
+    "padding": "0.5rem",
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-amber-800-amber-300"],
+  },
+  c1521gle: {
+    "marginTop": "0.125rem",
+    "height": "0.875rem",
+    "width": "0.875rem",
+  },
+  c19115da: {
+    "marginBottom": "1rem",
+    "maxHeight": "14rem",
+    "overflow": "auto",
+    "paddingRight": "0.25rem",
+  },
+  c4reyg2: {
+    "display": "flex",
+    "alignItems": "center",
+    "gap": "0.75rem",
+    "borderRadius": "0.5rem",
+    "borderWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": colors["--sos-border-slate-200-slate-700"],
+    "padding": "0.5rem",
+  },
+  c1u2ke4p: {
+    "display": "flex",
+    "height": "2rem",
+    "width": "2rem",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "borderRadius": "0.375rem",
+  },
+  c1r022bi: {
+    "minWidth": "0",
+    "flex": 1,
+  },
+  ca35a7z: {
+    "overflow": "hidden",
+    "textOverflow": "ellipsis",
+    "whiteSpace": "nowrap",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "fontWeight": 500,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  c6b0xl6: {
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c1f6wbgy: {
+    "display": "flex",
+    "justifyContent": "flex-end",
+    "gap": "0.5rem",
+  },
+  c1hozn4m: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+  c1gbn6df: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+  c1w3ylu8: {
+    "marginBottom": "0.75rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-600-slate-300"],
+  },
+  ck4pa24: {
+    "marginBottom": "1rem",
+    "borderRadius": "0.5rem",
+    "borderWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": colors["--sos-border-red-200-red-900_50"],
+    "backgroundColor": colors["--sos-bg-red-50-red-950_30"],
+    "padding": "0.75rem",
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-red-700-red-300"],
+  },
+  c19xw58i: {
+    "gap": "0.375rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+  c1ew92ne: {
+    "display": "none",
+  },
+});

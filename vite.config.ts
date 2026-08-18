@@ -20,8 +20,8 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       stylex.vite({
-        dev: mode === 'development',
-        runtimeInjection: mode === 'development',
+        dev: mode === 'development' || mode === 'test',
+        runtimeInjection: mode === 'development' || mode === 'test',
         useCSSLayers: false,
       }),
       react({

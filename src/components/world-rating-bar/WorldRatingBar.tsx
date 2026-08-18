@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { RatingSummary } from '../../types';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
 
 export type WorldRatingBarVariant = 'card' | 'list';
 
@@ -24,24 +26,24 @@ export function WorldRatingBar({ summary, variant }: WorldRatingBarProps) {
   if (variant === 'list') {
     return (
       <div
-        className="shrink-0 w-[110px] flex flex-col gap-1"
+        className={stylex.props(styles.cltrpab).className}
         data-testid="world-rating-bar-list"
       >
         <div
-          className="relative h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700"
+          className={stylex.props(styles.c1du6otd).className}
           role="img"
           aria-label={`${goodPercent}% ${t('sentiment.ratings.good')} · ${t('sentiment.ratings.totalRatings', { count: total })}`}
         >
           <div
-            className="absolute inset-y-0 left-0 rounded-full bg-emerald-500"
+            className={stylex.props(styles.cwbafq4).className}
             style={{ width: `${goodPercent}%` }}
           />
           <div
-            className="absolute inset-y-0 right-0 rounded-full bg-rose-500"
+            className={stylex.props(styles.c1u4ke18).className}
             style={{ width: `${badPercent}%` }}
           />
         </div>
-        <p className="text-right text-[11px] tabular-nums text-slate-500 dark:text-slate-400">
+        <p className={stylex.props(styles.c10tl28u).className}>
           <span
             className={
               goodPercent >= 50
@@ -58,25 +60,84 @@ export function WorldRatingBar({ summary, variant }: WorldRatingBarProps) {
   }
 
   return (
-    <div className="mt-3" data-testid="world-rating-bar-card">
+    <div className={stylex.props(styles.c200p9).className} data-testid="world-rating-bar-card">
       <div
-        className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700"
+        className={stylex.props(styles.c1rw3ezr).className}
         role="img"
         aria-label={`${goodPercent}% ${t('sentiment.ratings.good')} · ${t('sentiment.ratings.totalRatings', { count: total })}`}
       >
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-emerald-500"
+          className={stylex.props(styles.cwbafq4).className}
           style={{ width: `${goodPercent}%` }}
         />
         <div
-          className="absolute inset-y-0 right-0 rounded-full bg-rose-500"
+          className={stylex.props(styles.c1u4ke18).className}
           style={{ width: `${badPercent}%` }}
         />
       </div>
-      <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-        <span className="font-semibold text-slate-700 dark:text-slate-300">{goodPercent}%</span>{' '}
+      <p className={stylex.props(styles.cy922ao).className}>
+        <span className={stylex.props(styles.c1fbimet).className}>{goodPercent}%</span>{' '}
         · {t('sentiment.ratings.totalRatings', { count: total })}
       </p>
     </div>
   );
 }
+
+const styles = stylex.create({
+  cltrpab: {
+    "width": "110px",
+    "display": "flex",
+    "flexDirection": "column",
+    "gap": "0.25rem",
+  },
+  c1du6otd: {
+    "position": "relative",
+    "height": "0.375rem",
+    "width": "100%",
+    "overflow": "hidden",
+    "borderRadius": "9999px",
+    "backgroundColor": colors["--sos-bg-slate-200-slate-700"],
+  },
+  cwbafq4: {
+    "position": "absolute",
+    "top": 0,
+    "bottom": 0,
+    "left": "0",
+    "borderRadius": "9999px",
+    "backgroundColor": "#10b981",
+  },
+  c1u4ke18: {
+    "position": "absolute",
+    "top": 0,
+    "bottom": 0,
+    "right": "0",
+    "borderRadius": "9999px",
+    "backgroundColor": "#f43f5e",
+  },
+  c10tl28u: {
+    "textAlign": "right",
+    "fontSize": "11px",
+    "fontVariantNumeric": "tabular-nums",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c200p9: {
+    "marginTop": "0.75rem",
+  },
+  c1rw3ezr: {
+    "position": "relative",
+    "height": "0.5rem",
+    "width": "100%",
+    "overflow": "hidden",
+    "borderRadius": "9999px",
+    "backgroundColor": colors["--sos-bg-slate-200-slate-700"],
+  },
+  cy922ao: {
+    "marginTop": "0.25rem",
+    "fontSize": "11px",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c1fbimet: {
+    "fontWeight": 600,
+    "color": colors["--sos-text-slate-700-slate-300"],
+  },
+});

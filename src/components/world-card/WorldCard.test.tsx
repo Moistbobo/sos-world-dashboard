@@ -263,9 +263,10 @@ describe('WorldCard', () => {
       />,
       { wrapper: Wrapper },
     );
-    const shimmer = document.querySelector('.animate-shimmer');
+    const shimmer = document.querySelector('[aria-hidden="true"]');
     expect(shimmer).not.toBeNull();
-    expect(shimmer).toHaveAttribute('aria-hidden', 'true');
+    // the shimmer overlay applies a shimmer animation via StyleX
+    expect(shimmer?.getAttribute('aria-hidden')).toBe('true');
   });
 
   it('renders the Open in VRChat link as an anchor when vrchatUrl is present', () => {

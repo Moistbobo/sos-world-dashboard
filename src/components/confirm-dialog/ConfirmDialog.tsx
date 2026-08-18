@@ -2,6 +2,9 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { useDialogFocus } from '../../hooks/useDialogFocus';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
+import { shared } from '../../styles/shared';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -36,52 +39,52 @@ export function ConfirmDialog({
   return (
     <div
       onClick={onCancel}
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-white/95 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out dark:bg-slate-950/95"
+      className={stylex.props(styles.c1afui6d).className}
       role="alertdialog"
       aria-modal="true"
     >
       <div
         ref={dialogRef}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm rounded-xl bg-white p-5 shadow-lg dark:bg-slate-900"
+        className={stylex.props(styles.caf9swy).className}
       >
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-base font-semibold text-slate-900 dark:text-white">{title}</h3>
+        <div className={stylex.props(styles.c1ypk39r).className}>
+          <h3 className={stylex.props(styles.ca9yw8g).className}>{title}</h3>
           <button
             onClick={onCancel}
             aria-label={t('common.close')}
-            className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            className={stylex.props(styles.cvjheld).className}
           >
-            <X className="h-5 w-5" />
+            <X className={stylex.props(styles.c1kypdu7).className} />
           </button>
         </div>
 
-        <p className="mb-4 text-sm text-slate-600 dark:text-slate-300">{message}</p>
+        <p className={stylex.props(styles.c1f5vuy7).className}>{message}</p>
 
         {showDontAskAgain && (
-          <div className="mb-4">
-            <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+          <div className={stylex.props(styles.c1zncs).className}>
+            <label className={stylex.props(styles.c1sxsaxn).className}>
               <input
                 type="checkbox"
                 checked={dontAskAgain}
                 onChange={(e) => setDontAskAgain(e.target.checked)}
-                className="h-6 w-6 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600"
+                className={stylex.props(styles.c11z2qc5).className}
               />
               {dontAskAgainLabel ?? t('lists.dontAskAgain')}
             </label>
-            <p className="mt-1 pl-6 text-xs text-slate-400 dark:text-slate-500">
+            <p className={stylex.props(styles.c9kaceo).className}>
               {t('lists.dontAskAgainHint')}
             </p>
           </div>
         )}
 
-        <div className="flex justify-end gap-2">
-          <button onClick={onCancel} className="btn-ghost text-sm py-2">
+        <div className={stylex.props(styles.c1f6wbgy).className}>
+          <button onClick={onCancel} className={stylex.props(shared.btnGhost, styles.c1hozn4m).className}>
             {cancelLabel ?? t('common.cancel')}
           </button>
           <button
             onClick={() => onConfirm(dontAskAgain)}
-            className="btn-primary text-sm py-2"
+            className={stylex.props(shared.btnPrimary, styles.c1gbn6df).className}
           >
             {confirmLabel ?? t('common.confirm')}
           </button>
@@ -90,3 +93,111 @@ export function ConfirmDialog({
     </div>
   );
 }
+
+const styles = stylex.create({
+  c1afui6d: {
+    "position": "fixed",
+    "top": 0,
+    "right": 0,
+    "bottom": 0,
+    "left": 0,
+    "zIndex": 50,
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "overflow": "auto",
+    "backgroundColor": colors["--sos-bg-white_95-slate-950_95"],
+    "padding": "1rem",
+    "backdropFilter": "blur(4px)",
+    "transitionProperty": "opacity",
+    "transitionDuration": "0.2s",
+    "transitionTimingFunction": "cubic-bezier(0, 0, 0.2, 1)",
+  },
+  caf9swy: {
+    "width": "100%",
+    "borderRadius": "0.75rem",
+    "backgroundColor": colors["--sos-bg-white-slate-900"],
+    "padding": "1.25rem",
+    "boxShadow": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+  },
+  c1ypk39r: {
+    "marginBottom": "0.75rem",
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "space-between",
+  },
+  ca9yw8g: {
+    "fontSize": "1rem",
+    "lineHeight": "1.5rem",
+    "fontWeight": 600,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  cvjheld: {
+    "display": "flex",
+    "height": "2.75rem",
+    "width": "2.75rem",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "borderRadius": "0.5rem",
+    "color": "#94a3b8",
+    ":hover": {
+      "color": colors["--sos-text-slate-600-slate-200"],
+    },
+  },
+  c1kypdu7: {
+    "height": "1.25rem",
+    "width": "1.25rem",
+  },
+  c1f5vuy7: {
+    "marginBottom": "1rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-600-slate-300"],
+  },
+  c1zncs: {
+    "marginBottom": "1rem",
+  },
+  c1sxsaxn: {
+    "display": "flex",
+    "cursor": "pointer",
+    "alignItems": "center",
+    "gap": "0.5rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-600-slate-300"],
+  },
+  c11z2qc5: {
+    "height": "1.5rem",
+    "width": "1.5rem",
+    "borderRadius": "0.25rem",
+    "borderColor": colors["--sos-border-slate-300-slate-600"],
+    "color": "#4f46e5",
+    ":focus": {
+      "boxShadow": "0 0 0 0px #fff, 0 0 0 1px #6366f1",
+    },
+  },
+  c9kaceo: {
+    "marginTop": "0.25rem",
+    "paddingLeft": "1.5rem",
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-slate-400-slate-500"],
+  },
+  c1f6wbgy: {
+    "display": "flex",
+    "justifyContent": "flex-end",
+    "gap": "0.5rem",
+  },
+  c1hozn4m: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+  c1gbn6df: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+  },
+});

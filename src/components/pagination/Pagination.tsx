@@ -1,4 +1,7 @@
 import { useTranslation } from 'react-i18next';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
+import { shared } from '../../styles/shared';
 
 interface PaginationProps {
   offset: number;
@@ -24,11 +27,11 @@ export function Pagination({ offset, limit, total, onChangeOffset }: PaginationP
   })();
 
   return (
-    <div className="flex items-center gap-2">
+    <div className={stylex.props(styles.c2ca09w).className}>
       <button
         disabled={!canPrev}
         onClick={() => onChangeOffset(Math.max(0, offset - limit))}
-        className="btn-secondary disabled:opacity-40 disabled:cursor-not-allowed px-3 py-2 text-sm"
+        className={stylex.props(shared.btnSecondary, styles.c1w21h5a).className}
       >
         {t('pagination.prev')}
       </button>
@@ -37,12 +40,10 @@ export function Pagination({ offset, limit, total, onChangeOffset }: PaginationP
         <button
           key={p}
           onClick={() => onChangeOffset((p - 1) * limit)}
-          className={`
-            min-w-11 rounded-lg px-3 py-2 text-sm font-medium transition
-            ${p === currentPage
-              ? 'bg-indigo-600 text-white'
-              : 'bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'}
-          `}
+          className={stylex.props(
+            styles.pageBtn,
+            p === currentPage ? styles.pageActive : styles.pageInactive,
+          ).className}
         >
           {p}
         </button>
@@ -51,12 +52,12 @@ export function Pagination({ offset, limit, total, onChangeOffset }: PaginationP
       <button
         disabled={!canNext}
         onClick={() => onChangeOffset(offset + limit)}
-        className="btn-secondary disabled:opacity-40 disabled:cursor-not-allowed px-3 py-2 text-sm"
+        className={stylex.props(shared.btnSecondary, styles.c1w21h5a).className}
       >
         {t('pagination.next')}
       </button>
 
-      <span className="ml-2 text-xs text-slate-400 dark:text-slate-500">
+      <span className={stylex.props(styles.c1wz43hi).className}>
         {t('pagination.range', {
           start: offset + 1,
           end: Math.min(offset + limit, total),
@@ -66,3 +67,53 @@ export function Pagination({ offset, limit, total, onChangeOffset }: PaginationP
     </div>
   );
 }
+
+const styles = stylex.create({
+  c2ca09w: {
+    "display": "flex",
+    "alignItems": "center",
+    "gap": "0.5rem",
+  },
+  c1w21h5a: {
+    "paddingLeft": "0.75rem",
+    "paddingRight": "0.75rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    ":disabled": {
+      "cursor": "not-allowed",
+    },
+  },
+  c1wz43hi: {
+    "marginLeft": "0.5rem",
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-slate-400-slate-500"],
+  },
+  pageBtn: {
+    "minWidth": "2.75rem",
+    "borderRadius": "0.5rem",
+    "paddingLeft": "0.75rem",
+    "paddingRight": "0.75rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "fontWeight": 500,
+    "transitionProperty": "color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter, backdrop-filter",
+    "transitionDuration": "0.15s",
+    "transitionTimingFunction": "cubic-bezier(0.4, 0, 0.2, 1)",
+  },
+  pageActive: {
+    "backgroundColor": "#4f46e5",
+    "color": "#ffffff",
+  },
+  pageInactive: {
+    "backgroundColor": colors["--sos-bg-slate-200-slate-800"],
+    "color": colors["--sos-text-slate-700-slate-300"],
+    ":hover": {
+      "backgroundColor": "#cbd5e1",
+    },
+  },
+});

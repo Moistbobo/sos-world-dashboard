@@ -14,6 +14,8 @@ import {
 } from '../../hooks/useSentiment';
 import { useCaptcha } from '../../hooks/useCaptcha';
 import { hasAnonymousSession } from '../../api/sentiment';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
 
 interface SentimentSectionProps {
   worldId: string;
@@ -95,10 +97,10 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
 
   return (
     <div data-testid="sentiment-section">
-      <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-white">
+      <h2 className={stylex.props(styles.cg1e8gk).className}>
         {t('sentiment.comments.title')}
       </h2>
-      <div className="mb-6">
+      <div className={stylex.props(styles.c1zncu).className}>
         <SentimentRating
           summary={ratings}
           isLoading={ratingsLoading}
@@ -108,8 +110,8 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
         />
       </div>
       {isRequired && (
-        <div className="mb-6 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
-          <p className="mb-3 text-sm text-slate-700 dark:text-slate-300">
+        <div className={stylex.props(styles.cjv8ivc).className}>
+          <p className={stylex.props(styles.chny6a9).className}>
             {t('sentiment.captcha.description')}
           </p>
           <TurnstileChallenge
@@ -120,7 +122,7 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
           />
         </div>
       )}
-      <div className="mb-6">
+      <div className={stylex.props(styles.c1zncu).className}>
         <SentimentCommentForm
           isSubmitting={submitComment.isPending || isRequired}
           onSubmit={handleComment}
@@ -136,3 +138,31 @@ export function SentimentSection({ worldId }: SentimentSectionProps) {
     </div>
   );
 }
+
+const styles = stylex.create({
+  cg1e8gk: {
+    "marginBottom": "1rem",
+    "fontSize": "1rem",
+    "lineHeight": "1.5rem",
+    "fontWeight": 600,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  c1zncu: {
+    "marginBottom": "1.5rem",
+  },
+  cjv8ivc: {
+    "marginBottom": "1.5rem",
+    "borderRadius": "0.5rem",
+    "borderWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": colors["--sos-border-slate-200-slate-700"],
+    "backgroundColor": colors["--sos-bg-slate-50-slate-800_50"],
+    "padding": "1rem",
+  },
+  chny6a9: {
+    "marginBottom": "0.75rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-700-slate-300"],
+  },
+});

@@ -1,6 +1,8 @@
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { RatingSummary } from '../../types';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
 
 interface SentimentRatingProps {
   summary: RatingSummary | undefined;
@@ -13,23 +15,24 @@ interface SentimentRatingProps {
 interface BarSegmentProps {
   percent: number;
   isActive: boolean;
-  colorClass: string;
-  activeTextClass: string;
+  fillStyle: unknown;
+  activeTextStyle: unknown;
   label: string;
 }
 
-function BarSegment({ percent, isActive, colorClass, activeTextClass, label }: BarSegmentProps) {
+function BarSegment({ percent, isActive, fillStyle, activeTextStyle, label }: BarSegmentProps) {
   if (percent <= 0) return null;
   return (
     <div
-      className={`h-full ${colorClass}`}
+      className={stylex.props(styles.seg, fillStyle as never).className}
       style={{ width: `${percent}%` }}
       title={`${percent}% ${label}`}
     >
       <span
-        className={`flex h-full items-center justify-center text-lg font-semibold ${
-          isActive ? activeTextClass : 'text-white'
-        }`}
+        className={stylex.props(
+          styles.segText,
+          isActive ? (activeTextStyle as never) : styles.segTextDefault,
+        ).className}
       >
         {percent}%
       </span>
@@ -72,7 +75,7 @@ export function SentimentRating({
   return (
     <div className="space-y-2" data-testid="sentiment-rating">
       <div
-        className="relative flex h-12 w-full overflow-hidden rounded-full border border-slate-300 bg-slate-200 transition-shadow duration-150 ease-out hover:shadow-md dark:border-slate-600 dark:bg-slate-700"
+        className={stylex.props(styles.ckqnok4).className}
         aria-label={t('sentiment.ratings.ratingBarLabel')}
         aria-valuenow={goodPercent}
         aria-valuemin={0}
@@ -80,21 +83,21 @@ export function SentimentRating({
         role="progressbar"
       >
         <div
-          className="pointer-events-none absolute inset-y-0 left-0 z-0 flex h-full w-full"
+          className={stylex.props(styles.c1wcxnka).className}
           data-testid="rating-fill-container"
         >
           <BarSegment
             percent={goodPercent}
             isActive={isGoodActive}
-            colorClass="bg-emerald-500"
-            activeTextClass="text-emerald-800 dark:text-emerald-900"
+            fillStyle={styles.fillGood}
+            activeTextStyle={styles.fillGoodText}
             label={t('sentiment.ratings.good')}
           />
           <BarSegment
             percent={badPercent}
             isActive={isBadActive}
-            colorClass="bg-rose-500"
-            activeTextClass="text-rose-800 dark:text-rose-900"
+            fillStyle={styles.fillBad}
+            activeTextStyle={styles.fillBadText}
             label={t('sentiment.ratings.bad')}
           />
         </div>
@@ -102,31 +105,31 @@ export function SentimentRating({
           type="button"
           disabled={isLoading || isSubmitting}
           onClick={handleGoodClick}
-          className="group relative z-10 flex w-1/2 items-center justify-start px-4 text-sm font-medium text-slate-700 transition-colors duration-150 ease-out hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-200 dark:hover:text-white"
+           className={`group ${stylex.props(styles.cmvbwxc).className}`}
           aria-label={t('sentiment.ratings.good')}
           aria-pressed={isGoodActive}
         >
-          <ThumbsUp className="h-5 w-5 transition-transform duration-150 ease-out group-hover:scale-110" />
+          <ThumbsUp className={stylex.props(styles.c1g1cjcy).className} />
         </button>
         <button
           type="button"
           disabled={isLoading || isSubmitting}
           onClick={handleBadClick}
-          className="group relative z-10 flex w-1/2 items-center justify-end px-4 text-sm font-medium text-slate-700 transition-colors duration-150 ease-out hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-200 dark:hover:text-white"
+           className={`group ${stylex.props(styles.cww7eea).className}`}
           aria-label={t('sentiment.ratings.bad')}
           aria-pressed={isBadActive}
         >
-          <ThumbsDown className="h-5 w-5 transition-transform duration-150 ease-out group-hover:scale-110" />
+          <ThumbsDown className={stylex.props(styles.c1g1cjcy).className} />
         </button>
       </div>
-      <p className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+      <p className={stylex.props(styles.ce6m6tc).className}>
         {hasVoted ? (
           <>
             <span>{t('sentiment.ratings.yourVote')}</span>
             {isGoodActive ? (
-              <ThumbsUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+              <ThumbsUp className={stylex.props(styles.c1too78j).className} />
             ) : (
-              <ThumbsDown className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+              <ThumbsDown className={stylex.props(styles.c1aqy741).className} />
             )}
           </>
         ) : (
@@ -136,3 +139,144 @@ export function SentimentRating({
     </div>
   );
 }
+
+const styles = stylex.create({
+  ckqnok4: {
+    "position": "relative",
+    "display": "flex",
+    "height": "3rem",
+    "width": "100%",
+    "overflow": "hidden",
+    "borderRadius": "9999px",
+    "borderWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": colors["--sos-border-slate-300-slate-600"],
+    "backgroundColor": colors["--sos-bg-slate-200-slate-700"],
+    "transitionProperty": "box-shadow",
+    "transitionDuration": "0.15s",
+    "transitionTimingFunction": "cubic-bezier(0, 0, 0.2, 1)",
+    ":hover": {
+      "boxShadow": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+    },
+  },
+  c1wcxnka: {
+    "pointerEvents": "none",
+    "position": "absolute",
+    "top": 0,
+    "bottom": 0,
+    "left": "0",
+    "zIndex": 0,
+    "display": "flex",
+    "height": "100%",
+    "width": "100%",
+  },
+  cmvbwxc: {
+    "position": "relative",
+    "zIndex": 10,
+    "display": "flex",
+    "width": "50%",
+    "alignItems": "center",
+    "justifyContent": "flex-start",
+    "paddingLeft": "1rem",
+    "paddingRight": "1rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "fontWeight": 500,
+    "color": colors["--sos-text-slate-700-slate-200"],
+    "transitionProperty": "color, background-color, border-color, text-decoration-color, fill, stroke",
+    "transitionDuration": "0.15s",
+    "transitionTimingFunction": "cubic-bezier(0, 0, 0.2, 1)",
+    ":hover": {
+      "color": colors["--sos-text-slate-900-white"],
+    },
+    ":disabled": {
+      "cursor": "not-allowed",
+    },
+    ":focus-visible": {
+      "boxShadow": "0 0 0 2px #fff, 0 0 0 4px #10b981",
+    },
+  },
+  c1g1cjcy: {
+    "height": "1.25rem",
+    "width": "1.25rem",
+    "transitionProperty": "transform",
+    "transitionDuration": "0.15s",
+    "transitionTimingFunction": "cubic-bezier(0, 0, 0.2, 1)",
+    ":is(.group:hover *)": {
+      "transform": "scale(1.1)",
+    },
+  },
+  cww7eea: {
+    "position": "relative",
+    "zIndex": 10,
+    "display": "flex",
+    "width": "50%",
+    "alignItems": "center",
+    "justifyContent": "flex-end",
+    "paddingLeft": "1rem",
+    "paddingRight": "1rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "fontWeight": 500,
+    "color": colors["--sos-text-slate-700-slate-200"],
+    "transitionProperty": "color, background-color, border-color, text-decoration-color, fill, stroke",
+    "transitionDuration": "0.15s",
+    "transitionTimingFunction": "cubic-bezier(0, 0, 0.2, 1)",
+    ":hover": {
+      "color": colors["--sos-text-slate-900-white"],
+    },
+    ":disabled": {
+      "cursor": "not-allowed",
+    },
+    ":focus-visible": {
+      "boxShadow": "0 0 0 2px #fff, 0 0 0 4px #f43f5e",
+    },
+  },
+  ce6m6tc: {
+    "display": "flex",
+    "alignItems": "center",
+    "gap": "0.375rem",
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c1too78j: {
+    "height": "0.875rem",
+    "width": "0.875rem",
+    "color": colors["--sos-text-emerald-600-emerald-400"],
+  },
+  c1aqy741: {
+    "height": "0.875rem",
+    "width": "0.875rem",
+    "color": colors["--sos-text-rose-600-rose-400"],
+  },
+  seg: {
+    "height": "100%",
+  },
+  segText: {
+    "display": "flex",
+    "height": "100%",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "fontSize": "1.125rem",
+    "lineHeight": "1.75rem",
+    "fontWeight": 600,
+  },
+  segTextDefault: {
+    "color": "#ffffff",
+  },
+  fillGood: {
+    "backgroundColor": "#10b981",
+  },
+  fillGoodText: {
+    "color": "#065f46",
+    ':is(.dark *)': { "color": "#064e3b" },
+  },
+  fillBad: {
+    "backgroundColor": "#f43f5e",
+  },
+  fillBadText: {
+    "color": "#9f1239",
+    ':is(.dark *)': { "color": "#881337" },
+  },
+});

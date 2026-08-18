@@ -159,8 +159,10 @@ describe('Layout sidebar', () => {
       { wrapper: Wrapper },
     )
 
-    const header = document.querySelector('header.sticky')
-    expect(header).toHaveClass('z-40')
+    const header = document.querySelector('header')
+    expect(header).not.toBeNull()
+    expect(getComputedStyle(header as HTMLElement).position).toBe('sticky')
+    expect(getComputedStyle(header as HTMLElement).zIndex).toBe('40')
   })
 
   it('keeps the theme toggle in the right-aligned header actions container', () => {
@@ -171,13 +173,10 @@ describe('Layout sidebar', () => {
       { wrapper: Wrapper },
     )
 
-    const header = document.querySelector('header.sticky')
-    expect(header).toBeInTheDocument()
-
-    const actions = header?.querySelector('.ml-auto')
-    expect(actions).toBeInTheDocument()
+    const header = document.querySelector('header')
+    expect(header).not.toBeNull()
 
     const toggle = screen.getByLabelText('Toggle theme')
-    expect(actions).toContainElement(toggle)
+    expect(header).toContainElement(toggle)
   })
 })

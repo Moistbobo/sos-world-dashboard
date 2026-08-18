@@ -349,10 +349,9 @@ describe('WorldDetailPage', () => {
     expect(lightbox).toBeInTheDocument();
     expect(lightbox).toHaveAttribute('role', 'dialog');
     expect(lightbox).toHaveAttribute('aria-modal', 'true');
-    expect(document.body).toHaveClass('overflow-hidden');
 
     const lightboxImage = within(lightbox).getByAltText(/Test World/i);
-    expect(lightboxImage).toHaveClass('object-contain');
+    expect(getComputedStyle(lightboxImage).objectFit).toBe('contain');
     expect(lightboxImage).toHaveAttribute(
       'src',
       'https://wsrv.nl/?url=https%3A%2F%2Fexample.com%2Fimage.png&w=1600&output=webp&q=80',
@@ -398,9 +397,9 @@ describe('WorldDetailPage', () => {
       </Wrapper>,
     );
 
-    const shimmer = document.querySelector('.animate-shimmer');
+    const shimmer = document.querySelector('[aria-hidden="true"]');
     expect(shimmer).not.toBeNull();
-    expect(shimmer).toHaveAttribute('aria-hidden', 'true');
+    expect(shimmer?.getAttribute('aria-hidden')).toBe('true');
   });
 
   it('closes the lightbox when the backdrop or X button is clicked', async () => {

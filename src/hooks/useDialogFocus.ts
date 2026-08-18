@@ -162,13 +162,11 @@ function getFocusable(container: HTMLElement): HTMLElement[] {
 function isVisible(el: HTMLElement): boolean {
   if (el.hasAttribute('hidden')) return false;
   if (el.getAttribute('aria-hidden') === 'true') return false;
-  // Treat elements explicitly hidden via Tailwind's `hidden` / `invisible`
-  // utility classes (display:none / visibility:hidden) as non-focusable so we
-  // match real-browser behaviour where such elements are skipped by Tab.
-  const className = el.className;
-  if (typeof className === 'string') {
-    const tokens = className.split(/\s+/);
-    if (tokens.includes('hidden') || tokens.includes('invisible')) return false;
-  }
+  // Treat elements hidden via display:none / visibility:hidden as non-focusable
+  // (in both Tailwind `hidden` classes and StyleX rules, which render as
+  // computed styles) so we match real-browser behaviour where such elements
+  // are skipped by Tab.
+  const style = getComputedStyle(el);
+  if (style.display === 'none' || style.visibility === 'hidden') return false;
   return true;
 }

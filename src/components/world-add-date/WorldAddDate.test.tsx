@@ -34,7 +34,8 @@ describe('WorldAddDate', () => {
 
   it('uses a dotted underline treatment', () => {
     render(<WorldAddDate world={mockWorld} />);
-    expect(screen.getByTitle(/dashboard/i)).toHaveClass('underline');
-    expect(screen.getByTitle(/dashboard/i)).toHaveClass('decoration-dotted');
+    const el = screen.getByTitle(/dashboard/i);
+    expect(getComputedStyle(el).textDecorationLine).toBe('underline');
+    expect(getComputedStyle(el).textDecorationStyle).toBe('dotted');
   });
 });

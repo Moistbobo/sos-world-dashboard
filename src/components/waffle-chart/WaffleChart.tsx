@@ -1,5 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { getEmojiForTag } from '../../utils/tagEmoji';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
 
 interface WaffleItem {
   name: string;
@@ -97,7 +99,7 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
   const focusedName = hovered?.name ?? null;
 
   return (
-    <div className="relative select-none">
+    <div className={stylex.props(styles.c4asjyt).className}>
       <style>
         {`
           @keyframes waffleScaleIn {
@@ -114,7 +116,7 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
       </style>
 
       {/* Grid of 100 cells */}
-      <div className="grid grid-cols-10 gap-1" onAnimationEnd={handleAnimationEnd}>
+      <div className={stylex.props(styles.c1bli1ba).className} onAnimationEnd={handleAnimationEnd}>
         {cells.map((cell, idx) => {
           const isMatch =
             focusedName !== null && cell.name === focusedName;
@@ -127,7 +129,7 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
               key={idx}
               role="button"
               tabIndex={0}
-              className="flex aspect-square cursor-pointer items-center justify-center rounded-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50"
+              className={stylex.props(styles.c4pf16l).className}
               style={{
                 backgroundColor: cell.color,
                 opacity: allAnimated ? (isDimmed ? 0.5 : 1) : 0,
@@ -160,7 +162,7 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
               onBlur={handleBlur}
             >
               {/* Emoji badge — rendered unconditionally so it scales in with the parent cell */}
-              <span className="pointer-events-none text-sm leading-none">{emoji}</span>
+              <span className={stylex.props(styles.c1d2oxqh).className}>{emoji}</span>
             </div>
           );
         })}
@@ -169,36 +171,122 @@ export function WaffleChart({ data, onSelectTag, getColor }: WaffleChartProps) {
       {/* Custom tooltip */}
       {hovered && (
         <div
-          className="pointer-events-none fixed z-50 rounded-md border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 shadow-lg dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+          className={stylex.props(styles.cx45rgu).className}
           style={{
             left: tooltipPos.x + 12,
             top: tooltipPos.y - 12,
           }}
         >
-          <div className="font-semibold">{hovered.name}</div>
-          <div className="text-slate-500 dark:text-slate-300">
+          <div className={stylex.props(styles.creg0xd).className}>{hovered.name}</div>
+          <div className={stylex.props(styles.c1v0hm78).className}>
             {hovered.value} ({hovered.pct.toFixed(1)}%)
           </div>
         </div>
       )}
 
       {/* Legend */}
-      <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
+      <div className={stylex.props(styles.c1bqih94).className}>
         {data.map((item) => (
           <div
             key={item.name}
-            className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300"
+            className={stylex.props(styles.c1jctewx).className}
           >
             <span
-              className="inline-block h-3 w-3 rounded-sm"
+              className={stylex.props(styles.crrrl3q).className}
               style={{ backgroundColor: getColor?.(item.name) ?? '#6366f1' }}
             />
-            <span className="leading-none">{getEmojiForTag(item.name)}</span>
-            <span className="max-w-[120px] truncate">{item.name}</span>
-            <span className="text-slate-500 dark:text-slate-400">({item.value})</span>
+            <span className={stylex.props(styles.czn4v4v).className}>{getEmojiForTag(item.name)}</span>
+            <span className={stylex.props(styles.ctvybfo).className}>{item.name}</span>
+            <span className={stylex.props(styles.c1v0hmxx).className}>({item.value})</span>
           </div>
         ))}
       </div>
     </div>
   );
 }
+
+const styles = stylex.create({
+  c4asjyt: {
+    "position": "relative",
+    "userSelect": "none",
+  },
+  c1bli1ba: {
+    "display": "grid",
+    "gridTemplateColumns": "repeat(10, minmax(0, 1fr))",
+    "gap": "0.25rem",
+  },
+  c4pf16l: {
+    "display": "flex",
+    "aspectRatio": "1 / 1",
+    "cursor": "pointer",
+    "alignItems": "center",
+    "justifyContent": "center",
+    "borderRadius": "0.125rem",
+    "transitionProperty": "color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter, backdrop-filter",
+    ":focus-visible": {
+      "boxShadow": "0 0 0 0px #fff, 0 0 0 2px #6366f180",
+    },
+  },
+  c1d2oxqh: {
+    "pointerEvents": "none",
+    "fontSize": "0.875rem",
+    "lineHeight": 1,
+  },
+  cx45rgu: {
+    "pointerEvents": "none",
+    "position": "fixed",
+    "zIndex": 50,
+    "borderRadius": "0.375rem",
+    "borderWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": colors["--sos-border-slate-300-slate-600"],
+    "backgroundColor": colors["--sos-bg-white-slate-800"],
+    "paddingLeft": "0.75rem",
+    "paddingRight": "0.75rem",
+    "paddingTop": "0.5rem",
+    "paddingBottom": "0.5rem",
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-slate-900-white"],
+    "boxShadow": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+  },
+  creg0xd: {
+    "fontWeight": 600,
+  },
+  c1v0hm78: {
+    "color": colors["--sos-text-slate-500-slate-300"],
+  },
+  c1bqih94: {
+    "marginTop": "1rem",
+    "display": "flex",
+    "flexWrap": "wrap",
+    "columnGap": "1rem",
+    "rowGap": "0.5rem",
+  },
+  c1jctewx: {
+    "display": "flex",
+    "alignItems": "center",
+    "gap": "0.375rem",
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-slate-700-slate-300"],
+  },
+  crrrl3q: {
+    "display": "inline-block",
+    "height": "0.75rem",
+    "width": "0.75rem",
+    "borderRadius": "0.125rem",
+  },
+  czn4v4v: {
+    "lineHeight": 1,
+  },
+  ctvybfo: {
+    "maxWidth": "120px",
+    "overflow": "hidden",
+    "textOverflow": "ellipsis",
+    "whiteSpace": "nowrap",
+  },
+  c1v0hmxx: {
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+});

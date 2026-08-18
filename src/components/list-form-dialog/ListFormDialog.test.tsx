@@ -63,8 +63,11 @@ describe('ListFormDialog', () => {
 
   it('gives the memo textarea the same input styling as the title field', () => {
     render(<ListFormDialog open={true} onOpenChange={vi.fn()} onSubmit={vi.fn()} />);
-    expect(screen.getByRole('textbox', { name: /memo/i })).toHaveClass('input');
-    expect(screen.getByRole('textbox', { name: /name/i })).toHaveClass('input');
+    const memo = screen.getByRole('textbox', { name: /memo/i });
+    const name = screen.getByRole('textbox', { name: /name/i });
+    // both use the shared input style
+    expect(getComputedStyle(memo).borderRadius).toBe(getComputedStyle(name).borderRadius);
+    expect(getComputedStyle(memo).minHeight).toBe(getComputedStyle(name).minHeight);
   });
 
   it('submits a new list', async () => {

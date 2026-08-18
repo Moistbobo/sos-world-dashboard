@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { validateComment, MAX_LENGTH } from '../../utils/commentValidation';
 import type { CommentValidationError } from '../../utils/commentValidation';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
+import { shared } from '../../styles/shared';
 
 interface SentimentCommentFormProps {
   isSubmitting: boolean;
@@ -51,17 +54,20 @@ export function SentimentCommentForm({ isSubmitting, onSubmit }: SentimentCommen
         maxLength={MAX_LENGTH + 1}
         rows={3}
         disabled={isSubmitting}
-        className="w-full rounded-lg border border-slate-300 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+        className={stylex.props(styles.cwjdjdf).className}
       />
-      <div className="mt-1 flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
+      <div className={stylex.props(styles.c1mtxzs9).className}>
+        <div className={stylex.props(styles.c1r022bi).className}>
           {error && (
-            <span className="block text-xs text-red-500">
+            <span className={stylex.props(styles.c10d1zjl).className}>
               {t(errorKeyMap[error])}
             </span>
           )}
           <span
-            className={`block text-xs text-slate-500 dark:text-slate-400 ${length > MAX_LENGTH ? 'text-red-500' : ''}`}
+            className={stylex.props(
+              styles.count,
+              length > MAX_LENGTH ? styles.countOver : undefined,
+            ).className}
           >
             {t('sentiment.comments.count', { count: length, max: MAX_LENGTH })}
           </span>
@@ -69,7 +75,7 @@ export function SentimentCommentForm({ isSubmitting, onSubmit }: SentimentCommen
         <button
           type="submit"
           disabled={isSubmitting || !content.trim() || !!error}
-          className="btn-primary text-sm"
+          className={stylex.props(shared.btnPrimary, styles.c3689rf).className}
         >
           {t('sentiment.comments.submit')}
         </button>
@@ -77,3 +83,54 @@ export function SentimentCommentForm({ isSubmitting, onSubmit }: SentimentCommen
     </form>
   );
 }
+
+const styles = stylex.create({
+  cwjdjdf: {
+    "width": "100%",
+    "borderRadius": "0.5rem",
+    "borderWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": colors["--sos-border-slate-300-slate-600"],
+    "backgroundColor": colors["--sos-bg-white-slate-800"],
+    "padding": "0.75rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-900-white"],
+    "::placeholder": {
+      "color": "#94a3b8",
+    },
+    ":focus": {
+      "borderColor": "#6366f1",
+    },
+  },
+  c1mtxzs9: {
+    "marginTop": "0.25rem",
+    "display": "flex",
+    "alignItems": "flex-start",
+    "justifyContent": "space-between",
+    "gap": "0.5rem",
+  },
+  c1r022bi: {
+    "minWidth": "0",
+    "flex": 1,
+  },
+  c10d1zjl: {
+    "display": "block",
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": "#ef4444",
+  },
+  c3689rf: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+  },
+  count: {
+    "display": "block",
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  countOver: {
+    "color": "#ef4444",
+  },
+});

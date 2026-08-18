@@ -16,9 +16,9 @@ describe('WorldRatingBar', () => {
       const { container } = render(<WorldRatingBar summary={summary} variant="card" />);
       const bar = screen.getByRole('img', { name: /75% good · 4 ratings/i });
       expect(bar).toBeInTheDocument();
-      const fills = bar.querySelectorAll('div');
-      const goodFill = Array.from(fills).find((el) => el.classList.contains('bg-emerald-500'));
-      const badFill = Array.from(fills).find((el) => el.classList.contains('bg-rose-500'));
+      const fills = Array.from(bar.querySelectorAll('div'));
+      const goodFill = fills.find((el) => el.getAttribute('style')?.includes('width: 75%'));
+      const badFill = fills.find((el) => el.getAttribute('style')?.includes('width: 25%'));
       expect(goodFill).toHaveStyle('width: 75%');
       expect(badFill).toHaveStyle('width: 25%');
       expect(container.textContent).toMatch(/75%/);

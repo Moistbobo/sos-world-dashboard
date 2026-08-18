@@ -12,6 +12,7 @@ import {
   Coffee,
   type LucideIcon,
 } from 'lucide-react';
+import * as stylex from '@stylexjs/stylex';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Star,
@@ -40,7 +41,7 @@ export function ListIcon({ icon, color, className = '' }: ListIconProps) {
   if (isEmoji) {
     return (
       <span
-        className={`inline-flex items-center justify-center ${className}`}
+        className={`${stylex.props(styles.wrapper).className} ${className}`}
         style={{ color }}
         aria-hidden="true"
       >
@@ -58,3 +59,11 @@ export function ListIcon({ icon, color, className = '' }: ListIconProps) {
     />
   );
 }
+
+const styles = stylex.create({
+  wrapper: {
+    alignItems: 'center',
+    display: 'inline-flex',
+    justifyContent: 'center',
+  },
+});

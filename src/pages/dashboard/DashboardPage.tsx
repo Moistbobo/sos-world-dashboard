@@ -10,6 +10,9 @@ import { StatCard } from '../../components/stat-card';
 import { WorldCard } from '../../components/world-card';
 import { getEmojiForTag } from '../../utils/tagEmoji';
 import { getWorldAddDate } from '../../utils/worldAddDate';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
+import { shared } from '../../styles/shared';
 
 const SENTIMENT_ENABLED = import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 'true';
 
@@ -38,51 +41,51 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="mb-2">
-        <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t('dashboard.title')}</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">{t('dashboard.subtitle')}</p>
+      <div className={stylex.props(styles.c1zncq).className}>
+        <h1 className={stylex.props(styles.c1ygyk63).className}>{t('dashboard.title')}</h1>
+        <p className={stylex.props(styles.c1xmut6z).className}>{t('dashboard.subtitle')}</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className={stylex.props(styles.c9fwvfq).className}>
         <StatCard
           label={t('dashboard.totalWorlds')}
           value={healthLoading ? '...' : healthIsError ? '?' : health?.worldCount ?? 0}
-          icon={<Globe className="h-5 w-5" />}
+          icon={<Globe className={stylex.props(styles.c1kypdu7).className} />}
         />
         <StatCard
           label={t('dashboard.uniqueTags')}
           value={tagsLoading ? '...' : tagsData?.tags.length ?? 0}
-          icon={<Tags className="h-5 w-5" />}
+          icon={<Tags className={stylex.props(styles.c1kypdu7).className} />}
         />
         <StatCard
           label={t('dashboard.dbVersion')}
           value={healthLoading ? '...' : health?.dbVersion ?? '-'}
-          icon={<Activity className="h-5 w-5" />}
+          icon={<Activity className={stylex.props(styles.c1kypdu7).className} />}
         />
         <StatCard
           label={t('dashboard.latest')}
           value={latestDateLabel}
-          icon={<Clock className="h-5 w-5" />}
+          icon={<Clock className={stylex.props(styles.c1kypdu7).className} />}
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className={stylex.props(styles.c9jd40s).className}>
         {/* Recent Worlds */}
-        <div className="lg:col-span-2">
-          <div className="card">
-            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3 dark:border-slate-700/50">
-              <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('dashboard.recentWorlds')}</h2>
+        <div className={stylex.props(styles.c8sj35n).className}>
+          <div className={stylex.props(shared.card).className}>
+            <div className={stylex.props(styles.ckot6yd).className}>
+              <h2 className={stylex.props(styles.c1gy9eiv).className}>{t('dashboard.recentWorlds')}</h2>
               <button
                 onClick={() => navigate('/worlds')}
-                className="min-h-11 px-2 text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                className={stylex.props(styles.cutr4jl).className}
               >
                 {t('dashboard.viewAll')}
               </button>
             </div>
-            <div className="grid gap-4 p-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className={stylex.props(styles.c1nft36d).className}>
               {worldsLoading
                 ? Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="card h-64 animate-pulse bg-slate-200 dark:bg-slate-800" />
+                    <div key={i} className={stylex.props(shared.card, styles.c1461knq).className} />
                   ))
                 : latestWorlds.map((w) => (
                     <WorldCard
@@ -101,14 +104,14 @@ export function DashboardPage() {
 
         {/* Top Tags */}
         <div>
-          <div className="card">
-            <div className="border-b border-slate-200 px-5 py-3 dark:border-slate-700/50">
-              <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('dashboard.topTags')}</h2>
+          <div className={stylex.props(shared.card).className}>
+            <div className={stylex.props(styles.csueyx).className}>
+              <h2 className={stylex.props(styles.c1gy9eiv).className}>{t('dashboard.topTags')}</h2>
             </div>
-            <div className="p-4 space-y-3">
+            <div className={stylex.props(styles.cidurin).className}>
               {tagsLoading
                 ? Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="h-4 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
+                    <div key={i} className={stylex.props(styles.cnmf8ml).className} />
                   ))
                 : topTags.map((t) => {
                     const max = topTagMaxCount || 1;
@@ -117,18 +120,18 @@ export function DashboardPage() {
                       <button
                         key={t.tag}
                         onClick={() => navigate(`/worlds?tag=${encodeURIComponent(t.tag)}`)}
-                        className="group w-full text-left"
+                         className={`group ${stylex.props(styles.ch3pdkd).className}`}
                       >
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="font-medium text-slate-800 dark:text-slate-200">
-                            <span className="mr-1">{getEmojiForTag(t.tag)}</span>
+                        <div className={stylex.props(styles.c16p3an).className}>
+                          <span className={stylex.props(styles.c1ecfho3).className}>
+                            <span className={stylex.props(styles.c1zz7t).className}>{getEmojiForTag(t.tag)}</span>
                             {t.tag}
                           </span>
-                          <span className="text-slate-500 dark:text-slate-400">{t.count}</span>
+                          <span className={stylex.props(styles.c1v0hmxx).className}>{t.count}</span>
                         </div>
-                        <div className="mt-1 h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-800">
+                        <div className={stylex.props(styles.cbc36q6).className}>
                           <div
-                            className="h-1.5 rounded-full bg-indigo-500/60 transition group-hover:bg-indigo-400"
+                            className={stylex.props(styles.c1pbehrz).className}
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -142,3 +145,146 @@ export function DashboardPage() {
     </div>
   );
 }
+
+const styles = stylex.create({
+  c1zncq: {
+    "marginBottom": "0.5rem",
+  },
+  c1ygyk63: {
+    "fontSize": "1.25rem",
+    "lineHeight": "1.75rem",
+    "fontWeight": 700,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  c1xmut6z: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  c9fwvfq: {
+    "display": "grid",
+    "gap": "1rem",
+    "@media (min-width: 640px)": {
+      "gridTemplateColumns": "repeat(2, minmax(0, 1fr))",
+    },
+    "@media (min-width: 1024px)": {
+      "gridTemplateColumns": "repeat(4, minmax(0, 1fr))",
+    },
+  },
+  c1kypdu7: {
+    "height": "1.25rem",
+    "width": "1.25rem",
+  },
+  c9jd40s: {
+    "display": "grid",
+    "gap": "1.5rem",
+    "@media (min-width: 1024px)": {
+      "gridTemplateColumns": "repeat(3, minmax(0, 1fr))",
+    },
+  },
+  c8sj35n: {
+    "@media (min-width: 1024px)": {
+      "gridColumn": "span 2 / span 2",
+    },
+  },
+  ckot6yd: {
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "space-between",
+    "borderBottomWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": colors["--sos-border-slate-200-slate-700_50"],
+    "paddingLeft": "1.25rem",
+    "paddingRight": "1.25rem",
+    "paddingTop": "0.75rem",
+    "paddingBottom": "0.75rem",
+  },
+  c1gy9eiv: {
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "fontWeight": 600,
+    "color": colors["--sos-text-slate-900-white"],
+  },
+  cutr4jl: {
+    "minHeight": "2.75rem",
+    "paddingLeft": "0.5rem",
+    "paddingRight": "0.5rem",
+    "fontSize": "0.875rem",
+    "lineHeight": "1.25rem",
+    "color": colors["--sos-text-indigo-600-indigo-400"],
+    ":hover": {
+      "color": colors["--sos-text-indigo-700-indigo-300"],
+    },
+  },
+  c1nft36d: {
+    "display": "grid",
+    "gap": "1rem",
+    "padding": "1rem",
+    "@media (min-width: 640px)": {
+      "gridTemplateColumns": "repeat(2, minmax(0, 1fr))",
+    },
+    "@media (min-width: 1280px)": {
+      "gridTemplateColumns": "repeat(3, minmax(0, 1fr))",
+    },
+  },
+  c1461knq: {
+    "height": "16rem",
+    "animation": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+    "backgroundColor": colors["--sos-bg-slate-200-slate-800"],
+  },
+  csueyx: {
+    "borderBottomWidth": 1,
+    "borderStyle": "solid",
+    "borderColor": colors["--sos-border-slate-200-slate-700_50"],
+    "paddingLeft": "1.25rem",
+    "paddingRight": "1.25rem",
+    "paddingTop": "0.75rem",
+    "paddingBottom": "0.75rem",
+  },
+  cidurin: {
+    "padding": "1rem",
+  },
+  cnmf8ml: {
+    "height": "1rem",
+    "animation": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+    "borderRadius": "0.25rem",
+    "backgroundColor": colors["--sos-bg-slate-200-slate-800"],
+  },
+  ch3pdkd: {
+    "width": "100%",
+    "textAlign": "left",
+  },
+  c16p3an: {
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "space-between",
+    "fontSize": "0.75rem",
+    "lineHeight": "1rem",
+  },
+  c1ecfho3: {
+    "fontWeight": 500,
+    "color": colors["--sos-text-slate-800-slate-200"],
+  },
+  c1zz7t: {
+    "marginRight": "0.25rem",
+  },
+  c1v0hmxx: {
+    "color": colors["--sos-text-slate-500-slate-400"],
+  },
+  cbc36q6: {
+    "marginTop": "0.25rem",
+    "height": "0.375rem",
+    "width": "100%",
+    "borderRadius": "9999px",
+    "backgroundColor": colors["--sos-bg-slate-200-slate-800"],
+  },
+  c1pbehrz: {
+    "height": "0.375rem",
+    "borderRadius": "9999px",
+    "backgroundColor": "#6366f199",
+    "transitionProperty": "color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter, backdrop-filter",
+    ":is(.group:hover *)": {
+      "backgroundColor": "#818cf8",
+    },
+  },
+});

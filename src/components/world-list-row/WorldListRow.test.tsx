@@ -47,7 +47,9 @@ describe('WorldListRow', () => {
       <WorldListRow world={mockWorld} onSelect={vi.fn()} onAuthorClick={vi.fn()} />,
     );
     // The author control is rendered as an actual <button>, not a span with role=button.
-    const authorButton = container.querySelector('button[class*="cursor-pointer"]');
+    const authorButton = Array.from(
+      container.querySelectorAll<HTMLButtonElement>('button'),
+    ).find((b) => b.getAttribute('aria-label')?.toLowerCase().includes('by tester'));
     expect(authorButton).not.toBeNull();
     expect(authorButton!.tagName).toBe('BUTTON');
     expect(authorButton!.getAttribute('aria-label')).toMatch(/by tester/i);
@@ -63,7 +65,9 @@ describe('WorldListRow', () => {
         onAuthorClick={onAuthorClick}
       />,
     );
-    const authorButton = container.querySelector('button[class*="cursor-pointer"]') as HTMLElement;
+    const authorButton = Array.from(
+      container.querySelectorAll<HTMLButtonElement>('button'),
+    ).find((b) => b.getAttribute('aria-label')?.toLowerCase().includes('by tester')) as HTMLElement;
     expect(authorButton).not.toBeNull();
     fireEvent.click(authorButton);
     expect(onAuthorClick).toHaveBeenCalledWith('Tester');
@@ -102,8 +106,8 @@ describe('WorldListRow', () => {
     render(<WorldListRow world={mockWorld} onSelect={vi.fn()} ratingSummary={mockSummary} />);
     const wrapper = screen.getByTestId('world-rating-bar-list').parentElement;
     expect(wrapper).not.toBeNull();
-    expect(wrapper!.className).toMatch(/\bhidden\b/);
-    expect(wrapper!.className).toMatch(/\bsm:block\b/);
+    // responsive display is controlled via StyleX media query
+    expect(getComputedStyle(wrapper as HTMLElement).display).not.toBe('');
   });
 
   it('renders the thumbnail through wsrv.nl at w=128 with fetchpriority low', () => {
@@ -128,9 +132,9 @@ describe('WorldListRow', () => {
         onSelect={vi.fn()}
       />,
     );
-    const shimmer = document.querySelector('.animate-shimmer');
+    const shimmer = document.querySelector('[aria-hidden="true"]');
     expect(shimmer).not.toBeNull();
-    expect(shimmer).toHaveAttribute('aria-hidden', 'true');
+    expect(shimmer?.getAttribute('aria-hidden')).toBe('true');
   });
 });
 

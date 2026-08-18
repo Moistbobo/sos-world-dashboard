@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import type { World } from '../../types';
 import { getWorldAddDate } from '../../utils/worldAddDate';
+import * as stylex from '@stylexjs/stylex';
+import { colors } from '../../styles/tokens.stylex';
 
 interface WorldAddDateProps {
   world: World;
@@ -16,10 +18,20 @@ export function WorldAddDate({ world, variant = 'date', className = '' }: WorldA
 
   return (
     <span
-      className={`underline decoration-dotted underline-offset-4 decoration-slate-400 dark:decoration-slate-500 cursor-help ${className}`}
+      className={`${stylex.props(styles.root).className}${className ? ` ${className}` : ''}`}
       title={t('worldAddDate.tooltip')}
     >
       {formatted}
     </span>
   );
 }
+
+const styles = stylex.create({
+  root: {
+    cursor: 'help',
+    textDecorationLine: 'underline',
+    textDecorationStyle: 'dotted',
+    textUnderlineOffset: '4px',
+    textDecorationColor: colors['--sos-decoration-slate-400-slate-500'],
+  },
+});
