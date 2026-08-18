@@ -55,12 +55,13 @@ describe('WorldCurationActions', () => {
     expect(screen.queryByRole('button', { name: 'Clear Quality' })).not.toBeInTheDocument();
   });
 
-  it('shows only Good and Bad for a high-priority world', () => {
+  it('shows Good, Bad, and Clear Status for a high-priority world', () => {
     render(<WorldCurationActions world={makeWorld({ highPriority: true })} />, {
       wrapper: Wrapper,
     });
     expect(screen.getByRole('button', { name: 'Mark Good' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Mark Bad' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Clear Status' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Mark High Priority' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Clear Quality' })).not.toBeInTheDocument();
   });
@@ -73,6 +74,7 @@ describe('WorldCurationActions', () => {
     expect(screen.queryByRole('button', { name: 'Mark Good' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Mark Bad' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Mark High Priority' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Clear Status' })).not.toBeInTheDocument();
   });
 
   it('fires set-quality with the world id, guild id, and quality', async () => {
@@ -92,6 +94,18 @@ describe('WorldCurationActions', () => {
     await user.click(screen.getByRole('button', { name: 'Mark High Priority' }));
 
     expect(mocks.setWorldHighPriority).toHaveBeenCalledWith('wrld_test', 'guild_1');
+  });
+
+  it('fires clear-high-priority with the world id and guild id', async () => {
+    const user = userEvent.setup();
+    render(<WorldCurationActions world={makeWorld({ highPriority: true })} />, {
+      wrapper: Wrapper,
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Clear Status' }));
+
+    expect(mocks.clearWorldHighPriority).toHaveBeenCalledWith('wrld_test', 'guild_1');
+    expect(mocks.setWorldQuality).not.toHaveBeenCalled();
   });
 
   it('fires clear-quality as a quality update to null', async () => {

@@ -42,7 +42,8 @@
     "markGood": "良いにする",
     "markBad": "悪いにする",
     "markHighPriority": "優先度高にする",
-    "clearQuality": "品質をクリア"
+    "clearQuality": "品質をクリア",
+    "clearStatus": "ステータスをクリア"
   },
   "dashboard": {
     "title": "ダッシュボード",
