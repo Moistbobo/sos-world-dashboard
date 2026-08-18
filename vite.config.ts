@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import stylex from '@stylexjs/unplugin'
 import { execSync } from 'node:child_process'
 import pkg from './package.json' assert { type: 'json' }
 
@@ -17,11 +18,18 @@ export default defineConfig(({ mode }) => {
   const benchmarkProfiler = env.VITE_BENCHMARK_PROFILER === 'true'
 
   return {
-    plugins: [react({
-      babel: {
-        plugins: compilerEnabled ? ['babel-plugin-react-compiler'] : [],
-      },
-    })],
+    plugins: [
+      stylex.vite({
+        dev: mode === 'development',
+        runtimeInjection: mode === 'development',
+        useCSSLayers: false,
+      }),
+      react({
+        babel: {
+          plugins: compilerEnabled ? ['babel-plugin-react-compiler'] : [],
+        },
+      }),
+    ],
     resolve: {
       alias: benchmarkProfiler
         ? { 'react-dom/client': 'react-dom/profiling' }

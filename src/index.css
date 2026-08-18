@@ -76,3 +76,79 @@
     }
   }
 }
+/* StyleX theme tokens: light defaults are `:root` vars emitted by
+   stylex.defineVars in src/styles/tokens.stylex.ts; dark flips them here.
+   Keep in sync by running `node scripts/gen-stylex-tokens.mjs`. */
+
+html.dark {
+  --sos-bg-amber-100-amber-950_50: #451a0380;
+  --sos-bg-amber-50-amber-950_30: #451a034d;
+  --sos-bg-indigo-100-indigo-950_50: #1e1b4b80;
+  --sos-bg-indigo-50-indigo-950_30: #1e1b4b4d;
+  --sos-bg-indigo-600-indigo-500: #6366f1;
+  --sos-bg-indigo-700-indigo-600: #4f46e5;
+  --sos-bg-red-50-red-950_30: #450a0a4d;
+  --sos-bg-slate-100-slate-800: #1e293b;
+  --sos-bg-slate-100_50-slate-800_50: #1e293b80;
+  --sos-bg-slate-200-slate-700: #334155;
+  --sos-bg-slate-200-slate-800: #1e293b;
+  --sos-bg-slate-200_40-slate-700_40: #33415566;
+  --sos-bg-slate-300-slate-600: #475569;
+  --sos-bg-slate-300-slate-700: #334155;
+  --sos-bg-slate-50-slate-700: #334155;
+  --sos-bg-slate-50-slate-800: #1e293b;
+  --sos-bg-slate-50-slate-800_50: #1e293b80;
+  --sos-bg-slate-900-white: #ffffff;
+  --sos-bg-white-slate-800: #1e293b;
+  --sos-bg-white-slate-850: #1e293b;
+  --sos-bg-white-slate-900: #0f172a;
+  --sos-bg-white-slate-950: #020617;
+  --sos-bg-white_80-slate-950_80: #020617cc;
+  --sos-bg-white_90-slate-800_90: #1e293be6;
+  --sos-bg-white_95-slate-950_95: #020617f2;
+  --sos-border-amber-200-amber-900_50: #78350f80;
+  --sos-border-red-200-red-900_50: #7f1d1d80;
+  --sos-border-slate-200-slate-700: #334155;
+  --sos-border-slate-200-slate-700_50: #33415580;
+  --sos-border-slate-200-slate-800: #1e293b;
+  --sos-border-slate-300-slate-600: #475569;
+  --sos-border-slate-300-slate-700: #334155;
+  --sos-border-slate-400-slate-600: #475569;
+  --sos-border-white-slate-900: #0f172a;
+  --sos-decoration-slate-400-slate-500: #64748b;
+  --sos-ring-slate-300-slate-600_30: #4755694d;
+  --sos-text-amber-700-amber-300: #fcd34d;
+  --sos-text-amber-800-amber-300: #fcd34d;
+  --sos-text-amber-900-amber-100: #fef3c7;
+  --sos-text-emerald-600-emerald-400: #34d399;
+  --sos-text-green-700-green-300: #86efac;
+  --sos-text-green-700-green-400: #4ade80;
+  --sos-text-green-900-green-200: #bbf7d0;
+  --sos-text-indigo-600-indigo-300: #a5b4fc;
+  --sos-text-indigo-600-indigo-400: #818cf8;
+  --sos-text-indigo-700-indigo-300: #a5b4fc;
+  --sos-text-indigo-900-white: #ffffff;
+  --sos-text-red-600-red-300: #fca5a5;
+  --sos-text-red-600-red-400: #f87171;
+  --sos-text-red-700-red-300: #fca5a5;
+  --sos-text-red-700-red-400: #f87171;
+  --sos-text-red-900-red-200: #fecaca;
+  --sos-text-rose-600-rose-400: #fb7185;
+  --sos-text-slate-300-slate-600: #475569;
+  --sos-text-slate-400-slate-500: #64748b;
+  --sos-text-slate-400-slate-600: #475569;
+  --sos-text-slate-500-slate-300: #cbd5e1;
+  --sos-text-slate-500-slate-400: #94a3b8;
+  --sos-text-slate-600-slate-200: #e2e8f0;
+  --sos-text-slate-600-slate-300: #cbd5e1;
+  --sos-text-slate-600-slate-400: #94a3b8;
+  --sos-text-slate-700-slate-200: #e2e8f0;
+  --sos-text-slate-700-slate-300: #cbd5e1;
+  --sos-text-slate-800-slate-100: #f1f5f9;
+  --sos-text-slate-800-slate-200: #e2e8f0;
+  --sos-text-slate-900-slate-100: #f1f5f9;
+  --sos-text-slate-900-slate-50: #f8fafc;
+  --sos-text-slate-900-white: #ffffff;
+  --sos-text-white-slate-900: #0f172a;
+}
+
