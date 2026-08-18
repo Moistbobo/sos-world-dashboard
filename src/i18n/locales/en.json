@@ -42,8 +42,7 @@
     "markGood": "Mark Good",
     "markBad": "Mark Bad",
     "markHighPriority": "Mark High Priority",
-    "clearQuality": "Clear Quality",
-    "clearStatus": "Clear Status"
+    "clearQuality": "Clear Quality"
   },
   "dashboard": {
     "title": "Dashboard",

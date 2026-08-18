@@ -55,15 +55,14 @@ describe('WorldCurationActions', () => {
     expect(screen.queryByRole('button', { name: 'Clear Quality' })).not.toBeInTheDocument();
   });
 
-  it('shows Good, Bad, and Clear Status for a high-priority world', () => {
+  it('shows Good, Bad, and Clear Quality for a high-priority world', () => {
     render(<WorldCurationActions world={makeWorld({ highPriority: true })} />, {
       wrapper: Wrapper,
     });
     expect(screen.getByRole('button', { name: 'Mark Good' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Mark Bad' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Clear Status' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Clear Quality' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Mark High Priority' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Clear Quality' })).not.toBeInTheDocument();
   });
 
   it('shows only Clear Quality for a quality-tagged world, even when both flags are set', () => {
@@ -74,7 +73,6 @@ describe('WorldCurationActions', () => {
     expect(screen.queryByRole('button', { name: 'Mark Good' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Mark Bad' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Mark High Priority' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Clear Status' })).not.toBeInTheDocument();
   });
 
   it('fires set-quality with the world id, guild id, and quality', async () => {
@@ -96,13 +94,13 @@ describe('WorldCurationActions', () => {
     expect(mocks.setWorldHighPriority).toHaveBeenCalledWith('wrld_test', 'guild_1');
   });
 
-  it('fires clear-high-priority with the world id and guild id', async () => {
+  it('fires clear-high-priority (via Clear Quality) with the world id and guild id for a high-priority world', async () => {
     const user = userEvent.setup();
     render(<WorldCurationActions world={makeWorld({ highPriority: true })} />, {
       wrapper: Wrapper,
     });
 
-    await user.click(screen.getByRole('button', { name: 'Clear Status' }));
+    await user.click(screen.getByRole('button', { name: 'Clear Quality' }));
 
     expect(mocks.clearWorldHighPriority).toHaveBeenCalledWith('wrld_test', 'guild_1');
     expect(mocks.setWorldQuality).not.toHaveBeenCalled();

@@ -68,7 +68,7 @@ export function WorldCurationActions({ world }: WorldCurationActionsProps) {
           }}
           className="relative z-30 rounded-lg bg-slate-200 px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-700 dark:text-slate-200"
         >
-          {t('curator.clearStatus')}
+          {t('curator.clearQuality')}
         </button>
       )}
       {state.kind === 'quality-tagged' && (
