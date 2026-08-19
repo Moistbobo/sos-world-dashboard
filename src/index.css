@@ -17,19 +17,6 @@ html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark 
   color: #f8fafc;
 }
 
-/* Visually hidden, read by assistive tech. Used by the skip link in Layout. */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;

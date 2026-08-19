@@ -71,7 +71,9 @@ describe('Layout sidebar', () => {
 
     const skipLink = screen.getByRole('link', { name: /skip to main content/i })
     expect(skipLink).toHaveAttribute('href', '#main')
-    expect(skipLink).toHaveClass('sr-only')
+    // sr-only behavior (visually hidden until focused) is now StyleX, not a Tailwind class.
+    const clip = window.getComputedStyle(skipLink).clip
+    expect(clip === 'rect(0px, 0px, 0px, 0px)' || clip === 'rect(0, 0, 0, 0)').toBe(true)
 
     const main = document.querySelector('main#main')
     expect(main).not.toBeNull()

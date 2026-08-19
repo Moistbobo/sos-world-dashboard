@@ -58,7 +58,7 @@ export function Layout({ children }: { children: ReactNode }) {
     <div className={stylex.props(styles.c7hoeab).className}>
       <a
         href="#main"
-         className={`sr-only ${stylex.props(styles.c1em8zxy).className}`}
+         className={stylex.props(styles.c1em8zxy).className}
       >
         {t('layout.skipToContent')}
       </a>
@@ -218,17 +218,32 @@ const styles = stylex.create({
     "minHeight": "100vh",
   },
   c1em8zxy: {
+    "position": "absolute",
+    "width": 1,
+    "height": 1,
+    "padding": 0,
+    "margin": "-1px",
+    "overflow": "hidden",
+    "clip": "rect(0, 0, 0, 0)",
+    "whiteSpace": "nowrap",
+    "borderWidth": 0,
     ":focus": {
       "position": "fixed",
       "top": "0.5rem",
       "left": "0.5rem",
       "zIndex": 60,
-      "borderRadius": "0.5rem",
-      "backgroundColor": "#4f46e5",
+      "width": "auto",
+      "height": "auto",
       "paddingLeft": "1rem",
       "paddingRight": "1rem",
       "paddingTop": "0.5rem",
       "paddingBottom": "0.5rem",
+      "margin": 0,
+      "overflow": "visible",
+      "clip": "auto",
+      "whiteSpace": "normal",
+      "borderRadius": "0.5rem",
+      "backgroundColor": "#4f46e5",
       "fontSize": "0.875rem",
       "lineHeight": "1.25rem",
       "fontWeight": 500,
