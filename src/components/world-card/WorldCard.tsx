@@ -202,7 +202,7 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
             >
               <ExternalLink className={stylex.props(styles.c1ky5l8t).className} />
               {t('worldDetail.openInVRChat')}
-              <span className="sr-only"> {t('common.opensInNewTab')}</span>
+              <span className={stylex.props(styles.srOnly).className}> {t('common.opensInNewTab')}</span>
             </a>
           ) : (
             <span
@@ -223,6 +223,14 @@ export const WorldCard = memo(function WorldCard({ world, onTagClick, onPlatform
 });
 
 const styles = stylex.create({
+  srOnly: {
+    position: 'absolute',
+    width: '1px',
+    height: '1px',
+    overflow: 'hidden',
+    clip: 'rect(0, 0, 0, 0)',
+    whiteSpace: 'nowrap',
+  },
   cdpixau: {
     "position": "relative",
     "overflow": "hidden",

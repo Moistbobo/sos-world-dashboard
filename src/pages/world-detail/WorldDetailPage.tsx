@@ -325,7 +325,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
                   {t('worldDetail.byAuthor', { author: w.authorName || t('worldDetail.unknownAuthor') })}
                 </p>
               </div>
-              <div className="shrink-0">
+              <div className={stylex.props(styles.shrink0).className}>
                 {w.quality === 'good' && (
                   <span className={stylex.props(styles.c1gewc7d).className}>
                     {t('worldDetail.qualityGood')}
@@ -399,7 +399,7 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
                 >
                   <ExternalLink className={stylex.props(styles.c1ky5l8t).className} />
                   {t('worldDetail.openInVRChat')}
-                  <span className="sr-only"> {t('common.opensInNewTab')}</span>
+                  <span className={stylex.props(styles.srOnly).className}> {t('common.opensInNewTab')}</span>
                 </a>
               ) : (
                 <span
@@ -446,6 +446,17 @@ export function WorldDetailPage({ worldId: worldIdProp }: { worldId?: string } =
 }
 
 const styles = stylex.create({
+  shrink0: {
+    flexShrink: 0,
+  },
+  srOnly: {
+    position: 'absolute',
+    width: '1px',
+    height: '1px',
+    overflow: 'hidden',
+    clip: 'rect(0, 0, 0, 0)',
+    whiteSpace: 'nowrap',
+  },
   cl17a3u: {
     "position": "fixed",
     "top": 0,

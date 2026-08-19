@@ -109,7 +109,7 @@ export function ListFormDialog({
               <X className={stylex.props(styles.c1kypdu7).className} />
             </button>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className={stylex.props(styles.formStack).className}>
             <div>
               <label
                 htmlFor="list-name"
@@ -199,6 +199,11 @@ export function ListFormDialog({
 }
 
 const styles = stylex.create({
+  formStack: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
   c1pncdne: {
     "display": "contents",
   },

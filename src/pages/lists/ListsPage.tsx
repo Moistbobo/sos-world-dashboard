@@ -90,7 +90,7 @@ export function ListsPage() {
   );
 
   return (
-    <div className="space-y-4">
+    <div className={stylex.props(styles.stack4).className}>
       <div className={stylex.props(styles.cxc8ak4).className}>
         <div>
           <h1 className={stylex.props(styles.c1lp0kv9).className}>
@@ -277,6 +277,11 @@ export function ListsPage() {
 }
 
 const styles = stylex.create({
+  stack4: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
   cxc8ak4: {
     "display": "flex",
     "alignItems": "center",

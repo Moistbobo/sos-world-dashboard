@@ -54,11 +54,11 @@ export function SentimentCommentList({
 
   if (isLoading) {
     return (
-      <div className="space-y-3" aria-busy="true" data-testid="sentiment-comment-list-loading">
+      <div className={stylex.props(styles.stack3).className} aria-busy="true" data-testid="sentiment-comment-list-loading">
         <div className={stylex.props(styles.c1mwsoy2).className} />
         <div className={stylex.props(styles.c17r0rim).className} />
         <div className={stylex.props(styles.c31gkee).className} />
-        <p className="sr-only">{t('sentiment.comments.loading')}</p>
+        <p className={stylex.props(styles.srOnly).className}>{t('sentiment.comments.loading')}</p>
       </div>
     );
   }
@@ -68,8 +68,8 @@ export function SentimentCommentList({
   }
 
   return (
-    <div className="space-y-3" data-testid="sentiment-comment-list">
-      <ul className="space-y-3">
+    <div className={stylex.props(styles.stack3).className} data-testid="sentiment-comment-list">
+      <ul className={stylex.props(styles.stack3).className}>
         {comments.map((comment) => (
           <li key={comment.id} className={stylex.props(styles.c1quv7lu).className}>
             <div className={stylex.props(styles.ctbjdmu).className}>
@@ -100,6 +100,19 @@ export function SentimentCommentList({
 }
 
 const styles = stylex.create({
+  stack3: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+  },
+  srOnly: {
+    position: 'absolute',
+    width: '1px',
+    height: '1px',
+    overflow: 'hidden',
+    clip: 'rect(0, 0, 0, 0)',
+    whiteSpace: 'nowrap',
+  },
   c1cl81ir: {
     "marginLeft": "0.25rem",
     "fontWeight": 700,

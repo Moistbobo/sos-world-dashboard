@@ -87,7 +87,7 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
   const ticks = [MIN_CAPACITY, 20, 40, 60, MAX_CAPACITY];
 
   return (
-    <div className="space-y-3">
+    <div className={stylex.props(styles.stack3).className}>
       <div className={stylex.props(styles.c1e541q8).className}>
         <label
           htmlFor="min-capacity"
@@ -130,7 +130,7 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
         />
       </div>
 
-      <div className="space-y-2">
+      <div className={stylex.props(styles.stack2).className}>
         <div
           className={stylex.props(styles.c1xu3u0s).className}
           aria-hidden="true"
@@ -196,6 +196,16 @@ export function CapacityRange({ min, max, onChange }: CapacityRangeProps) {
 }
 
 const styles = stylex.create({
+  stack3: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+  },
+  stack2: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem',
+  },
   c1e541q8: {
     "display": "grid",
     "gridTemplateColumns": "auto 1fr",

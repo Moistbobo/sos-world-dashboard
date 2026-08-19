@@ -57,7 +57,7 @@ export function ListDetailPage({
 
   if (!isHydrated) {
     return (
-      <div className="space-y-4">
+      <div className={stylex.props(styles.stack4).className}>
         <div className={stylex.props(styles.caajinm).className} />
         <div className={stylex.props(shared.card, styles.c1yvaa6j).className}>
           <div className={stylex.props(styles.cbpfumt).className} />
@@ -68,7 +68,7 @@ export function ListDetailPage({
 
   if (!list) {
     return (
-      <div className="space-y-4">
+      <div className={stylex.props(styles.stack4).className}>
         <button
           onClick={() => navigate(-1)}
           className={stylex.props(shared.btnGhost, styles.c1xphv85).className}
@@ -115,7 +115,7 @@ export function ListDetailPage({
   };
 
   return (
-    <div className="space-y-4">
+    <div className={stylex.props(styles.stack4).className}>
       <button
         onClick={() => navigate(-1)}
         className={stylex.props(shared.btnGhost, styles.c1xphv85).className}
@@ -196,7 +196,7 @@ export function ListDetailPage({
           </button>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className={stylex.props(styles.stack3).className}>
           <h2 className={stylex.props(styles.c1gy9eiv).className}>
             {t('lists.worldsSection')}
           </h2>
@@ -274,6 +274,16 @@ export function ListDetailPage({
 }
 
 const styles = stylex.create({
+  stack4: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
+  stack3: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+  },
   caajinm: {
     "height": "1rem",
     "width": "6rem",

@@ -33,7 +33,7 @@ export function TagsPage() {
   );
 
   return (
-    <div className="space-y-4">
+    <div className={stylex.props(styles.stack4).className}>
       <div className={stylex.props(styles.cjqkzf8).className}>
         <div>
           <h1 className={stylex.props(styles.c1ygyk63).className}>{t('tags.title')}</h1>
@@ -122,6 +122,11 @@ export function TagsPage() {
 }
 
 const styles = stylex.create({
+  stack4: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
   cjqkzf8: {
     "display": "flex",
     "flexDirection": "column",

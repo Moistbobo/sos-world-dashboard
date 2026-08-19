@@ -40,7 +40,7 @@ export function DashboardPage() {
   const topTagMaxCount = topTags[0]?.count;
 
   return (
-    <div className="space-y-6">
+    <div className={stylex.props(styles.stack6).className}>
       <div className={stylex.props(styles.c1zncq).className}>
         <h1 className={stylex.props(styles.c1ygyk63).className}>{t('dashboard.title')}</h1>
         <p className={stylex.props(styles.c1xmut6z).className}>{t('dashboard.subtitle')}</p>
@@ -147,6 +147,11 @@ export function DashboardPage() {
 }
 
 const styles = stylex.create({
+  stack6: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.5rem',
+  },
   c1zncq: {
     "marginBottom": "0.5rem",
   },

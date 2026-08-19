@@ -73,7 +73,7 @@ export function SentimentRating({
   };
 
   return (
-    <div className="space-y-2" data-testid="sentiment-rating">
+    <div className={stylex.props(styles.stack2).className} data-testid="sentiment-rating">
       <div
         className={stylex.props(styles.ckqnok4).className}
         aria-label={t('sentiment.ratings.ratingBarLabel')}
@@ -141,6 +141,11 @@ export function SentimentRating({
 }
 
 const styles = stylex.create({
+  stack2: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem',
+  },
   ckqnok4: {
     "position": "relative",
     "display": "flex",

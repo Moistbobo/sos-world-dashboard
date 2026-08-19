@@ -234,7 +234,7 @@ export function WorldsPage() {
   }, [infiniteQuery, isPagination, viewMode, worlds.length, columnCount, lastVirtualRowIndex]);
 
   return (
-    <div className="space-y-4">
+    <div className={stylex.props(styles.stack4).className}>
       <div className={stylex.props(styles.czrugxf).className}>
         <div>
           <h1 className={stylex.props(styles.c1ygyk63).className}>{t('worlds.title')}</h1>
@@ -331,7 +331,7 @@ export function WorldsPage() {
       )}
 
       {isPending && (
-        <div className={viewMode === 'grid' ? stylex.props(styles.skeletonGrid).className : 'space-y-3'}>
+        <div className={viewMode === 'grid' ? stylex.props(styles.skeletonGrid).className : stylex.props(styles.stack3).className}>
           {Array.from({ length: limit }).map((_, i) => (
             <div key={i} className={stylex.props(shared.card, styles.cn0q47e).className} />
           ))}
@@ -449,6 +449,16 @@ export function WorldsPage() {
 }
 
 const styles = stylex.create({
+  stack4: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
+  stack3: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+  },
   czrugxf: {
     "display": "flex",
     "flexDirection": "column",
