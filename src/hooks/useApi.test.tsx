@@ -210,4 +210,21 @@ describe('useMe', () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(toast.error).not.toHaveBeenCalled();
   });
+
+  it('does not retry a rejected identity request, so the error surfaces after a single call', async () => {
+    // This client keeps TanStack's default retry, so a single fetchMe call
+    // proves useMe's own retry: false (the shared client disables retries globally).
+    const retryClient = new QueryClient();
+    retryClient.setQueryData(['identity', 'requested'], true);
+    const fetchSpy = vi.spyOn(client, 'fetchMe').mockRejectedValue(new Error('unauthorized'));
+
+    const retryWrapper = ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={retryClient}>{children}</QueryClientProvider>
+    );
+
+    const { result } = renderHook(() => useMe(), { wrapper: retryWrapper });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
 });
