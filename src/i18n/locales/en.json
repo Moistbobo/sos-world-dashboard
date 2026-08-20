@@ -53,7 +53,12 @@
     "latest": "Latest",
     "recentWorlds": "Recent Worlds",
     "viewAll": "View all →",
-    "topTags": "Top Tags"
+    "recentActivity": "Recent Activity",
+    "activityCommented": "commented on <world>{{world}}</world>",
+    "activityRatedGood": "got a good rating",
+    "activityRatedBad": "got a bad rating",
+    "activityEmpty": "No community activity yet. Be the first to like or comment!",
+    "activityLoading": "Loading recent activity..."
   },
   "worlds": {
     "title": "Worlds",
