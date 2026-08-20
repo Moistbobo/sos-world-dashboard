@@ -173,7 +173,17 @@ describe('useMe', () => {
     vi.clearAllMocks();
   });
 
+  it('does not fetch identity until the request is requested (Apply)', async () => {
+    const fetchSpy = vi.spyOn(client, 'fetchMe');
+
+    renderHook(() => useMe(), { wrapper: Wrapper });
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
   it('returns the current user with role and permissions', async () => {
+    queryClient.setQueryData(['identity', 'requested'], true);
     vi.spyOn(client, 'fetchMe').mockResolvedValue({
       name: 'Curator',
       role: 'curator',
@@ -192,6 +202,7 @@ describe('useMe', () => {
   });
 
   it('suppresses the error toast by default when the request fails', async () => {
+    queryClient.setQueryData(['identity', 'requested'], true);
     vi.spyOn(client, 'fetchMe').mockRejectedValue(new Error('unauthorized'));
 
     const { result } = renderHook(() => useMe(), { wrapper: Wrapper });
