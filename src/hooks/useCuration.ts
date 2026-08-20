@@ -69,6 +69,10 @@ export function useCurationMutation() {
         await setWorldHighPriority(worldId, guildId);
         return;
       }
+      if (action.type === 'clear-high-priority') {
+        await clearWorldHighPriority(worldId, guildId);
+        return;
+      }
       await setWorldQuality(worldId, guildId, null);
     },
     onMutate: async ({ worldId, action }) => {

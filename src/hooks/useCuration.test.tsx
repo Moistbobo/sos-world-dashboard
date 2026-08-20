@@ -158,6 +158,39 @@ describe('useCurationMutation', () => {
     });
   });
 
+  it('clear-high-priority removes the flag without touching quality', async () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    seedCache(queryClient);
+    const { result } = renderHook(() => useCurationMutation(), {
+      wrapper: makeWrapper(queryClient),
+    });
+
+    await result.current.mutateAsync({
+      worldId: 'wrld_hp',
+      guildId: 'guild_1',
+      action: { type: 'clear-high-priority' },
+    });
+
+    expect(clientApi.clearWorldHighPriority).toHaveBeenCalledWith('wrld_hp', 'guild_1');
+    expect(clientApi.setWorldQuality).not.toHaveBeenCalled();
+    expect(worldFromList(queryClient, 'wrld_hp')).toMatchObject({
+      quality: null,
+      highPriority: false,
+    });
+    const infinite = queryClient.getQueryData<InfiniteData<PaginatedWorlds>>([
+      'worlds-infinite',
+      { limit: 20 },
+    ]);
+    expect(infinite?.pages[0].worlds.find((w) => w.worldId === 'wrld_hp')).toMatchObject({
+      highPriority: false,
+    });
+    const byIds = queryClient.getQueryData<World[]>(['worlds-by-ids', 'wrld_untagged,wrld_hp']);
+    expect(byIds?.find((w) => w.worldId === 'wrld_hp')).toMatchObject({ highPriority: false });
+    expect(queryClient.getQueryData<World>(['world', 'wrld_hp'])).toMatchObject({
+      highPriority: false,
+    });
+  });
+
   it('clear-quality resets the cached world to untagged', async () => {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     seedCache(queryClient);

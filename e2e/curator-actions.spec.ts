@@ -46,7 +46,7 @@ test.describe('Curator quick actions', () => {
     await expect(card.getByRole('button', { name: 'Mark Good' })).toBeVisible();
     await expect(card.getByRole('button', { name: 'Mark Bad' })).toBeVisible();
     await expect(card.getByRole('button', { name: 'Mark High Priority' })).toHaveCount(0);
-    await expect(card.getByRole('button', { name: 'Clear Quality' })).toHaveCount(0);
+    await expect(card.getByRole('button', { name: 'Clear Quality' })).toBeVisible();
 
     const qualityRequest = page.waitForRequest(
       (req) => req.method() === 'PUT' && req.url().includes('/api/worlds/wrld_priority_watch/quality'),
@@ -62,6 +62,32 @@ test.describe('Curator quick actions', () => {
       guildId: 'guild_e2e',
       quality: 'bad',
     });
+    expect((await deleteRequest).postDataJSON()).toEqual({ guildId: 'guild_e2e' });
+    await refetch;
+
+    await expect(page.getByRole('heading', { name: 'Priority Watch' })).toHaveCount(0);
+  });
+
+  test('high-priority world Clear Quality removes it from the HP filter list', async ({ page }) => {
+    await visitWorlds(page, {
+      scrollMode: 'pagination',
+      viewMode: 'grid',
+      curator: true,
+      queryString: '?highPriority=true',
+    });
+
+    const card = page.locator('.card').filter({ hasText: 'Priority Watch' });
+    await expect(card.getByRole('button', { name: 'Mark Good' })).toBeVisible();
+    await expect(card.getByRole('button', { name: 'Mark Bad' })).toBeVisible();
+    await expect(card.getByRole('button', { name: 'Clear Quality' })).toBeVisible();
+
+    const deleteRequest = page.waitForRequest(
+      (req) =>
+        req.method() === 'DELETE' && req.url().includes('/api/worlds/wrld_priority_watch/high-priority'),
+    );
+    const refetch = waitForWorldsRequest(page, (url) => url.searchParams.get('limit') === '20');
+    await card.getByRole('button', { name: 'Clear Quality' }).click();
+
     expect((await deleteRequest).postDataJSON()).toEqual({ guildId: 'guild_e2e' });
     await refetch;
 
