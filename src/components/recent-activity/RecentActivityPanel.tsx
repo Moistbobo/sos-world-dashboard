@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react';
@@ -34,14 +35,29 @@ function ActivityIcon({ row }: { row: RecentActivityRow }) {
   );
 }
 
-export function RecentActivityPanel() {
+export function RecentActivityPanel({ maxHeight }: { maxHeight?: number }) {
   const { t } = useTranslation();
   const enabled = import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 'true';
   const { rows, isPending } = useRecentActivity(enabled);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const update = () => setHeaderHeight(el.offsetHeight);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const bodyMaxHeight =
+    typeof maxHeight === 'number' && maxHeight > 0 ? Math.max(0, maxHeight - headerHeight) : undefined;
 
   return (
     <div className="card flex h-full min-h-0 flex-col" data-testid="recent-activity-panel">
-      <div className="border-b border-slate-200 px-5 py-3 dark:border-slate-700/50">
+      <div ref={headerRef} className="border-b border-slate-200 px-5 py-3 dark:border-slate-700/50">
         <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('dashboard.recentActivity')}</h2>
       </div>
       {isPending ? (
@@ -56,8 +72,11 @@ export function RecentActivityPanel() {
           {t('dashboard.activityEmpty')}
         </p>
       ) : (
-        <div className="min-h-0 max-h-[520px] flex-1 overflow-y-auto p-2">
-          <ul className="divide-y divide-slate-200 dark:divide-slate-700/50">
+        <div
+          className="min-h-0 flex-1 overflow-y-auto"
+          style={bodyMaxHeight !== undefined ? { maxHeight: bodyMaxHeight } : undefined}
+        >
+          <ul className="divide-y divide-slate-200 p-2 dark:divide-slate-700/50">
             {rows.map((row) => (
               <li key={`${row.type}-${row.id}`}>
                 <Link

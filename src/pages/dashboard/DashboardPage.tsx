@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Activity, Globe, Tags, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +20,18 @@ export function DashboardPage() {
   const { data: tagsData, isPending: tagsLoading } = useTags();
   const { data: worldsData, isPending: worldsLoading } = useWorlds({ limit: 6 });
   const navigate = useNavigate();
+  const recentWorldsRef = useRef<HTMLDivElement>(null);
+  const [recentWorldsHeight, setRecentWorldsHeight] = useState(0);
+
+  useEffect(() => {
+    const el = recentWorldsRef.current;
+    if (!el) return;
+    const update = () => setRecentWorldsHeight(el.offsetHeight);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [worldsLoading]);
 
   const latestWorlds = useMemo(() => worldsData?.worlds ?? [], [worldsData]);
   const latestWorldIds = useMemo(() => latestWorlds.map((w) => w.worldId), [latestWorlds]);
@@ -67,7 +79,7 @@ export function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Recent Worlds */}
         <div className="lg:col-span-2">
-          <div className="card h-full">
+          <div ref={recentWorldsRef} className="card">
             <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3 dark:border-slate-700/50">
               <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('dashboard.recentWorlds')}</h2>
               <button
@@ -99,7 +111,7 @@ export function DashboardPage() {
 
         {/* Recent Activity */}
         <div className="order-first min-w-0 lg:order-none">
-          <RecentActivityPanel />
+          <RecentActivityPanel maxHeight={recentWorldsHeight} />
         </div>
       </div>
     </div>
