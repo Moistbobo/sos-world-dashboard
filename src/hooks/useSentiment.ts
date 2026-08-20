@@ -274,6 +274,7 @@ export function useRecentActivity(enabled: boolean): RecentActivityResult {
     queryFn: fetchRecentActivity,
     enabled,
     retry: 1,
+    staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
   const items = query.data;
