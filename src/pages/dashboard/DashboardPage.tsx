@@ -8,7 +8,7 @@ import { useHealth } from '../../hooks/useHealth';
 import { useRatingsForWorldIds } from '../../hooks/useSentiment';
 import { StatCard } from '../../components/stat-card';
 import { WorldCard } from '../../components/world-card';
-import { getEmojiForTag } from '../../utils/tagEmoji';
+import { RecentActivityPanel } from '../../components/recent-activity';
 import { getWorldAddDate } from '../../utils/worldAddDate';
 
 const SENTIMENT_ENABLED = import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 'true';
@@ -21,7 +21,6 @@ export function DashboardPage() {
   const { data: worldsData, isPending: worldsLoading } = useWorlds({ limit: 6 });
   const navigate = useNavigate();
 
-  const topTags = tagsData?.tags.slice(0, 10) || [];
   const latestWorlds = useMemo(() => worldsData?.worlds ?? [], [worldsData]);
   const latestWorldIds = useMemo(() => latestWorlds.map((w) => w.worldId), [latestWorlds]);
   const { data: ratingSummaries } = useRatingsForWorldIds(
@@ -34,7 +33,6 @@ export function DashboardPage() {
     () => (latestAddDate ? new Date(latestAddDate).toLocaleDateString() : '-'),
     [latestAddDate],
   );
-  const topTagMaxCount = topTags[0]?.count;
 
   return (
     <div className="space-y-6">
@@ -99,44 +97,9 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* Top Tags */}
+        {/* Recent Activity */}
         <div>
-          <div className="card">
-            <div className="border-b border-slate-200 px-5 py-3 dark:border-slate-700/50">
-              <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('dashboard.topTags')}</h2>
-            </div>
-            <div className="p-4 space-y-3">
-              {tagsLoading
-                ? Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="h-4 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
-                  ))
-                : topTags.map((t) => {
-                    const max = topTagMaxCount || 1;
-                    const pct = Math.round((t.count / max) * 100);
-                    return (
-                      <button
-                        key={t.tag}
-                        onClick={() => navigate(`/worlds?tag=${encodeURIComponent(t.tag)}`)}
-                        className="group w-full text-left"
-                      >
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="font-medium text-slate-800 dark:text-slate-200">
-                            <span className="mr-1">{getEmojiForTag(t.tag)}</span>
-                            {t.tag}
-                          </span>
-                          <span className="text-slate-500 dark:text-slate-400">{t.count}</span>
-                        </div>
-                        <div className="mt-1 h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-800">
-                          <div
-                            className="h-1.5 rounded-full bg-indigo-500/60 transition group-hover:bg-indigo-400"
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-                      </button>
-                    );
-                  })}
-            </div>
-          </div>
+          <RecentActivityPanel />
         </div>
       </div>
     </div>

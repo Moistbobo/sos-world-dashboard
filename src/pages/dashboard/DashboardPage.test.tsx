@@ -11,6 +11,20 @@ const queryClient = new QueryClient({
 });
 
 let tagsFixture: { tag: string; count: number }[] = [];
+let recentActivityFixture: {
+  rows: Array<{
+    type: 'comment' | 'rating';
+    id: string;
+    worldId: string;
+    value?: 'good' | 'bad';
+    username?: string;
+    content?: string;
+    createdAt: string;
+    worldName: string;
+  }>;
+  isPending: boolean;
+  isError: boolean;
+} = { rows: [], isPending: false, isError: false };
 
 vi.mock('../../hooks/useApi', () => ({
   useTags: () => ({ data: { tags: tagsFixture }, isPending: false }),
@@ -38,6 +52,7 @@ vi.mock('../../hooks/useSentiment', () => ({
     isSuccess: false,
     isFetching: false,
   }),
+  useRecentActivity: () => recentActivityFixture,
 }));
 
 let lastUnmount: (() => void) | null = null;
@@ -61,10 +76,12 @@ describe('DashboardPage', () => {
     window.localStorage.clear();
     window.history.pushState({}, '', '/');
     lastUnmount = null;
+    recentActivityFixture = { rows: [], isPending: false, isError: false };
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllEnvs();
     if (lastUnmount) {
       lastUnmount();
       lastUnmount = null;
@@ -72,7 +89,7 @@ describe('DashboardPage', () => {
     window.history.pushState({}, '', '/');
   });
 
-  it('shows the full unique tag count on the stat card while the Top Tags panel stays at 10', () => {
+  it('shows the full unique tag count on the stat card', () => {
     tagsFixture = Array.from({ length: 12 }, (_, i) => ({
       tag: `tag-${i + 1}`,
       count: 120 - i * 10,
@@ -81,11 +98,6 @@ describe('DashboardPage', () => {
     renderPage();
 
     expect(screen.getByText('12')).toBeInTheDocument();
-
-    const topTagButtons = screen.getAllByRole('button', { name: /\btag-\d+\b/ });
-    expect(topTagButtons).toHaveLength(10);
-    expect(screen.queryByRole('button', { name: /\btag-11\b/ })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /\btag-12\b/ })).not.toBeInTheDocument();
   });
 
   it('shows the unique tag count without truncation when fewer than 10 tags exist', () => {
@@ -99,6 +111,28 @@ describe('DashboardPage', () => {
     renderPage();
 
     expect(screen.getByText('4')).toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: /chill|social|quest|avatar/ })).toHaveLength(4);
+  });
+
+  it('renders the recent activity panel with activity rows when sentiment is enabled', () => {
+    vi.stubEnv('VITE_ENABLE_COMMUNITY_SENTIMENT', 'true');
+    recentActivityFixture = {
+      rows: [
+        {
+          type: 'comment',
+          id: 'c1',
+          worldId: 'w1',
+          username: 'Ann',
+          content: 'Nice world',
+          createdAt: '2024-01-03T00:00:00Z',
+          worldName: 'Alpha World',
+        },
+      ],
+      isPending: false,
+      isError: false,
+    };
+
+    renderPage();
+
+    expect(screen.getByText('Alpha World')).toBeInTheDocument();
   });
 });
