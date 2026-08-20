@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
 import { useQueries, useQueryClient } from '@tanstack/react-query';
 import type { InfiniteData } from '@tanstack/react-query';
 import {
   fetchComments,
   fetchRatings,
   fetchRatingsForWorldIds,
+  fetchRecentActivity,
   submitComment,
   submitRating,
   updateRating,
@@ -17,9 +19,10 @@ import {
   useApiQuery,
   useFinalErrorToast,
 } from './useApiToasts';
+import { useWorldsByIds } from './useWorldsByIds';
 import { useCurrentUserId } from './useCurrentUser';
 import { generateUsername } from '../utils/username';
-import type { Comment, RatingSummary } from '../types';
+import type { Comment, RatingSummary, World, RecentActivityItem, RecentActivityRow } from '../types';
 
 export function useRatings(worldId: string | undefined) {
   return useApiQuery<RatingSummary>({
@@ -254,4 +257,66 @@ export function useSubmitComment() {
       queryClient.invalidateQueries({ queryKey: ['comments', worldId] });
     },
   });
+}
+
+export interface RecentActivityResult {
+  rows: RecentActivityRow[];
+  isPending: boolean;
+  isError: boolean;
+  error: Error | null;
+  refetch: () => void;
+}
+
+export function useRecentActivity(enabled: boolean): RecentActivityResult {
+  const queryClient = useQueryClient();
+  const query = useApiQuery<RecentActivityItem[]>({
+    queryKey: ['recent-activity'],
+    queryFn: fetchRecentActivity,
+    enabled,
+    retry: 1,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+  });
+  const items = query.data;
+
+  const worldIds = useMemo(
+    () => Array.from(new Set((items ?? []).map((item) => item.worldId))),
+    [items],
+  );
+
+  const {
+    worlds: worldResults,
+    isPending: worldsPending,
+    isError: worldsError,
+  } = useWorldsByIds(enabled ? worldIds : []);
+
+  const worldById = useMemo(() => {
+    const map = new Map<string, World>();
+    for (const result of worldResults) {
+      if (result.data) map.set(result.worldId, result.data);
+    }
+    return map;
+  }, [worldResults]);
+
+  const rows = useMemo(() => {
+    if (!enabled || !items) return [];
+    return items
+      .filter((item) => worldById.has(item.worldId))
+      .map((item) => ({ ...item, worldName: worldById.get(item.worldId)!.name }));
+  }, [enabled, items, worldById]);
+
+  const needsWorlds = worldIds.length > 0;
+  const isPending = enabled && (query.isPending || (needsWorlds && worldsPending));
+  const isError = enabled && (query.isError || (needsWorlds && worldsError));
+
+  return {
+    rows,
+    isPending,
+    isError,
+    error: query.error ?? null,
+    refetch: () => {
+      void queryClient.invalidateQueries({ queryKey: ['worlds-by-ids'] });
+      void query.refetch();
+    },
+  };
 }

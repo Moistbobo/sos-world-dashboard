@@ -53,7 +53,13 @@
     "latest": "最新",
     "recentWorlds": "最近のワールド",
     "viewAll": "すべて表示 →",
-    "topTags": "人気タグ"
+    "recentActivity": "最近のアクティビティ",
+    "activityCommented": "に<world>{{world}}</world>コメントしました",
+    "activityRatedGood": "が良い評価を獲得しました",
+    "activityRatedBad": "が悪い評価を獲得しました",
+    "activityEmpty": "まだコミュニティのアクティビティはありません。最初の評価やコメントを投稿してみましょう！",
+    "activityLoading": "最近のアクティビティを読み込み中...",
+    "activityError": "現在、最近のアクティビティを読み込めません。"
   },
   "worlds": {
     "title": "ワールド",

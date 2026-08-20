@@ -74,3 +74,24 @@ export interface Comment {
   content: string;
   created_at: string;
 }
+
+export interface RatingActivity {
+  type: 'rating';
+  id: string;
+  worldId: string;
+  value: 'good' | 'bad';
+  createdAt: string;
+}
+
+export interface CommentActivity {
+  type: 'comment';
+  id: string;
+  worldId: string;
+  username: string;
+  content: string;
+  createdAt: string;
+}
+
+export type RecentActivityItem = RatingActivity | CommentActivity;
+
+export type RecentActivityRow = RecentActivityItem & { worldName: string };
