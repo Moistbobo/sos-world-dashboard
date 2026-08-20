@@ -29,13 +29,15 @@ export function SettingsPage() {
     const trimmed = next.trim();
     setToken(trimmed);
     setSavedToken(trimmed);
+    queryClient.removeQueries({ queryKey: ['me'] });
     if (trimmed) {
       setStoredApiToken(trimmed);
+      queryClient.setQueryData(['identity', 'requested'], true);
+      queryClient.invalidateQueries({ queryKey: ['me'] });
     } else {
       clearStoredApiToken();
+      queryClient.setQueryData(['identity', 'requested'], false);
     }
-    queryClient.removeQueries({ queryKey: ['me'] });
-    queryClient.invalidateQueries({ queryKey: ['me'] });
   }
 
   function handleApply() {
