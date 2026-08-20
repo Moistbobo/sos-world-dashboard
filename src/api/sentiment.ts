@@ -162,8 +162,8 @@ export async function submitComment(
   return data as Comment;
 }
 
-export const RECENT_ACTIVITY_QUERY_LIMIT = 20;
-export const RECENT_ACTIVITY_MAX = 10;
+export const RECENT_ACTIVITY_QUERY_LIMIT = 15;
+export const RECENT_ACTIVITY_MAX = 15;
 
 export function mergeRecentActivity(
   ratings: Rating[],

@@ -32,6 +32,15 @@ const ratingRow = {
   worldName: 'Beta',
 } as const;
 
+const badRatingRow = {
+  type: 'rating',
+  id: 'r2',
+  worldId: 'w3',
+  value: 'bad',
+  createdAt: '2024-01-01T08:00:00Z',
+  worldName: 'Gamma',
+} as const;
+
 function WorldProbe() {
   const { id } = useParams();
   return <div>world {id}</div>;
@@ -61,7 +70,7 @@ describe('RecentActivityPanel', () => {
 
   it('renders comment and rating rows with names, content, and timestamps', () => {
     mocks.useRecentActivity.mockReturnValue({
-      rows: [commentRow, ratingRow],
+      rows: [commentRow, ratingRow, badRatingRow],
       isPending: false,
       isError: false,
     });
@@ -78,9 +87,16 @@ describe('RecentActivityPanel', () => {
     expect(screen.getByText(formatTimestamp(commentRow.createdAt))).toBeInTheDocument();
     expect(screen.getByText('Beta')).toBeInTheDocument();
     expect(screen.getByText(formatTimestamp(ratingRow.createdAt))).toBeInTheDocument();
+    expect(screen.getByText('Gamma')).toBeInTheDocument();
+    expect(screen.getByText(formatTimestamp(badRatingRow.createdAt))).toBeInTheDocument();
+
+    expect(screen.getByTestId('activity-icon-comment')).toBeInTheDocument();
+    expect(screen.getByTestId('activity-icon-good')).toBeInTheDocument();
+    expect(screen.getByTestId('activity-icon-bad')).toBeInTheDocument();
 
     expect(screen.getByRole('link', { name: /Alpha/ })).toHaveAttribute('href', '/worlds/w1');
     expect(screen.getByRole('link', { name: /Beta/ })).toHaveAttribute('href', '/worlds/w2');
+    expect(screen.getByRole('link', { name: /Gamma/ })).toHaveAttribute('href', '/worlds/w3');
   });
 
   it('navigates to the world detail page when a row is clicked', async () => {

@@ -67,7 +67,7 @@ export function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Recent Worlds */}
         <div className="lg:col-span-2">
-          <div className="card">
+          <div className="card h-full">
             <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3 dark:border-slate-700/50">
               <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('dashboard.recentWorlds')}</h2>
               <button
@@ -98,7 +98,7 @@ export function DashboardPage() {
         </div>
 
         {/* Recent Activity */}
-        <div>
+        <div className="order-first min-w-0 lg:order-none">
           <RecentActivityPanel />
         </div>
       </div>
