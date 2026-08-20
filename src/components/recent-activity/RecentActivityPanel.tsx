@@ -57,7 +57,7 @@ export function RecentActivityPanel({ maxHeight }: { maxHeight?: number }) {
 
   return (
     <div className="card flex h-full min-h-0 flex-col" data-testid="recent-activity-panel">
-      <div ref={headerRef} className="border-b border-slate-200 px-5 py-3 dark:border-slate-700/50">
+      <div ref={headerRef} className="flex min-h-11 items-center border-b border-slate-200 px-5 py-3 dark:border-slate-700/50">
         <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('dashboard.recentActivity')}</h2>
       </div>
       {isPending ? (
