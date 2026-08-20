@@ -31,7 +31,22 @@ export async function visitWorlds(page: Page, options: WorldsVisitOptions = {}) 
     { scrollMode, viewMode, theme, curator },
   );
   await mockApi(page);
-  await page.goto(`/worlds${queryString}`);
+
+  if (curator) {
+    await page.goto('/settings');
+    const meResponse = page.waitForResponse(
+      (res) => res.url().includes('/api/me') && res.status() === 200,
+    );
+    await page.getByRole('button', { name: /apply/i }).click();
+    await meResponse;
+    await page.evaluate((qs) => {
+      window.history.pushState({}, '', `/worlds${qs}`);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }, queryString);
+  } else {
+    await page.goto(`/worlds${queryString}`);
+  }
+
   await page.getByRole('heading', { name: /worlds/i }).waitFor();
 }
 
