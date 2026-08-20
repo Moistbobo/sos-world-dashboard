@@ -10,9 +10,11 @@ import {
   useUpdateRating,
   useDeleteRating,
   useSubmitComment,
+  useRecentActivity,
 } from './useSentiment';
 import { useCurrentUserId } from './useCurrentUser';
 import * as sentimentApi from '../api/sentiment';
+import * as clientApi from '../api/client';
 import type { RatingSummary } from '../types';
 
 const mocks = vi.hoisted(() => ({
@@ -435,5 +437,66 @@ describe('useSubmitComment', () => {
     expect(comments.pages[0].comments).toHaveLength(2);
     expect(comments.pages[0].comments[0].user_id).toBe('u-current');
     expect(comments.pages[0].total).toBe(2);
+  });
+});
+
+describe('useRecentActivity', () => {
+  function makeWorld(id: string, name: string) {
+    return {
+      worldId: id,
+      name,
+      authorName: 'Author',
+      capacity: 10,
+      platforms: ['pc'],
+      tags: [],
+      imageUrl: 'https://example.com/image.png',
+      vrchatUrl: 'https://vrchat.com',
+      quality: null,
+      createdAt: '2024-01-01T00:00:00Z',
+    };
+  }
+
+  it('does not fetch when disabled', async () => {
+    const spy = vi.spyOn(sentimentApi, 'fetchRecentActivity');
+
+    const { result } = renderHook(() => useRecentActivity(false), { wrapper });
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(spy).not.toHaveBeenCalled();
+    expect(result.current.rows).toEqual([]);
+    expect(result.current.isPending).toBe(false);
+  });
+
+  it('enriches items with world names', async () => {
+    vi.spyOn(sentimentApi, 'fetchRecentActivity').mockResolvedValue([
+      { type: 'comment', id: 'c1', worldId: 'w1', username: 'Ann', content: 'hi', createdAt: '2024-01-03T00:00:00Z' },
+      { type: 'rating', id: 'r1', worldId: 'w2', value: 'good', createdAt: '2024-01-02T00:00:00Z' },
+    ]);
+    vi.spyOn(clientApi, 'fetchWorldsByIds').mockResolvedValue([
+      makeWorld('w1', 'Alpha'),
+      makeWorld('w2', 'Beta'),
+    ]);
+
+    const { result } = renderHook(() => useRecentActivity(true), { wrapper });
+    await waitFor(() => expect(result.current.isPending).toBe(false));
+
+    expect(sentimentApi.fetchRecentActivity).toHaveBeenCalled();
+    expect(result.current.rows).toHaveLength(2);
+    expect(result.current.rows[0]).toMatchObject({ type: 'comment', id: 'c1', username: 'Ann', content: 'hi', worldName: 'Alpha' });
+    expect(result.current.rows[1]).toMatchObject({ type: 'rating', id: 'r1', value: 'good', worldName: 'Beta' });
+  });
+
+  it('filters out items whose world is missing or deleted', async () => {
+    vi.spyOn(sentimentApi, 'fetchRecentActivity').mockResolvedValue([
+      { type: 'comment', id: 'c1', worldId: 'w1', username: 'Ann', content: 'hi', createdAt: '2024-01-03T00:00:00Z' },
+      { type: 'rating', id: 'r1', worldId: 'w-missing', value: 'good', createdAt: '2024-01-02T00:00:00Z' },
+    ]);
+    vi.spyOn(clientApi, 'fetchWorldsByIds').mockResolvedValue([makeWorld('w1', 'Alpha')]);
+
+    const { result } = renderHook(() => useRecentActivity(true), { wrapper });
+    await waitFor(() => expect(result.current.isPending).toBe(false));
+
+    expect(result.current.rows).toHaveLength(1);
+    expect(result.current.rows[0]).toMatchObject({ id: 'c1', worldName: 'Alpha' });
   });
 });
