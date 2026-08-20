@@ -268,10 +268,13 @@ export interface RecentActivityResult {
 }
 
 export function useRecentActivity(enabled: boolean): RecentActivityResult {
+  const queryClient = useQueryClient();
   const query = useApiQuery<RecentActivityItem[]>({
     queryKey: ['recent-activity'],
     queryFn: fetchRecentActivity,
     enabled,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
   const items = query.data;
 
@@ -311,6 +314,7 @@ export function useRecentActivity(enabled: boolean): RecentActivityResult {
     isError,
     error: query.error ?? null,
     refetch: () => {
+      void queryClient.invalidateQueries({ queryKey: ['worlds-by-ids'] });
       void query.refetch();
     },
   };

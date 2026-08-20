@@ -504,10 +504,22 @@ describe('useRecentActivity', () => {
     vi.spyOn(sentimentApi, 'fetchRecentActivity').mockRejectedValue(new Error('supabase down'));
 
     const { result } = renderHook(() => useRecentActivity(true), { wrapper });
-    await waitFor(() => expect(result.current.isError).toBe(true));
+    await waitFor(() => expect(result.current.isError).toBe(true), { timeout: 3000 });
 
     expect(result.current.rows).toEqual([]);
     expect(result.current.error?.message).toBe('supabase down');
     expect(typeof result.current.refetch).toBe('function');
+  });
+
+  it('surfaces an error when the worlds fetch fails while activity succeeds', async () => {
+    vi.spyOn(sentimentApi, 'fetchRecentActivity').mockResolvedValue([
+      { type: 'comment', id: 'c1', worldId: 'w1', username: 'Ann', content: 'hi', createdAt: '2024-01-03T00:00:00Z' },
+    ]);
+    vi.spyOn(clientApi, 'fetchWorldsByIds').mockRejectedValue(new Error('worlds down'));
+
+    const { result } = renderHook(() => useRecentActivity(true), { wrapper });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect(result.current.rows).toEqual([]);
   });
 });

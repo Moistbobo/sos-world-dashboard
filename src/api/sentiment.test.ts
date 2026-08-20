@@ -348,6 +348,8 @@ describe('fetchRecentActivity', () => {
     const result = await fetchRecentActivity();
 
     expect(mocks.select).toHaveBeenCalledTimes(2);
+    expect(mocks.select).toHaveBeenNthCalledWith(1, 'id, world_id, value, created_at');
+    expect(mocks.select).toHaveBeenNthCalledWith(2, 'id, world_id, username, content, created_at');
     expect(ratingsOrder).toHaveBeenCalledWith('created_at', { ascending: false });
     expect(commentsOrder).toHaveBeenCalledWith('created_at', { ascending: false });
     expect(ratingsLimit).toHaveBeenCalledWith(RECENT_ACTIVITY_QUERY_LIMIT);

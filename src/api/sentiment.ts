@@ -199,13 +199,13 @@ export async function fetchRecentActivity(): Promise<RecentActivityItem[]> {
       await Promise.all([
         supabase
           .from('ratings')
-          .select('*')
+          .select('id, world_id, value, created_at')
           .order('created_at', { ascending: false })
           .limit(RECENT_ACTIVITY_QUERY_LIMIT)
           .abortSignal(controller.signal),
         supabase
           .from('comments')
-          .select('*')
+          .select('id, world_id, username, content, created_at')
           .order('created_at', { ascending: false })
           .limit(RECENT_ACTIVITY_QUERY_LIMIT)
           .abortSignal(controller.signal),
