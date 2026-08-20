@@ -173,7 +173,17 @@ describe('useMe', () => {
     vi.clearAllMocks();
   });
 
+  it('does not fetch identity until the request is requested (Apply)', async () => {
+    const fetchSpy = vi.spyOn(client, 'fetchMe');
+
+    renderHook(() => useMe(), { wrapper: Wrapper });
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
   it('returns the current user with role and permissions', async () => {
+    queryClient.setQueryData(['identity', 'requested'], true);
     vi.spyOn(client, 'fetchMe').mockResolvedValue({
       name: 'Curator',
       role: 'curator',
@@ -192,11 +202,29 @@ describe('useMe', () => {
   });
 
   it('suppresses the error toast by default when the request fails', async () => {
+    queryClient.setQueryData(['identity', 'requested'], true);
     vi.spyOn(client, 'fetchMe').mockRejectedValue(new Error('unauthorized'));
 
     const { result } = renderHook(() => useMe(), { wrapper: Wrapper });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(toast.error).not.toHaveBeenCalled();
+  });
+
+  it('does not retry a rejected identity request, so the error surfaces after a single call', async () => {
+    // This client keeps TanStack's default retry, so a single fetchMe call
+    // proves useMe's own retry: false (the shared client disables retries globally).
+    const retryClient = new QueryClient();
+    retryClient.setQueryData(['identity', 'requested'], true);
+    const fetchSpy = vi.spyOn(client, 'fetchMe').mockRejectedValue(new Error('unauthorized'));
+
+    const retryWrapper = ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={retryClient}>{children}</QueryClientProvider>
+    );
+
+    const { result } = renderHook(() => useMe(), { wrapper: retryWrapper });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 });

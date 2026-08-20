@@ -5,7 +5,8 @@ export type CurationQuality = 'good' | 'bad';
 export type CurationAction =
   | { type: 'set-quality'; quality: CurationQuality }
   | { type: 'set-high-priority' }
-  | { type: 'clear-quality' };
+  | { type: 'clear-quality' }
+  | { type: 'clear-high-priority' };
 
 export type CurationState =
   | { kind: 'untagged'; quality: null; highPriority: boolean }
@@ -36,5 +37,7 @@ export function applyCuration(world: World, action: CurationAction): World {
       return { ...world, highPriority: true };
     case 'clear-quality':
       return { ...world, quality: null, highPriority: false };
+    case 'clear-high-priority':
+      return { ...world, highPriority: false };
   }
 }
