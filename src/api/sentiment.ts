@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { generateUsername } from '../utils/username';
-import type { Comment, RatingSummary } from '../types';
+import type { Comment, Rating, RatingSummary, RecentActivityItem } from '../types';
 
 async function ensureAnonymousUser(captchaToken?: string) {
   const { data: sessionData } = await supabase.auth.getSession();
@@ -160,4 +160,53 @@ export async function submitComment(
     .single();
   if (error) throw new Error(error.message);
   return data as Comment;
+}
+
+export const RECENT_ACTIVITY_QUERY_LIMIT = 20;
+export const RECENT_ACTIVITY_MAX = 10;
+
+export function mergeRecentActivity(
+  ratings: Rating[],
+  comments: Comment[],
+  max: number = RECENT_ACTIVITY_MAX,
+): RecentActivityItem[] {
+  const items: RecentActivityItem[] = [
+    ...ratings.map((rating) => ({
+      type: 'rating' as const,
+      id: rating.id,
+      worldId: rating.world_id,
+      value: rating.value,
+      createdAt: rating.created_at,
+    })),
+    ...comments.map((comment) => ({
+      type: 'comment' as const,
+      id: comment.id,
+      worldId: comment.world_id,
+      username: comment.username,
+      content: comment.content,
+      createdAt: comment.created_at,
+    })),
+  ];
+  return items.sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, max);
+}
+
+export async function fetchRecentActivity(): Promise<RecentActivityItem[]> {
+  const [{ data: ratings, error: ratingsError }, { data: comments, error: commentsError }] =
+    await Promise.all([
+      supabase
+        .from('ratings')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(RECENT_ACTIVITY_QUERY_LIMIT),
+      supabase
+        .from('comments')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(RECENT_ACTIVITY_QUERY_LIMIT),
+    ]);
+
+  if (ratingsError) throw new Error(ratingsError.message);
+  if (commentsError) throw new Error(commentsError.message);
+
+  return mergeRecentActivity((ratings ?? []) as Rating[], (comments ?? []) as Comment[]);
 }
