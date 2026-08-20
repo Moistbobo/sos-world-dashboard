@@ -263,25 +263,28 @@ export interface RecentActivityResult {
   rows: RecentActivityRow[];
   isPending: boolean;
   isError: boolean;
+  error: Error | null;
+  refetch: () => void;
 }
 
 export function useRecentActivity(enabled: boolean): RecentActivityResult {
-  const {
-    data: items,
-    isPending: itemsPending,
-    isError: itemsError,
-  } = useApiQuery<RecentActivityItem[]>({
+  const query = useApiQuery<RecentActivityItem[]>({
     queryKey: ['recent-activity'],
     queryFn: fetchRecentActivity,
     enabled,
   });
+  const items = query.data;
 
   const worldIds = useMemo(
     () => Array.from(new Set((items ?? []).map((item) => item.worldId))),
     [items],
   );
 
-  const { worlds: worldResults, isPending: worldsPending } = useWorldsByIds(enabled ? worldIds : []);
+  const {
+    worlds: worldResults,
+    isPending: worldsPending,
+    isError: worldsError,
+  } = useWorldsByIds(enabled ? worldIds : []);
 
   const worldById = useMemo(() => {
     const map = new Map<string, World>();
@@ -299,7 +302,16 @@ export function useRecentActivity(enabled: boolean): RecentActivityResult {
   }, [enabled, items, worldById]);
 
   const needsWorlds = worldIds.length > 0;
-  const isPending = enabled && (itemsPending || (needsWorlds && worldsPending));
+  const isPending = enabled && (query.isPending || (needsWorlds && worldsPending));
+  const isError = enabled && (query.isError || (needsWorlds && worldsError));
 
-  return { rows, isPending, isError: enabled && itemsError };
+  return {
+    rows,
+    isPending,
+    isError,
+    error: query.error ?? null,
+    refetch: () => {
+      void query.refetch();
+    },
+  };
 }

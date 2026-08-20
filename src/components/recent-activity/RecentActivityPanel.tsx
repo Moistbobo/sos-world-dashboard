@@ -38,7 +38,7 @@ function ActivityIcon({ row }: { row: RecentActivityRow }) {
 export function RecentActivityPanel({ maxHeight }: { maxHeight?: number }) {
   const { t } = useTranslation();
   const enabled = import.meta.env.VITE_ENABLE_COMMUNITY_SENTIMENT === 'true';
-  const { rows, isPending } = useRecentActivity(enabled);
+  const { rows, isPending, isError, refetch } = useRecentActivity(enabled);
   const headerRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
 
@@ -67,6 +67,20 @@ export function RecentActivityPanel({ maxHeight }: { maxHeight?: number }) {
           ))}
           <p className="sr-only">{t('dashboard.activityLoading')}</p>
         </div>
+      ) : isError ? (
+        <div
+          role="status"
+          className="m-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-6 text-center text-sm text-red-700 dark:text-red-300"
+        >
+          <p>{t('dashboard.activityError')}</p>
+          <button
+            type="button"
+            onClick={refetch}
+            className="mt-2 text-indigo-600 underline dark:text-indigo-400"
+          >
+            {t('worlds.tryAgain')}
+          </button>
+        </div>
       ) : rows.length === 0 ? (
         <p className="px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
           {t('dashboard.activityEmpty')}
@@ -81,7 +95,7 @@ export function RecentActivityPanel({ maxHeight }: { maxHeight?: number }) {
               <li key={`${row.type}-${row.id}`}>
                 <Link
                   to={`/worlds/${row.worldId}`}
-                  className="group flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors duration-150 hover:bg-slate-100 hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-500 dark:hover:bg-slate-800/60 dark:hover:shadow-none"
+                  className="group flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors duration-150 hover:bg-slate-200/60 hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-500 dark:hover:bg-slate-700/50 dark:hover:shadow-none"
                 >
                   <ActivityIcon row={row} />
                   <span className="min-w-0 flex-1">

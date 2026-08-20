@@ -164,6 +164,7 @@ export async function submitComment(
 
 export const RECENT_ACTIVITY_QUERY_LIMIT = 15;
 export const RECENT_ACTIVITY_MAX = 15;
+export const RECENT_ACTIVITY_TIMEOUT_MS = 10_000;
 
 export function mergeRecentActivity(
   ratings: Rating[],
@@ -191,22 +192,30 @@ export function mergeRecentActivity(
 }
 
 export async function fetchRecentActivity(): Promise<RecentActivityItem[]> {
-  const [{ data: ratings, error: ratingsError }, { data: comments, error: commentsError }] =
-    await Promise.all([
-      supabase
-        .from('ratings')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(RECENT_ACTIVITY_QUERY_LIMIT),
-      supabase
-        .from('comments')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(RECENT_ACTIVITY_QUERY_LIMIT),
-    ]);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), RECENT_ACTIVITY_TIMEOUT_MS);
+  try {
+    const [{ data: ratings, error: ratingsError }, { data: comments, error: commentsError }] =
+      await Promise.all([
+        supabase
+          .from('ratings')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(RECENT_ACTIVITY_QUERY_LIMIT)
+          .abortSignal(controller.signal),
+        supabase
+          .from('comments')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(RECENT_ACTIVITY_QUERY_LIMIT)
+          .abortSignal(controller.signal),
+      ]);
 
-  if (ratingsError) throw new Error(ratingsError.message);
-  if (commentsError) throw new Error(commentsError.message);
+    if (ratingsError) throw new Error(ratingsError.message);
+    if (commentsError) throw new Error(commentsError.message);
 
-  return mergeRecentActivity((ratings ?? []) as Rating[], (comments ?? []) as Comment[]);
+    return mergeRecentActivity((ratings ?? []) as Rating[], (comments ?? []) as Comment[]);
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }

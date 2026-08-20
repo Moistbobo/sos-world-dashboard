@@ -24,7 +24,9 @@ let recentActivityFixture: {
   }>;
   isPending: boolean;
   isError: boolean;
-} = { rows: [], isPending: false, isError: false };
+  error: Error | null;
+  refetch: () => void;
+} = { rows: [], isPending: false, isError: false, error: null, refetch: vi.fn() };
 
 vi.mock('../../hooks/useApi', () => ({
   useTags: () => ({ data: { tags: tagsFixture }, isPending: false }),
@@ -76,7 +78,7 @@ describe('DashboardPage', () => {
     window.localStorage.clear();
     window.history.pushState({}, '', '/');
     lastUnmount = null;
-    recentActivityFixture = { rows: [], isPending: false, isError: false };
+    recentActivityFixture = { rows: [], isPending: false, isError: false, error: null, refetch: vi.fn() };
   });
 
   afterEach(() => {
@@ -129,6 +131,8 @@ describe('DashboardPage', () => {
       ],
       isPending: false,
       isError: false,
+      error: null,
+      refetch: vi.fn(),
     };
 
     renderPage();

@@ -58,7 +58,8 @@
     "activityRatedGood": "が良い評価を獲得しました",
     "activityRatedBad": "が悪い評価を獲得しました",
     "activityEmpty": "まだコミュニティのアクティビティはありません。最初の評価やコメントを投稿してみましょう！",
-    "activityLoading": "最近のアクティビティを読み込み中..."
+    "activityLoading": "最近のアクティビティを読み込み中...",
+    "activityError": "現在、最近のアクティビティを読み込めません。"
   },
   "worlds": {
     "title": "ワールド",

@@ -7,6 +7,7 @@ import {
   mergeRecentActivity,
   RECENT_ACTIVITY_QUERY_LIMIT,
   RECENT_ACTIVITY_MAX,
+  RECENT_ACTIVITY_TIMEOUT_MS,
   submitRating,
   updateRating,
   deleteRating,
@@ -327,15 +328,17 @@ describe('mergeRecentActivity', () => {
 
 describe('fetchRecentActivity', () => {
   it('queries both tables newest-first at the query limit and returns merged sorted results', async () => {
-    const ratingsLimit = vi.fn().mockReturnValue({
+    const ratingsAbort = vi.fn().mockReturnValue({
       data: [{ id: 'r1', world_id: 'w1', user_id: 'u1', value: 'good', created_at: '2024-01-02T00:00:00Z' }],
       error: null,
     });
+    const ratingsLimit = vi.fn().mockReturnValue({ abortSignal: ratingsAbort });
     const ratingsOrder = vi.fn().mockReturnValue({ limit: ratingsLimit });
-    const commentsLimit = vi.fn().mockReturnValue({
+    const commentsAbort = vi.fn().mockReturnValue({
       data: [{ id: 'c1', world_id: 'w2', user_id: 'u2', username: 'Ann', content: 'hi', created_at: '2024-01-03T00:00:00Z' }],
       error: null,
     });
+    const commentsLimit = vi.fn().mockReturnValue({ abortSignal: commentsAbort });
     const commentsOrder = vi.fn().mockReturnValue({ limit: commentsLimit });
 
     mocks.select
@@ -349,6 +352,8 @@ describe('fetchRecentActivity', () => {
     expect(commentsOrder).toHaveBeenCalledWith('created_at', { ascending: false });
     expect(ratingsLimit).toHaveBeenCalledWith(RECENT_ACTIVITY_QUERY_LIMIT);
     expect(commentsLimit).toHaveBeenCalledWith(RECENT_ACTIVITY_QUERY_LIMIT);
+    expect(ratingsAbort).toHaveBeenCalledWith(expect.any(AbortSignal));
+    expect(commentsAbort).toHaveBeenCalledWith(expect.any(AbortSignal));
     expect(result).toEqual([
       { type: 'comment', id: 'c1', worldId: 'w2', username: 'Ann', content: 'hi', createdAt: '2024-01-03T00:00:00Z' },
       { type: 'rating', id: 'r1', worldId: 'w1', value: 'good', createdAt: '2024-01-02T00:00:00Z' },
@@ -359,12 +364,16 @@ describe('fetchRecentActivity', () => {
     mocks.select
       .mockReturnValueOnce({
         order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockReturnValue({ data: null, error: { message: 'ratings failed' } }),
+          limit: vi.fn().mockReturnValue({
+            abortSignal: vi.fn().mockReturnValue({ data: null, error: { message: 'ratings failed' } }),
+          }),
         }),
       })
       .mockReturnValueOnce({
         order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockReturnValue({ data: [], error: null }),
+          limit: vi.fn().mockReturnValue({
+            abortSignal: vi.fn().mockReturnValue({ data: [], error: null }),
+          }),
         }),
       });
 
@@ -375,15 +384,45 @@ describe('fetchRecentActivity', () => {
     mocks.select
       .mockReturnValueOnce({
         order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockReturnValue({ data: [], error: null }),
+          limit: vi.fn().mockReturnValue({
+            abortSignal: vi.fn().mockReturnValue({ data: [], error: null }),
+          }),
         }),
       })
       .mockReturnValueOnce({
         order: vi.fn().mockReturnValue({
-          limit: vi.fn().mockReturnValue({ data: null, error: { message: 'comments failed' } }),
+          limit: vi.fn().mockReturnValue({
+            abortSignal: vi.fn().mockReturnValue({ data: null, error: { message: 'comments failed' } }),
+          }),
         }),
       });
 
     await expect(fetchRecentActivity()).rejects.toThrow('comments failed');
+  });
+
+  it('attaches an abort signal that fires after the timeout', async () => {
+    vi.useFakeTimers();
+    const signals: AbortSignal[] = [];
+    const make = (data: unknown) => ({
+      order: vi.fn().mockReturnValue({
+        limit: vi.fn().mockReturnValue({
+          abortSignal: vi.fn().mockImplementation((signal: AbortSignal) => {
+            signals.push(signal);
+            return { data, error: null };
+          }),
+        }),
+      }),
+    });
+    mocks.select.mockReturnValueOnce(make([])).mockReturnValueOnce(make([]));
+
+    const promise = fetchRecentActivity();
+
+    vi.advanceTimersByTime(RECENT_ACTIVITY_TIMEOUT_MS);
+    await promise;
+
+    expect(signals).toHaveLength(2);
+    expect(signals.every((signal) => signal.aborted)).toBe(true);
+
+    vi.useRealTimers();
   });
 });

@@ -46,6 +46,10 @@ function WorldProbe() {
   return <div>world {id}</div>;
 }
 
+function mockResult(overrides: Record<string, unknown> = {}) {
+  return { rows: [], isPending: false, isError: false, error: null, refetch: vi.fn(), ...overrides };
+}
+
 describe('RecentActivityPanel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -56,7 +60,7 @@ describe('RecentActivityPanel', () => {
   });
 
   it('shows a loading skeleton while pending', () => {
-    mocks.useRecentActivity.mockReturnValue({ rows: [], isPending: true, isError: false });
+    mocks.useRecentActivity.mockReturnValue(mockResult({ isPending: true }));
 
     render(
       <MemoryRouter>
@@ -69,11 +73,9 @@ describe('RecentActivityPanel', () => {
   });
 
   it('renders comment and rating rows with names, content, and timestamps', () => {
-    mocks.useRecentActivity.mockReturnValue({
-      rows: [commentRow, ratingRow, badRatingRow],
-      isPending: false,
-      isError: false,
-    });
+    mocks.useRecentActivity.mockReturnValue(
+      mockResult({ rows: [commentRow, ratingRow, badRatingRow] }),
+    );
 
     render(
       <MemoryRouter>
@@ -100,11 +102,7 @@ describe('RecentActivityPanel', () => {
   });
 
   it('navigates to the world detail page when a row is clicked', async () => {
-    mocks.useRecentActivity.mockReturnValue({
-      rows: [commentRow],
-      isPending: false,
-      isError: false,
-    });
+    mocks.useRecentActivity.mockReturnValue(mockResult({ rows: [commentRow] }));
 
     render(
       <MemoryRouter initialEntries={['/']} future={{ v7_startTransition: true }}>
@@ -121,7 +119,7 @@ describe('RecentActivityPanel', () => {
   });
 
   it('shows the empty state when there are no rows', () => {
-    mocks.useRecentActivity.mockReturnValue({ rows: [], isPending: false, isError: false });
+    mocks.useRecentActivity.mockReturnValue(mockResult());
 
     render(
       <MemoryRouter>
@@ -134,8 +132,26 @@ describe('RecentActivityPanel', () => {
     ).toBeInTheDocument();
   });
 
+  it('shows an error state with a retry button when the fetch fails', async () => {
+    const refetch = vi.fn();
+    mocks.useRecentActivity.mockReturnValue(mockResult({ isError: true, error: new Error('boom'), refetch }));
+
+    render(
+      <MemoryRouter>
+        <RecentActivityPanel />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByText('Recent activity is unavailable right now.'),
+    ).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'try again' }));
+    expect(refetch).toHaveBeenCalledTimes(1);
+  });
+
   it('passes the env flag to the hook, disabling when sentiment is off', () => {
-    mocks.useRecentActivity.mockReturnValue({ rows: [], isPending: false, isError: false });
+    mocks.useRecentActivity.mockReturnValue(mockResult());
 
     vi.stubEnv('VITE_ENABLE_COMMUNITY_SENTIMENT', 'false');
     render(

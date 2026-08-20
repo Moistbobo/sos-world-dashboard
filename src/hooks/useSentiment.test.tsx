@@ -499,4 +499,15 @@ describe('useRecentActivity', () => {
     expect(result.current.rows).toHaveLength(1);
     expect(result.current.rows[0]).toMatchObject({ id: 'c1', worldName: 'Alpha' });
   });
+
+  it('surfaces an error and a refetch when the activity fetch fails', async () => {
+    vi.spyOn(sentimentApi, 'fetchRecentActivity').mockRejectedValue(new Error('supabase down'));
+
+    const { result } = renderHook(() => useRecentActivity(true), { wrapper });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect(result.current.rows).toEqual([]);
+    expect(result.current.error?.message).toBe('supabase down');
+    expect(typeof result.current.refetch).toBe('function');
+  });
 });
